@@ -1,0 +1,26 @@
+{
+  "MonitoringFormComponent": {
+    "spring": "Spring",
+    "creationDate": "Date de création",
+    "architectureType": "Type d'architecture",
+    "database": "Base de données",
+    "dbURL": "URL base de données",
+    "dbUser": "Utilisateur base de données",
+    "performances": "Performances",
+    "servicePerformance": "Performance des services",
+    "log4jConf": "Configuration Log4J",
+    "jobsMonitoring": "Surveillance des jobs",
+    "libraries": "Librairies",
+    "resetStats": "Effacer Stats",
+    "refreshStats": "Rafraichir Stats",
+    "detailedStats": "Stats détaillées",
+    "report": "Rapport",
+    "note": "NOTE",
+    "statsReportHelp": "Rapport de Stats : com.twomoro.aerowebb.aop.PerformanceMonitoring log doit être à INFO ou DEBUG",
+    "detailedStatsHelp": "Stats détaillées : com.twomoro.aerowebb.aop.PerformanceMonitoring log doit être à DEBUG",
+    "refreshLibraries": "Rafraichir les librairies"
+  },
+  "DialogLibrairiesReportComponent": {
+    "title": "Rapport JARs"
+  }
+}

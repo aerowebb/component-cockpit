@@ -1,0 +1,52 @@
+{
+  "ComponentCockpitSearchComponent": {
+    "title": "Filtres d'inspection",
+    "filterName": "Nom",
+    "author": "Auteur",
+    "graphicalReference": "",
+    "isPublic": "Public",
+    "isPersistent": "Persistant",
+    "onSuccessDeleteList": "L'item sélectionné a été supprimé",
+    "deleteErrorMessage": "Ce filtre ne peut pas être supprimé",
+    "confirmDeleteSelectedLists": "Voulez-vous supprimer les données sélectionnées ?",
+    "confirmDeleteSelectedList": "Voulez-vous supprimer la donnée sélectionnée ?"
+  },
+  "ComponentCockpitFormComponent": {
+    "title": "Filtres d'inspection",
+    "id": "Id",
+    "name": "Nom",
+    "author": "Auteur",
+    "isPublic": "Public",
+    "isPersistent": "Persistant",
+    "logicLink": "Lien logique",
+    "siteTitle": "Sites",
+    "profileTitle": "Profiles",
+    "variantTitle": "Variantes",
+    "filterTitle": " Filtres",
+    "icons": "Icones :",
+    "warningDataExists": "La donnée existe déjà",
+    "none": "Aucun",
+    "objectKey": "Objet",
+    "dataKey": "Donnée",
+    "typeKey": "Type",
+    "valueKey": "Valeur",
+    "createApp": "Applicabilités",
+    "confirmDeleteSelectedLists": "Voulez-vous supprimer les données sélectionnées ?",
+    "confirmDeleteSelectedList": "Voulez-vous supprimer la donnée sélectionnée ?",
+    "savedSuccesfuly": "Sauvegardé avec succès",
+    "createdSuccesfuly": "Créé avec succès"
+  },
+  "DialogComponentCockpitComponent": {
+    "elementPopup": "Gestion de filtre",
+    "object": "Objet",
+    "data": "Donnée",
+    "type": "Type",
+    "value": "Valeur",
+    "profilePopup": "Gestion de profile",
+    "sitePopup": "Gestion de site",
+    "variantPopup": "Gestion de variante",
+    "profile": "Profile",
+    "site": "Site",
+    "variant": "Variante"
+  }
+}

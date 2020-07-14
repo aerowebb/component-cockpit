@@ -1,0 +1,24 @@
+{
+  "ReferentialDashboardFormComponent": {
+    "reportName": "EN_Report Name",
+    "folderName": "EN_Folder Name",
+    "date": "EN_Date",
+    "confirmDeleteSelectedFile": "EN_Do you want to delete selected file?",
+    "confirmDownloadSelectedFiles": "EN_Do you want to download selected files?",
+    "successOnDownloadFile": "EN_Download successfully completed",
+    "successOnDeleteFile": "EN_Delete successfully completed",
+    "errorOnDeleteFile": "EN_Delete file unsuccessful",
+    "errorOnDownloadFile": "EN_Download file unsuccessful"
+  },
+  "ReferentialDashboardSearchComponent": {
+    "reportName": "EN_Report Name",
+    "folderName": "EN_Folder Name",
+    "date": "EN_Date",
+    "confirmDeleteSelectedFile": "EN_Do you want to delete selected file?",
+    "confirmDownloadSelectedFiles": "EN_Do you want to download selected files?",
+    "successOnDownloadFile": "EN_Download successfully completed",
+    "successOnDeleteFile": "EN_Delete successfully completed",
+    "errorOnDeleteFile": "EN_Delete file unsuccessful",
+    "errorOnDownloadFile": "EN_Download file unsuccessful"
+  }
+}

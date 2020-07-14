@@ -1,0 +1,10 @@
+{
+  "TodoListSearchComponent": {
+    "funcObjectLabel": "Object type",
+    "id": "Object identifier",
+    "isUrgent": "Urgent",
+    "statusDate": "Status date",
+    "statusLabel": "Status",
+    "statusUser": "Last person modifying status"
+  }
+}

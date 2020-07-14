@@ -1,0 +1,9 @@
+{
+  "LogisticDataExchangeComponent": {
+    "materialFileToImport": "Fichier des articles à importer",
+    "importFile": "Importer",
+    "importData": "Vous êtes sur le point de charger des données depuis le fichier suivant : {{importData.fileName}}",
+    "importData.line1": "Attention : Cette étape peut prendre quelques minutes...",
+    "openReport": "Vous avez choisi d'ouvrir le document : {{openReport.reportName}}"
+  }
+}

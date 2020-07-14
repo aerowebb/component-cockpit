@@ -1,0 +1,9 @@
+{
+  "LicensingSearchComponent": {
+    "checkLicensing": "Check Licensing",
+    "errorOnFindingBsdeAwCustoms": "Unable to load AW Customs",
+    "errorOnFetchingLicense": "Unable to check Licensing",
+    "licensingCheckReport": "Licensing Check Report",
+    "numberOfLicenseAquired": "Number of acquired Licenses"
+  }
+}

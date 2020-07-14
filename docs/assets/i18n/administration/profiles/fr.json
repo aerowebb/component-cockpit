@@ -1,0 +1,27 @@
+{
+  "ProfilesSearchComponent": {
+    "profilesSearchList": "Liste des Profils",
+    "profileName": "Nom",
+    "profileComment": "Commentaire",
+    "successOnDeleteProfile": "Profil(s) supprimé(s) avec succès",
+    "confirmDeleteSelectedProfiles": "Voulez-vous supprimer les profils sélectionnés ?",
+    "confirmDeleteSelectedProfile": "Voulez-vous supprimer le profil sélectionné ?"
+  },
+  "ProfilesFormComponent": {
+    "profileName": "Nom",
+    "profileComment": "Commentaire",
+    "BB_MCH": "Gestion des données techniques",
+    "BB_FM": "Gestion de flotte & de navigabilité",
+    "BB_MFO": "Prévision de maintenance",
+    "BB_AIRM": "Exécution de maintenance",
+    "BB_MM": "Gestion de la logistique",
+    "BB_SP": "Commandes & ventes",
+    "BB_HR": "Ressources humaines",
+    "BB_IWB": "Inspection sur table",
+    "BB_C2": "Contrôle de configuration",
+    "rights": "Droits",
+    "successOnCreateProfile": "Profil sauvé avec succès",
+    "profileAlreadyExist": "Le profil existe déjà",
+    "errorOnMissingProfileName": "Veuillez remplir tous les champs obligatoires"
+  }
+}

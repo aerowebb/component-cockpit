@@ -1,0 +1,57 @@
+{
+  "DialogFolderTypeComponent": {
+    "code": "Code",
+    "confirmDeleteSelectedFolderType": "Do you want to delete selected operation?",
+    "confirmDeleteSelectedFolderTypes": "Do you want to delete selected operations?",
+    "designation": "Designation",
+    "dftCode": "Code",
+    "dftDesignation": "Designation",
+    "dftopeKey": "Operation",
+    "dftopeSequenceNumber": "Sequence Number",
+    "docCategorie": "Category Type",
+    "errorOnLoadingMaterialType": "Error on loading Document Catgories",
+    "item": "Item",
+    "linkedDocCategories": "Linked Document Category",
+    "materialTypes": "Material Types",
+    "moveDown": "Move down",
+    "moveUp": "Move up",
+    "objectType": "Element Type",
+    "operations": "Operations",
+    "package": "Package",
+    "pnType": "Material Type",
+    "receipt": "Receipt Type",
+    "shipment": "Shipment Type",
+    "taskTypeCode": "Task Type",
+    "transferType": "Transfer Type"
+  },
+  "DialogOperationCatalogComponent": {
+    "editOperation": "Edit Operation",
+    "elementType": "Element Type",
+    "item": "Item",
+    "newOperation": "New Operation",
+    "operation": "Operation",
+    "package": "Package",
+    "taskType": "Task Type",
+    "code": "Code"
+  },
+  "ReceiptTypeComponent": {
+    "code": "Code",
+    "confirmDeleteSelectedReceiptType": "Do you want to delete selected receipt type?",
+    "confirmDeleteSelectedReceiptTypes": "Do you want to delete selected receipt types?",
+    "designation": "Designation",
+    "noOfOperations": "Number of Operations",
+    "successOnDeleteReceiptType": "Receipt type removed",
+    "successOnDeleteReceiptTypes": "Receipt types removed",
+    "title": "Receipt Type"
+  },
+  "ShipmentTypeComponent": {
+    "code": "Code",
+    "confirmDeleteSelectedShimpentTypes": "Do you want to delete selected shipment types?",
+    "confirmDeleteSelectedShipmentType": "Do you want to delete selected shipment type?",
+    "designation": "Designation",
+    "noOfOperations": "Number of Operations",
+    "successOnDeleteShimpmentType": "Shipment type removed",
+    "successOnDeleteShimpmentTypes": "Shipment types removed",
+    "title": "Shipment Type"
+  }
+}

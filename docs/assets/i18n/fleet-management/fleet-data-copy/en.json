@@ -1,0 +1,53 @@
+{
+  "FleetDataCopySearchComponent": {
+    "title": "Fleet Data Copy",
+    "copyData": "Data Copy",
+    "aircraftStatus": "Aircraft Status",
+    "operationalStatus": "Operational Status",
+    "functionalLocation": "Functional Location",
+    "assetCode": "Asset Code",
+    "asset": "Asset",
+    "registration": "Registration",
+    "pn": "P/N",
+    "sn": "S/N",
+    "esn": "ESN",
+    "function": "Function",
+    "equipment": "Equipment",
+    "equipmentCode": "Asset Code",
+    "equipments": "Equipments",
+    "familyVariantCode": "Family Variant",
+    "familyVariant": "Family Variant",
+    "snCode": "S/N",
+    "pnCode": "P/N",
+    "equipmentFunction": "Function",
+    "functionCode": "Function Code",
+    "equipmentDesignation": "Designation",
+    "ownerCustomerCode": "Owner",
+    "owner": "Owner"
+  },
+  "FleetDataCopyPopupComponent": {
+    "sourceAsset": "Source Asset",
+    "dataToCopy": "Data to Copy",
+    "maintenancePlan": "Maintenance Plan",
+    "lifeLimits": "Life Limits",
+    "usage": "Usage",
+    "attributes": "Attributes",
+    "targetAssetsTitle": "Target Assets",
+    "title": "Fleet Data Copy",
+    "reportTitle": "Report - Fleet Data Copy",
+    "report": "Report",
+    "pnCode": "P/N",
+    "sn": "S/N",
+    "equipmentDesignation": "Designation",
+    "ownerCustomerCode": "Owner",
+    "sourceEvolution": "Source Evolution",
+    "applicationDate": "Application Date",
+    "isPartiallyApplied": "Is Partially Applied",
+    "sb182": "SB-182 (TGB replacement)",
+    "successMessage": "The fleet data copy is OK",
+    "errorMessage": "Error occurred while copying fleet data"
+  },
+  "FleetDataCopyReportPopupComponent": {
+    "title": "Copy Report"
+  }
+}

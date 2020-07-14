@@ -1,0 +1,37 @@
+{
+  "ConfigurationDiagramFormComponent": {
+    "approvalDate": "Date d'Approbation",
+    "configurationSimulation": "Simulation de la Configuration",
+    "date": "Date",
+    "designation": "Désignation",
+    "evolution": "Évolution",
+    "inConfiguration": "Dans la Simulation",
+    "partsProgression": "Progression des Références",
+    "pnAndEvolutionSelection": "Sélection P/N & Évolution",
+    "quantity": "Quantité",
+    "reset": "Effacer",
+    "retrieveEvolutionInConfiguration": "Retrouver une Évolution dans la Configuration",
+    "retrievePnInConfiguration": "Retrouver un P/N dans la Configuration",
+    "simulate": "Simuler",
+    "step": "Etape",
+    "targetPn": "P/N Cible",
+    "targetQuantity": "Quantité Cible"
+  },
+  "ConfigurationDiagramSearchComponent": {
+    "chapter": "Chapitre",
+    "family": "Famille",
+    "familyVariant": "Famille-Variante",
+    "functionCode": "Code Fonction",
+    "itemCode": "Code de l'Item",
+    "itemFamily": "Famille d'Item",
+    "itemNumber": "Numéro de l'Item",
+    "marks": "Repère",
+    "name": "Nom",
+    "pnCode": "P/N",
+    "searchCriteria": "Rechercher",
+    "section": "Section",
+    "sheet": "Figure",
+    "subject": "Sujet",
+    "variant": "Variante"
+  }
+}

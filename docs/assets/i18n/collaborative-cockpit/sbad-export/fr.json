@@ -1,0 +1,10 @@
+{
+  "SbAdExportFormComponent": {
+    "data": "Données",
+    "export": "Exporter",
+    "exportSbAdData": "Exporter données SB/AD",
+    "sbad": "SB/AD",
+    "type": "Type",
+    "errorOnDownloadSbadList": "Impossible de récupérer la liste des SB/AD"
+  }
+}

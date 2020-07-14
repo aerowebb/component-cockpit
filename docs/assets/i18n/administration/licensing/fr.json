@@ -1,0 +1,9 @@
+{
+  "LicensingSearchComponent": {
+    "checkLicensing": "Contrôler les licences",
+    "errorOnFindingBsdeAwCustoms": "Impossible de charger les spécificités AW",
+    "errorOnFetchingLicense": "Impossible de contrôler les licences",
+    "licensingCheckReport": "Rapport de contrôle des licences",
+    "numberOfLicenseAquired": "Nombre de licences acquises"
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "ContactSearchComponent": {
+    "businessPartner": "Business Partner",
+    "contactName": "Contact Name",
+    "customerCode": "Business Partner",
+    "customerName": "Contact Name",
+    "title": "Title",
+    "phone1": "Office Phone",
+    "phone2": "Mobile Phone",
+    "confirmDeleteSelectedContact": "Do you want to delete selected contact?",
+    "confirmDeleteSelectedContacts": "Do you want to delete selected contact?",
+    "successOnDeleteContact": "Contact deleted"
+  },
+  "ContactFormComponent": {
+    "businessPartner": "Business Partner",
+    "contact": "Contact",
+    "contactName": "Contact Name",
+    "title": "Title",
+    "country": "Country",
+    "town": "Town",
+    "address": "Address",
+    "eMail": "E-mail",
+    "fax": "Fax",
+    "mobilePhone": "Mobile Phone",
+    "name": "Name",
+    "officePhone": "Office Phone",
+    "primaryContact": "Primary Contact",
+    "lastName": "Last Name",
+    "firstName": "First Name",
+    "successOnSaveContact": "Contact saved",
+    "successOnUpdateContact": "Contact updated"
+  }
+}

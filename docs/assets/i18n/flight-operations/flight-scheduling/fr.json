@@ -1,0 +1,37 @@
+{
+  "FlightSchedulingFormComponent": {
+    "addFlight": "Ajouter vol",
+    "chronoNumber": "Numéro chrono",
+    "code": "Code",
+    "confirmDeleteSelectedMissionEquipment": "Voulez-vous supprimer ces données ?",
+    "date": "Date",
+    "duplicate": "Dupliquer",
+    "endDate": "Date de fin",
+    "fleet": "Flotte",
+    "flightType": "Type de vol",
+    "missionName": "Immatriculation de l'avion",
+    "name": "Nom",
+    "nextWeek": "Deux semaines suivantes",
+    "previousWeek": "Deux semaines précédentes",
+    "removeFlight": "Supprimer vol",
+    "resetFlight": "Réinitialiser le vol",
+    "schedule": "Planification",
+    "startDate": "Date de début",
+    "status": "Statut",
+    "successOnDeleteMissionEquipment": "Vol supprimé avec succès.",
+    "timeZone": "Fuseau horaire"
+  },
+  "FlightSchedulingSearchComponent": {
+    "confirmDeleteSelectedFleet": "Voulez-vous supprimer la flotte sélectionnée ?",
+    "confirmDeleteSelectedFleets": "Voulez-vous supprimer les flottes sélectionnées ?",
+    "consult": "Consulter",
+    "customerCode": "Code du client",
+    "errorOnDeleteFleet": "Impossible de supprimer la flotte.",
+    "errorOnMissingFleetId": "Impossible d'ouvrir les flottes sélectionnées.",
+    "fleet": "Flotte",
+    "fleetCode": "Code de la flotte",
+    "fleetName": "Nom de la flotte",
+    "successOnDeleteFleet": "Flotte supprimée avec succès.",
+    "viewSched": "Voir la planification"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "SiteSearchComponent": {
+    "bidtCompanyId": "Company",
+    "siteCode": "Code",
+    "siteCompany": "Company",
+    "siteDescription": "Description",
+    "siteName": "Name",
+    "confirmDeleteSelectedSite": "Do you want to delete the selected site?",
+    "confirmDeleteSelectedSites": "Do you want to delete the selected sites?",
+    "successOnDeleteSite": "Site removed",
+    "errorOnMissingSiteCode": "Unable to open: missing site code"
+  },
+  "SiteFormComponent": {
+    "availabilityDate": "Validity date",
+    "bidtCompanyId": "Company",
+    "capabilities": "Capabilities",
+    "cost": "Cost",
+    "pnCode": "Part Number",
+    "siteCode": "Code",
+    "siteDescription": "Description",
+    "siteName": "Name",
+    "tat": "TAT(days)",
+    "technicalLevel": "Technical Level",
+    "successOnSave": "Saved Successfully",
+    "errorOnSave": "Unable to save",
+    "warningOnCapabilityExists": "Capability already exists",
+    "errorOnDuplicateSite": " Site with code already exists in company"
+  }
+}

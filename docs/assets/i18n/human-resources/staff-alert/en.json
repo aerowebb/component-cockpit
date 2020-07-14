@@ -1,0 +1,34 @@
+{
+  "StaffAlertSearchComponent": {
+    "date": "Date",
+    "alertThreshold": "Alert Threshold (in days)",
+    "superiorLastName": "Superior Last Name",
+    "superiorFirstName": "Superior First Name",
+    "superiorId": "Superior ID",
+    "toCalculate": "Calculate",
+    "enterSearchCriteria": "Please select a date"
+  },
+  "StaffAlertFormComponent": {
+    "date": "Date",
+    "alertThreshold": "Alert Threshold (in days)",
+    "superiorLastName": "Superior Last Name",
+    "superiorFirstName": "Superior First Name",
+    "superiorId": "Superior ID",
+    "newCalculation": "New Calculation",
+    "employeeNumber": "Employee ID",
+    "employeeLastName": "Last Name",
+    "employeeFirstName": "First Name",
+    "superior": "Superior",
+    "type": "Type",
+    "title": "Title",
+    "expiryDate": "Expiry",
+    "MSG_TXT_MEDICAL": "Medical",
+    "MSG_TXT_QUALIFICATION": "Qualification",
+    "MSG_TXT_LICENSE": "License",
+    "alertList": "Alerts List",
+    "medicalAlerts": "Medical",
+    "qualificationAlerts": "Qualification",
+    "licenseAlerts": "License",
+    "reset": "Show All"
+  }
+}
