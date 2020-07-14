@@ -1,0 +1,62 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".title" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="row">
+      <div class="form-group">
+        <label class="form-label"> {{ getComponentName() + ".fileToImport" | translate }}</label>
+
+        <div class="form-control form-control-with-modal">
+          <div class="form-control-data">
+            {{ fileName }}
+          </div>
+
+          <div class="btn-file-upload-wrapper">
+            <p-fileUpload
+              #fileUploader
+              class="aw-fileupload"
+              name="document[]"
+              customUpload="true"
+              mode="basic"
+              auto="true"
+              chooseLabel=""
+              (uploadHandler)="uploadDocument($event, fileUploader)"
+            >
+            </p-fileUpload>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="form-group">
+        <label class="form-label">
+          {{ getComponentName() + ".deleteScenCurrentData" | translate }}
+        </label>
+
+        <div class="form-control">
+          <p-checkbox binary="true" class="aw-checkbox" [(ngModel)]="file.deletion"></p-checkbox>
+        </div>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button type="button" mat-raised-button (click)="closeDialog()">
+      <span>{{ "global.cancel" | translate }}</span>
+    </button>
+
+    <button type="button" mat-raised-button class="btn-with-spinner" [disabled]="!fileName" (click)="importFile()">
+      <span class="lds-hourglass" *ngIf="showImportSpinner"></span>
+      {{ getComponentName() + ".import" | translate }}
+    </button>
+  </a-footer>
+</a-modal>
+
+<aw-dialog-imported-message
+  *ngIf="showImportMsgDialog"
+  [importReportMessage]="importMessage"
+  [(display)]="showImportMsgDialog"
+  (onClose)="onCloseMsgDialog($event)"
+></aw-dialog-imported-message>

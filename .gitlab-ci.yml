@@ -1,0 +1,98 @@
+stages:
+  - install_dependencies
+  - verify
+  - build
+  - deploy
+  - quality
+  
+image: trion/ng-cli:7.3.0
+
+install_dependencies:
+  stage: install_dependencies
+  cache:
+    key: $CI_COMMIT_REF_SLUG
+    paths:
+      - node_modules/
+  script: 
+    - npm set registry http://nexus.2moro.lan:8081/repository/npm-all/
+    - npm ci --prefer-offline --no-audit --verbose
+  only:
+    changes:
+      - package-lock.json
+  tags:
+    - aero-webb-frontend
+
+############
+### verify ###
+############
+fixes:naming:
+  stage: verify
+  script:
+    - export BRANCH=$CI_COMMIT_REF_NAME
+    - echo $BRANCH
+    - if echo "$BRANCH" | grep -E "^fixes\/([0-9]+)(-([0-9]+))*$"; then exit 0; else exit 1; fi
+  only:
+    - /^fixes/.*$/
+    - /^fix/.*$/
+  tags:
+    - aero-webb-frontend
+
+check_tslint_and_aot:
+  stage: verify
+  cache:
+    key: $CI_COMMIT_REF_SLUG
+    paths:
+      - node_modules/
+    policy: pull
+  script:
+    - npm set registry http://nexus.2moro.lan:8081/repository/npm-all/
+    - npm i --prefer-offline --no-audit
+    - ./node_modules/tslint/bin/tslint --project tsconfig.json --config tslint.ci.json 'src/**/*.ts'
+    - node --max_old_space_size=8000 ./node_modules/@angular/cli/bin/ng build --configuration ci-aot
+  only:
+    - merge_requests
+  tags:
+    - aero-webb-frontend
+
+build_prod:
+  stage: build
+  script:
+    - npm set registry http://nexus.2moro.lan:8081/repository/npm-all/
+    - npm ci --prefer-offline --no-audit
+    # Modify Version (Keep part after last '/' of tag/branch name) and Date
+    - export CURRENT_DATE=$(date +"%Y/%m/%d")
+    - export VERSION=$CI_COMMIT_REF_NAME
+    - 'sed "s/\"version\": \"dev\"/\"version\":\"${VERSION##*/}\"/g" -i src/app-version.json'
+    - 'sed "s#\"versionDate\": \"\"#\"versionDate\":\"$CURRENT_DATE\"#g" -i src/app-version.json'
+    # Build application
+    - node --max_old_space_size=8000 ./node_modules/@angular/cli/bin/ng build --configuration prod
+    - rm -fr dist/app-config
+    - mkdir -p delivery/others
+    - cp -rT dist delivery/others
+    # Specialize per clients logo
+    - for i in templates/img/*.svg; do export file=${i:19}; export client=${file%\.svg}; mkdir -p delivery/$client; cp -rT dist delivery/$client; cp $i delivery/$client/assets/img/client.svg;  done
+
+  only:
+    - tags
+    - /^release/.*$/
+  artifacts:
+    name: "frontend-$CI_COMMIT_REF_SLUG"
+    paths:
+      - delivery/
+  tags:
+    - aero-webb-prod-frontend
+
+############
+### Quality ###
+###########
+analyze:code:
+  stage: quality
+  image: trion/ng-cli-e2e:7.3.0
+  script:
+    - npm set registry http://nexus.2moro.lan:8081/repository/npm-all/
+    - npm ci --prefer-offline --no-audit
+    - npm run sonar
+  only:
+    - /develop$/
+  tags:
+    - aero-webb-prod-frontend

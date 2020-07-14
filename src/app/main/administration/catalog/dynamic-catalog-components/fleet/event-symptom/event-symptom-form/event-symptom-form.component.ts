@@ -1,0 +1,382 @@
+import { Component, OnInit } from '@angular/core';
+
+import { TableDataSource } from '../../../../../../../shared/components/table/table-data-source';
+import { ComponentOpenMode } from '../../../../../../../shared/enums/component-open-mode.enum';
+import { FavoriteService } from '../../../../../../../shared/services/favorite.service';
+import { LoaderService } from '../../../../../../../shared/services/loader.service';
+import { MessageService } from '../../../../../../../shared/services/message.service';
+import { SerializationService } from '../../../../../../../shared/services/serialization.service';
+import { TabService } from '../../../../../../../shared/services/tab.service';
+import { SaveCatalogInput } from '../../../../../../../shared/types/api-input-types/catalog/save-catalog-input.interface';
+import { BidoExtensionContextSymptomOutputDTO } from '../../../../../../../shared/types/api-output-types/catalog/bido-extension-context-symptom-output-dto.interface';
+import { BidoExtensionDTOId } from '../../../../../../../shared/types/api-types/bido-extension-dto-id.interface';
+import { BidoExtensionDTO } from '../../../../../../../shared/types/api-types/bido-extension-dto.interface';
+import { BidoParameterDTO } from '../../../../../../../shared/types/api-types/bido-parameter-dto.interface';
+import { SearchResultsDTO } from '../../../../../../../shared/types/api-types/search-results-dto.interface';
+import { FormPageComponent } from '../../../../../../../shared/types/form-page-component';
+import { LabelValue } from '../../../../../../../shared/types/label-value.interface';
+import { PageComponentData } from '../../../../../../../shared/types/page-component-data.interface';
+import { LabelValueUtils } from '../../../../../../../shared/utils/label-value-utils';
+import { CatalogService } from '../../../../catalog.service';
+import { EventContextService } from '../../event-context/event-context.service';
+import { EventSymptomService } from '../event-symptom.service';
+
+@Component({
+  selector: 'aw-event-symptom-form',
+  templateUrl: './event-symptom-form.component.html',
+  styleUrls: ['./event-symptom-form.component.scss']
+})
+export class EventSymptomFormComponent extends FormPageComponent<PageComponentData> implements OnInit {
+  public symptom: BidoExtensionDTO;
+
+  public parametersTableDataSource: TableDataSource<BidoParameterDTO>;
+
+  public currentParameter: BidoParameterDTO;
+  public currentParameterIndex: number | undefined;
+
+  public tabParametersId: string;
+  public currentTabId: string;
+
+  public existingSymptoms: string[];
+
+  public showParametersPopup: boolean;
+
+  public isNewParameter: boolean | undefined;
+
+  public eventSymptomAddedList: BidoExtensionContextSymptomOutputDTO;
+  public eventSymptomUpdatedList: BidoExtensionContextSymptomOutputDTO;
+
+  public eventSymptomTable: SearchResultsDTO<BidoExtensionDTO>;
+
+  public units: LabelValue<string>[];
+
+  public showSaveSpinner: boolean;
+
+  public constructor(
+    favoriteService: FavoriteService,
+    loaderService: LoaderService,
+    messageService: MessageService,
+    serializationService: SerializationService,
+    tabService: TabService,
+    private readonly eventSymptomService: EventSymptomService,
+    private readonly catalogService: CatalogService,
+    private readonly eventContextService: EventContextService
+  ) {
+    super(ComponentOpenMode.Read, favoriteService, loaderService, messageService, serializationService, tabService);
+
+    if (!this.componentData) {
+      this.loadUnitDropdown();
+    }
+    this.init();
+
+    this.getExistingSymptomCodes();
+  }
+
+  public ngOnInit() {
+    super.ngOnInit();
+
+    if (this.componentData) {
+      this.updateOpenMode(this.componentData.openMode);
+
+      const eventSymptom = this.isCreateOpenMode
+        ? 'tab.createMode'
+        : !!this.componentData.objectId &&
+          this.serializationService.deserialize(this.componentData.objectId).extensionCode;
+
+      this.displayComponentContext(eventSymptom, this.isCreateOpenMode);
+
+      this.loadSymptom();
+    }
+  }
+
+  public getComponentName(): string {
+    return 'EventSymptomFormComponent';
+  }
+
+  private init(): void {
+    this.eventSymptomTable = { list: [], moreResults: false };
+    this.symptom = {};
+
+    this.currentTabId = this.tabParametersId;
+
+    this.parametersTableDataSource = new TableDataSource({
+      allowMultiSelect: true,
+      columns: [
+        {
+          field: 'code',
+          translateKey: this.getTranslateKey('code')
+        },
+        {
+          field: 'name',
+          translateKey: this.getTranslateKey('name')
+        },
+        {
+          field: 'unit',
+          translateKey: this.getTranslateKey('unit')
+        }
+      ],
+      data: []
+    });
+
+    this.currentParameter = {};
+    this.currentParameterIndex = undefined;
+
+    this.showParametersPopup = false;
+
+    this.existingSymptoms = [];
+
+    this.isNewParameter = undefined;
+
+    this.eventSymptomAddedList = {
+      bidoExtensionDTO: {},
+      bidoParameterDTO: []
+    };
+    this.eventSymptomUpdatedList = {};
+
+    this.units = [];
+
+    this.loadEventSymptomTableData();
+  }
+
+  public loadSymptom(): void {
+    this.parametersTableDataSource.setData([]);
+    if (!!this.componentData && !!this.componentData.objectId) {
+      const bidoExtensionDTOId: BidoExtensionDTOId = {
+        extensionCode: this.serializationService.deserialize(this.componentData.objectId).extensionCode
+      };
+      this.eventSymptomService.loadSymptom(bidoExtensionDTOId).subscribe((results) => {
+        this.eventContextService.loadUnitDropdown().subscribe((result) => {
+          if (!!results.bidoExtensionDTO) {
+            result.forEach((res) => {
+              const unit: LabelValue<string> = {
+                label: '',
+                value: ''
+              };
+              unit.label = res.value;
+              unit.value = res.label;
+              this.units.push(unit);
+            });
+
+            this.symptom = results.bidoExtensionDTO;
+            if (!!results.bidoParameterDTO) {
+              results.bidoParameterDTO.forEach((element) => {
+                this.units.forEach((u) => {
+                  if (element.unit === u.value) {
+                    element.unit = u.label;
+                  }
+                });
+              });
+            }
+            this.parametersTableDataSource.addData(results.bidoParameterDTO || []);
+          } else {
+            super.throwUnboundLocalError('loadSymptom', 'results.bidoExtensionDTO');
+          }
+        });
+      });
+    }
+  }
+
+  public getExistingSymptomCodes(): void {
+    this.eventSymptomService.loadEventSymptomList().subscribe((results) => {
+      results.list.forEach((result) => {
+        if (result.extensionType === 'S' && !!result.extensionCode) {
+          this.existingSymptoms.push(result.extensionCode);
+        }
+      });
+    });
+  }
+
+  public reloadSymptom(): void {
+    this.init();
+    this.loadSymptom();
+  }
+
+  public editSymptom(): void {
+    this.updateOpenMode(ComponentOpenMode.Write);
+  }
+
+  public loadEventSymptomTableData(): void {
+    this.eventSymptomService.loadEventSymptomList().subscribe((results) => {
+      results.list.forEach((result) => {
+        if (result.extensionType === 'C') {
+          this.eventSymptomTable.list.push(result);
+        }
+      });
+    });
+  }
+
+  public saveSymptom(): void {
+    if (
+      !this.symptom.extensionCode ||
+      !this.symptom.extensionName ||
+      this.symptom.extensionCode.trim().length === 0 ||
+      this.symptom.extensionName.trim().length === 0
+    ) {
+      this.messageService.showWarningMessage('global.warningOnMissingRequiredFields');
+    } else {
+      this.eventSymptomService.loadEventSymptomList().subscribe((results) => {
+        results.list.forEach((result) => {
+          if (result.extensionType === 'S') {
+            this.eventSymptomTable.list.push(result);
+          }
+        });
+        const create = 0;
+        const update = 1;
+        this.symptom.extensionType = 'S';
+        this.parametersTableDataSource.dataSrc.forEach((parameter) => {
+          parameter.extensionCode = this.symptom.extensionCode;
+        });
+        this.parametersTableDataSource.setData(this.parametersTableDataSource.dataSrc);
+        if (!!this.componentData && this.componentData.openMode === create) {
+          if (!!this.symptom.extensionCode && this.existingSymptoms.includes(this.symptom.extensionCode)) {
+            this.messageService.showErrorMessage(this.getTranslateKey('codeAlreadyExists'));
+          } else {
+            this.eventSymptomAddedList = {
+              bidoExtensionDTO: this.symptom,
+              bidoParameterDTO: this.parametersTableDataSource.dataSrc
+            };
+            const saveCatalogInput: SaveCatalogInput = {
+              bidoExtensionAddedList: this.eventSymptomAddedList
+            };
+
+            this.showSaveSpinner = true;
+            this.catalogService.saveCatalog(saveCatalogInput).subscribe(
+              (_result) => {
+                this.eventSymptomTable = { list: [], moreResults: false };
+                this.messageService.showSuccessMessage('global.successOnSave');
+                if (!!this.componentData && !!this.symptom.extensionCode) {
+                  this.displayComponentContext(this.symptom.extensionCode, this.isCreateOpenMode);
+                  this.updateOpenMode(ComponentOpenMode.Write);
+                  this.componentData.openMode = 1;
+                  this.componentData.objectId = this.serializationService.serialize(this.symptom);
+                } else {
+                  super.throwUnboundLocalError('saveCatalog', 'this.symptom.extensionCode');
+                }
+                this.showSaveSpinner = false;
+              },
+              () => {
+                this.eventSymptomTable = { list: [], moreResults: false };
+                this.messageService.showErrorMessage('global.errorOnSave');
+                this.showSaveSpinner = false;
+              }
+            );
+          }
+        } else if (!!this.componentData && this.componentData.openMode === update) {
+          let dataInDB = false;
+          this.eventSymptomTable.list.forEach((symptom) => {
+            if (symptom.extensionCode === this.symptom.extensionCode) {
+              dataInDB = true;
+            }
+          });
+          if (dataInDB) {
+            this.eventSymptomUpdatedList = {
+              bidoExtensionDTO: this.symptom,
+              bidoParameterDTO: this.parametersTableDataSource.dataSrc
+            };
+
+            const saveCatalogInput: SaveCatalogInput = {
+              bidoExtensionUpdatedList: this.eventSymptomUpdatedList
+            };
+
+            this.showSaveSpinner = true;
+            this.catalogService.saveCatalog(saveCatalogInput).subscribe(
+              (_result) => {
+                this.eventSymptomTable = { list: [], moreResults: false };
+                if (!!this.componentData) {
+                  this.messageService.showSuccessMessage('global.successOnSave');
+                  this.updateOpenMode(ComponentOpenMode.Write);
+                  this.componentData.objectId = this.serializationService.serialize(this.symptom);
+                } else {
+                  super.throwUnboundLocalError('saveCatalog', 'this.componentData');
+                }
+                this.showSaveSpinner = false;
+              },
+              () => {
+                this.eventSymptomTable = { list: [], moreResults: false };
+                this.messageService.showErrorMessage('global.errorOnSave');
+                this.showSaveSpinner = false;
+              }
+            );
+          } else {
+            this.messageService.showErrorMessage('global.internalServerError');
+          }
+        }
+      });
+    }
+  }
+
+  public cancelSymptom(): void {
+    this.updateOpenMode(ComponentOpenMode.Read);
+    this.reloadSymptom();
+  }
+
+  public openParametersTab(): void {
+    this.currentTabId = this.tabParametersId;
+  }
+
+  public loadUnitDropdown(): void {
+    this.eventContextService.loadUnitDropdown().subscribe((result) => {
+      result.forEach((res) => {
+        const unit: LabelValue<string> = {
+          label: '',
+          value: ''
+        };
+        unit.label = res.value;
+        unit.value = res.label;
+        this.units.push(unit);
+      });
+    });
+  }
+
+  /*******
+   * Popup
+   *******/
+
+  public addNewParameter(): void {
+    this.showParametersPopup = true;
+    this.currentParameter = {};
+    this.isNewParameter = true;
+  }
+
+  public editParameter(): void {
+    this.showParametersPopup = true;
+    const parameterToUpdate = this.parametersTableDataSource.dataSelection[0];
+    LabelValueUtils.labelToStringValue<BidoParameterDTO>(parameterToUpdate, 'unit', this.units);
+    this.currentParameter = parameterToUpdate;
+    this.currentParameterIndex = this.parametersTableDataSource.dataSrc.findIndex(
+      (p) => p.code === this.currentParameter.code
+    );
+    this.isNewParameter = false;
+  }
+
+  public deleteParameters(): void {
+    this.parametersTableDataSource.deleteDataSelection();
+    this.messageService.showSuccessMessage('global.deleteSuccessMsg');
+  }
+
+  public createParameter(event: BidoParameterDTO) {
+    const inParameterTable = this.parametersTableDataSource.dataSrc.filter(
+      (parameter) => parameter.code === event.code
+    );
+    if (inParameterTable.length === 0) {
+      LabelValueUtils.stringValueToLabel<BidoParameterDTO>(event, 'unit', this.units);
+      this.parametersTableDataSource.addData([event]);
+    } else {
+      this.messageService.showErrorMessage(this.getTranslateKey('codeAlreadyExists'));
+    }
+  }
+
+  public updateParameter(event: BidoParameterDTO) {
+    if (this.currentParameterIndex !== null && this.currentParameterIndex !== undefined) {
+      LabelValueUtils.stringValueToLabel<BidoParameterDTO>(event, 'unit', this.units);
+      this.parametersTableDataSource.replaceData(
+        this.parametersTableDataSource.dataSrc[this.currentParameterIndex],
+        event
+      );
+      this.currentParameterIndex = undefined;
+      this.parametersTableDataSource.dataSelection = [];
+    } else {
+      super.throwUnboundLocalError('updateParameter', 'this.currentParameterIndex');
+    }
+  }
+}

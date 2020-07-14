@@ -1,0 +1,302 @@
+@import "constants";
+@import "mixins";
+
+$table-header-height: 24px;
+
+:host {
+  .grid-cell-search {
+    .search-actions {
+      button {
+        margin-left: $margin-value;
+
+        &:first-of-type {
+          margin-left: 0;
+        }
+      }
+    }
+  }
+
+  ::ng-deep p-progressbar.pla .ui-progressbar-value {
+    background: $grey1;
+  }
+  ::ng-deep p-progressbar.ong .ui-progressbar-value {
+    background: $blue-light1;
+  }
+  ::ng-deep p-progressbar.tbc .ui-progressbar-value {
+    background: $blue-light1;
+  }
+  ::ng-deep p-progressbar.per .ui-progressbar-value {
+    background: $blue-dark1;
+  }
+  ::ng-deep p-progressbar.clo .ui-progressbar-value {
+    background: $green-light1;
+  }
+  ::ng-deep p-progressbar.pos .ui-progressbar-value {
+    background: $green-light1;
+  }
+  ::ng-deep p-progressbar.por .ui-progressbar-value {
+    background: $yellow1;
+  }
+
+  .grid-cell-work-order-list {
+    .table {
+      @include flex-column();
+
+      position: relative;
+      width: 100%;
+
+      .workOrder {
+        width: 20%;
+      }
+
+      .engineeringData {
+        width: 22.5%;
+      }
+
+      .fleetData {
+        width: 10%;
+      }
+
+      .schedulingData {
+        width: 17.5%;
+      }
+
+      .executionData {
+        width: 17.5%;
+      }
+
+      .illustration {
+        width: 12.5%;
+        text-align: center;
+      }
+
+      .table-body,
+      .table-header {
+        .table-cell {
+          padding: 0 calc(#{$margin-value} / 2);
+        }
+      }
+
+      .table-header {
+        background-color: $primary-background-color;
+        position: sticky;
+        top: $topbar-height;
+
+        .table-row {
+          @include flex-row();
+
+          border-bottom: $border-width $border-style $border-color;
+          max-height: $table-header-height;
+          min-height: $table-header-height;
+        }
+
+        .table-actions {
+          @include flex-row();
+
+          padding-bottom: $margin-value;
+
+          .row-actions {
+            @include flex-row();
+
+            align-items: flex-end;
+            justify-content: flex-end;
+
+            & > .aw-btn {
+              margin-left: $margin-value;
+
+              &:first-of-type {
+                margin-left: 0;
+              }
+            }
+          }
+
+          .table-filters {
+            @include flex-row();
+
+            align-items: center;
+            margin-right: $margin-value;
+
+            & > .aw-icon {
+              font-size: 1.125rem;
+              line-height: 2rem;
+              width: 2rem;
+            }
+          }
+
+          .table-global-filter {
+            @include flex-row();
+
+            align-items: baseline;
+            flex-grow: 1;
+            padding-right: 5%;
+
+            .global-filter-input {
+              @include input();
+              @include placeholder {
+                color: $secondary-text-color;
+                font-weight: 400;
+              }
+
+              min-width: 12rem;
+              width: 12rem;
+
+              transition: border-bottom-color 0.25s ease-in-out, width 0.5s ease;
+
+              &:focus {
+                border-bottom-color: $accent-color;
+                outline: none;
+                width: 100%;
+              }
+            }
+          }
+        }
+      }
+
+      .table-body {
+        min-height: calc(#{$margin-value} * 5);
+
+        .table-row {
+          @include flex-row();
+
+          border-bottom: $border-width $border-style $secondary-background-color;
+          cursor: pointer;
+          padding: $margin-value 0;
+
+          &:hover {
+            background-color: $secondary-background-color;
+          }
+
+          &.selected {
+            background-color: lighten($accent-color, 65%);
+            border-bottom-color: lighten($accent-color, 65%);
+            border-left: calc(2 * #{$border-width}) $border-style $border-color;
+            border-right: calc(2 * #{$border-width}) $border-style $border-color;
+            border-top: calc(2 * #{$border-width}) $border-style $border-color;
+          }
+
+          .table-cell {
+            @include flex-column();
+
+            &.illustration img {
+              max-height: 6rem;
+            }
+
+            .horizontal-separator {
+              margin-left: 2%;
+            }
+
+            .additional-data {
+              margin-top: $margin-value;
+            }
+
+            .label {
+              min-width: 2.5rem;
+              display: inline-block;
+            }
+
+            .label + .value {
+              margin-left: 5%;
+            } 
+
+            .value {
+              font-weight: bold;
+            }
+
+            .designation {
+              font-style: italic;
+            }
+
+            a {
+              color: $accent-color;
+
+              &:hover {
+                text-decoration: underline;
+              }
+            }
+          }
+        }
+
+        .table-row-details {
+          @include flex-column();
+
+          border-bottom: calc(2 * #{$border-width}) $border-style $border-color;
+          border-left: calc(2 * #{$border-width}) $border-style $border-color;
+          border-right: calc(2 * #{$border-width}) $border-style $border-color;
+          border-top: $border-width dashed $border-color;
+          padding: $margin-value;
+
+          .table-row-details-header {
+            margin-bottom: $margin-value;
+          }
+        }
+      }
+    }
+  }
+
+  .row.nowrap {
+    flex-wrap: nowrap !important;
+  }
+
+  ::ng-deep .tree-table-cell {
+    @include flex-column();
+
+    &.illustration img {
+      max-height: 6rem;
+    }
+
+    .horizontal-separator {
+      margin-left: 2%;
+    }
+
+    .additional-data {
+      margin-top: $margin-value;
+    }
+
+    .label {
+      min-width: 2.5rem;
+      display: inline-block;
+    }
+
+    .label + .value {
+      margin-left: 5%;
+    } 
+
+    .value {
+      font-weight: bold;
+    }
+
+    .designation {
+      font-style: italic;
+      white-space: normal;
+    }
+
+    a {
+      color: $accent-color;
+      width: fit-content;
+/*       &:hover {
+        text-decoration: underline;
+      } */
+    }
+  }
+
+
+  ::ng-deep .small-calendar .ui-calendar{
+    width: 100px !important;
+  }
+
+  ::ng-deep .small-calendar .ui-calendar .ui-inputtext{
+    padding: 0 !important;
+  }
+
+  .table-filters-overlay {
+    @include flex-column();
+
+    .filters {
+      @include flex-column();
+
+      & > * {
+        margin-top: $margin-value;
+      }
+    }
+  }
+}

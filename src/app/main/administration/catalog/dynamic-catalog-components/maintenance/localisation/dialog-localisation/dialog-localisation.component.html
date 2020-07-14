@@ -1,0 +1,38 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".title" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="form-group required">
+      <label class="form-label">{{ getComponentName() + ".localisationCode" | translate }}</label>
+      <div class="form-control">
+        <input
+          type="text"
+          name="returnReasonCode"
+          [(ngModel)]="bireLocalisationCodeDTO.localisationCode"
+          class="aw-input"
+          maxlength="50"
+          [disabled]="isReadOpenMode || !isCreateOpenMode"
+          required
+        />
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button *ngIf="isReadOpenMode" type="button" mat-raised-button (click)="closeDialog()">
+      {{ "global.close" | translate }}
+    </button>
+    <button type="button" mat-raised-button (click)="closeDialog()">{{ "global.cancel" | translate }}</button>
+    <button
+      type="button"
+      mat-raised-button
+      color="primary"
+      (click)="validate()"
+      [disabled]="!bireLocalisationCodeDTO.localisationCode"
+    >
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>

@@ -1,0 +1,52 @@
+{
+  "ComponentCockpitSearchComponent": {
+    "title": "Component Cockpit Filters",
+    "filterName": "Name",
+    "author": "Author",
+    "graphicalReference": "",
+    "isPublic": "Public",
+    "isPersistent": "Persistent",
+    "onSuccessDeleteList": "Selected item successfully deleted",
+    "deleteErrorMessage": "This filter cannot be deleted, it is used as a filter element",
+    "confirmDeleteSelectedLists": "Do you want to delete selected data?",
+    "confirmDeleteSelectedList": "Do you want to delete selected data?"
+  },
+  "ComponentCockpitFormComponent": {
+    "title": "Component Cockpit Filters",
+    "id": "Id",
+    "name": "Name",
+    "author": "Author",
+    "isPublic": "Public",
+    "isPersistent": "Persistent",
+    "logicLink": "Logical Link",
+    "siteTitle": "Sites",
+    "profileTitle": "Profiles",
+    "variantTitle": "Variants",
+    "filterTitle": "Filter Elements",
+    "icons": "Icons :",
+    "warningDataExists": "Data already exists",
+    "none": "None",
+    "objectKey": "Object",
+    "dataKey": "Data",
+    "typeKey": "Type",
+    "valueKey": "Value",
+    "createApp": "Applicabilities",
+    "confirmDeleteSelectedLists": "Do you want to delete selected data?",
+    "confirmDeleteSelectedList": "Do you want to delete selected data?",
+    "savedSuccesfuly": "Saved successfully",
+    "createdSuccesfuly": "Created successfully"
+  },
+  "DialogComponentCockpitComponent": {
+    "elementPopup": "Element Management",
+    "object": "Object",
+    "data": "Data",
+    "type": "Type",
+    "value": "Value",
+    "profilePopup": "Profile Management",
+    "sitePopup": "Site Management",
+    "variantPopup": "Variant Management",
+    "profile": "Profile",
+    "site": "Site",
+    "variant": "Variant"
+  }
+}

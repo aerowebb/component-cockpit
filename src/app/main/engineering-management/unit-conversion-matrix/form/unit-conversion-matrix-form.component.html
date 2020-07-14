@@ -1,0 +1,401 @@
+<div class="page-header">
+  <div class="page-info">
+    <div>
+      <h2 class="page-title">
+        {{ "transaction." + componentData.componentId | translate }}
+      </h2>
+
+      <div class="page-subtitle">
+        <div *ngIf="!isCreateOpenMode && componentData && componentData.objectId" class="page-subtitle">
+          - {{ baseInformation.cmCode }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-actions">
+    <button type="button" mat-raised-button *ngIf="isReadOpenMode" (click)="editUnitConversionMatrix()">
+      {{ "global.edit" | translate }}
+    </button>
+
+    <button
+      type="button"
+      class="btn-with-spinner"
+      mat-raised-button
+      color="primary"
+      *ngIf="!isReadOpenMode"
+      (click)="saveBireConversionMatrix()"
+    >
+      <span class="lds-hourglass" *ngIf="showSaveSpinner"></span>
+      {{ "global.save" | translate }}
+    </button>
+
+    <button
+      mat-icon-button
+      *ngIf="!isCreateOpenMode"
+      class="mat-elevation-z1"
+      matTooltip="Show all actions"
+      matTooltipPosition="above"
+      aria-label="Show all actions"
+      [matMenuTriggerFor]="actions"
+    >
+      <mat-icon>more_horiz</mat-icon>
+    </button>
+
+    <mat-menu #actions="matMenu">
+      <button type="button" mat-menu-item (click)="reloadMatrix()">
+        {{ "global.refresh" | translate }}
+      </button>
+
+      <button type="button" mat-menu-item (click)="updateFavoriteState()">
+        {{ "page." + (isFavoriteEntry ? "removeFromFavorites" : "addToFavorites") | translate }}
+      </button>
+    </mat-menu>
+  </div>
+</div>
+
+<div class="page-wrapper">
+  <div class="page-container search-page-container">
+    <div class="page-content">
+      <mat-tab-group animationDuration="0ms" dynamicHeight>
+        <mat-tab>
+          <ng-template mat-tab-label>
+            {{ "home" | translate }}
+          </ng-template>
+
+          <div class="grid-row">
+            <div class="grid-cell--6">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ "page.mainData" | translate }}
+                    </h3>
+                  </div>
+                </div>
+                <div class="grid-cell-content">
+                  <div class="column">
+                    <div class="row">
+                      <div class="form-group" [class.required]="!isReadOpenMode">
+                        <label class="form-label">
+                          {{ componentData.componentId + ".cmCode" | translate }}
+                        </label>
+
+                        <div class="form-control">
+                          <input
+                            type="text"
+                            class="aw-input"
+                            [disabled]="isReadOpenMode"
+                            [(ngModel)]="baseInformation.cmCode"
+                          />
+                        </div>
+                      </div>
+
+                      <div class="form-group" [class.required]="!isReadOpenMode">
+                        <label class="form-label">
+                          {{ componentData.componentId + ".cmName" | translate }}
+                        </label>
+
+                        <div class="form-control">
+                          <input
+                            type="text"
+                            class="aw-input"
+                            [disabled]="isReadOpenMode"
+                            [(ngModel)]="baseInformation.cmName"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid-cell--6">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ componentData.componentId + ".concernedFamilies" | translate }} ({{
+                        bireCMVariantAddedList ? bireCMVariantAddedList.length : 0
+                      }})
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content grid-cell-content-with-section">
+                  <div class="section">
+                    <div class="section-content">
+                      <p-table
+                        id="cmVariantsDisplayed"
+                        [resizableColumns]="true"
+                        #ptableConcernedFamilies
+                        class="aw-table2"
+                        [columns]="concernedFamiliesTableCols"
+                        [value]="bireCMVariantAddedList"
+                        [(selection)]="selectedBireCMVariant"
+                        [scrollable]="true"
+                      >
+                        <ng-template pTemplate="emptymessage">
+                          <span *ngIf="!isLoadingApplicabilityTable"> &nbsp;</span>
+
+                          <div *ngIf="isLoadingApplicabilityTable" class="aw-table-loading-indicator">
+                            <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                            <div class="lds-hourglass"></div>
+                          </div>
+                        </ng-template>
+
+                        <ng-template pTemplate="caption">
+                          <div
+                            class="aw-table-header"
+                            [ngClass]="{ 'rows-selected': selectedBireCMVariant.length > 0 }"
+                          >
+                            <div class="aw-table-global-filter">
+                              <label class="aw-table-global-filter-label">
+                                <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                              </label>
+
+                              <input
+                                #ptableConcernedFamiliesGlobalFilter
+                                class="aw-table-global-filter-input"
+                                type="text"
+                                placeholder="{{ 'table.globalFilterText' | translate }}"
+                                (input)="ptableConcernedFamilies.filterGlobal($event.target.value, 'contains')"
+                              />
+                            </div>
+
+                            <div class="aw-table-actions">
+                              <button
+                                id="deleteBireSbVariantsDisplayed"
+                                *ngIf="!isReadOpenMode && selectedBireCMVariant.length > 0"
+                                type="button"
+                                mat-raised-button
+                                (click)="deleteApplicabilities()"
+                              >
+                                {{ "global.delete" | translate }}
+                              </button>
+
+                              <button
+                                id="openBireSbVariantsDisplayed"
+                                *ngIf="!isReadOpenMode && selectedBireCMVariant.length === 1"
+                                type="button"
+                                mat-raised-button
+                                (click)="openApplicabilities()"
+                              >
+                                {{ "global.open" | translate }}
+                              </button>
+
+                              <button
+                                *ngIf="!isReadOpenMode && selectedBireCMVariant.length === 1"
+                                type="button"
+                                mat-raised-button
+                                (click)="setAsDefaultFamilyVariant()"
+                              >
+                                {{ componentData.componentId + ".setasDefault" | translate }}
+                              </button>
+
+                              <button
+                                *ngIf="!isReadOpenMode && selectedBireCMVariant.length === 0"
+                                type="button"
+                                mat-raised-button
+                                (click)="createApplicabilities()"
+                              >
+                                {{ "global.add" | translate }}
+                              </button>
+                            </div>
+                          </div>
+                        </ng-template>
+
+                        <ng-template pTemplate="colgroup" let-columns>
+                          <colgroup>
+                            <col class="aw-table-checkbox-wrapper" />
+                            <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                          </colgroup>
+                        </ng-template>
+
+                        <ng-template pTemplate="header" let-columns>
+                          <tr>
+                            <th class="aw-table-checkbox-wrapper">
+                              <p-tableHeaderCheckbox class="aw-table-checkbox"></p-tableHeaderCheckbox>
+                            </th>
+
+                            <th
+                              pResizableColumn
+                              *ngFor="let col of columns"
+                              [ngStyle]="{ 'text-align': col.alignment }"
+                            >
+                              {{ componentData.componentId + "." + col.field | translate }}
+                            </th>
+                          </tr>
+                        </ng-template>
+
+                        <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                          <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                            <td class="aw-table-checkbox-wrapper">
+                              <p-tableCheckbox class="aw-table-checkbox" [value]="rowData"></p-tableCheckbox>
+                            </td>
+
+                            <td
+                              *ngFor="let col of columns"
+                              [ngStyle]="{ 'text-align': col.alignment }"
+                              [ngSwitch]="col.field"
+                            >
+                              <span *ngSwitchCase="'cmApplicabilityDate'">
+                                {{ rowData[col.field] | date: "shortDate":"":currentLang }}
+                              </span>
+
+                              <span *ngSwitchCase="'isDefault'">
+                                <i *ngIf="rowData[col.field]" class="pi pi-check"></i>
+                              </span>
+
+                              <span *ngSwitchDefault> {{ rowData[col.field] }} </span>
+                            </td>
+                          </tr>
+                        </ng-template>
+                      </p-table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-row">
+            <div class="grid-cell--12">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ componentData.componentId + ".ucmTab" | translate }} ({{ ucmTable ? ucmTable.length : 0 }})
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <p-table
+                    [resizableColumns]="true"
+                    #ucTable
+                    [columns]="ucmTableCols"
+                    [value]="ucmTable"
+                    class="aw-table2"
+                    [style]="{ margin: '0 auto', width: '100%' }"
+                    [(selection)]="selectedUcmRows"
+                    [scrollable]="true"
+                    scrollHeight="400px"
+                  >
+                    <ng-template pTemplate="emptymessage">
+                      <span *ngIf="!isLoading"> &nbsp;</span>
+
+                      <div *ngIf="isLoading" class="aw-table-loading-indicator">
+                        <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                        <div class="lds-hourglass"></div>
+                      </div>
+                    </ng-template>
+                    <ng-template pTemplate="caption">
+                      <div class="aw-table-header" [ngClass]="{ 'rows-selected': selectedUcmRows.length > 0 }">
+                        <div class="aw-table-global-filter">
+                          <label class="aw-table-global-filter-label">
+                            <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                          </label>
+
+                          <input
+                            #ptableResultsGlobalFilter
+                            class="aw-table-global-filter-input"
+                            type="text"
+                            placeholder="{{ 'table.globalFilterText' | translate }}"
+                            (input)="ucTable.filterGlobal($event.target.value, 'contains')"
+                          />
+                        </div>
+
+                        <div class="aw-table-actions">
+                          <button
+                            type="button"
+                            *ngIf="!isReadOpenMode && selectedUcmRows.length === 0"
+                            mat-raised-button
+                            (click)="createUcmRecord()"
+                          >
+                            {{ "global.add" | translate }}
+                          </button>
+
+                          <button
+                            *ngIf="!isReadOpenMode && selectedUcmRows.length === 1"
+                            type="button"
+                            mat-raised-button
+                            (click)="editUcmRecord()"
+                          >
+                            {{ "global.edit" | translate }}
+                          </button>
+
+                          <button
+                            *ngIf="!isReadOpenMode && selectedUcmRows.length > 0"
+                            type="button"
+                            mat-raised-button
+                            color="warn"
+                            (click)="deleteUcmRecord()"
+                          >
+                            {{ "global.delete" | translate }}
+                          </button>
+                        </div>
+                      </div>
+                    </ng-template>
+
+                    <ng-template pTemplate="colgroup" let-columns>
+                      <colgroup>
+                        <col class="aw-table-checkbox-wrapper" />
+                        <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                      </colgroup>
+                    </ng-template>
+
+                    <ng-template pTemplate="header" let-columns>
+                      <tr>
+                        <th class="aw-table-checkbox-wrapper">
+                          <p-tableHeaderCheckbox class="aw-table-checkbox"></p-tableHeaderCheckbox>
+                        </th>
+
+                        <th pResizableColumn *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                          {{ componentData.componentId + "." + col.field | translate }}
+                        </th>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                      <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                        <td class="aw-table-checkbox-wrapper">
+                          <p-tableCheckbox class="aw-table-checkbox" [value]="rowData"></p-tableCheckbox>
+                        </td>
+
+                        <td
+                          *ngFor="let col of columns"
+                          [ngStyle]="{ 'text-align': col.alignment }"
+                          [ngSwitch]="col.field"
+                        >
+                          <span *ngSwitchDefault> {{ rowData[col.field] }} </span>
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+  </div>
+</div>
+
+<aw-dialog-unit-conversion-matrix
+  *ngIf="showDialogUnitConversionMatrix"
+  [ucm]="currentUcm"
+  [(display)]="showDialogUnitConversionMatrix"
+  [newUcm]="isNewUcm"
+  (onCreate)="addNewUcm($event)"
+  (onUpdate)="updateUcm($event)"
+></aw-dialog-unit-conversion-matrix>
+
+<aw-cm-applicabilities-popup
+  *ngIf="showApplicabilitiesDialog"
+  [(display)]="showApplicabilitiesDialog"
+  [component-data]="dataApplicabilities"
+  (onCreate)="addNewCMVariant($event)"
+  [isNewVariant]="isNewApplicabilities"
+></aw-cm-applicabilities-popup>

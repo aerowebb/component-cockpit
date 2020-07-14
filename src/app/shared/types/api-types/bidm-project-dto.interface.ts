@@ -1,0 +1,48 @@
+import { BidmWorkOrderDTO } from './bidm-work-order-dto.interface';
+
+export interface BidmProjectDTO {
+  projectId?: string;
+  projectNumber?: number;
+  projectName?: string;
+  projectDescription?: string;
+  projectStartDate?: Date;
+  projectEndDate?: Date;
+  salesRequestCode?: string;
+  purchaseRequestCode?: string;
+  projectContactName?: string;
+  projectContactPhone?: string;
+  projectDueDate?: Date;
+  projectTargetedTat?: string;
+  aircraftRegistration?: string;
+  aircraftMsn?: string;
+  receivingNumber?: string;
+  receivingDescription?: string;
+  receivingDate?: Date;
+  receivingPriority?: string;
+  receivingDeliveyRef?: string;
+  receivingAssignedTo?: string;
+  receivingNumberPackages?: number;
+  receivingPackagesRef?: string;
+  receivingIsDamaged?: boolean;
+  receivingInventory?: string;
+  receivingRemarks?: string;
+  bidoCustomerCode?: string;
+  bireReturnReasonCode?: string;
+  bireRepairCenterCode?: string;
+  assetCode?: string;
+  assetName?: string;
+  statusState?: string;
+  statusUser?: string;
+  statusDate?: Date;
+  bidoOperationCode?: string;
+  projectType?: string;
+  startDateCriteria?: string;
+  endDateCriteria?: string;
+  equipmentFunction?: string;
+  workOrderDTOs?: BidmWorkOrderDTO[];
+  maintenancePlanUpdatedAttributeId?: string;
+  sourceSystemId?: string;
+  sourceSystemReference?: string;
+  defaultStatusFilter?: boolean;
+  bidtWarehouseId?: number;
+}

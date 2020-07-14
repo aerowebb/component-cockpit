@@ -1,0 +1,31 @@
+<div class="content">
+  <div
+    class="card"
+    *ngFor="let workPackage of formattedWorkPackageList; let i = index"
+    [pTooltip]="workPackage.tooltip"
+    tooltipPosition="top"
+    [escape]="false"
+  >
+    <div>
+      <a (click)="openWorkPackage(workPackage)">{{ workPackage.projectNumber }}</a>
+    </div>
+    <div>{{ workPackage.status }}</div>
+    <div>{{ workPackage.date }}</div>
+
+    <div class="action-list">
+      <i
+        *ngIf="addToVisible"
+        class="fa fa-fw fa-link aw-icon"
+        aria-hidden="true"
+        (click)="addToWorkPackage(workPackage)"
+      ></i>
+
+      <i
+        *ngIf="removeVisible"
+        class="fa fa-fw fa-trash aw-icon"
+        aria-hidden="true"
+        (click)="removeWorkPackage(workPackage)"
+      ></i>
+    </div>
+  </div>
+</div>

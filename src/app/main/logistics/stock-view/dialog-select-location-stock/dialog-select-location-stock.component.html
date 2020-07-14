@@ -1,0 +1,173 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".title" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="section">
+      <h3 class="section-title">
+        {{ getComponentName() + ".newLocation" | translate }}
+      </h3>
+      <div class="grid-row">
+        <div class="form-group required">
+          <label class="form-label">
+            {{ getComponentName() + ".zone" | translate }}
+          </label>
+          <div class="form-control">
+            <p-selectButton
+              [(ngModel)]="selectedZone"
+              [options]="storageZoneList"
+              appendTo="body"
+              (onChange)="loadBinDropDown()"
+            ></p-selectButton>
+          </div>
+        </div>
+        <div class="form-group required" *ngIf="isZoneHaveBins">
+          <label class="form-label">
+            {{ getComponentName() + ".bins" | translate }}
+          </label>
+          <div class="form-control">
+            <p-dropdown
+              class="aw-dropdown fixed-width"
+              placeholder="&nbsp;"
+              [(ngModel)]="selectedBin"
+              [options]="storageBinList"
+              appendTo="body"
+            ></p-dropdown>
+          </div>
+        </div>
+        <div class="form-group" *ngIf="!isZoneHaveBins"></div>
+        <div class="form-group"></div>
+        <div class="form-group"></div>
+        <div class="form-group"></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3 class="section-title">
+        {{ getComponentName() + ".assetToMove" | translate }}
+      </h3>
+
+      <div class="section-content">
+        <p-table
+          #ptableStockInformation
+          class="aw-table2"
+          [resizableColumns]="true"
+          [scrollable]="true"
+          [value]="rows"
+          [customSort]="false"
+        >
+          <ng-template pTemplate="colgroup">
+            <colgroup>
+              <col style="width: 18%;" />
+              <col style="width: 18%;" />
+              <col style="width: 16%;" />
+              <col style="width: 16%;" />
+              <col style="width: 16%;" *ngIf="withAlternatives" />
+              <col style="width: 16%;" />
+            </colgroup>
+          </ng-template>
+          <ng-template pTemplate="header">
+            <tr>
+              <th style="text-align: left;">
+                {{ getComponentName() + ".material" | translate }}
+              </th>
+              <th style="text-align: left;">
+                {{ getComponentName() + ".batchNumber" | translate }}
+              </th>
+
+              <th style="text-align: left;">
+                {{ getComponentName() + ".snAndManufactoring" | translate }}
+              </th>
+              <th style="text-align: right;">
+                {{ getComponentName() + ".quantity" | translate }}
+              </th>
+              <th style="text-align: left;" *ngIf="withAlternatives">
+                {{ getComponentName() + ".interchangeability" | translate }}
+              </th>
+              <th style="text-align: left;">
+                {{ getComponentName() + ".storage" | translate }}
+              </th>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="body" let-rowData let-rowIndex="rowIndex">
+            <tr>
+              <td>
+                <div>
+                  <div>
+                    <span class="bold">
+                      {{ rowData["pn"] }}
+                    </span>
+                  </div>
+                  <div>
+                    <span class="italic">{{ rowData["designation"] }}</span>
+                  </div>
+                </div>
+              </td>
+
+              <td>
+                <div>
+                  <span class="bold">
+                    {{ rowData["stockBatchNumber"] }}
+                  </span>
+                </div>
+                <div *ngIf="rowData['stockBatchNumber']">
+                  <span class="italic">
+                    {{ rowData["operationalStatus"] | formatSelectOption: equipmentStatuses }}
+                  </span>
+                </div>
+              </td>
+
+              <td>
+                <div>
+                  <span class="bold" *ngIf="rowData['stockSn'] && !rowData['manufacturingBatchNumber']">
+                    {{ rowData["stockSn"] }}
+                  </span>
+                  <span class="bold" *ngIf="!rowData['stockSn'] && rowData['manufacturingBatchNumber']">
+                    {{ rowData["manufacturingBatchNumber"] }}
+                  </span>
+                </div>
+                <div *ngIf="!rowData['stockBatchNumber']">
+                  <span class="italic">
+                    {{ rowData["operationalStatus"] | formatSelectOption: equipmentStatuses }}
+                  </span>
+                </div>
+              </td>
+
+              <td style="text-align: right;">
+                {{ rowData["stockQuantity"] | formatNumber }}
+              </td>
+
+              <td *ngIf="withAlternatives">
+                {{ rowData["interchangeabilityText"] }}
+              </td>
+              <td>
+                <div>
+                  <div>
+                    <span class="bold">
+                      {{ rowData["areaText"] }}
+                    </span>
+                  </div>
+                  <div>
+                    {{ rowData["storageBinText"] }}
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button type="button" mat-raised-button (click)="closeDialog()">
+      <span>{{ "global.cancel" | translate }}</span>
+    </button>
+
+    <button *ngIf="!isReadOpenMode" color="primary" type="button" mat-raised-button (click)="validate()">
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>

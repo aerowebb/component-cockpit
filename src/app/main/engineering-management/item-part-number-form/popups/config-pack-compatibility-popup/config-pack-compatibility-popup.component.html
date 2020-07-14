@@ -1,0 +1,28 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".title" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="column">
+      <div class="form-group">
+        <label class="form-label">{{ getComponentName() + ".configurationCompatibilityResult" | translate }}</label>
+        <div class="form-control">
+          <textarea
+            class="aw-textarea"
+            [rows]="5"
+            pInputTextarea
+            [(ngModel)]="compatibilityResult"
+            [disabled]="true"
+          ></textarea>
+        </div>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button *ngIf="!isReadOpenMode" type="button" mat-raised-button (click)="onCancel()">
+      <span>{{ "global.cancel" | translate }}</span>
+    </button>
+  </a-footer>
+</a-modal>

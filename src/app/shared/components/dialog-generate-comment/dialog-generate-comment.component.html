@@ -1,0 +1,309 @@
+<a-modal class="aw-modal" [(visible)]="display" [width]="70">
+  <a-header>
+    <div class="modal-title">
+      {{ getComponentName() + ".title" | translate }}
+    </div>
+  </a-header>
+
+  <a-content>
+    <div class="column">
+      <div class="row object-details">
+        <div class="column">
+          <div class="row">
+            <div class="form-group">
+              <label class="form-label"> {{ getComponentName() + ".mainComment" | translate }} </label>
+
+              <div class="form-control">
+                <textarea class="aw-textarea" [rows]="3" pInputTextarea [(ngModel)]="mainComment"></textarea>
+              </div>
+            </div>
+            <div class="form-group"></div>
+            <div class="form-group"></div>
+          </div>
+
+          <ng-template [ngIf]="showPanel">
+            <div class="grid-row">
+              <div class="grid-cell--12">
+                <div class="section">
+                  <h4 class="section-title">
+                    {{ getComponentName() + ".ruleSection" | translate }}
+                  </h4>
+
+                  <div class="section-content">
+                    <div class="row">
+                      <div class="form-group required">
+                        <label class="form-label"> {{ getComponentName() + ".type" | translate }} </label>
+
+                        <div class="form-control">
+                          <p-dropdown
+                            class="aw-dropdown fixed-width"
+                            [options]="ruleTypeList"
+                            [(ngModel)]="ruleData.type"
+                            [disabled]="rulesTableSelectedList.length > 0"
+                            (onChange)="changeType()"
+                          ></p-dropdown>
+                        </div>
+                      </div>
+
+                      <div class="form-group required">
+                        <label class="form-label"> {{ getComponentName() + ".applicabilityCode" | translate }} </label>
+
+                        <div class="form-control form-control-with-modal" *ngIf="ruleData.type === 'EVOL'">
+                          <div class="form-control-data" (click)="showEvol()">{{ ruleData.applicabilityCode }}</div>
+
+                          <div *ngIf="ruleData.applicabilityCode" class="btn-clear-wrapper">
+                            <i
+                              class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+                              aria-hidden="true"
+                              (click)="ruleData.applicabilityCode = undefined"
+                            ></i>
+                          </div>
+                          <div class="btn-search-wrapper">
+                            <i
+                              class="fa fa-fw fa-search aw-icon btn-search"
+                              aria-hidden="true"
+                              (click)="showEvol()"
+                            ></i>
+                          </div>
+                        </div>
+
+                        <div class="form-control form-control-with-modal" *ngIf="ruleData.type === 'SB'">
+                          <div class="form-control-data" (click)="showSb()">{{ ruleData.applicabilityCode }}</div>
+
+                          <div *ngIf="ruleData.applicabilityCode" class="btn-clear-wrapper">
+                            <i
+                              class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+                              aria-hidden="true"
+                              (click)="ruleData.applicabilityCode = undefined"
+                            ></i>
+                          </div>
+                          <div class="btn-search-wrapper">
+                            <i class="fa fa-fw fa-search aw-icon btn-search" aria-hidden="true" (click)="showSb()"></i>
+                          </div>
+                        </div>
+
+                        <div class="form-control form-control-with-modal" *ngIf="ruleData.type === 'AD'">
+                          <div class="form-control-data" (click)="showAd()">{{ ruleData.applicabilityCode }}</div>
+
+                          <div *ngIf="ruleData.applicabilityCode" class="btn-clear-wrapper">
+                            <i
+                              class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+                              aria-hidden="true"
+                              (click)="ruleData.applicabilityCode = undefined"
+                            ></i>
+                          </div>
+                          <div class="btn-search-wrapper">
+                            <i class="fa fa-fw fa-search aw-icon btn-search" aria-hidden="true" (click)="showAd()"></i>
+                          </div>
+                        </div>
+
+                        <div class="form-control form-control-with-modal" *ngIf="ruleData.type === 'MOD'">
+                          <div class="form-control-data" (click)="showMod()">{{ ruleData.applicabilityCode }}</div>
+
+                          <div *ngIf="ruleData.applicabilityCode" class="btn-clear-wrapper">
+                            <i
+                              class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+                              aria-hidden="true"
+                              (click)="ruleData.applicabilityCode = undefined"
+                            ></i>
+                          </div>
+                          <div class="btn-search-wrapper">
+                            <i class="fa fa-fw fa-search aw-icon btn-search" aria-hidden="true" (click)="showMod()"></i>
+                          </div>
+                        </div>
+
+                        <div class="form-control" *ngIf="ruleData.type === 'SN'">
+                          <div class="aw-input-group">
+                            <input type="text" class="aw-input" [(ngModel)]="ruleData.applicabilityCode" />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="form-group required">
+                        <label class="form-label"> {{ getComponentName() + ".periodicity" | translate }} </label>
+
+                        <div class="form-control">
+                          <div class="aw-input-group">
+                            <input
+                              type="text"
+                              #periodicity="ngModel"
+                              class="aw-input"
+                              [(ngModel)]="ruleData.periodicity"
+                              [pKeyFilter]="inputValidationService.validatorOfNumber()"
+                              [pValidateOnly]="true"
+                              maxlength="37"
+                            />
+                            <p-message
+                              *ngIf="periodicity.invalid && (periodicity.dirty || periodicity.touched)"
+                              severity="error"
+                              [text]="inputValidationService.formatOfNumber()"
+                            ></p-message>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="form-group">
+                        <label class="form-label"> {{ getComponentName() + ".comment" | translate }} </label>
+
+                        <div class="form-control">
+                          <div class="aw-input-group">
+                            <input type="text" class="aw-input" [(ngModel)]="ruleData.comment" maxlength="37" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row actions-bar">
+              <button
+                type="button"
+                mat-raised-button
+                color="primary"
+                (click)="saveCommentAndRules()"
+                [disabled]="validateData() || (periodicity.invalid && (periodicity.dirty || periodicity.touched))"
+              >
+                {{ "global.validate" | translate }}
+              </button>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+      <div class="row">
+        <div class="section">
+          <h4 class="section-title">
+            {{ getComponentName() + ".ruleTableTitle" | translate }}
+            ({{ rulesTable ? rulesTable.length : 0 }})
+          </h4>
+
+          <div class="section-content">
+            <p-table
+              [resizableColumns]="true"
+              #ptableRules
+              class="aw-table2"
+              [columns]="rulesTableColList"
+              [value]="rulesTable"
+              [(selection)]="rulesTableSelectedList"
+              [scrollable]="true"
+              (onFilter)="onRulesFilter($event)"
+              (onRowSelect)="onRowSelect()"
+              (onRowUnselect)="onRowSelect()"
+              (onHeaderCheckboxToggle)="onRowSelect()"
+              dataKey="rowIndex"
+            >
+              <ng-template pTemplate="caption">
+                <div class="aw-table-header" [ngClass]="{ 'rows-selected': rulesTableSelectedList.length > 0 }">
+                  <div class="aw-table-global-filter">
+                    <label class="aw-table-global-filter-label">
+                      <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                    </label>
+
+                    <input
+                      #ptableRulesGlobalFilter
+                      class="aw-table-global-filter-input"
+                      type="text"
+                      placeholder="{{ 'table.globalFilterText' | translate }}"
+                      (input)="ptableRules.filterGlobal($event.target.value, 'contains')"
+                    />
+                  </div>
+
+                  <div class="aw-table-actions">
+                    <button
+                      *ngIf="!showPanel && rulesTableSelectedList.length > 0"
+                      type="button"
+                      mat-raised-button
+                      color="warn"
+                      (click)="deleteRules()"
+                    >
+                      {{ "global.delete" | translate }}
+                    </button>
+                    <button
+                      *ngIf="rulesTableSelectedList.length === 1"
+                      type="button"
+                      mat-raised-button
+                      [ngClass]="{ active: showPanel }"
+                      (click)="toggleOpenMode()"
+                    >
+                      {{ "global.edit" | translate }}
+                    </button>
+                    <button
+                      *ngIf="rulesTableSelectedList.length === 0"
+                      type="button"
+                      mat-raised-button
+                      [ngClass]="{ active: showPanel }"
+                      (click)="toggleOpenMode()"
+                    >
+                      {{ "global.add" | translate }}
+                    </button>
+                  </div>
+                </div>
+              </ng-template>
+
+              <ng-template pTemplate="colgroup" let-columns>
+                <colgroup>
+                  <col class="aw-table-checkbox-wrapper" />
+                  <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                </colgroup>
+              </ng-template>
+
+              <ng-template pTemplate="header" let-columns>
+                <tr>
+                  <th class="aw-table-checkbox-wrapper">
+                    <p-tableHeaderCheckbox class="aw-table-checkbox"></p-tableHeaderCheckbox>
+                  </th>
+
+                  <th pResizableColumn *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                    {{ getComponentName() + "." + col.field | translate }}
+                  </th>
+                </tr>
+              </ng-template>
+
+              <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                  <td class="aw-table-checkbox-wrapper">
+                    <p-tableCheckbox class="aw-table-checkbox" [value]="rowData"></p-tableCheckbox>
+                  </td>
+
+                  <td *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                    {{ rowData[col.field] }}
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button type="button" mat-raised-button (click)="closeDialog()">
+      <span>{{ "global.close" | translate }}</span>
+    </button>
+  </a-footer>
+</a-modal>
+
+<aw-dialog-search-evolution
+  *ngIf="showEvolutionTableDialog"
+  [(display)]="showEvolutionTableDialog"
+  (onSelected)="onSelectedEvolution($event)"
+>
+</aw-dialog-search-evolution>
+
+<aw-dialog-search-sbad
+  *ngIf="showSbadDialog"
+  [(display)]="showSbadDialog"
+  (onValidated)="setSelectedObject($event)"
+  [revisionNumber]=""
+  [dialogType]="sbadDialogType"
+>
+</aw-dialog-search-sbad>
+
+<aw-dialog-search-modification
+  *ngIf="showModificationTableDialog"
+  [(display)]="showModificationTableDialog"
+  (onSelected)="setSelectedModification($event)"
+>
+</aw-dialog-search-modification>

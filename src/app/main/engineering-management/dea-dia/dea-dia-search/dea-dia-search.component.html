@@ -1,0 +1,184 @@
+<div class="page-header">
+  <div class="page-info">
+    <div>
+      <h2 class="page-title">
+        {{ "transaction." + componentData.componentId | translate }}
+      </h2>
+    </div>
+  </div>
+
+  <div class="page-actions">
+    <button
+      mat-icon-button
+      class="mat-elevation-z1"
+      matTooltip="{{ 'global.showAllActionTooltip' | translate }}"
+      matTooltipPosition="above"
+      aria-label="Show all actions"
+      [matMenuTriggerFor]="actions"
+    >
+      <mat-icon>more_horiz</mat-icon>
+    </button>
+    <mat-menu #actions="matMenu">
+      <button mat-menu-item (click)="updateFavoriteState()">{{ "addToFavorite" | translate }}</button>
+    </mat-menu>
+  </div>
+</div>
+
+<div class="page-wrapper">
+  <div class="page-container search-page-container">
+    <div class="page-content">
+      <div class="grid-row">
+        <div class="grid-cell--12">
+          <div class="grid-cell grid-cell--container">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">{{ "global.search" | translate }}</h3>
+              </div>
+            </div>
+
+            <div class="grid-cell-content">
+              <div class="column">
+                <div class="row search-criteria-header">
+                  <i
+                    class="fa fa-fw fa-undo aw-icon aw-icon-with-border search-criteria-action"
+                    aria-hidden="true"
+                    pTooltip="{{ 'global.reset' | translate }}"
+                    tooltipPosition="top"
+                    (click)="resetSearchCriteria()"
+                  ></i>
+                </div>
+
+                <div class="row">
+                  <div class="form-group">
+                    <label class="form-label">
+                      {{ getComponentName() + ".pnCode" | translate }}
+                    </label>
+
+                    <div class="form-control">
+                      <input type="text" class="aw-input" maxlength="50" [(ngModel)]="guidelineSearch.pnCode" />
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label">
+                      {{ getComponentName() + ".pugCode" | translate }}
+                    </label>
+
+                    <div class="form-control">
+                      <input type="text" class="aw-input" maxlength="300" [(ngModel)]="guidelineSearch.pugCode" />
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label">
+                      {{ getComponentName() + ".pugType" | translate }}
+                    </label>
+
+                    <div class="form-control">
+                      <p-dropdown
+                        class="aw-dropdown fixed-width"
+                        [options]="partGuidelineTypes"
+                        [(ngModel)]="guidelineSearch.pugType"
+                        [showClear]="true"
+                        placeholder="&nbsp;"
+                      ></p-dropdown>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">
+                      {{ componentData.componentId + ".pugStatus" | translate }}
+                    </label>
+
+                    <div class="form-control">
+                      <p-dropdown
+                        class="aw-dropdown fixed-width"
+                        [options]="partGuidelineStatus"
+                        [(ngModel)]="guidelineSearch.pugStatus"
+                        [showClear]="true"
+                        placeholder="&nbsp;"
+                      ></p-dropdown>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label">{{ componentData.componentId + ".isUrgent" | translate }}</label>
+
+                    <div class="form-control">
+                      <p-checkbox class="aw-checkbox" binary="true" [(ngModel)]="guidelineSearch.isUrgent">
+                      </p-checkbox>
+                    </div>
+                  </div>
+
+                  <div class="row search-criteria-footer">
+                    <div class="search-actions">
+                      <button
+                        type="button"
+                        mat-raised-button
+                        class="btn-with-spinner"
+                        color="primary"
+                        (click)="search()"
+                        appKeyPress
+                        [keyCode]="'Enter'"
+                        (keyPress)="search()"
+                      >
+                        <span *ngIf="isLoading" class="lds-hourglass"></span>
+                        {{ "global.toSearch" | translate }}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-row">
+          <div class="grid-cell--12">
+            <div #resultsContainerAnchor class="grid-cell grid-cell--container">
+              <div class="grid-cell-header">
+                <div class="grid-cell-title-container">
+                  <h3 class="grid-cell-title">
+                    {{ "global.results" | translate }} ({{
+                      guidelineTableDataSource ? guidelineTableDataSource.dataCount : 0
+                    }})
+                  </h3>
+                </div>
+              </div>
+
+              <div class="grid-cell-content">
+                <a-table [dataSource]="guidelineTableDataSource">
+                  <ng-template tableActionsDef>
+                    <button
+                      *ngIf="guidelineTableDataSource.hasDataSelection"
+                      type="button"
+                      mat-raised-button
+                      (click)="openSelectedPartNumber()"
+                    >
+                      {{ "global.open" | translate }}
+                    </button>
+                  </ng-template>
+
+                  <ng-template columnDef="pnCode" let-rowData="rowData">
+                    <a (click)="openPartNumber(rowData.pnCode)"> {{ rowData["pnCode"] }}</a>
+                  </ng-template>
+
+                  <ng-template columnDef="pugCode" let-rowData="rowData">
+                    <a (click)="openGuideline(rowData)"> {{ rowData["pugCode"] }}</a>
+                  </ng-template>
+
+                  <ng-template columnDef="isUrgent" let-rowData="rowData">
+                    <i
+                      *ngIf="rowData.isUrgent !== null && rowData.isUrgent"
+                      class="fa fa-fw fa-check"
+                      aria-hidden="true"
+                    ></i>
+                  </ng-template>
+                </a-table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

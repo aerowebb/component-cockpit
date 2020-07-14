@@ -1,0 +1,567 @@
+<div class="page-header">
+  <div class="page-info">
+    <div>
+      <h2 class="page-title" *ngIf="formInfoCriteria">
+        {{ formInfoCriteria.movementType.label }}
+      </h2>
+
+      <div class="page-subtitle">
+        <div *ngIf="subtitle" class="page-subtitle">- {{ subtitle }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-actions">
+    <button type="button" *ngIf="isTreatPhase" mat-raised-button (click)="restTreatPhase()">
+      {{ componentNamespace + ".treatEnd" | translate }}
+    </button>
+    <button
+      mat-icon-button
+      class="mat-elevation-z1"
+      matTooltip="{{ 'global.showAllActionTooltip' | translate }}"
+      matTooltipPosition="above"
+      aria-label="Show all actions"
+      [matMenuTriggerFor]="actions"
+    >
+      <mat-icon>more_horiz</mat-icon>
+    </button>
+    <mat-menu #actions="matMenu">
+      <button mat-menu-item (click)="reload()">{{ "global.refresh" | translate }}</button>
+    </mat-menu>
+  </div>
+</div>
+
+<div class="page-wrapper">
+  <div class="page-container">
+    <div class="page-content">
+      <div class="grid-row" *ngIf="!showMovementInformation">
+        <div class="grid-cell--8">
+          <div class="grid-cell grid-cell--container">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">
+                  {{ componentNamespace + ".criteria" | translate }}
+                </h3>
+              </div>
+            </div>
+
+            <div class="grid-cell-content" *ngIf="formInfoCriteria">
+              <div class="column">
+                <div class="row">
+                  <div class="form-group">
+                    <label class="form-label">{{ componentNamespace + ".site" | translate }}</label>
+
+                    <div class="form-control">
+                      <div class="form-control-generic">
+                        {{ formInfoCriteria.site }}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label">{{ componentNamespace + ".warehouse" | translate }}</label>
+
+                    <div class="form-control">
+                      <div class="form-control-generic">
+                        {{ formInfoCriteria.warehouse }}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">{{ componentNamespace + ".status" | translate }}</label>
+
+                    <div class="form-control">
+                      <div class="form-control-generic">
+                        {{ formInfoCriteria.status }}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label
+                      class="form-label"
+                      *ngIf="
+                        formInfoCriteria.status !=
+                          getMvtStockStatus(awPropertiesConstants.MM_MVT_STATUS_EXECUTED_KEY).label &&
+                        formInfoCriteria.status !=
+                          getMvtStockStatus(awPropertiesConstants.MM_MVT_STATUS_CANCELED_KEY).label
+                      "
+                      >{{ componentNamespace + ".beforeDate" | translate }}</label
+                    >
+                    <label
+                      class="form-label"
+                      *ngIf="
+                        formInfoCriteria.status ==
+                          getMvtStockStatus(awPropertiesConstants.MM_MVT_STATUS_EXECUTED_KEY).label ||
+                        formInfoCriteria.status ==
+                          getMvtStockStatus(awPropertiesConstants.MM_MVT_STATUS_CANCELED_KEY).label
+                      "
+                      >{{ componentNamespace + ".the" | translate }}</label
+                    >
+
+                    <div class="form-control">
+                      <div class="form-control-generic">
+                        {{ formInfoCriteria.date | date: appConstants.JS_DATE }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-cell--4">
+          <div class="grid-cell grid-cell--container advancement-cell">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">
+                  {{ componentNamespace + ".advancement" | translate }}
+                </h3>
+              </div>
+            </div>
+
+            <div class="grid-cell-content" *ngIf="movementsStatusMap">
+              <div class="advancement-items">
+                <div class="advancement-item">
+                  <div>{{ advancementPlanned }}</div>
+                  <div>{{ getMvtStockStatus(awPropertiesConstants.MM_MVT_STATUS_PLANNED_KEY).label }}</div>
+                </div>
+
+                <div class="advancement-item">
+                  <div>{{ advancementRequested }}</div>
+                  <div>{{ getMvtStockStatus(awPropertiesConstants.MM_MVT_STATUS_ON_GOING_KEY).label }}</div>
+                </div>
+
+                <div class="advancement-item">
+                  <div>{{ advancementChecked }}</div>
+                  <div>{{ getMvtStockStatus(awPropertiesConstants.MM_MVT_STATUS_CHECKED_KEY).label }}</div>
+                </div>
+
+                <div class="advancement-item">
+                  <div>{{ advancementReleased }}</div>
+                  <div>{{ getMvtStockStatus(awPropertiesConstants.MM_MVT_STATUS_EXECUTED_KEY).label }}</div>
+                </div>
+              </div>
+
+              <div class="advancement-progress" *ngIf="isTreatPhase">
+                <p-progressBar
+                  [ngClass]="{ green: advancement === component.PROGRESS_MAX }"
+                  [value]="advancement"
+                ></p-progressBar>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-row" *ngIf="!showMovementInformation">
+        <div class="grid-cell--12">
+          <div class="grid-cell grid-cell--container">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title" *ngIf="!showCardView">
+                  {{ componentNamespace + ".movements" | translate }} ({{
+                    stockMovementTableDataSource ? stockMovementTableDataSource.dataCount : 0
+                  }})
+                </h3>
+                <h3 class="grid-cell-title" *ngIf="showCardView">
+                  {{ componentNamespace + ".movements" | translate }} ({{
+                    stockMovementTableDataSource ? stockMovementTableDataSource.dataSelectionCount : 0
+                  }})
+                </h3>
+              </div>
+            </div>
+
+            <div class="grid-cell-content">
+              <a-table [dataSource]="stockMovementTableDataSource" *ngIf="!showCardView">
+                <ng-template tableActionsDef>
+                  <button
+                    type="button"
+                    *ngIf="
+                      stockMovementTableDataSource.hasDataSelection &&
+                      isTreatPhase &&
+                      getCurrentComponentContext == componentContext.STOCK_PILLING &&
+                      isChangeLocationVisible()
+                    "
+                    mat-raised-button
+                    (click)="openSelectLocaationDialog()"
+                  >
+                    {{ componentNamespace + ".changeLocation" | translate }}
+                  </button>
+                  <button
+                    type="button"
+                    *ngIf="
+                      stockMovementTableDataSource.hasDataSelection &&
+                      !isTreatPhase &&
+                      !checkIfExecutedSelected() &&
+                      !bidtShipmentFolder
+                    "
+                    mat-raised-button
+                    (click)="checkIfOnGoingSelected()"
+                  >
+                    {{ componentNamespace + ".treat" | translate }}
+                  </button>
+
+                  <button
+                    type="button"
+                    *ngIf="
+                      stockMovementTableDataSource.hasDataSelection &&
+                      !isTreatPhase &&
+                      !checkIfExecutedSelected() &&
+                      !bidtShipmentFolder &&
+                      getCurrentComponentContext == componentContext.PICKING &&
+                      checkAllSameFinalReceipt(this.stockMovementTableDataSource.dataSelection) &&
+                      checkAllSameTransferOrderType(this.stockMovementTableDataSource.dataSelection)
+                    "
+                    mat-raised-button
+                    (click)="createShipmentAndPackage()"
+                  >
+                    {{ componentNamespace + ".treatAndShip" | translate }}
+                  </button>
+
+                  <button
+                    type="button"
+                    *ngIf="
+                      stockMovementTableDataSource.hasDataSelection &&
+                      isTreatPhase &&
+                      !checkIfExecutedSelected() &&
+                      getCurrentComponentContext == componentContext.PICKING &&
+                      isCheckMvtsVisible()
+                    "
+                    mat-raised-button
+                    (click)="checkMvts()"
+                  >
+                    {{ componentNamespace + ".checked" | translate }}
+                  </button>
+
+                  <button
+                    type="button"
+                    *ngIf="
+                      stockMovementTableDataSource.hasDataSelection &&
+                      !isTreatPhase &&
+                      !checkIfExecutedSelected() &&
+                      bidtShipmentFolder
+                    "
+                    mat-raised-button
+                    (click)="openAddPackageToShipment()"
+                  >
+                    {{ componentNamespace + ".addShipment" | translate }}
+                  </button>
+
+                  <button
+                    type="button"
+                    *ngIf="
+                      stockMovementTableDataSource.hasDataSelection &&
+                      isTreatPhase &&
+                      !checkIfExecutedSelected() &&
+                      !checkDislocationNeeded()
+                    "
+                    mat-raised-button
+                    (click)="executeMvts()"
+                  >
+                    {{ componentNamespace + ".execute" | translate }}
+                  </button>
+
+                  <i
+                    class="fa fa-fw fa-filter aw-icon aw-icon-with-border aw-icon-with-overlay"
+                    [ngClass]="{ active: filtersVisible }"
+                    aria-hidden="true"
+                    (click)="opTableFilter.toggle($event)"
+                    *ngIf="stockMovementTableDataSource.data.length > 0"
+                  ></i>
+                </ng-template>
+
+                <ng-template columnDef="mvtStockCode" let-rowData="rowData">
+                  <div>
+                    <a (click)="openStockMovement(rowData)">{{ rowData["mvtStockCode"] }}</a>
+
+                    <i
+                      *ngIf="rowData['bidtStockMvtOperations']"
+                      (click)="openDocumentDialog(rowData['bidtStockMvtOperations'])"
+                      class="fa fa-th-list icon"
+                      aria-hidden="true"
+                    ></i>
+                  </div>
+                </ng-template>
+
+                <ng-template columnDef="article" let-rowData="rowData">
+                  <div>
+                    <a (click)="openPartNumberLink(rowData['pnCode'])">{{ rowData["pnCode"] }}</a>
+                  </div>
+                  <div>
+                    <i>{{ rowData["articleDesignation"] }}</i>
+                  </div>
+                </ng-template>
+
+                <ng-template columnDef="batchNumber" let-rowData="rowData">
+                  <div *ngIf="rowData['batchNumber']">
+                    <a (click)="openLink(rowData['_bidoEquipment'])">{{ rowData["batchNumber"] }}</a>
+                  </div>
+                  <div *ngIf="rowData['batchNumber']">
+                    <i>{{ rowData["operationalStatus"] }}</i>
+                  </div>
+                  <div *ngIf="rowData['needDislocate']">
+                    <span style="color: red;"
+                      >{{ componentNamespace + ".qtyEqual" | translate }}
+                      {{ rowData["_bidoEquipment"].quantity | formatNumber }}</span
+                    >
+                  </div>
+                </ng-template>
+
+                <ng-template columnDef="sn" let-rowData="rowData">
+                  <div *ngIf="!rowData['manufacturingBatch'] && rowData['sn']">
+                    <a (click)="openLinkEquipment(rowData['_bidoEquipment'].equipmentCode)">{{ rowData["sn"] }}</a>
+                  </div>
+                  <div *ngIf="rowData['manufacturingBatch']">
+                    <a (click)="openMfgBatch(rowData['manufacturingBatch'].batchNumber)"
+                      >{{ rowData["manufacturingBatch"].batchNumber }}
+                    </a>
+                  </div>
+
+                  <div *ngIf="!rowData['batchNumber']">
+                    <i>{{ rowData["operationalStatus"] }}</i>
+                  </div>
+                </ng-template>
+
+                <ng-template columnDef="qty" let-rowData="rowData">
+                  <div *ngIf="!rowData['needDislocate']">{{ rowData["qty"] | formatNumber }}</div>
+                  <div
+                    *ngIf="rowData['needDislocate']"
+                    class="need-disclocate"
+                    pTooltip="{{ componentNamespace + '.tooltipDisclocate' | translate }}"
+                    tooltipPosition="top"
+                  >
+                    <span
+                      >{{ rowData["qty"] | formatNumber }}
+                      <i
+                        class="fa fa-fw fa-cubes"
+                        style="color: initial; cursor: pointer; margin-left: 5px;"
+                        aria-hidden="true"
+                        (click)="showAddUpdatePopup(rowData)"
+                      ></i
+                    ></span>
+                  </div>
+                </ng-template>
+
+                <ng-template columnDef="sbOutput" let-rowData="rowData">
+                  <div *ngIf="rowData['bidtStorageBinZoneIssue']?.sbNumber">
+                    <div style="min-width: 2rem; display: inline-block;">
+                      {{ componentNamespace + ".area" | translate }}
+                    </div>
+                    <span style="font-weight: 600">
+                      {{ rowData["bidtStorageBinZoneIssue"]?.sbNumber }}
+                      <ng-container *ngIf="rowData['bidtStorageBinZoneIssue']?.sbDescription">
+                        - {{ rowData["bidtStorageBinZoneIssue"]?.sbDescription }}
+                      </ng-container>
+                    </span>
+                  </div>
+
+                  <div *ngIf="rowData['bidtStorageBinBinIssue']?.sbNumber">
+                    <div style="min-width: 3rem; display: inline-block;">
+                      {{ componentNamespace + ".bins" | translate }}
+                    </div>
+                    <span style="font-weight: 600">{{ rowData["bidtStorageBinBinIssue"]?.sbNumber }}</span>
+                  </div>
+                </ng-template>
+
+                <ng-template columnDef="sbInput" let-rowData="rowData">
+                  <div *ngIf="rowData['bidtStorageBinZoneReceipt']?.sbNumber">
+                    <div style="min-width: 2rem; display: inline-block;">
+                      {{ componentNamespace + ".area" | translate }}
+                    </div>
+                    <span style="font-weight: 600">
+                      {{ rowData["bidtStorageBinZoneReceipt"]?.sbNumber }}
+                      <ng-container *ngIf="rowData['bidtStorageBinZoneReceipt']?.sbDescription">
+                        - {{ rowData["bidtStorageBinZoneReceipt"]?.sbDescription }}
+                      </ng-container>
+                    </span>
+                  </div>
+
+                  <div *ngIf="rowData['bidtStorageBinBinReceipt']?.sbNumber">
+                    <div style="min-width: 3rem; display: inline-block;">
+                      {{ componentNamespace + ".bins" | translate }}
+                    </div>
+                    <span style="font-weight: 600">{{ rowData["bidtStorageBinBinReceipt"]?.sbNumber }}</span>
+                  </div>
+                </ng-template>
+
+                <ng-template columnDef="status" let-rowData="rowData">
+                  <div
+                    [ngClass]="{
+                      'green-background': rowData['smoStatus'].value == awPropertiesConstants.MM_MVT_STATUS_EXECUTED_KEY
+                    }"
+                  >
+                    {{ rowData["smoStatus"].label }}
+                  </div>
+                  <div>
+                    {{ rowData["statusDate"] | date: appConstants.JS_DATE }}
+                  </div>
+                </ng-template>
+
+                <ng-template columnDef="docOfOrigin" let-rowData="rowData">
+                  <div>
+                    <a (click)="openDocOrigine(rowData)">{{ rowData["documentNum"] }}</a>
+                    <div
+                      class="alert alert--nok"
+                      *ngIf="rowData['criticity'] === awPropertiesConstants.LOGISTICAL_CRITICALITY_IMMEDIATE"
+                    >
+                      {{ componentNamespace + ".immediate" | translate }}
+                    </div>
+
+                    <div
+                      class="alert alert--warning"
+                      *ngIf="rowData['criticity'] === awPropertiesConstants.LOGISTICAL_CRITICALITY_URGENT"
+                    >
+                      {{ componentNamespace + ".urgent" | translate }}
+                    </div>
+                    <div
+                      class="alert alert--ok"
+                      *ngIf="rowData['criticity'] === awPropertiesConstants.LOGISTICAL_CRITICALITY_ROUTINE"
+                    >
+                      {{ componentNamespace + ".routine" | translate }}
+                    </div>
+                  </div>
+                  <div>
+                    <i>{{ rowData["documentDescription"] }}</i>
+                  </div>
+                </ng-template>
+
+                <ng-template columnDef="finalRecipient" let-rowData="rowData">
+                  <div *ngIf="rowData['bidoCustomerName']">
+                    <div class="bold">
+                      {{ rowData["bidoCustomerName"] }}
+                    </div>
+                  </div>
+                  <div *ngIf="!rowData['bidoCustomerName']">
+                    <div class="bold">
+                      {{ rowData["site"] }}
+                    </div>
+                    <div>
+                      <i>
+                        {{ rowData["warehouse"] }}
+                      </i>
+                    </div>
+                  </div>
+                </ng-template>
+              </a-table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <aw-dialog-select-container
+    *ngIf="containerDialogVisible"
+    [(display)]="containerDialogVisible"
+    (onAdded)="onSelectContainer($event)"
+  ></aw-dialog-select-container>
+
+  <aw-confirm-dialog-treatment
+    *ngIf="isOnGoingSelected"
+    [(display)]="isOnGoingSelected"
+    (acceptEvent)="treatMvts()"
+  ></aw-confirm-dialog-treatment>
+
+  <aw-dialog-select-location
+    *ngIf="selectedLocationDialogVisable"
+    [(display)]="selectedLocationDialogVisable"
+    [rows]="this.stockMvtList"
+    [warehouse]="stockMovementList[0].warehouse"
+    (onChangeLocation)="onChangeLocation($event)"
+    (onChangeAndExecLocation)="onChangeAndExecLocation($event)"
+  ></aw-dialog-select-location>
+
+  <aw-dialog-add-package
+    [bidtDeliveryFolder]="bidtShipmentFolder"
+    *ngIf="displayAddPackaage"
+    [(display)]="displayAddPackaage"
+    (onCreate)="addToShipmentFolder($event)"
+  ></aw-dialog-add-package>
+
+  <aw-dialog-document-categories
+    *ngIf="displayDocumentDialog"
+    [(display)]="displayDocumentDialog"
+    [bidtStockMvtOperationDTOList]="stockMvtOperationSelected"
+  ></aw-dialog-document-categories>
+
+  <aw-dialog-create-shipment-folder
+    [(display)]="displayCreateShipmentFolder"
+    (onValidate)="createShipmentFolder($event)"
+    *ngIf="displayCreateShipmentFolder"
+    [movementStock]="firstSelectedMvt"
+  ></aw-dialog-create-shipment-folder>
+
+  <p-overlayPanel #opTableFilter class="aw-overlay" (onShow)="filtersVisible = true" (onHide)="filtersVisible = false">
+    <div>
+      <div *ngIf="isDbInput && filterInLocList.length > 0">
+        <div class="form-group">
+          <label class="form-label"> {{ componentNamespace + ".inboundZone" | translate }} </label>
+
+          <div class="form-control">
+            <p-selectButton [(ngModel)]="filterInChoose" [options]="filterInLocList"></p-selectButton>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="isSbOutput && filterOutLocList.length > 0" class="filter">
+        <div class="form-group">
+          <label class="form-label"> {{ componentNamespace + ".outboundZone" | translate }} </label>
+
+          <div class="form-control">
+            <p-selectButton [(ngModel)]="filterOutChoose" [options]="filterOutLocList"></p-selectButton>
+          </div>
+        </div>
+      </div>
+
+      <div class="filter">
+        <div class="form-group">
+          <label class="form-label"> {{ componentNamespace + ".finalRecipient" | translate }} </label>
+
+          <div class="form-control">
+            <p-dropdown
+              class="aw-dropdown fixed-width"
+              placeholder="&nbsp;"
+              [showClear]="true"
+              [(ngModel)]="filterFinalReceiptChoose"
+              [options]="filterFinalReceiptList"
+            ></p-dropdown>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; margin-top: 32px;">
+        <button
+          type="button"
+          mat-raised-button
+          (click)="opTableFilter.hide(); filtersVisible = false; clearTableFilters()"
+        >
+          {{ "resetFilters" | translate }}
+        </button>
+
+        <button
+          type="button"
+          mat-raised-button
+          color="primary"
+          style="margin-left: 8px;"
+          (click)="opTableFilter.hide(); filtersVisible = false; filterTable()"
+        >
+          {{ "filter" | translate }}
+        </button>
+      </div>
+    </div>
+  </p-overlayPanel>
+</div>
+
+<aw-dialog-add-update
+  *ngIf="openAddUpdatedialog"
+  [(display)]="openAddUpdatedialog"
+  [subAssemblyObject]="subAssemblyPopupObject"
+  [quantity]="addUpdateDialogQuantity"
+  [operatonalStatus]="addUpdateDialogEquipementStatus"
+  [unit]="packagingBatchUnit"
+  [fromStockMovement]="true"
+  (onValidate)="updateSubAssembly($event)"
+>
+</aw-dialog-add-update>

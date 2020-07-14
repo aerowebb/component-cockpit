@@ -1,0 +1,78 @@
+<a-modal class="aw-modal" [(visible)]="display" [width]="isCreateOpenMode ? 25 : 55">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".title" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="column">
+      <div class="section">
+        <div class="section-content">
+          <div [ngClass]="{ column: isCreateOpenMode, row: !isCreateOpenMode }">
+            <div class="form-group required">
+              <label class="form-label">{{ getComponentName() + ".smCode" | translate }}</label>
+
+              <div class="form-control">
+                <input
+                  type="text"
+                  name="smCode"
+                  [(ngModel)]="bireShopManualDTO.smCode"
+                  class="aw-input"
+                  maxlength="50"
+                  [disabled]="isReadOpenMode || !isCreateOpenMode"
+                  required
+                />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">{{ getComponentName() + ".smDescription" | translate }}</label>
+
+              <div class="form-control">
+                <textarea
+                  class="aw-textarea"
+                  [rows]="3"
+                  pInputTextarea
+                  [(ngModel)]="bireShopManualDTO.smDescription"
+                  [disabled]="isReadOpenMode"
+                  maxlength="300"
+                ></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- shop manual task table -->
+
+      <div *ngIf="!isCreateOpenMode" class="section">
+        <h4 class="section-title">
+          {{ getComponentName() + ".shopManualTaskList" | translate }} ({{
+            shopManualTableDataSource ? shopManualTableDataSource.dataCount : 0
+          }})
+        </h4>
+
+        <div class="section-content">
+          <div class="row">
+            <a-table [dataSource]="shopManualTableDataSource">
+              <ng-template columnDef="isStandard" let-rowData="rowData">
+                <i *ngIf="rowData.isStandard" class="fa fa-check" aria-hidden="true"></i>
+              </ng-template>
+            </a-table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button *ngIf="isReadOpenMode" type="button" mat-raised-button (click)="closeDialog()">
+      {{ "global.close" | translate }}
+    </button>
+
+    <button type="button" mat-raised-button (click)="closeDialog()">{{ "global.cancel" | translate }}</button>
+
+    <button type="button" mat-raised-button color="primary" (click)="validate()" [disabled]="!bireShopManualDTO.smCode">
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>

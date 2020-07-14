@@ -1,0 +1,91 @@
+@import "mixins";
+@import "constants";
+
+:host {
+  .separator {
+    @include flex-row();
+
+    align-items: center;
+  }
+
+  .grid-cell-chart {
+    .chart-container {
+      @include flex-row();
+
+      @media screen and (max-width: 1280px) {
+        flex-direction: column;
+      }
+
+      .chart-legend {
+        @include flex-column();
+
+        justify-content: center;
+        margin-left: $margin-value;
+
+        .chart-legend-label {
+          @include flex-row();
+
+          align-items: center;
+
+          .chart-legend-label-color {
+            height: 0.75rem;
+            margin-right: $margin-value;
+            width: 2rem;
+
+            &.quantity {
+              background-color: #0d3fc2;
+            }
+
+            &.amount {
+              background-color: #d3c632;
+            }
+
+            &.not-airworthy {
+              background-color: $red-light1;
+            }
+          }
+        }
+
+        .chart-value {
+          font-weight: 700;
+          margin-left: $margin-value;
+        }
+      }
+
+      .chart-wrapper {
+        position: relative;
+        height: 18rem;
+        width: 30rem;
+      }
+    }
+  }
+
+  .postponement-historic {
+    display: flex;
+    flex: 1;
+    flex-direction: row;
+    justify-content: flex-start;
+    button {
+      margin-left: 0.5rem;
+    }
+  }
+
+  .postponement-choices {
+    display: flex;
+    flex: 1;
+    flex-direction: row;
+    justify-content: flex-end;
+    button {
+      margin-left: 0.5rem;
+    }
+  }
+
+  .anchorClass {
+    cursor: pointer;
+  }
+
+  .list {
+    max-width: 40%;
+    min-width: 40%;
+  }
+}

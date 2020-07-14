@@ -1,0 +1,145 @@
+<a-modal class="aw-modal" [(visible)]="display" width="30">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".referenceMeasurement" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="column">
+      <div class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+        <label class="form-label">{{ getComponentName() + ".itemVersion" | translate }}</label>
+        <div class="form-control">
+          <p-dropdown
+            class="aw-dropdown fixed-width"
+            placeholder="&nbsp;"
+            [showClear]="true"
+            [options]="itemVersionList"
+            [(ngModel)]="itemVersion"
+            [disabled]="isReadOpenMode || !isEditable"
+            appendTo="body"
+          ></p-dropdown>
+        </div>
+      </div>
+
+      <div class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+        <label class="form-label">{{ getComponentName() + ".measureCode" | translate }}</label>
+
+        <div class="form-control form-control-with-modal" [ngClass]="{ disabled: isReadOpenMode || !isEditable }">
+          <div class="form-control-data" (click)="showCounterCode()">{{ currentRef.counterCode }}</div>
+
+          <div *ngIf="currentRef.counterCode" class="btn-clear-wrapper">
+            <i
+              class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+              aria-hidden="true"
+              *ngIf="isReadOpenMode || isEditable"
+              (click)="currentRef.counterCode = undefined"
+            ></i>
+          </div>
+          <div class="btn-search-wrapper">
+            <i class="fa fa-fw fa-search aw-icon btn-search" aria-hidden="true" (click)="showCounterCode()"></i>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group" [ngClass]="{ required: !isReadOpenMode }" *ngIf="isFollowedInRating">
+        <label class="form-label">{{ getComponentName() + ".ratingCode" | translate }}</label>
+
+        <div class="form-control form-control-with-modal" [ngClass]="{ disabled: isReadOpenMode || !isEditable }">
+          <div class="form-control-data" (click)="showRating()">{{ bireVersionMeasureDTO.ratingCode }}</div>
+
+          <div *ngIf="bireVersionMeasureDTO.ratingCode" class="btn-clear-wrapper">
+            <i
+              class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+              aria-hidden="true"
+              *ngIf="isReadOpenMode || isEditable"
+              (click)="bireVersionMeasureDTO.ratingCode = undefined"
+            ></i>
+          </div>
+          <div class="btn-search-wrapper">
+            <i class="fa fa-fw fa-search aw-icon btn-search" aria-hidden="true" (click)="showRating()"></i>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group" *ngIf="isFollowedInRating">
+        <label class="form-label">{{ getComponentName() + ".ratingName" | translate }}</label>
+
+        <div class="form-control">
+          <input type="text" class="aw-input" maxlength="50" [(ngModel)]="bireRatingDTO.ratingName" [disabled]="true" />
+        </div>
+      </div>
+
+      <div class="display--flex-row">
+        <div class="form-group min-width--fit-content">
+          <label class="form-label">&nbsp;</label>
+
+          <div class="form-control aw-selectbutton-wrapper">
+            <p-selectButton [(ngModel)]="radLimit" [options]="limitList"></p-selectButton>
+          </div>
+        </div>
+
+        <div *ngIf="radLimit === 'limitValue'" class="form-group">
+          <label class="form-label">&nbsp;</label>
+
+          <div class="form-control">
+            <input type="number" class="aw-input" maxlength="30" [(ngModel)]="bireVersionMeasureDTO.referenceValue" />
+          </div>
+        </div>
+
+        <div *ngIf="radLimit === 'limitDate'" class="form-group">
+          <label class="form-label">&nbsp;</label>
+
+          <div class="form-control">
+            <p-calendar
+              showButtonBar="true"
+              [monthNavigator]="true"
+              [yearNavigator]="true"
+              [yearRange]="sessionService.calendarYearRange"
+              class="aw-calendar"
+              [dateFormat]="sessionService.dateFormatPrimeNG"
+              [locale]="sessionService.calendarFormat"
+              [(ngModel)]="bireVersionMeasureDTO.limitDate"
+              appendTo="body"
+            ></p-calendar>
+          </div>
+        </div>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button *ngIf="isReadOpenMode" type="button" mat-raised-button (click)="onCancel()">
+      <span>{{ "global.close" | translate }}</span>
+    </button>
+
+    <button *ngIf="!isReadOpenMode" type="button" mat-raised-button (click)="onCancel()">
+      <span>{{ "global.cancel" | translate }}</span>
+    </button>
+
+    <button
+      *ngIf="!isReadOpenMode"
+      type="button"
+      mat-raised-button
+      color="primary"
+      [disabled]="!itemVersion || !currentRef.counterCode || (!bireVersionMeasureDTO.ratingCode && isFollowedInRating)"
+      (click)="onValidate()"
+    >
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>
+
+<aw-dialog-table
+  *ngIf="showCounterCodeDialog"
+  [(display)]="showCounterCodeDialog"
+  [data]="dialogTableDataCounterCode"
+  [keyMap]="keyMap"
+  (onSelected)="setSelectedCounterCode($event)"
+></aw-dialog-table>
+
+<aw-dialog-search-rating
+  *ngIf="showRatingDialog"
+  [(display)]="showRatingDialog"
+  (onSelected)="setSelectedRating($event)"
+  [structure-type]="bireItemDTOId.structureType"
+  [family-code]="bireItemDTOId.familyCode"
+></aw-dialog-search-rating>

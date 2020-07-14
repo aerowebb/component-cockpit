@@ -1,0 +1,47 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".title" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="form-group">
+      <span
+        class="form-label"
+        (click)="openTemplate()"
+        style="cursor: pointer; text-decoration: underline; color: blue"
+      >
+        {{ getComponentName() + ".templateE5xMappingXls" | translate }}
+      </span>
+    </div>
+    <div class="form-group">
+      <label class="form-label"> {{ getComponentName() + ".fileToImport" | translate }} </label>
+      <div class="form-control form-control-with-btn">
+        <input
+          type="text"
+          class="aw-input"
+          [(ngModel)]="fileName"
+          [disabled]="true"
+          placeholder="No file selected."
+          style="width:79%"
+        />
+        <p-fileUpload
+          #fileUploader
+          class="aw-fileupload aw-table-action"
+          name="document[]"
+          customUpload="true"
+          mode="basic"
+          auto="true"
+          chooseLabel="{{ 'global.upload' | translate }}"
+          (uploadHandler)="uploadDocument($event, fileUploader)"
+        ></p-fileUpload>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button type="button" mat-raised-button (click)="close()">{{ "global.close" | translate }}</button>
+    <button type="button" mat-raised-button (click)="import()" [disabled]="!fileName">
+      {{ "global.import" | translate }}
+    </button>
+  </a-footer>
+</a-modal>

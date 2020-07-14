@@ -1,0 +1,896 @@
+<div class="page-header">
+  <div class="page-info">
+    <div>
+      <h2 class="page-title">
+        {{ "transaction." + componentData.componentId | translate }}
+      </h2>
+    </div>
+  </div>
+
+  <div class="page-actions">
+    <button type="button" mat-raised-button (click)="createProcurementRequest()">
+      {{ "global.create" | translate }}
+    </button>
+
+    <button
+      mat-icon-button
+      class="mat-elevation-z1"
+      matTooltip="{{ 'global.showAllActionTooltip' | translate }}"
+      matTooltipPosition="above"
+      aria-label="Show all actions"
+      [matMenuTriggerFor]="actions"
+    >
+      <mat-icon>more_horiz</mat-icon>
+    </button>
+    <mat-menu #actions="matMenu">
+      <button mat-menu-item (click)="updateFavoriteState()">
+        {{ (isFavoriteEntry ? "page.removeFromFavorites" : "page.addToFavorites") | translate }}
+      </button>
+    </mat-menu>
+  </div>
+</div>
+
+<div class="page-wrapper">
+  <div class="page-container search-page-container">
+    <div class="page-content">
+      <div class="grid-row">
+        <div class="grid-cell--12">
+          <div class="grid-cell grid-cell--container">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">{{ "global.search" | translate }}</h3>
+              </div>
+            </div>
+
+            <div class="grid-cell-content grid-cell-content-with-section">
+              <div class="column">
+                <!-- TODO -->
+                <!-- <div class="row search-criteria-header">
+                  <aw-manage-search-criteria></aw-manage-search-criteria>
+                </div> -->
+
+                <div class="section">
+                  <h4 class="section-title">{{ componentData.componentId + ".shipper" | translate }}</h4>
+
+                  <div class="section-content">
+                    <div class="row">
+                      <div class="form-group">
+                        <label class="form-label"> {{ componentData.componentId + ".site" | translate }} </label>
+
+                        <div class="form-control">
+                          <p-dropdown
+                            class="aw-dropdown fixed-width"
+                            placeholder="&nbsp;"
+                            [showClear]="true"
+                            [(ngModel)]="procurementSearchInput.siteIssue"
+                            [options]="siteList"
+                            (onChange)="loadSupplierWarehouses()"
+                          ></p-dropdown>
+                        </div>
+                      </div>
+
+                      <div class="form-group">
+                        <label
+                          class="form-label"
+                          *ngIf="
+                            selectedSupplierWarehouseCategory === awPropertiesConstants.WAREHOUSE_CATEGORY_WAREHOUSE
+                          "
+                        >
+                          {{ componentData.componentId + ".warehouse" | translate }}
+                        </label>
+                        <label
+                          class="form-label"
+                          *ngIf="
+                            selectedSupplierWarehouseCategory === awPropertiesConstants.WAREHOUSE_CATEGORY_WORKSHOP
+                          "
+                        >
+                          {{ componentData.componentId + ".workshop" | translate }}
+                        </label>
+
+                        <div class="form-control group-control ">
+                          <div class="form-sub-control ">
+                            <p-selectButton
+                              [options]="logisticsTypeList"
+                              [(ngModel)]="selectedSupplierWarehouseCategory"
+                              (onChange)="loadSupplierWarehouses()"
+                            ></p-selectButton>
+                          </div>
+                          <div class="form-sub-control ">
+                            <p-dropdown
+                              class="aw-dropdown fixed-width"
+                              placeholder="&nbsp;"
+                              [showClear]="true"
+                              [(ngModel)]="procurementSearchInput.warehouseIssue"
+                              [options]="supplierWarehouses"
+                            ></p-dropdown>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="form-group">
+                        <label class="form-label"> {{ getComponentName() + ".partner" | translate }} </label>
+                        <div class="form-control">
+                          <p-dropdown
+                            class="aw-dropdown fixed-width"
+                            [options]="customerList"
+                            [showClear]="true"
+                            placeholder="&nbsp;"
+                            [(ngModel)]="procurementSearchInput.customer"
+                            appendTo="body"
+                          >
+                          </p-dropdown>
+                        </div>
+                      </div>
+
+                      <div class="form-group flex--1"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="section">
+                  <h4 class="section-title">{{ componentData.componentId + ".recipient" | translate }}</h4>
+
+                  <div class="section-content">
+                    <div class="row">
+                      <div class="form-group">
+                        <label class="form-label"> {{ componentData.componentId + ".site" | translate }} </label>
+                        <div class="form-control">
+                          <p-dropdown
+                            class="aw-dropdown fixed-width"
+                            placeholder="&nbsp;"
+                            [showClear]="true"
+                            [(ngModel)]="procurementSearchInput.siteName"
+                            [options]="siteList"
+                            (onChange)="loadRecipientWarehouses()"
+                          ></p-dropdown>
+                        </div>
+                      </div>
+
+                      <div class="form-group">
+                        <label
+                          class="form-label"
+                          *ngIf="procurementSearchInput.whType === awPropertiesConstants.WAREHOUSE_CATEGORY_WAREHOUSE"
+                        >
+                          {{ componentData.componentId + ".warehouse" | translate }}
+                        </label>
+                        <label
+                          class="form-label"
+                          *ngIf="procurementSearchInput.whType === awPropertiesConstants.WAREHOUSE_CATEGORY_WORKSHOP"
+                        >
+                          {{ componentData.componentId + ".workshop" | translate }}
+                        </label>
+
+                        <div class="form-control group-control ">
+                          <div class="form-sub-control ">
+                            <p-selectButton
+                              [options]="logisticsTypeList"
+                              [(ngModel)]="procurementSearchInput.whType"
+                              (onChange)="loadRecipientWarehouses()"
+                            ></p-selectButton>
+                          </div>
+                          <div class="form-sub-control ">
+                            <p-dropdown
+                              class="aw-dropdown fixed-width"
+                              placeholder="&nbsp;"
+                              [showClear]="true"
+                              [(ngModel)]="procurementSearchInput.whCode"
+                              [options]="shopList"
+                            ></p-dropdown>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="form-group">
+                        <label class="form-label">
+                          {{ "asset" | translate }}
+                        </label>
+
+                        <div class="form-control form-control-with-modal">
+                          <div class="form-control-data" (click)="openAssetDialog()">
+                            {{ selectedAssetName }}
+                          </div>
+
+                          <div *ngIf="selectedAsset" class="btn-clear-wrapper">
+                            <i
+                              class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+                              aria-hidden="true"
+                              (click)="selectedAsset = undefined"
+                            ></i>
+                          </div>
+                          <div class="btn-search-wrapper">
+                            <i
+                              class="fa fa-fw fa-search aw-icon btn-search"
+                              aria-hidden="true"
+                              (click)="openAssetDialog()"
+                            ></i>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="form-group"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="section">
+                  <h4 class="section-title">{{ componentData.componentId + ".requestManagment" | translate }}</h4>
+
+                  <div class="section-content">
+                    <div class="row">
+                      <div class="form-group">
+                        <label class="form-label">{{ "type" | translate }}</label>
+                        <div class="form-control aw-selectbutton-wrapper">
+                          <p-selectButton
+                            [options]="procurementRequestTypes"
+                            [(ngModel)]="procurementSearchInput.type"
+                          ></p-selectButton>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="form-group">
+                        <label class="form-label">{{ componentData.componentId + ".criticity" | translate }}</label>
+                        <div class="form-control aw-selectbutton-wrapper">
+                          <p-selectButton
+                            [options]="criticalList"
+                            [(ngModel)]="procurementSearchInput.criticality"
+                          ></p-selectButton>
+                        </div>
+                      </div>
+
+                      <div class="form-group">
+                        <label class="form-label">
+                          {{ componentData.componentId + ".requestNumber" | translate }}
+                        </label>
+
+                        <div class="form-control">
+                          <input type="text" class="aw-input" [(ngModel)]="procurementSearchInput.procCode" />
+                        </div>
+                      </div>
+
+                      <div class="form-group">
+                        <label class="form-label"> {{ componentData.componentId + ".status" | translate }} </label>
+                        <div class="form-control">
+                          <p-dropdown
+                            class="aw-dropdown fixed-width"
+                            placeholder="&nbsp;"
+                            [showClear]="true"
+                            [(ngModel)]="procurementSearchInput.procStatus"
+                            [options]="statusList"
+                          ></p-dropdown>
+                        </div>
+                      </div>
+
+                      <div class="form-group">
+                        <label class="form-label">
+                          {{ componentData.componentId + ".expectedDate" | translate }}
+                        </label>
+                        <div class="form-control">
+                          <p-calendar
+                            showButtonBar="true"
+                            [monthNavigator]="true"
+                            [yearNavigator]="true"
+                            [yearRange]="sessionService.calendarYearRange"
+                            class="aw-calendar"
+                            [dateFormat]="sessionService.dateFormatPrimeNG"
+                            [locale]="sessionService.calendarFormat"
+                            appendTo="body"
+                            [(ngModel)]="procurementSearchInput.requestedDate"
+                          ></p-calendar>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="form-group">
+                        <label class="form-label">{{ "pn" | translate }}</label>
+
+                        <div class="form-control form-control-with-modal">
+                          <div class="form-control-data" (click)="openAssetPnDialog()">
+                            {{ selectedAssetPn?.pnCode }}
+                          </div>
+
+                          <div *ngIf="selectedAssetPn" class="btn-clear-wrapper">
+                            <i
+                              class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+                              aria-hidden="true"
+                              (click)="clearAssetPn()"
+                            ></i>
+                          </div>
+                          <div class="btn-search-wrapper">
+                            <i
+                              class="fa fa-fw fa-search aw-icon btn-search"
+                              aria-hidden="true"
+                              (click)="openAssetPnDialog()"
+                            ></i>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="form-group flex--2">
+                        <label class="form-label">{{ "designation" | translate }}</label>
+
+                        <div class="form-control">
+                          <input class="aw-input" type="text" [(ngModel)]="selectedDesignation" />
+                        </div>
+                      </div>
+
+                      <div class="form-group"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="section">
+                  <div class="section-content">
+                    <div class="advanced-criteria" [ngClass]="{ 'display--none': !showAdvancedSearchCriteria }">
+                      <div class="section">
+                        <h4 class="section-title">
+                          {{ componentData.componentId + ".referenceDocument" | translate }}
+                        </h4>
+                        <div class="section-content">
+                          <div class="row">
+                            <div class="form-group">
+                              <label class="form-label"
+                                >{{ componentData.componentId + ".documentType" | translate }}
+                              </label>
+
+                              <div class="form-control">
+                                <p-dropdown
+                                  class="aw-dropdown fixed-width"
+                                  placeholder="&nbsp;"
+                                  [showClear]="true"
+                                  [(ngModel)]="procurementSearchInput.documentType"
+                                  [options]="documentList"
+                                ></p-dropdown>
+                              </div>
+                            </div>
+                            <div class="form-group">
+                              <label class="form-label">
+                                {{ componentData.componentId + ".documentNumber" | translate }}
+                              </label>
+                              <div class="form-control">
+                                <input type="text" class="aw-input" [(ngModel)]="procurementSearchInput.woCode" />
+                              </div>
+                            </div>
+                            <div class="form-group"></div>
+                            <div class="form-group"></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- ACTION -->
+                <div class="section">
+                  <div class="section-content">
+                    <div class="row search-criteria-footer">
+                      <button mat-button (click)="showAdvancedSearchCriteria = !showAdvancedSearchCriteria">
+                        <ng-container *ngIf="showAdvancedSearchCriteria">
+                          <mat-icon>remove</mat-icon>
+                          {{ "global.collapseCriteria" | translate }}
+                        </ng-container>
+                        <ng-container *ngIf="!showAdvancedSearchCriteria">
+                          <mat-icon>add</mat-icon>
+                          {{ "global.expandCriteria" | translate }}
+                        </ng-container>
+                      </button>
+
+                      <div class="search-actions">
+                        <button
+                          type="button"
+                          mat-raised-button
+                          (click)="search()"
+                          color="primary"
+                          appKeyPress
+                          [keyCode]="'Enter'"
+                          (keyPress)="search()"
+                        >
+                          {{ "global.toSearch" | translate }}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-row">
+        <div class="grid-cell--12">
+          <div #resultsContainerAnchor class="grid-cell grid-cell--container">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">
+                  {{ "global.results" | translate }} ({{ resultsTable ? resultsTable.length : 0 }})
+                </h3>
+              </div>
+            </div>
+
+            <div class="grid-cell-content">
+              <p-table
+                [resizableColumns]="true"
+                #ptableResult
+                class="aw-table2"
+                [columns]="resultTableCols"
+                [value]="resultsTable"
+                [(selection)]="selectedResults"
+                [scrollable]="true"
+              >
+                <ng-template pTemplate="emptymessage">
+                  <span *ngIf="!isLoading"> &nbsp;</span>
+
+                  <div *ngIf="isLoading" class="aw-table-loading-indicator">
+                    <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                    <div class="lds-hourglass"></div>
+                  </div>
+                </ng-template>
+
+                <ng-template pTemplate="caption">
+                  <div class="aw-table-header" [ngClass]="{ 'rows-selected': selectedResults.length > 0 }">
+                    <div class="aw-table-global-filter">
+                      <label class="aw-table-global-filter-label">
+                        <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                      </label>
+
+                      <input
+                        #ptableEquipmentGlobalFilter
+                        class="aw-table-global-filter-input"
+                        type="text"
+                        placeholder="{{ 'table.globalFilterText' | translate }}"
+                        (input)="ptableResult.filterGlobal($event.target.value, 'contains')"
+                      />
+                    </div>
+
+                    <div class="aw-table-actions">
+                      <button
+                        *ngIf="isDeleteButtonVisible()"
+                        type="button"
+                        mat-raised-button
+                        color="warn"
+                        (click)="deleteProcurementRequest()"
+                      >
+                        {{ getComponentName() + ".delete" | translate }}
+                      </button>
+
+                      <button
+                        *ngIf="isCancelButtonVisible()"
+                        type="button"
+                        mat-raised-button
+                        color="warn"
+                        (click)="cancelProcurementRequest()"
+                      >
+                        {{ "cancel" | translate }}
+                      </button>
+
+                      <button
+                        *ngIf="selectedResults.length == 1 && selectedResults[0]._obj.bidtProcReqItems?.length == 1"
+                        type="button"
+                        mat-raised-button
+                        (click)="openProcurementManagmentPage()"
+                      >
+                        {{ getComponentName() + ".manage" | translate }}
+                      </button>
+
+                      <button
+                        *ngIf="selectedResults.length === 1"
+                        type="button"
+                        mat-raised-button
+                        (click)="openProcurementDetails(selectedResults[0])"
+                      >
+                        {{ "global.open" | translate }}
+                      </button>
+
+                      <div class="aw-table-icon-actions">
+                        <i
+                          class="fa fa-fw fa-filter aw-icon aw-icon-with-border aw-icon-with-overlay"
+                          [ngClass]="{ active: filtersVisible }"
+                          aria-hidden="true"
+                          (click)="opTableFilter.toggle($event)"
+                          *ngIf="resultsTableSrc.length > 0"
+                        ></i>
+                      </div>
+                    </div>
+                  </div>
+                </ng-template>
+
+                <ng-template pTemplate="colgroup" let-columns>
+                  <colgroup>
+                    <col class="aw-table-checkbox-wrapper" />
+                    <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                  </colgroup>
+                </ng-template>
+
+                <ng-template pTemplate="header" let-columns>
+                  <tr>
+                    <th class="aw-table-checkbox-wrapper">
+                      <p-tableHeaderCheckbox class="aw-table-checkbox"></p-tableHeaderCheckbox>
+                    </th>
+
+                    <th
+                      [pSortableColumn]="col.field"
+                      pResizableColumn
+                      *ngFor="let col of columns"
+                      [ngStyle]="{ 'text-align': col.alignment }"
+                    >
+                      {{ componentData.componentId + "." + col.field | translate }}
+                      <p-sortIcon [field]="col.field"></p-sortIcon>
+                    </th>
+                  </tr>
+                </ng-template>
+
+                <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                  <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                    <td class="aw-table-checkbox-wrapper">
+                      <p-tableCheckbox class="aw-table-checkbox" [value]="rowData"></p-tableCheckbox>
+                    </td>
+
+                    <td *ngFor="let col of columns" [ngSwitch]="col.field" [ngStyle]="{ 'text-align': col.alignment }">
+                      <ng-container *ngSwitchCase="'procurementRequest'">
+                        <div>
+                          <a class="bold" (click)="openProcurementDetails(rowData)">
+                            {{ rowData[col.field] }}
+                          </a>
+                        </div>
+
+                        <div>
+                          {{ rowData["procurementRequestDescription"] | formatSelectOption: procurementRequestTypes }}
+                        </div>
+                      </ng-container>
+
+                      <span *ngSwitchCase="'referenceDocument'">
+                        <div>
+                          <a class="bold" (click)="openWorkOrder(rowData)"> {{ rowData[col.field] }}</a>
+                        </div>
+                        <div class="info">
+                          <i> {{ rowData["referenceDocumentDesc"] }} </i>
+                        </div>
+                      </span>
+
+                      <span *ngSwitchCase="'shipper'">
+                        <div class="code">
+                          <div>
+                            <span>
+                              <b>{{ rowData[col.field] }}</b>
+                            </span>
+                          </div>
+                          <div>
+                            <span>
+                              <i> {{ rowData["shipperDesc"] }} </i></span
+                            >
+                          </div>
+                          <div class="custom-padding">
+                            <span>
+                              {{ rowData["customerName"] }}
+                            </span>
+                          </div>
+                        </div>
+                      </span>
+
+                      <span *ngSwitchCase="'recipient'">
+                        <div class="code">
+                          <div>
+                            <span>
+                              <b>{{ rowData[col.field] }}</b>
+                            </span>
+                          </div>
+                          <div>
+                            <span>
+                              <i> {{ rowData["recipientDesc"] }} </i></span
+                            >
+                          </div>
+                        </div>
+                      </span>
+
+                      <span *ngSwitchCase="'assetRecipient'">
+                        <a class="bold" (click)="openWorkPackageAsset(rowData)">{{ rowData[col.field] }}</a>
+                      </span>
+
+                      <span *ngSwitchCase="'materials'">
+                        <div>
+                          <a class="bold" (click)="openPart(rowData)">{{ rowData[col.field] }}</a>
+                        </div>
+                        <div *ngIf="rowData['materialsDesc']">
+                          <i>{{ rowData["materialsDesc"] }}</i>
+                        </div>
+                        <div *ngIf="!rowData['materialsDesc'] && rowData['numberOfRecords']">
+                          <i>{{ rowData["numberOfRecords"] }} {{ componentData.componentId + ".items" | translate }}</i>
+                        </div>
+                      </span>
+
+                      <span *ngSwitchCase="'expectedOn'">
+                        {{ rowData[col.field] | date: "yyyy/MM/dd":"":translateService.currentLang }}
+                      </span>
+
+                      <span *ngSwitchCase="'status'">
+                        <div class="code">
+                          <div>
+                            <span>
+                              <b>{{ getStatusLabel(rowData[col.field]) }}</b>
+                            </span>
+                          </div>
+                          <div>
+                            <span>
+                              <i>
+                                <ng-container *ngIf="rowData['advancement'] == advancement.NOT_SERVED">
+                                  {{ componentData.componentId + ".notServed" | translate }}
+                                </ng-container>
+                                <ng-container *ngIf="rowData['advancement'] == advancement.PARTIALLY_SERVED">
+                                  {{ componentData.componentId + ".partiallyServed" | translate }}
+                                </ng-container>
+                                <ng-container *ngIf="rowData['advancement'] == advancement.SERVED">
+                                  {{ componentData.componentId + ".served" | translate }}
+                                </ng-container>
+                              </i>
+                            </span>
+                          </div>
+                        </div>
+                      </span>
+
+                      <span *ngSwitchCase="'criticity'">
+                        <span
+                          *ngIf="rowData[col.field] === awPropertiesConstants.LOGISTICAL_CRITICALITY_IMMEDIATE"
+                          class="procurement-alert procurement--nok"
+                        >
+                          {{ componentData.componentId + ".immediate" | translate }}
+                        </span>
+                        <span
+                          *ngIf="rowData[col.field] === awPropertiesConstants.LOGISTICAL_CRITICALITY_URGENT"
+                          class="procurement-alert procurement--warning"
+                        >
+                          {{ componentData.componentId + ".urgent" | translate }}
+                        </span>
+                        <span
+                          *ngIf="rowData[col.field] === awPropertiesConstants.LOGISTICAL_CRITICALITY_ROUTINE"
+                          class="procurement-alert procurement--ok"
+                        >
+                          {{ componentData.componentId + ".routine" | translate }}
+                        </span>
+                      </span>
+
+                      <span *ngSwitchDefault>{{ rowData[col.field] }}</span>
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<aw-procurement-request-popup *ngIf="showCreateProcurementDialog" [(display)]="showCreateProcurementDialog">
+</aw-procurement-request-popup>
+
+<aw-dialog-search-equipment
+  *ngIf="assetDialogVisible"
+  [(display)]="assetDialogVisible"
+  [selectionMultiple]="false"
+  [searchAllEquipment]="true"
+  (onSelected)="onSelectAsset($event)"
+></aw-dialog-search-equipment>
+
+<aw-dialog-search-pn
+  [showPartTypeSelection]="true"
+  [(display)]="assetPnDialogVisible"
+  (onSelected)="onSelectAssetPn($event)"
+  [withAllTypes]="true"
+  *ngIf="assetPnDialogVisible"
+></aw-dialog-search-pn>
+
+<p-overlayPanel #opTableFilter class="aw-overlay" (onShow)="filtersVisible = true" (onHide)="filtersVisible = false">
+  <div class="row">
+    <div class="section">
+      <h4 class="section-title">{{ componentData.componentId + ".requestManagment" | translate }}</h4>
+
+      <div class="section-content">
+        <div class="row">
+          <div class="form-group">
+            <label class="form-label"> {{ componentData.componentId + ".status" | translate }} </label>
+            <div class="form-control">
+              <p-dropdown
+                class="aw-dropdown fixed-width"
+                placeholder="&nbsp;"
+                [showClear]="true"
+                [(ngModel)]="filter.status"
+                [options]="statusList"
+              ></p-dropdown>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label"> {{ componentData.componentId + ".advancement" | translate }} </label>
+            <div class="form-control">
+              <p-dropdown
+                class="aw-dropdown fixed-width"
+                placeholder="&nbsp;"
+                [showClear]="true"
+                [(ngModel)]="filter.advancement"
+                [options]="filter.advancements"
+              ></p-dropdown>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              {{ componentData.componentId + ".expectedDateFilter" | translate }}
+            </label>
+            <div class="form-control">
+              <p-calendar
+                showButtonBar="true"
+                [monthNavigator]="true"
+                [yearNavigator]="true"
+                [yearRange]="sessionService.calendarYearRange"
+                class="aw-calendar"
+                [dateFormat]="sessionService.dateFormatPrimeNG"
+                [locale]="sessionService.calendarFormat"
+                appendTo="body"
+                [(ngModel)]="filter.requestedDate"
+              ></p-calendar>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="form-group">
+            <label class="form-label">{{ "type" | translate }}</label>
+            <div class="form-control aw-selectbutton-wrapper">
+              <p-selectButton [options]="procurementRequestTypes" [(ngModel)]="filter.type"></p-selectButton>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="form-group">
+            <label class="form-label">{{ componentData.componentId + ".criticity" | translate }}</label>
+            <div class="form-control aw-selectbutton-wrapper">
+              <p-selectButton [options]="criticalList" [(ngModel)]="filter.criticity"></p-selectButton>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label"> {{ componentData.componentId + ".workOrder" | translate }} </label>
+            <div class="form-control">
+              <p-dropdown
+                class="aw-dropdown fixed-width"
+                placeholder="&nbsp;"
+                [showClear]="true"
+                [(ngModel)]="filter.workOrder"
+                [options]="filter.workOrders"
+              ></p-dropdown>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="section">
+        <h4 class="section-title">{{ componentData.componentId + ".shipper" | translate }}</h4>
+
+        <div class="section-content">
+          <div class="row">
+            <div class="form-group">
+              <label class="form-label"> {{ componentData.componentId + ".site" | translate }} </label>
+
+              <div class="form-control">
+                <p-dropdown
+                  class="aw-dropdown fixed-width"
+                  placeholder="&nbsp;"
+                  [showClear]="true"
+                  [(ngModel)]="filter.shipperSite"
+                  [options]="siteList"
+                  (onChange)="loadSupplierWarehousesFilter()"
+                ></p-dropdown>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label
+                class="form-label"
+                *ngIf="filter.shipperWarehouseType === awPropertiesConstants.WAREHOUSE_CATEGORY_WAREHOUSE"
+              >
+                {{ componentData.componentId + ".warehouse" | translate }}
+              </label>
+              <label
+                class="form-label"
+                *ngIf="filter.shipperWarehouseType === awPropertiesConstants.WAREHOUSE_CATEGORY_WORKSHOP"
+              >
+                {{ componentData.componentId + ".workshop" | translate }}
+              </label>
+
+              <div class="form-control group-control">
+                <div class="form-sub-control ">
+                  <p-selectButton
+                    [options]="logisticsTypeList"
+                    [(ngModel)]="filter.shipperWarehouseType"
+                    (onChange)="loadSupplierWarehousesFilter()"
+                  ></p-selectButton>
+                </div>
+                <div class="form-sub-control">
+                  <p-dropdown
+                    class="aw-dropdown fixed-width"
+                    placeholder="&nbsp;"
+                    [showClear]="true"
+                    [(ngModel)]="filter.shipperWarehouse"
+                    [options]="filter.shipperWarehouses"
+                  ></p-dropdown>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="section">
+          <h4 class="section-title">{{ componentData.componentId + ".recipient" | translate }}</h4>
+
+          <div class="section-content">
+            <div class="row">
+              <div class="form-group">
+                <label class="form-label"> {{ componentData.componentId + ".site" | translate }} </label>
+                <div class="form-control">
+                  <p-dropdown
+                    class="aw-dropdown fixed-width"
+                    placeholder="&nbsp;"
+                    [showClear]="true"
+                    [(ngModel)]="filter.recepientSite"
+                    [options]="siteList"
+                    (onChange)="loadRecipientWarehousesFilter()"
+                  ></p-dropdown>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label
+                  class="form-label"
+                  *ngIf="filter.recepientWarehouseType === awPropertiesConstants.WAREHOUSE_CATEGORY_WAREHOUSE"
+                >
+                  {{ componentData.componentId + ".warehouse" | translate }}
+                </label>
+                <label
+                  class="form-label"
+                  *ngIf="filter.recepientWarehouseType === awPropertiesConstants.WAREHOUSE_CATEGORY_WORKSHOP"
+                >
+                  {{ componentData.componentId + ".workshop" | translate }}
+                </label>
+
+                <div class="form-control group-control ">
+                  <div class="form-sub-control ">
+                    <p-selectButton
+                      [options]="logisticsTypeList"
+                      [(ngModel)]="filter.recepientWarehouseType"
+                      (onChange)="loadRecipientWarehousesFilter()"
+                    ></p-selectButton>
+                  </div>
+                  <div class="form-sub-control ">
+                    <p-dropdown
+                      class="aw-dropdown fixed-width"
+                      placeholder="&nbsp;"
+                      [showClear]="true"
+                      [(ngModel)]="filter.recepientWarehouse"
+                      [options]="filter.recepientWarehouses"
+                    ></p-dropdown>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row action-list" style="justify-content: flex-end;">
+    <button type="button" mat-raised-button (click)="opTableFilter.hide(); filtersVisible = false; clearTableFilters()">
+      {{ "resetFilters" | translate }}
+    </button>
+
+    <button
+      type="button"
+      mat-raised-button
+      color="primary"
+      style="margin-left: 8px;"
+      (click)="opTableFilter.hide(); filtersVisible = false; filterTable()"
+    >
+      {{ "filter" | translate }}
+    </button>
+  </div>
+</p-overlayPanel>

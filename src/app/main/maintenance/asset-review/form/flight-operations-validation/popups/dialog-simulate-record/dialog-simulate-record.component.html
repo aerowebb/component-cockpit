@@ -1,0 +1,114 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div *ngIf="isRecord" class="modal-title">{{ getComponentName() + ".titleRecord" | translate }}</div>
+    <div *ngIf="isSimulate" class="modal-title">{{ getComponentName() + ".titleSimulate" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="search-dialog-container">
+      <div class="section results-section">
+        <div class="grid-row">
+          <div class="form-group">
+            <label class="form-label"> {{ getComponentName() + ".timeZone" | translate }} </label>
+
+            <div class="form-control">
+              <p-dropdown
+                class="aw-dropdown fixed-width"
+                [options]="timeZoneList"
+                [(ngModel)]="currentTimeZone"
+                [showClear]="true"
+                placeholder="&nbsp;"
+                (onChange)="updateReadingDates()"
+                [disabled]="isReadOpenMode"
+              ></p-dropdown>
+            </div>
+          </div>
+        </div>
+        <div class="grid-row" style="width: 25%">
+          <div class="form-group required">
+            <label class="form-label"> {{ getComponentName() + ".date" | translate }} </label>
+
+            <div class="form-control">
+              <p-calendar
+                showButtonBar="true"
+                [monthNavigator]="true"
+                [yearNavigator]="true"
+                [yearRange]="sessionService.calendarYearRange"
+                showTime="true"
+                class="aw-calendar"
+                [dateFormat]="sessionService.dateFormatPrimeNG"
+                [locale]="sessionService.calendarFormat"
+                [disabled]="isReadOpenMode"
+                [(ngModel)]="this.popupForm.readingDate"
+                appendTo="body"
+              ></p-calendar>
+            </div>
+          </div>
+        </div>
+        <div class="grid-row">
+          <div class="form-group" style="width: 430px;">
+            <label class="form-label">{{ getComponentName() + ".measureInsertion" | translate }}</label>
+
+            <div class="form-control">
+              <p-checkbox
+                class="aw-checkbox"
+                binary="true"
+                [(ngModel)]="this.popupForm.allowMeasureInsertionBeforeExistingValue"
+                [disabled]="isReadOpenMode"
+              ></p-checkbox>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">{{ getComponentName() + ".measureReading" | translate }}</label>
+
+            <div class="form-control">
+              <p-checkbox
+                class="aw-checkbox"
+                binary="true"
+                [(ngModel)]="this.popupForm.allowMeasureReadingGreaterThanPreviousMonth"
+                [disabled]="isReadOpenMode"
+              ></p-checkbox>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-row">
+          <div class="form-group">
+            <label class="form-label">{{ getComponentName() + ".measureEquals" | translate }}</label>
+
+            <div class="form-control">
+              <p-checkbox
+                class="aw-checkbox"
+                binary="true"
+                [(ngModel)]="this.popupForm.allowMeasureReadingEqualsOrSmallerThanPrevious"
+                [disabled]="isReadOpenMode"
+              ></p-checkbox>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">{{ getComponentName() + ".forceRecording" | translate }}</label>
+
+            <div class="form-control">
+              <p-checkbox
+                class="aw-checkbox"
+                binary="true"
+                [(ngModel)]="this.popupForm.forceReading"
+                [disabled]="isReadOpenMode"
+              ></p-checkbox>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button type="button" mat-raised-button (click)="closeDialog()">
+      <span>{{ "global.cancel" | translate }}</span>
+    </button>
+    <button [disabled]="showValidate()" color="primary" type="button" mat-raised-button (click)="onValidate()">
+      <i class="fa fa-fw fa-check" aria-hidden="true"></i> <span>{{ "global.validate" | translate }}</span>
+    </button>
+  </a-footer>
+</a-modal>

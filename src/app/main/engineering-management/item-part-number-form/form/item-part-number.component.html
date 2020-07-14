@@ -1,0 +1,721 @@
+<div class="page-header">
+  <div class="page-info">
+    <div>
+      <h2 class="page-title">
+        {{ "transaction." + componentData.componentId | translate }}
+      </h2>
+
+      <div class="page-subtitle">
+        <div *ngIf="!isCreateOpenMode" class="page-subtitle">
+          <span *ngIf="!!designation">
+            - {{ serializationService.deserialize(componentData.objectId)["pnCode"] }} ({{ designation }})
+          </span>
+          <span *ngIf="designation === null || designation === undefined || designation === ''">
+            - {{ serializationService.deserialize(componentData.objectId)["pnCode"] }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-actions">
+    <button *ngIf="isReadOpenMode && hasUpdateAccessRight" type="button" mat-raised-button (click)="editItemPN()">
+      {{ "global.edit" | translate }}
+    </button>
+
+    <button *ngIf="!isReadOpenMode && !isCreateOpenMode" type="button" mat-raised-button (click)="cancel()">
+      {{ "global.cancel" | translate }}
+    </button>
+
+    <button
+      *ngIf="!isReadOpenMode"
+      class="btn-with-spinner"
+      color="primary"
+      type="button"
+      mat-raised-button
+      (click)="saveItemPN()"
+    >
+      <span class="lds-hourglass" *ngIf="showSaveSpinner"></span>
+      {{ "global.save" | translate }}
+    </button>
+
+    <button
+      mat-icon-button
+      *ngIf="!isCreateOpenMode"
+      class="mat-elevation-z1"
+      matTooltip="{{ 'global.showAllActionTooltip' | translate }}"
+      matTooltipPosition="above"
+      aria-label="Show all actions"
+      [matMenuTriggerFor]="actions"
+    >
+      <mat-icon>more_horiz</mat-icon>
+    </button>
+    <mat-menu #actions="matMenu">
+      <button *ngIf="!isCreateOpenMode" mat-menu-item (click)="openStatusUpdatesPopup()">
+        {{ "global.updates" | translate }}
+      </button>
+      <button *ngIf="isReadOpenMode && !isCreateOpenMode" mat-menu-item (click)="reloadItemPN()">
+        {{ "global.refresh" | translate }}
+      </button>
+      <button *ngIf="!isCreateOpenMode" mat-menu-item (click)="updateFavoriteState()">
+        {{ "page." + (isFavoriteEntry ? "removeFromFavorites" : "addToFavorites") | translate }}
+      </button>
+    </mat-menu>
+  </div>
+</div>
+
+<div class="page-wrapper">
+  <div class="page-container search-page-container">
+    <div class="page-content">
+      <mat-tab-group animationDuration="0ms" dynamicHeight>
+        <!-- HOME -->
+        <mat-tab>
+          <ng-template mat-tab-label>
+            {{ getComponentName() + ".home" | translate }}
+          </ng-template>
+
+          <div class="grid-row">
+            <!-- MAIN INFORMATION -->
+            <div #mainAnchor class="grid-cell--4" (click)="selectPageTocEntry(component.MAIN_ANCHOR_ID)">
+              <div
+                class="grid-cell grid-cell--container"
+                [ngClass]="{ active: isPageTocEntrySelected(component.MAIN_ANCHOR_ID) }"
+              >
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">{{ "page.mainData" | translate }}</h3>
+                  </div>
+                </div>
+
+                <!-- ROW 1 -->
+                <div class="grid-cell-content">
+                  <div class="form-group flex--2">
+                    <label class="form-label"> {{ componentData.componentId + ".familyVariant" | translate }} </label>
+
+                    <div class="form-control">
+                      <input type="text" class="aw-input" [(ngModel)]="familyVariant" disabled />
+                    </div>
+                  </div>
+
+                  <div class="form-group flex--2">
+                    <label class="form-label"> {{ componentData.componentId + ".item" | translate }} </label>
+
+                    <div class="form-control">
+                      <input type="text" class="aw-input" disabled [(ngModel)]="item" />
+                    </div>
+                  </div>
+
+                  <div class="form-group flex--2">
+                    <label class="form-label"> {{ componentData.componentId + ".version" | translate }} </label>
+
+                    <div class="form-control">
+                      <input type="text" class="aw-input" disabled [(ngModel)]="pageData.versionNumber" />
+                    </div>
+                  </div>
+                </div>
+
+                <!-- ROW 2 -->
+                <div class="grid-cell-content">
+                  <div class="form-group flex--2">
+                    <label class="form-label"> {{ componentData.componentId + ".designation" | translate }} </label>
+
+                    <div class="form-control text-area">
+                      <textarea
+                        class="aw-textarea"
+                        [rows]="2"
+                        pInputTextarea
+                        autoResize="autoResize"
+                        [(ngModel)]="designation"
+                        [disabled]="isReadOpenMode"
+                      ></textarea>
+                    </div>
+                  </div>
+
+                  <div class="form-group flex--1 required">
+                    <label class="form-label"> {{ componentData.componentId + ".pn" | translate }} </label>
+
+                    <div class="form-control" [ngClass]="{ 'form-control-with-btn': isCreateOpenMode }">
+                      <input type="text" class="aw-input" [(ngModel)]="pageData.pnCode" disabled />
+
+                      <i
+                        *ngIf="isCreateOpenMode"
+                        class="fa fa-fw fa-search aw-icon"
+                        aria-hidden="true"
+                        pTooltip="{{ 'global.search' | translate }}"
+                        tooltipPosition="top"
+                        (click)="openPNSearchPopup()"
+                      ></i>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- ROW 3 -->
+                <div class="grid-cell-content">
+                  <div class="form-group flex--1">
+                    <label class="form-label"> {{ componentData.componentId + ".isnATA" | translate }} </label>
+
+                    <div class="form-control">
+                      <input type="text" class="aw-input" [(ngModel)]="isnATA" disabled />
+                    </div>
+                  </div>
+
+                  <div class="form-group flex--1 required">
+                    <label class="form-label"> {{ componentData.componentId + ".availabilityISN" | translate }} </label>
+
+                    <div class="form-control">
+                      <p-dropdown
+                        class="aw-dropdown fixed-width"
+                        placeholder="&nbsp;"
+                        [showClear]="true"
+                        [(ngModel)]="pageData.isnAta"
+                        [options]="isnOptions"
+                        (onChange)="onChangeATA()"
+                        [disabled]="isReadOpenMode || hasVersionPnExist"
+                      ></p-dropdown>
+                    </div>
+                  </div>
+
+                  <div class="form-group flex--1"></div>
+                </div>
+
+                <!-- ROW 4 -->
+                <div class="grid-cell-content">
+                  <div class="form-group flex--1">
+                    <label class="form-label"> {{ componentData.componentId + ".ipcQuantity" | translate }} </label>
+
+                    <div class="form-control">
+                      <input
+                        type="text"
+                        class="aw-input"
+                        [(ngModel)]="pageData.pnQuantityTci"
+                        [disabled]="isReadOpenMode"
+                        [maxlength]="3"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="form-group flex--1">
+                    <label class="form-label"> {{ componentData.componentId + ".mplQuantity" | translate }} </label>
+
+                    <div class="form-control">
+                      <input
+                        type="text"
+                        class="aw-input"
+                        [(ngModel)]="pageData.pnQuantityMpl"
+                        [disabled]="isReadOpenMode"
+                        [maxlength]="3"
+                      />
+                    </div>
+                  </div>
+                  <div class="form-group flex--1"></div>
+                </div>
+
+                <!-- ROW 5 -->
+                <div class="grid-cell-content">
+                  <div class="form-group flex--1">
+                    <label class="form-label"> {{ componentData.componentId + ".qtyAsRequired" | translate }} </label>
+
+                    <div class="form-control">
+                      <p-checkbox
+                        class="aw-checkbox"
+                        binary="true"
+                        [(ngModel)]="pageData.ar"
+                        (onChange)="onChangeQtyAsRequired()"
+                        [disabled]="isReadOpenMode"
+                      ></p-checkbox>
+                    </div>
+                  </div>
+
+                  <div class="form-group flex--1">
+                    <label class="form-label"> {{ componentData.componentId + ".qtyToRefer" | translate }} </label>
+
+                    <div class="form-control">
+                      <p-checkbox
+                        class="aw-checkbox"
+                        binary="true"
+                        [(ngModel)]="pageData.rf"
+                        (onChange)="onChangeQtyToRefer()"
+                        [disabled]="isReadOpenMode"
+                      ></p-checkbox>
+                    </div>
+                  </div>
+                  <div class="form-group flex--1"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- RULES -->
+            <div #ruleAnchor class="grid-cell--4" (click)="selectPageTocEntry(component.RULES_ANCHOR_ID)">
+              <div
+                class="grid-cell grid-cell--container"
+                [ngClass]="{ active: isPageTocEntrySelected(component.RULES_ANCHOR_ID) }"
+              >
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ componentData.componentId + ".rules" | translate }}
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <div class="form-group flex--3">
+                    <label class="form-label">{{ componentData.componentId + ".configurationRule" | translate }}</label>
+
+                    <div class="form-control text-area">
+                      <textarea
+                        class="aw-textarea"
+                        [rows]="3"
+                        pInputTextarea
+                        autoResize="autoResize"
+                        [(ngModel)]="pageData.configurationRule"
+                        [disabled]="isReadOpenMode"
+                      ></textarea>
+                    </div>
+                  </div>
+
+                  <div class="form-group flex--1"></div>
+
+                  <div class="form-group flex--1">
+                    <button
+                      *ngIf="!isReadOpenMode"
+                      style="width: 90%"
+                      type="button"
+                      mat-raised-button
+                      (click)="addConfigurationRule()"
+                    >
+                      <div style="padding-left: inherit">{{ componentData.componentId + ".addRule" | translate }}</div>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <div class="form-group flex--3">
+                    <label class="form-label">{{ componentData.componentId + ".usedWith" | translate }}</label>
+
+                    <div class="form-control text-area">
+                      <textarea
+                        class="aw-textarea"
+                        [rows]="3"
+                        pInputTextarea
+                        autoResize="autoResize"
+                        [(ngModel)]="pageData.usedWith"
+                        [disabled]="isReadOpenMode"
+                      ></textarea>
+                    </div>
+                  </div>
+
+                  <div class="form-group flex--1"></div>
+
+                  <div class="form-group flex--1">
+                    <button
+                      *ngIf="!isReadOpenMode"
+                      style="width: 90%"
+                      type="button"
+                      mat-raised-button
+                      (click)="addUsedWithRule()"
+                    >
+                      <div style="padding-left: inherit">{{ componentData.componentId + ".addRule" | translate }}</div>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ALTERNATIVES -->
+            <div
+              #alternativesAnchor
+              class="grid-cell--4"
+              (click)="selectPageTocEntry(component.ALTERNATIVES_ANCHOR_ID)"
+            >
+              <div
+                class="grid-cell grid-cell--container"
+                [ngClass]="{ active: isPageTocEntrySelected(component.ALTERNATIVES_ANCHOR_ID) }"
+              >
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ componentData.componentId + ".alternatives" | translate }}
+                      ({{ alternativesListDataSource.dataCount }})
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <a-table [dataSource]="alternativesListDataSource">
+                    <ng-template tableActionsDef>
+                      <button
+                        *ngIf="!isReadOpenMode && alternativesListDataSource.hasDataSelection"
+                        type="button"
+                        mat-raised-button
+                        color="warn"
+                        (click)="deleteSelectedAlternatives()"
+                      >
+                        {{ "global.delete" | translate }}
+                      </button>
+
+                      <button
+                        type="button"
+                        *ngIf="!isReadOpenMode && !alternativesListDataSource.hasDataSelection"
+                        mat-raised-button
+                        (click)="createAlternative()"
+                      >
+                        {{ "global.add" | translate }}
+                      </button>
+
+                      <button
+                        *ngIf="!isReadOpenMode && alternativesListDataSource.dataSelectionCount === 1"
+                        type="button"
+                        mat-raised-button
+                        (click)="editAlternative()"
+                      >
+                        {{ "global.edit" | translate }}
+                      </button>
+                    </ng-template>
+                  </a-table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+
+        <!-- ADDITIONAL INFORMATION-->
+        <mat-tab>
+          <ng-template mat-tab-label>
+            {{ getComponentName() + ".general" | translate }}
+          </ng-template>
+
+          <div class="grid-row">
+            <!-- ADDITIONAL INFORMATION-->
+            <div #generalAnchor class="grid-cell--6" (click)="selectPageTocEntry(component.GENERAL_ANCHOR_ID)">
+              <div
+                class="grid-cell grid-cell--container"
+                [ngClass]="{ active: isPageTocEntrySelected(component.GENERAL_ANCHOR_ID) }"
+              >
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">{{ componentData.componentId + ".general" | translate }}</h3>
+                  </div>
+                </div>
+
+                <!-- ROW 1 -->
+                <div class="grid-cell-content">
+                  <div class="form-group flex--2">
+                    <label class="form-label"> {{ componentData.componentId + ".applicability" | translate }} </label>
+
+                    <div class="form-control" [ngClass]="{ ' form-control-with-btn': !isReadOpenMode }">
+                      <input type="text" class="aw-input" [(ngModel)]="pageData.applicability" disabled />
+                      <i
+                        *ngIf="!isReadOpenMode"
+                        class="fa fa-fw fa-search aw-icon"
+                        aria-hidden="true"
+                        pTooltip="{{ 'global.search' | translate }}"
+                        tooltipPosition="top"
+                        (click)="openApplicabilityDialog()"
+                      ></i>
+                    </div>
+                  </div>
+
+                  <div *ngIf="repairabilityEnabled" class="form-group flex--2">
+                    <label class="form-label"> {{ componentData.componentId + ".repairability" | translate }} </label>
+
+                    <div class="form-control">
+                      <p-dropdown
+                        class="aw-dropdown fixed-width"
+                        placeholder="&nbsp;"
+                        [showClear]="true"
+                        [(ngModel)]="pageData.repairableState"
+                        [options]="repairabilityOptions"
+                        [disabled]="isReadOpenMode"
+                      ></p-dropdown>
+                    </div>
+                  </div>
+
+                  <div class="form-group flex--2">
+                    <label class="form-label"> {{ componentData.componentId + ".alternativeType" | translate }} </label>
+
+                    <div class="form-control">
+                      <p-dropdown
+                        class="aw-dropdown fixed-width"
+                        placeholder="&nbsp;"
+                        [showClear]="true"
+                        [(ngModel)]="pageData.pnAlternativeType"
+                        [options]="alternativeTypeOptions"
+                        [disabled]="isReadOpenMode"
+                      ></p-dropdown>
+                    </div>
+                  </div>
+
+                  <div class="form-group flex--2">
+                    <label class="form-label"> {{ componentData.componentId + ".pnEffectivity" | translate }} </label>
+
+                    <div class="form-control">
+                      <input
+                        type="text"
+                        class="aw-input"
+                        [(ngModel)]="pageData.pnEffectivity"
+                        [disabled]="isReadOpenMode"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <!-- ROW 2 -->
+                <div class="grid-cell-content">
+                  <div class="form-group flex--2">
+                    <label class="form-label"> {{ componentData.componentId + ".isnAecma" | translate }} </label>
+
+                    <div class="form-control">
+                      <input type="text" class="aw-input" [(ngModel)]="isnAecma" disabled />
+                    </div>
+                  </div>
+
+                  <div class="form-group flex--2">
+                    <label class="form-label"> {{ componentData.componentId + ".availabilityISN" | translate }} </label>
+
+                    <div class="form-control">
+                      <p-dropdown
+                        class="aw-dropdown fixed-width"
+                        placeholder="&nbsp;"
+                        [showClear]="true"
+                        [(ngModel)]="pageData.isnAecma"
+                        [options]="isnOptions"
+                        (onChange)="onChangeAecma()"
+                        [disabled]="isReadOpenMode"
+                      ></p-dropdown>
+                    </div>
+                  </div>
+
+                  <div class="form-group flex--2">
+                    <label class="form-label"> {{ componentData.componentId + ".npNotProcurable" | translate }} </label>
+
+                    <div class="form-control">
+                      <p-checkbox
+                        class="aw-checkbox"
+                        binary="true"
+                        [(ngModel)]="pageData.procurability"
+                        [disabled]="isReadOpenMode"
+                      ></p-checkbox>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- ROW 3 -->
+                <div class="grid-cell-content">
+                  <div class="form-group">
+                    <label class="form-label">{{ componentData.componentId + ".comment" | translate }}</label>
+
+                    <div class="form-control text-area">
+                      <textarea
+                        class="aw-textarea"
+                        [rows]="3"
+                        pInputTextarea
+                        autoResize="autoResize"
+                        [(ngModel)]="pageData.remarks"
+                        [disabled]="isReadOpenMode"
+                      ></textarea>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ATTRIBUTES-->
+            <div class="grid-cell--6">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">{{ componentData.componentId + ".attributes" | translate }}</h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content grid-cell-content-with-section">
+                  <aw-dynamic-attributes
+                    [attributes]="dynamicAttributesForItemPartNumber"
+                    [isReadOpenMode]="isReadOpenMode"
+                  >
+                  </aw-dynamic-attributes>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+
+        <!-- CONFIGURATION -->
+        <mat-tab>
+          <ng-template mat-tab-label>
+            {{ getComponentName() + ".configurationPacks" | translate }}
+          </ng-template>
+
+          <div class="grid-row">
+            <div
+              #configurtaionAnchor
+              class="grid-cell--12"
+              (click)="selectPageTocEntry(component.CONFIGURATION_ANCHOR_ID)"
+            >
+              <div
+                class="grid-cell grid-cell--container"
+                [ngClass]="{ active: isPageTocEntrySelected(component.CONFIGURATION_ANCHOR_ID) }"
+              >
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ componentData.componentId + ".configurationPacks" | translate }}({{
+                        configPackListDataSource.dataCount
+                      }})
+                    </h3>
+                  </div>
+                </div>
+                <div class="grid-cell-content">
+                  <a-table [dataSource]="configPackListDataSource">
+                    <ng-template tableActionsDef>
+                      <button
+                        *ngIf="!isReadOpenMode && configPackListDataSource.dataSelectionCount === 1"
+                        type="button"
+                        mat-raised-button
+                        (click)="showPacksDialog()"
+                      >
+                        {{ componentData.componentId + ".showPacks" | translate }}
+                      </button>
+
+                      <button
+                        *ngIf="!isReadOpenMode && configPackListDataSource.dataSelectionCount === 1"
+                        type="button"
+                        mat-raised-button
+                        (click)="verifyPacksCompatibiltiyDialog()"
+                        pTooltip="{{ getComponentName() + '.verifyPacksTooltip' | translate }}"
+                      >
+                        {{ componentData.componentId + ".verifyPackCompatibility" | translate }}
+                      </button>
+
+                      <button
+                        *ngIf="!isReadOpenMode && configPackListDataSource.hasDataSelection"
+                        type="button"
+                        mat-raised-button
+                        color="warn"
+                        (click)="deleteSelectedPacks()"
+                      >
+                        {{ "global.delete" | translate }}
+                      </button>
+
+                      <button
+                        *ngIf="!isReadOpenMode && configPackListDataSource.dataSelectionCount === 1"
+                        type="button"
+                        mat-raised-button
+                        (click)="editConfigPack()"
+                      >
+                        {{ "global.edit" | translate }}
+                      </button>
+
+                      <button
+                        *ngIf="!isReadOpenMode && configPackListDataSource.dataSelectionCount === 1"
+                        type="button"
+                        mat-raised-button
+                        (click)="openConfigPackDialog()"
+                      >
+                        {{ "global.open" | translate }}
+                      </button>
+
+                      <button
+                        type="button"
+                        *ngIf="!isReadOpenMode && !configPackListDataSource.hasDataSelection"
+                        mat-raised-button
+                        (click)="addConfigPacksDialog()"
+                      >
+                        {{ "global.add" | translate }}
+                      </button>
+                    </ng-template>
+                  </a-table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+  </div>
+</div>
+
+<!-- POPUP ZONE -->
+<aw-add-rule-popup
+  *ngIf="showAddConfigurationRulePopup"
+  (onValidate)="onConfigurationRuleValidate($event)"
+  [(display)]="showAddConfigurationRulePopup"
+  [propertyOptions]="configurationRulePropertyOptions"
+  [input]="applicabilityInput"
+></aw-add-rule-popup>
+
+<aw-add-rule-popup
+  *ngIf="showAddUsedWithRulePopup"
+  (onValidate)="onUsedWithRuleValidate($event)"
+  [(display)]="showAddUsedWithRulePopup"
+  [propertyOptions]="usedWithPropertyOptions"
+  [input]="applicabilityInput"
+></aw-add-rule-popup>
+
+<aw-alternatives-pn-popup
+  *ngIf="showAlternativePnPopup"
+  [(display)]="showAlternativePnPopup"
+  [inputAlternative]="currentAlternative"
+  (onCreate)="onCreateAlternative($event)"
+  (onUpdate)="onUpdateAlternative($event)"
+  [alternativePnOptions]="alternativePnOptions"
+  [interchangeabilityOptions]="interchangeabilityOptions"
+  [newAlternative]="isNewAlternative"
+></aw-alternatives-pn-popup>
+
+<aw-dialog-table
+  *ngIf="showApplicabilityPopup"
+  [(display)]="showApplicabilityPopup"
+  [data]="applicabilityTableData"
+  (onSelected)="setSelectedApplicability($event)"
+></aw-dialog-table>
+
+<!-- <aw-dialog-table
+  *ngIf="showPnPopup"
+  [(display)]="showPnPopup"
+  [data]="pnTableData"
+  (onSelected)="setSelectedPn($event)"
+></aw-dialog-table> -->
+
+<aw-dialog-status
+  *ngIf="showStatusUpdatesPopup"
+  [(display)]="showStatusUpdatesPopup"
+  [item]="pageData"
+  [itemId]="itemId"
+  [isStatusEditable]="!isReadOpenMode"
+>
+</aw-dialog-status>
+
+<aw-add-config-pack
+  *ngIf="showAddConfigurationPackPopup"
+  (onAdded)="onConfigurationPackAdd($event)"
+  (onEdit)="onConfigurationPackEdit($event)"
+  [input]="dataConfPack"
+  [pageData]="pageData"
+  [(display)]="showAddConfigurationPackPopup"
+></aw-add-config-pack>
+
+<aw-config-pack-compatibility-popup
+  *ngIf="showConfigurationPackCompatibilityPopup"
+  [(display)]="showConfigurationPackCompatibilityPopup"
+  [input]="configPackListDataSource.dataSelection[0]"
+></aw-config-pack-compatibility-popup>
+
+<aw-show-packs-popup
+  *ngIf="showPacksPopup"
+  [(display)]="showPacksPopup"
+  [input]="configPackListDataSource.dataSelection[0]"
+  [data]="pageData"
+  (onAdd)="onAddAssociatedPacks($event)"
+  [associatedpackLists]="associatedPackDTO"
+></aw-show-packs-popup>
+
+<aw-dialog-search-part
+  *ngIf="showPnPopup"
+  [pnType]="selectedPnType"
+  [disablePartTypeDropdown]="true"
+  [(display)]="showPnPopup"
+  (onValidated)="setSelectedPn($event)"
+  [searchObject]="pnSearchObject"
+></aw-dialog-search-part>

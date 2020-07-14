@@ -1,0 +1,32 @@
+<a-modal class="aw-modal" [(visible)]="display" [width]="30">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".title" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="form-group required">
+      <label class="form-label">{{ getComponentName() + ".selectItem" | translate }} {{ pn }}</label>
+
+      <div class="form-control">
+        <p-dropdown
+          class="aw-dropdown fixed-width"
+          appendTo="body"
+          placeholder="&nbsp;"
+          [showClear]="true"
+          [options]="bireItemList"
+          [(ngModel)]="bireItemSelected"
+        ></p-dropdown>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button type="button" mat-raised-button (click)="closeDialog()">
+      <span>{{ "global.close" | translate }}</span>
+    </button>
+
+    <button type="button" mat-raised-button (click)="validate()">
+      {{ "global.add" | translate }}
+    </button>
+  </a-footer>
+</a-modal>

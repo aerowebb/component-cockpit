@@ -1,0 +1,39 @@
+@import "constants";
+
+:host {
+  .alert {
+    display: inline-block;
+    text-transform: uppercase;
+    font-weight: 600;
+    width: 8em;
+    text-align: center;
+
+    &.alert--ok {
+      background-color: $green-light1;
+    }
+
+    &.alert--warning {
+      background-color: $orange;
+    }
+
+    &.alert--nok {
+      background-color: $red-light1;
+    }
+
+    &.alert--none {
+      background-color: $grey1;
+    }
+  }
+
+  .custom-anchor {
+    padding: 0.7em 0;
+  }
+
+  .margin-class {
+    margin-top: 0 !important;
+  }
+
+  .custom-control {
+    padding-top: 0.4em;
+  }
+}

@@ -1,0 +1,318 @@
+<div class="page-header">
+  <div class="page-info">
+    <div>
+      <h2 class="page-title">
+        {{ "transaction." + componentData.componentId | translate }}
+      </h2>
+
+      <div class="page-subtitle">
+        <div class="page-subtitle" *ngIf="!isCreateOpenMode && componentData && componentData.objectId">
+          - {{ subTitle }}
+        </div>
+      </div>
+    </div>
+    <div
+      class="object-status"
+      [ngClass]="{ disabled: isCreateOpenMode }"
+      *ngIf="visit.statusState"
+      (click)="showStatus()"
+    >
+      {{ visit.statusState | formatSelectOption: statusList }}
+    </div>
+  </div>
+
+  <div class="page-actions">
+    <button mat-raised-button id="edit" *ngIf="isReadOpenMode && hasUpdateAccessRight" (click)="editVisit()">
+      {{ "global.edit" | translate }}
+    </button>
+
+    <button
+      mat-raised-button
+      color="warn"
+      id="cancel"
+      *ngIf="!isReadOpenMode && !isCreateOpenMode"
+      (click)="cancelVisit()"
+    >
+      {{ "global.cancel" | translate }}
+    </button>
+
+    <button
+      mat-raised-button
+      class="btn-with-spinner"
+      color="primary"
+      id="save"
+      *ngIf="!isReadOpenMode"
+      [ngClass]="{ inactive: !visit.taskCode || visit.taskCode.length === 0 }"
+      (click)="saveVisit()"
+    >
+      <span class="lds-hourglass" *ngIf="saving"></span>
+      {{ "global.save" | translate }}
+    </button>
+
+    <button
+      mat-icon-button
+      class="mat-elevation-z1"
+      matTooltip="{{ 'global.showAllActionTooltip' | translate }}"
+      matTooltipPosition="above"
+      aria-label="Show all actions"
+      [matMenuTriggerFor]="actions"
+    >
+      <mat-icon>more_horiz</mat-icon>
+    </button>
+    <mat-menu #actions="matMenu">
+      <button mat-menu-item (click)="openStatusUpdatesPopup()">{{ "updates" | translate }}</button>
+
+      <button mat-menu-item id="refresh" *ngIf="isReadOpenMode && !isCreateOpenMode" (click)="reloadVisit()">
+        {{ "global.refresh" | translate }}
+      </button>
+
+      <button mat-menu-item (click)="updateFavoriteState()">
+        {{ (isFavoriteEntry ? "page.removeFromFavorites" : "page.addToFavorites") | translate }}
+      </button>
+    </mat-menu>
+  </div>
+</div>
+
+<div class="page-wrapper">
+  <div class="page-container search-page-container">
+    <div class="page-content">
+      <mat-tab-group animationDuration="0ms" dynamicHeight>
+        <mat-tab>
+          <ng-template mat-tab-label>
+            {{ "home" | translate }}
+          </ng-template>
+          <div class="grid-row">
+            <div id="mainInformation" class="grid-cell--grow2">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 id="mainInformationTitle" class="grid-cell-title">{{ "page.mainData" | translate }}</h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <div class="grid-row grid-cell--12 grid-cell--no-padding">
+                    <div class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+                      <label class="form-label"> {{ componentData.componentId + ".visitCode" | translate }} </label>
+
+                      <div class="form-control">
+                        <input
+                          type="text"
+                          class="aw-input"
+                          [(ngModel)]="visit.taskCode"
+                          [disabled]="isReadOpenMode || !isCreateOpenMode"
+                        />
+                      </div>
+                    </div>
+
+                    <div class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+                      <label class="form-label"> {{ componentData.componentId + ".visitVersion" | translate }} </label>
+
+                      <div class="form-control">
+                        <input
+                          type="text"
+                          class="aw-input"
+                          [(ngModel)]="visit.taskVersion"
+                          [disabled]="isReadOpenMode || !isCreateOpenMode"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="grid-row grid-cell--12 grid-cell--no-padding">
+                    <div class="form-group">
+                      <label class="form-label"> {{ componentData.componentId + ".designation" | translate }} </label>
+
+                      <div class="form-control">
+                        <textarea
+                          class="aw-textarea"
+                          [rows]="3"
+                          pInputTextarea
+                          [(ngModel)]="visit.taskDesignation"
+                          [disabled]="isReadOpenMode"
+                        ></textarea>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="grid-row grid-cell--12 grid-cell--no-padding">
+                    <div class="form-group">
+                      <label class="form-label"> {{ componentData.componentId + ".description" | translate }} </label>
+
+                      <div class="form-control">
+                        <textarea
+                          class="aw-textarea"
+                          [rows]="3"
+                          pInputTextarea
+                          [(ngModel)]="visit.taskDescription"
+                          [disabled]="isReadOpenMode"
+                        ></textarea>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div *ngIf="isCostSettingEnabled" class="grid-row grid-cell--12 grid-cell--no-padding">
+                    <div class="form-group">
+                      <label class="form-label"> {{ componentData.componentId + ".cost" | translate }} </label>
+
+                      <div class="form-control">
+                        <div class="aw-input-group">
+                          <br />
+                          {{ isCreateOpenMode ? 0 : totalCost }} &nbsp;&nbsp; <span>{{ currency }}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div id="maintenancePrograms" class="grid-cell--grow3">
+              <!-- Maintenance programs table -->
+
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 id="maintenanceProgramsTableTitle" class="grid-cell-title">
+                      {{ "global.maintenance" | translate }} ({{
+                        maintenanceTableDataSource ? maintenanceTableDataSource.dataCount : 0
+                      }})
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <a-table [dataSource]="maintenanceTableDataSource">
+                    <ng-template columnDef="planCode" let-rowData="rowData">
+                      <a (click)="goToMaintenanceProgram(rowData)">
+                        {{ rowData.planCode }}
+                      </a>
+                    </ng-template>
+                  </a-table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="taskDecomposition" class="grid-row">
+            <div class="grid-cell--12">
+              <!-- Tasks decomposition table -->
+
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 id="taskDecompositionTableTitle" class="grid-cell-title">
+                      {{ componentData.componentId + ".decomposition" | translate }} ({{
+                        decompositionTableDataSource ? decompositionTableDataSource.dataCount : 0
+                      }})
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <a-table [dataSource]="decompositionTableDataSource" class="aw-table2">
+                    <ng-template tableActionsDef>
+                      <button
+                        *ngIf="!isReadOpenMode && decompositionTableDataSource.dataSelectionCount === 1"
+                        type="button"
+                        mat-raised-button
+                        (click)="deleteDecomposition()"
+                      >
+                        {{ "global.delete" | translate }}
+                      </button>
+
+                      <button
+                        *ngIf="!isReadOpenMode && !decompositionTableDataSource.hasDataSelection"
+                        type="button"
+                        mat-raised-button
+                        (click)="createDecomposition()"
+                      >
+                        {{ "global.add" | translate }}
+                      </button>
+
+                      <button
+                        *ngIf="!isReadOpenMode && decompositionTableDataSource.dataSelectionCount === 1"
+                        type="button"
+                        mat-raised-button
+                        (click)="editDecomposition()"
+                      >
+                        {{ "global.edit" | translate }}
+                      </button>
+
+                      <button
+                        *ngIf="decompositionTableDataSource.dataSelectionCount === 1"
+                        type="button"
+                        mat-raised-button
+                        (click)="openDecomposition()"
+                      >
+                        {{ "global.open" | translate }}
+                      </button>
+                    </ng-template>
+
+                    <ng-template columnDef="taskCode" let-rowData="rowData">
+                      <a (click)="goToTask(rowData)">
+                        {{ rowData.taskCode }}
+                      </a>
+                    </ng-template>
+                  </a-table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+
+        <mat-tab *ngIf="dynamicAttributesForVisit && dynamicAttributesForVisit.length > 0">
+          <ng-template mat-tab-label>
+            {{ "global.attributes" | translate }}
+          </ng-template>
+
+          <div class="grid-row">
+            <div id="attributesPanel" class="grid-cell--12">
+              <div #attributesAnchor class="grid-cell grid-cell--container">
+                <div class="grid-cell-content grid-cell-content-with-section">
+                  <aw-dynamic-attributes
+                    [attributes]="dynamicAttributesForVisit"
+                    [history]="dynamicAttributesHistoric"
+                    [showHistory]="true"
+                    [isReadOpenMode]="isReadOpenMode"
+                  ></aw-dynamic-attributes>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+  </div>
+</div>
+
+<!-- POPUP ZONE -->
+<aw-dialog-associated-tasks-maintenance
+  *ngIf="showDecompositionDialog"
+  [decomposition]="currentDecomposition"
+  [(display)]="showDecompositionDialog"
+  [isReadOnlyForm]="isReadOnlyDecompositionDialog"
+  [newDecomposition]="isNewDecomposition"
+  (onCreate)="addNewDecomposition($event)"
+  (onUpdate)="updateDecomposition($event)"
+></aw-dialog-associated-tasks-maintenance>
+
+<aw-status-update-history
+  *ngIf="showStatusUpdatesPopup"
+  [object]="visit"
+  [data]="tableStatusUpdatesData"
+  [deleteApi]="deleteApi"
+  [(display)]="showStatusUpdatesPopup"
+  [keyMap]="updatesKeyMap"
+  [isStatusEditable]="!isReadOpenMode"
+  (onUpdated)="updateObjectStatusFromStatusUpdatesHistory($event)"
+></aw-status-update-history>
+
+<aw-dynamic-attributes-history
+  *ngIf="showDynamicAttributesHistoric"
+  [attributes]="dynamicAttributesForTask"
+  [history]="dynamicAttributesHistoric"
+  showDelete="true"
+  [deleteApi]="taskHistoryApi.removeHBireTaskAttribute"
+  [(display)]="showDynamicAttributesHistoric"
+></aw-dynamic-attributes-history>

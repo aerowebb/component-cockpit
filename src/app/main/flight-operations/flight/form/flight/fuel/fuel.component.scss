@@ -1,0 +1,20 @@
+@import "constants";
+@import "mixins";
+
+:host {
+  .form-group {
+    max-width: 12rem;
+    min-width: 12rem;
+  }
+
+  .chart-inputs {
+    @include flex-column();
+
+    padding-bottom: 28px;
+    width: 12rem;
+  }
+
+  .chart-wrapper {
+    width: calc(100% - 12rem);
+  }
+}

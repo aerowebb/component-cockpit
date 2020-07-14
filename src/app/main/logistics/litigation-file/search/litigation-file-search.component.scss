@@ -1,0 +1,27 @@
+@import "constants";
+:host {
+  .font-bold {
+    font-weight: bold;
+  }
+
+  .font-italic {
+    font-style: italic;
+  }
+
+  .custom-width {
+    max-width: fit-content;
+  }
+
+  .group-control {
+    display: flex;
+    .form-sub-control {
+      flex-direction: column;
+      width: 100%;
+      & > p-selectButton {
+        display: flex;
+        align-items: flex-end;
+        height: $form-control-height;
+      }
+    }
+  }
+}

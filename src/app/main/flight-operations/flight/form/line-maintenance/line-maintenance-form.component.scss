@@ -1,0 +1,27 @@
+@import "constants";
+
+:host {
+  .aircraft-row {
+    & > div:nth-of-type(1) {
+      max-width: 22.5%;
+      min-width: 22.5%;
+    }
+    & > div:nth-of-type(2) {
+      max-width: 32.5%;
+      min-width: 32.5%;
+    }
+    & > div:nth-of-type(3),
+    & > div:nth-of-type(4) {
+      max-width: 22.5%;
+      min-width: 22.5%;
+    }
+  }
+  .table-summary-wrapper {
+    margin: calc(#{$margin-value} * 2) auto 0 auto;
+    width: 30rem;
+  }
+
+  .custom-color {
+    color: #01579b;
+  }
+}

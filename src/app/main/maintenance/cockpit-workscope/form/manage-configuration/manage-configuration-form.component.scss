@@ -1,0 +1,16 @@
+:host {
+  #hover-content {
+    display: none;
+  }
+  #parent-hover-content:hover #hover-content {
+    display: block;
+    background-color: black;
+    color: #fff !important;
+    white-space: normal;
+  }
+
+  .custom-filter-class {
+    flex-grow: 0 !important;
+    padding-right: 2% !important;
+  }
+}

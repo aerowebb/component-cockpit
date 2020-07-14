@@ -1,0 +1,2741 @@
+<div class="page-header">
+  <div class="page-info">
+    <div>
+      <div class="page-title">
+        {{ "transaction." + componentData.componentId | translate }}
+      </div>
+
+      <div class="page-subtitle">
+        <div *ngIf="!isCreateOpenMode && componentData && componentData.objectId" class="page-subtitle">
+          - {{ employeeName }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-actions">
+    <button *ngIf="isReadOpenMode && hasUpdateAccessRight" type="button" mat-raised-button (click)="editEmployee()">
+      {{ "global.edit" | translate }}
+    </button>
+
+    <button
+      *ngIf="!isReadOpenMode && !isCreateOpenMode"
+      type="button"
+      color="warn"
+      mat-raised-button
+      (click)="cancelEmployee()"
+    >
+      {{ "global.cancel" | translate }}
+    </button>
+
+    <button
+      *ngIf="!isReadOpenMode"
+      class="btn-with-spinner"
+      color="primary"
+      type="button"
+      mat-raised-button
+      (click)="saveEmployee()"
+    >
+      <span class="lds-hourglass" *ngIf="showSaveSpinner"></span>
+      {{ "global.save" | translate }}
+    </button>
+
+    <button
+      id="actions"
+      mat-icon-button
+      class="mat-elevation-z1"
+      matTooltip="{{ 'global.showAllActionTooltip' | translate }}"
+      matTooltipPosition="above"
+      aria-label="Show all actions"
+      [matMenuTriggerFor]="actions"
+    >
+      <mat-icon>more_horiz</mat-icon>
+    </button>
+
+    <mat-menu #actions="matMenu">
+      <button *ngIf="!isReadOpenMode" type="button" mat-menu-item (click)="editEmployeeCard()">
+        <span>{{ componentData.componentId + ".editCard" | translate }}</span>
+      </button>
+
+      <button *ngIf="isReadOpenMode && !isCreateOpenMode" type="button" mat-menu-item (click)="reloadEmployee()">
+        {{ "global.refresh" | translate }}
+      </button>
+
+      <button id="favorites" mat-menu-item (click)="updateFavoriteState()">
+        {{ (isFavoriteEntry ? "page.removeFromFavorites" : "page.addToFavorites") | translate }}
+      </button>
+    </mat-menu>
+  </div>
+</div>
+
+<div class="page-wrapper">
+  <div class="page-container search-page-container">
+    <div class="page-content">
+      <mat-tab-group animationDuration="0ms" dynamicHeight>
+        <!-- Home -->
+        <mat-tab id="homeTab">
+          <ng-template mat-tab-label>
+            {{ "home" | translate }}
+          </ng-template>
+          <div class="grid-row">
+            <div class="grid-cell--12">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">{{ "page.mainData" | translate }}</h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <div class="column">
+                    <div class="row">
+                      <div class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+                        <label class="form-label">{{
+                          componentData.componentId + ".employeeFirstName" | translate
+                        }}</label>
+
+                        <div class="form-control">
+                          <input
+                            type="text"
+                            class="aw-input"
+                            [(ngModel)]="employeeFormData.employeeFirstName"
+                            maxlength="30"
+                            [disabled]="isReadOpenMode"
+                          />
+                        </div>
+                      </div>
+
+                      <div class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+                        <label class="form-label">{{
+                          componentData.componentId + ".employeeLastName" | translate
+                        }}</label>
+
+                        <div class="form-control">
+                          <input
+                            type="text"
+                            class="aw-input"
+                            [(ngModel)]="employeeFormData.employeeLastName"
+                            maxlength="30"
+                            [disabled]="isReadOpenMode"
+                          />
+                        </div>
+                      </div>
+
+                      <div class="form-group">
+                        <label class="form-label">{{
+                          componentData.componentId + ".employeeNumber" | translate
+                        }}</label>
+
+                        <div class="form-control">
+                          <input
+                            type="text"
+                            class="aw-input"
+                            [(ngModel)]="employeeFormData.employeeNumber"
+                            maxlength="20"
+                            [disabled]="isReadOpenMode"
+                          />
+                        </div>
+                      </div>
+
+                      <div class="form-group">
+                        <label class="form-label">{{
+                          componentData.componentId + ".employeeBirthday" | translate
+                        }}</label>
+
+                        <div class="form-control">
+                          <p-calendar
+                            showButtonBar="true"
+                            [monthNavigator]="true"
+                            [yearNavigator]="true"
+                            [yearRange]="sessionService.calendarYearRange"
+                            class="aw-calendar"
+                            [dateFormat]="sessionService.dateFormatPrimeNG"
+                            [locale]="sessionService.calendarFormat"
+                            [(ngModel)]="employeeFormData.employeeBirthday"
+                            [disabled]="isReadOpenMode"
+                          ></p-calendar>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+                        <label class="form-label">{{
+                          componentData.componentId + ".bidtCompanyName" | translate
+                        }}</label>
+
+                        <div class="form-control">
+                          <p-dropdown
+                            class="aw-dropdown fixed-width"
+                            [options]="companies"
+                            [(ngModel)]="selectedCompany"
+                            (onChange)="loadSites()"
+                            [showClear]="true"
+                            placeholder="&nbsp;"
+                            [disabled]="isReadOpenMode"
+                          ></p-dropdown>
+                        </div>
+                      </div>
+
+                      <div class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+                        <label class="form-label">{{ componentData.componentId + ".bidtSiteName" | translate }}</label>
+
+                        <div class="form-control">
+                          <p-dropdown
+                            class="aw-dropdown fixed-width"
+                            [options]="sites"
+                            (onChange)="loadWarehousesBysite()"
+                            [(ngModel)]="employeeFormData.bidtSiteId"
+                            [showClear]="true"
+                            placeholder="&nbsp;"
+                            [disabled]="isReadOpenMode"
+                          ></p-dropdown>
+                        </div>
+                      </div>
+
+                      <div class="form-group">
+                        <label class="form-label">
+                          {{ componentData.componentId + ".warehouseOrWorkshop" | translate }}
+                        </label>
+
+                        <div class="form-control">
+                          <p-dropdown
+                            class="aw-dropdown fixed-width"
+                            [options]="warehouses"
+                            [(ngModel)]="employeeFormData.bidtWarehouseId"
+                            [showClear]="true"
+                            placeholder="&nbsp;"
+                            [disabled]="isReadOpenMode"
+                          ></p-dropdown>
+                        </div>
+                      </div>
+
+                      <div class="form-group">
+                        <label class="form-label">{{ componentData.componentId + ".location" | translate }}</label>
+
+                        <div class="form-control">
+                          <input
+                            type="text"
+                            class="aw-input"
+                            [disabled]="isReadOpenMode"
+                            [(ngModel)]="employeeFormData.employeeComment"
+                            maxlength="300"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-row">
+            <div class="grid-cell--equally">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">{{ componentData.componentId + ".contactInfo" | translate }}</h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content grid-cell-content-with-section">
+                  <div class="section">
+                    <div class="section-content">
+                      <div class="row">
+                        <div class="form-group">
+                          <label class="form-label">{{
+                            componentData.componentId + ".employeeAdress" | translate
+                          }}</label>
+
+                          <div class="form-control">
+                            <input
+                              type="text"
+                              class="aw-input"
+                              [(ngModel)]="employeeFormData.employeeAdress"
+                              [disabled]="isReadOpenMode"
+                              maxlength="300"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="form-group">
+                          <label class="form-label">{{
+                            componentData.componentId + ".employeeZipCode" | translate
+                          }}</label>
+
+                          <div class="form-control">
+                            <input
+                              type="text"
+                              class="aw-input"
+                              [(ngModel)]="employeeFormData.employeeZipCode"
+                              [disabled]="isReadOpenMode"
+                              maxlength="20"
+                            />
+                          </div>
+                        </div>
+
+                        <div class="form-group">
+                          <label class="form-label">{{
+                            componentData.componentId + ".employeeCity" | translate
+                          }}</label>
+
+                          <div class="form-control">
+                            <input
+                              type="text"
+                              class="aw-input"
+                              [(ngModel)]="employeeFormData.employeeCity"
+                              [disabled]="isReadOpenMode"
+                              maxlength="100"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="form-group">
+                          <label class="form-label">{{
+                            componentData.componentId + ".employeeCountry" | translate
+                          }}</label>
+
+                          <div class="form-control">
+                            <p-dropdown
+                              class="aw-dropdown fixed-width"
+                              [options]="countries"
+                              [(ngModel)]="employeeFormData.employeeCountry"
+                              [showClear]="true"
+                              placeholder="&nbsp;"
+                              [disabled]="isReadOpenMode"
+                            ></p-dropdown>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="row">
+                        <div class="form-group">
+                          <label class="form-label">{{
+                            componentData.componentId + ".employeeWorkPhone" | translate
+                          }}</label>
+
+                          <div class="form-control">
+                            <input
+                              type="text"
+                              class="aw-input"
+                              [(ngModel)]="employeeFormData.employeeWorkPhone"
+                              [disabled]="isReadOpenMode"
+                              maxlength="20"
+                            />
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="form-label">{{
+                            componentData.componentId + ".employeePersonnalPhone" | translate
+                          }}</label>
+
+                          <div class="form-control">
+                            <input
+                              type="text"
+                              class="aw-input"
+                              [(ngModel)]="employeeFormData.employeePersonnalPhone"
+                              [disabled]="isReadOpenMode"
+                              maxlength="20"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="form-group">
+                          <label class="form-label">{{
+                            componentData.componentId + ".employeeMail" | translate
+                          }}</label>
+
+                          <div class="form-control">
+                            <input
+                              type="text"
+                              class="aw-input"
+                              [(ngModel)]="employeeFormData.employeeMail"
+                              [disabled]="isReadOpenMode"
+                              maxlength="150"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid-cell--grow3 grid-cell--no-padding">
+              <div class="grid-row">
+                <div class="grid-cell--equally">
+                  <div class="grid-cell grid-cell--container">
+                    <div class="grid-cell-header">
+                      <div class="grid-cell-title-container">
+                        <h3 class="grid-cell-title">{{ componentData.componentId + ".contract" | translate }}</h3>
+                      </div>
+                    </div>
+
+                    <div class="grid-cell-content grid-cell-content-with-section">
+                      <div class="section">
+                        <div class="section-content">
+                          <div class="row">
+                            <div class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+                              <label class="form-label">{{
+                                componentData.componentId + ".startDate" | translate
+                              }}</label>
+
+                              <div class="form-control">
+                                <p-calendar
+                                  showButtonBar="true"
+                                  [monthNavigator]="true"
+                                  [yearNavigator]="true"
+                                  [yearRange]="sessionService.calendarYearRange"
+                                  class="aw-calendar"
+                                  [dateFormat]="sessionService.dateFormatPrimeNG"
+                                  [locale]="sessionService.calendarFormat"
+                                  [(ngModel)]="selectedContractEmployeeStartDate"
+                                  [disabled]="isReadOpenMode"
+                                ></p-calendar>
+                              </div>
+                            </div>
+
+                            <div class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+                              <label class="form-label">{{
+                                componentData.componentId + ".contractName" | translate
+                              }}</label>
+
+                              <div class="form-control">
+                                <p-dropdown
+                                  class="aw-dropdown fixed-width"
+                                  [options]="contractNames"
+                                  [(ngModel)]="selectedContractName"
+                                  (onChange)="loadContractTypesOnChange()"
+                                  [showClear]="true"
+                                  placeholder="&nbsp;"
+                                  [disabled]="isReadOpenMode"
+                                ></p-dropdown>
+                              </div>
+                            </div>
+
+                            <div class="form-group">
+                              <label class="form-label">{{
+                                componentData.componentId + ".contractType" | translate
+                              }}</label>
+
+                              <div class="form-control">
+                                <input
+                                  type="text"
+                                  class="aw-input"
+                                  [(ngModel)]="selectedContractTypeName"
+                                  [disabled]="true"
+                                />
+                              </div>
+                            </div>
+
+                            <div class="form-group">
+                              <label class="form-label">{{ componentData.componentId + ".endDate" | translate }}</label>
+
+                              <div class="form-control">
+                                <p-calendar
+                                  showButtonBar="true"
+                                  [monthNavigator]="true"
+                                  [yearNavigator]="true"
+                                  [yearRange]="sessionService.calendarYearRange"
+                                  class="aw-calendar"
+                                  [dateFormat]="sessionService.dateFormatPrimeNG"
+                                  [locale]="sessionService.calendarFormat"
+                                  [(ngModel)]="selectedContractEmployeeEndDate"
+                                  [disabled]="isReadOpenMode"
+                                ></p-calendar>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="grid-row">
+                <div class="grid-cell--equally">
+                  <div class="grid-cell grid-cell--container">
+                    <div class="grid-cell-header">
+                      <div class="grid-cell-title-container">
+                        <h3 class="grid-cell-title">{{ componentData.componentId + ".salary" | translate }}</h3>
+                      </div>
+                    </div>
+
+                    <div class="grid-cell-content grid-cell-content-with-section">
+                      <div class="section">
+                        <div class="section-content">
+                          <div class="row">
+                            <div class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+                              <label class="form-label">{{
+                                componentData.componentId + ".grossSalary" | translate
+                              }}</label>
+
+                              <div class="form-control">
+                                <input
+                                  #salaryValue="ngModel"
+                                  type="text"
+                                  class="aw-input"
+                                  [(ngModel)]="salaryFormData.salaryValue"
+                                  [disabled]="isReadOpenMode"
+                                  [pKeyFilter]="inputValidationService.validatorOfPositiveNumber()"
+                                  [pValidateOnly]="true"
+                                />
+                                <p-message
+                                  *ngIf="salaryValue.invalid && (salaryValue.dirty || salaryValue.touched)"
+                                  severity="error"
+                                  [text]="inputValidationService.formatOfPositiveNumber()"
+                                ></p-message>
+                              </div>
+                            </div>
+
+                            <div class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+                              <label class="form-label">{{ componentData.componentId + ".period" | translate }}</label>
+
+                              <div class="form-control">
+                                <p-dropdown
+                                  class="aw-dropdown fixed-width"
+                                  [options]="periods"
+                                  [(ngModel)]="salaryFormData.salaryPayPeriod"
+                                  [showClear]="true"
+                                  placeholder="&nbsp;"
+                                  [disabled]="isReadOpenMode"
+                                ></p-dropdown>
+                              </div>
+                            </div>
+
+                            <div class="form-group">
+                              <label class="form-label">{{
+                                componentData.componentId + ".internalCost" | translate
+                              }}</label>
+
+                              <div class="form-control">
+                                <input
+                                  #salaryInternalCost="ngModel"
+                                  type="text"
+                                  class="aw-input"
+                                  [(ngModel)]="salaryFormData.salaryInternalCost"
+                                  [disabled]="isReadOpenMode"
+                                  [pKeyFilter]="inputValidationService.validatorOfPositiveNumber()"
+                                  [pValidateOnly]="true"
+                                />
+                                <p-message
+                                  *ngIf="
+                                    salaryInternalCost.invalid &&
+                                    (salaryInternalCost.dirty || salaryInternalCost.touched)
+                                  "
+                                  severity="error"
+                                  [text]="inputValidationService.formatOfPositiveNumber()"
+                                ></p-message>
+                              </div>
+                            </div>
+
+                            <div class="form-group">
+                              <label class="form-label">{{
+                                componentData.componentId + ".currency" | translate
+                              }}</label>
+
+                              <div class="form-control">
+                                <input
+                                  type="text"
+                                  class="aw-input"
+                                  [(ngModel)]="selectedSalaryCurrency"
+                                  [disabled]="true"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="grid-row">
+                <div class="grid-cell--equally">
+                  <div class="grid-cell grid-cell--container">
+                    <div class="grid-cell-header">
+                      <div class="grid-cell-title-container">
+                        <h3 class="grid-cell-title">{{ componentData.componentId + ".management" | translate }}</h3>
+                      </div>
+                    </div>
+
+                    <div class="grid-cell-content grid-cell-content-with-section">
+                      <div class="section">
+                        <div class="section-content">
+                          <div class="row">
+                            <div class="form-group flex--2">
+                              <label class="form-label">{{
+                                componentData.componentId + ".superior" | translate
+                              }}</label>
+
+                              <div
+                                class="form-control form-control-with-modal"
+                                [ngClass]="{ disabled: isReadOpenMode }"
+                              >
+                                <div class="form-control-data" (click)="openSuperiorPopup()">
+                                  {{ superiorFormData.employeeLastName }} {{ superiorFormData.employeeFirstName }}
+                                </div>
+
+                                <div *ngIf="superiorFormData.employeeNumber" class="btn-clear-wrapper">
+                                  <i
+                                    class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+                                    aria-hidden="true"
+                                    (click)="refreshSuperior()"
+                                  ></i>
+                                </div>
+                                <div class="btn-search-wrapper">
+                                  <i
+                                    class="fa fa-fw fa-search aw-icon btn-search"
+                                    aria-hidden="true"
+                                    (click)="openSuperiorPopup()"
+                                  ></i>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="form-group flex--2"></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+        <mat-tab id="qualificationsTab">
+          <ng-template mat-tab-label>
+            {{ componentData.componentId + ".qualifications" | translate }}
+          </ng-template>
+          <div class="grid-row">
+            <div class="grid-cell--12">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ componentData.componentId + ".qualifications" | translate }} ({{
+                        bidtQualifEmployeeDisplayed ? bidtQualifEmployeeDisplayed.length : 0
+                      }})
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <p-table
+                    [resizableColumns]="true"
+                    #ptableQualification
+                    class="aw-table2"
+                    [columns]="qualificationsTableCols"
+                    [value]="bidtQualifEmployeeDisplayed"
+                    [(selection)]="selectedQualifications"
+                    [scrollable]="true"
+                  >
+                    <ng-template pTemplate="emptymessage">
+                      <span *ngIf="!isLoadingQualificationTable"> &nbsp;</span>
+
+                      <div *ngIf="isLoadingQualificationTable" class="aw-table-loading-indicator">
+                        <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                        <div class="lds-hourglass"></div>
+                      </div>
+                    </ng-template>
+
+                    <ng-template pTemplate="caption">
+                      <div class="aw-table-header" [ngClass]="{ 'rows-selected': selectedQualifications.length > 0 }">
+                        <div class="aw-table-global-filter">
+                          <label class="aw-table-global-filter-label">
+                            <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                          </label>
+
+                          <input
+                            #ptableQualificationGlobalFilter
+                            class="aw-table-global-filter-input"
+                            type="text"
+                            placeholder="{{ 'table.globalFilterText' | translate }}"
+                            (input)="ptableQualification.filterGlobal($event.target.value, 'contains')"
+                          />
+                        </div>
+
+                        <div class="aw-table-actions">
+                          <button
+                            *ngIf="!isReadOpenMode && selectedQualifications.length > 0"
+                            type="button"
+                            mat-raised-button
+                            color="warn"
+                            (click)="deleteQualification()"
+                          >
+                            {{ "global.delete" | translate }}
+                          </button>
+
+                          <button
+                            *ngIf="!isReadOpenMode && selectedQualifications.length === 1"
+                            type="button"
+                            mat-raised-button
+                            (click)="editQualification()"
+                          >
+                            {{ "global.edit" | translate }}
+                          </button>
+
+                          <button
+                            *ngIf="selectedQualifications.length === 1"
+                            type="button"
+                            mat-raised-button
+                            (click)="openQualification()"
+                          >
+                            {{ "global.open" | translate }}
+                          </button>
+                          <button
+                            *ngIf="!isReadOpenMode && selectedQualifications.length === 0"
+                            type="button"
+                            mat-raised-button
+                            (click)="createQualification()"
+                          >
+                            {{ "global.add" | translate }}
+                          </button>
+                        </div>
+                      </div>
+                    </ng-template>
+
+                    <ng-template pTemplate="colgroup" let-columns>
+                      <colgroup>
+                        <col class="aw-table-checkbox-wrapper" />
+                        <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                      </colgroup>
+                    </ng-template>
+
+                    <ng-template pTemplate="header" let-columns>
+                      <tr>
+                        <th class="aw-table-checkbox-wrapper">
+                          <p-tableHeaderCheckbox class="aw-table-checkbox"></p-tableHeaderCheckbox>
+                        </th>
+
+                        <th pResizableColumn *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                          {{ componentData.componentId + "." + col.field | translate }}
+                        </th>
+                      </tr>
+                    </ng-template>
+
+                    <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                      <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                        <td class="aw-table-checkbox-wrapper">
+                          <p-tableCheckbox class="aw-table-checkbox" [value]="rowData"></p-tableCheckbox>
+                        </td>
+
+                        <td
+                          *ngFor="let col of columns"
+                          [ngSwitch]="col.field"
+                          [ngStyle]="{ 'text-align': col.alignment }"
+                        >
+                          <span *ngSwitchCase="'qualifOngoing'">
+                            <span *ngIf="rowData[col.field] !== null && rowData[col.field]">
+                              <i class="fa fa-fw fa-check" aria-hidden="true"></i>
+                            </span>
+                          </span>
+                          <span *ngSwitchDefault> {{ rowData[col.field] }} </span>
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-row">
+            <div class="grid-cell--12">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ componentData.componentId + ".qualificationRenewal" | translate }} ({{
+                        qualificationRenewalTableDataSource ? qualificationRenewalTableDataSource.dataCount : 0
+                      }})
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <div class="row">
+                    <div class="form-group">
+                      <label class="form-label">{{ componentData.componentId + ".startDate" | translate }}</label>
+
+                      <div class="form-control">
+                        <p-calendar
+                          showButtonBar="true"
+                          [monthNavigator]="true"
+                          [yearNavigator]="true"
+                          [yearRange]="sessionService.calendarYearRange"
+                          class="aw-calendar"
+                          [dateFormat]="sessionService.dateFormatPrimeNG"
+                          [locale]="sessionService.calendarFormat"
+                          [(ngModel)]="qualificationRenewalStartDateFilter"
+                          [disabled]="isReadOpenMode"
+                        ></p-calendar>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">{{ componentData.componentId + ".endDate" | translate }}</label>
+
+                      <div class="form-control">
+                        <p-calendar
+                          showButtonBar="true"
+                          [monthNavigator]="true"
+                          [yearNavigator]="true"
+                          [yearRange]="sessionService.calendarYearRange"
+                          class="aw-calendar"
+                          [dateFormat]="sessionService.dateFormatPrimeNG"
+                          [locale]="sessionService.calendarFormat"
+                          [(ngModel)]="qualificationRenewalEndDateFilter"
+                          [disabled]="isReadOpenMode"
+                        ></p-calendar>
+                      </div>
+                    </div>
+                    <button
+                      *ngIf="!isReadOpenMode"
+                      type="button"
+                      mat-raised-button
+                      (click)="filterQualificationRenewalDates()"
+                    >
+                      {{ componentData.componentId + ".filter" | translate }}
+                    </button>
+                  </div>
+
+                  <a-table [dataSource]="qualificationRenewalTableDataSource"> </a-table>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="grid-row">
+            <div class="grid-cell--12">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ componentData.componentId + ".training" | translate }} ({{
+                        bidtTrainingDisplayed ? bidtTrainingDisplayed.length : 0
+                      }})
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <p-table
+                    [resizableColumns]="true"
+                    #ptableTraining
+                    class="aw-table2"
+                    [columns]="trainingsTableCols"
+                    [value]="bidtTrainingDisplayed"
+                    [(selection)]="selectedTrainings"
+                    [scrollable]="true"
+                  >
+                    <ng-template pTemplate="emptymessage">
+                      <span *ngIf="!isLoadingTrainingTable"> &nbsp;</span>
+
+                      <div *ngIf="isLoadingTrainingTable" class="aw-table-loading-indicator">
+                        <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                        <div class="lds-hourglass"></div>
+                      </div>
+                    </ng-template>
+
+                    <ng-template pTemplate="caption">
+                      <div class="aw-table-header" [ngClass]="{ 'rows-selected': selectedTrainings.length > 0 }">
+                        <div class="aw-table-global-filter">
+                          <label class="aw-table-global-filter-label">
+                            <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                          </label>
+
+                          <input
+                            #ptableTrainingGlobalFilter
+                            class="aw-table-global-filter-input"
+                            type="text"
+                            placeholder="{{ 'table.globalFilterText' | translate }}"
+                            (input)="ptableTraining.filterGlobal($event.target.value, 'contains')"
+                          />
+                        </div>
+
+                        <div class="aw-table-actions">
+                          <button
+                            *ngIf="!isReadOpenMode && selectedTrainings.length > 0"
+                            type="button"
+                            mat-raised-button
+                            color="warn"
+                            (click)="deleteTraining()"
+                          >
+                            {{ "global.delete" | translate }}
+                          </button>
+
+                          <button
+                            *ngIf="!isReadOpenMode && selectedTrainings.length === 1"
+                            type="button"
+                            mat-raised-button
+                            (click)="editTraining()"
+                          >
+                            {{ "global.edit" | translate }}
+                          </button>
+
+                          <button
+                            *ngIf="selectedTrainings.length === 1"
+                            type="button"
+                            mat-raised-button
+                            (click)="openTraining()"
+                          >
+                            {{ "global.open" | translate }}
+                          </button>
+
+                          <button
+                            *ngIf="!isReadOpenMode && selectedTrainings.length === 0"
+                            type="button"
+                            mat-raised-button
+                            (click)="createTraining()"
+                          >
+                            {{ "global.add" | translate }}
+                          </button>
+                        </div>
+                      </div>
+                    </ng-template>
+
+                    <ng-template pTemplate="colgroup" let-columns>
+                      <colgroup>
+                        <col class="aw-table-checkbox-wrapper" />
+                        <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                      </colgroup>
+                    </ng-template>
+
+                    <ng-template pTemplate="header" let-columns>
+                      <tr>
+                        <th class="aw-table-checkbox-wrapper">
+                          <p-tableHeaderCheckbox class="aw-table-checkbox"></p-tableHeaderCheckbox>
+                        </th>
+
+                        <th pResizableColumn *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                          {{ componentData.componentId + "." + col.field | translate }}
+                        </th>
+                      </tr>
+                    </ng-template>
+
+                    <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                      <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                        <td class="aw-table-checkbox-wrapper">
+                          <p-tableCheckbox class="aw-table-checkbox" [value]="rowData"></p-tableCheckbox>
+                        </td>
+
+                        <td
+                          *ngFor="let col of columns"
+                          [ngSwitch]="col.field"
+                          [ngStyle]="{ 'text-align': col.alignment }"
+                        >
+                          <span *ngSwitchCase="'trainingPerformed'">
+                            <i *ngIf="rowData[col.field]" class="fa fa-fw fa-check" aria-hidden="true"></i>
+                          </span>
+                          <span *ngSwitchDefault> {{ rowData[col.field] }} </span>
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+        <mat-tab id="licenseTab">
+          <ng-template mat-tab-label>
+            {{ componentData.componentId + ".license" | translate }}
+          </ng-template>
+          <div class="grid-row">
+            <div class="grid-cell--12">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">{{ componentData.componentId + ".license" | translate }}</h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content grid-cell-content-with-section">
+                  <div class="section">
+                    <div class="section-content">
+                      <div class="row">
+                        <div class="form-group">
+                          <label class="form-label">{{
+                            componentData.componentId + ".licenseNumber" | translate
+                          }}</label>
+
+                          <div class="form-control">
+                            <input
+                              type="text"
+                              class="aw-input"
+                              [(ngModel)]="licenseFormData.licenseNumber"
+                              [disabled]="isReadOpenMode"
+                              maxlength="50"
+                            />
+                          </div>
+                        </div>
+
+                        <div class="form-group">
+                          <label class="form-label">{{
+                            componentData.componentId + ".licenseIssuingCountry" | translate
+                          }}</label>
+
+                          <div class="form-control">
+                            <input
+                              type="text"
+                              class="aw-input"
+                              [(ngModel)]="licenseFormData.licenseIssuingCountry"
+                              [disabled]="isReadOpenMode"
+                              maxlength="50"
+                            />
+                          </div>
+                        </div>
+
+                        <div class="form-group">
+                          <label class="form-label">{{
+                            componentData.componentId + ".licenseIssueDate" | translate
+                          }}</label>
+
+                          <div class="form-control">
+                            <p-calendar
+                              showButtonBar="true"
+                              [monthNavigator]="true"
+                              [yearNavigator]="true"
+                              [yearRange]="sessionService.calendarYearRange"
+                              class="aw-calendar"
+                              [dateFormat]="sessionService.dateFormatPrimeNG"
+                              [locale]="sessionService.calendarFormat"
+                              [(ngModel)]="selectedLicenseIssueDate"
+                              [disabled]="isReadOpenMode"
+                            ></p-calendar>
+                          </div>
+                        </div>
+
+                        <div class="form-group">
+                          <label class="form-label">{{
+                            componentData.componentId + ".licenseValidatingDate" | translate
+                          }}</label>
+
+                          <div class="form-control">
+                            <p-calendar
+                              showButtonBar="true"
+                              [monthNavigator]="true"
+                              [yearNavigator]="true"
+                              [yearRange]="sessionService.calendarYearRange"
+                              class="aw-calendar"
+                              [dateFormat]="sessionService.dateFormatPrimeNG"
+                              [locale]="sessionService.calendarFormat"
+                              [(ngModel)]="selectedLicenseValidatingDate"
+                              [disabled]="isReadOpenMode"
+                            ></p-calendar>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-row">
+            <div class="grid-cell--12">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ componentData.componentId + ".categories" | translate }} ({{
+                        categoryLevelTableData ? categoryLevelTableData.length : 0
+                      }})
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content grid-cell-content-with-section">
+                  <div class="section">
+                    <div class="section-content">
+                      <p-table
+                        [resizableColumns]="true"
+                        #ptableCategories
+                        class="aw-table2"
+                        [columns]="licensesTableCols"
+                        [value]="categoryLevelTableData"
+                      >
+                        <ng-template pTemplate="emptymessage">
+                          <span *ngIf="!isLoadingCategoryTable"> &nbsp;</span>
+
+                          <div *ngIf="isLoadingCategoryTable" class="aw-table-loading-indicator">
+                            <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                            <div class="lds-hourglass"></div>
+                          </div>
+                        </ng-template>
+
+                        <ng-template pTemplate="caption">
+                          <div class="aw-table-header"></div>
+                        </ng-template>
+
+                        <ng-template pTemplate="colgroup" let-columns>
+                          <colgroup>
+                            <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                          </colgroup>
+                        </ng-template>
+
+                        <ng-template pTemplate="header" let-columns>
+                          <tr>
+                            <th>{{ componentData.componentId + ".categoryLevelHeader" | translate }}</th>
+
+                            <th
+                              pResizableColumn
+                              *ngFor="let col of columns"
+                              [ngStyle]="{ 'text-align': col.alignment }"
+                            >
+                              {{ showHeaderText(col.field) | translate }}
+                            </th>
+                          </tr>
+                        </ng-template>
+
+                        <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                          <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                            <td>{{ showCategory(rowIndex) }}</td>
+
+                            <td *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                              <p-checkbox
+                                class="aw-table-checkbox"
+                                binary="true"
+                                [(ngModel)]="rowData[col.field]"
+                                [disabled]="isReadOpenMode"
+                              ></p-checkbox>
+                            </td>
+                          </tr>
+                        </ng-template>
+                      </p-table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+        <mat-tab id="worksTab">
+          <ng-template mat-tab-label>
+            {{ componentData.componentId + ".works" | translate }}
+          </ng-template>
+          <div class="grid-row" [style.display]="!showFlightTab ? 'none' : ''">
+            <div class="grid-cell--12">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ componentData.componentId + ".flights" | translate }} ({{
+                        flightsDisplayed ? flightsDisplayed.length : 0
+                      }})
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <p-table
+                    [resizableColumns]="true"
+                    #ptableFlights
+                    class="aw-table2"
+                    [columns]="flightsTableCols"
+                    [value]="flightsDisplayed"
+                    [scrollable]="true"
+                  >
+                    <ng-template pTemplate="emptymessage">
+                      <span *ngIf="!isLoadingFlightsTable"> &nbsp;</span>
+
+                      <div *ngIf="isLoadingFlightsTable" class="aw-table-loading-indicator">
+                        <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                        <div class="lds-hourglass"></div>
+                      </div>
+                    </ng-template>
+
+                    <ng-template pTemplate="caption">
+                      <div class="aw-table-header">
+                        <div class="aw-table-global-filter">
+                          <label class="aw-table-global-filter-label">
+                            <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                          </label>
+
+                          <input
+                            #ptableFlightsGlobalFilter
+                            class="aw-table-global-filter-input"
+                            type="text"
+                            placeholder="{{ 'table.globalFilterText' | translate }}"
+                            (input)="ptableFlights.filterGlobal($event.target.value, 'contains')"
+                          />
+                        </div>
+                        <div class="aw-table-actions">
+                          <div class="aw-table-icon-actions" *ngIf="!isLoadingFlightsTable">
+                            <i
+                              class="fa fa-fw fa-filter aw-icon aw-icon-with-border aw-icon-with-overlay"
+                              aria-hidden="true"
+                              pTooltip="{{
+                                'global' + (flightFiltersVisible ? '.hideFilters' : '.showFilters') | translate
+                              }}"
+                              tooltipPosition="top"
+                              [ngClass]="{ active: flightFiltersVisible }"
+                              (click)="flightFilters.toggle($event)"
+                            ></i>
+                          </div>
+                        </div>
+                      </div>
+                    </ng-template>
+
+                    <ng-template pTemplate="colgroup" let-columns>
+                      <colgroup>
+                        <col
+                          *ngFor="let col of columns"
+                          [ngStyle]="{ 'text-align': col.alignment, width: col.width }"
+                        />
+                      </colgroup>
+                    </ng-template>
+
+                    <ng-template pTemplate="header" let-columns>
+                      <tr>
+                        <th
+                          pResizableColumn
+                          *ngFor="let col of columns"
+                          [ngStyle]="{ 'text-align': col.alignment, width: col.width }"
+                        >
+                          {{ componentData.componentId + "." + col.field | translate }}
+                        </th>
+                      </tr>
+                    </ng-template>
+
+                    <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                      <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                        <td *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment, width: col.width }">
+                          {{ rowData[col.field] }}
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-row">
+            <div class="grid-cell--6">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">{{ componentData.componentId + ".workTemplate" | translate }}</h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content grid-cell-content-with-section">
+                  <div class="section">
+                    <div class="section-content">
+                      <div class="row">
+                        <div class="form-group">
+                          <label class="form-label">{{ componentData.componentId + ".ltName" | translate }}</label>
+
+                          <div class="form-control">
+                            <p-dropdown
+                              class="aw-dropdown fixed-width"
+                              [options]="workTemplateNames"
+                              [(ngModel)]="selectedWorkTemplateName"
+                              (onChange)="setWorkTemplatedata()"
+                              [showClear]="true"
+                              placeholder="&nbsp;"
+                              [disabled]="isReadOpenMode"
+                            ></p-dropdown>
+                          </div>
+                        </div>
+
+                        <div class="form-group">
+                          <label class="form-label">{{
+                            componentData.componentId + ".ltDayPerWeek" | translate
+                          }}</label>
+
+                          <div class="form-control">
+                            <input
+                              type="text"
+                              class="aw-input"
+                              [(ngModel)]="laborTemplateFormData.ltDayPerWeek"
+                              [disabled]="true"
+                            />
+                          </div>
+                        </div>
+
+                        <div class="form-group">
+                          <label class="form-label">{{
+                            componentData.componentId + ".ltHourPerWeek" | translate
+                          }}</label>
+
+                          <div class="form-control">
+                            <input
+                              type="text"
+                              class="aw-input"
+                              [(ngModel)]="laborTemplateFormData.ltHourPerWeek"
+                              [disabled]="true"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="section">
+                    <h4 class="section-title">{{ "global.workingDay" | translate }}</h4>
+
+                    <div class="section-content">
+                      <div class="row">
+                        <div class="form-group">
+                          <label class="form-label">{{ "global.hours" | translate }}</label>
+
+                          <div class="form-control">
+                            <input
+                              type="text"
+                              class="aw-input"
+                              [(ngModel)]="laborTemplateFormData.ltNbHourWd"
+                              [disabled]="true"
+                            />
+                          </div>
+                        </div>
+
+                        <div class="form-group">
+                          <label class="form-label">{{ componentData.componentId + ".ltIsMonday" | translate }}</label>
+
+                          <div class="form-control">
+                            <p-checkbox
+                              class="aw-checkbox"
+                              binary="true"
+                              [(ngModel)]="laborTemplateFormData.ltIsMonday"
+                              [disabled]="true"
+                            ></p-checkbox>
+                          </div>
+                        </div>
+
+                        <div class="form-group">
+                          <label class="form-label">{{ componentData.componentId + ".ltIsTuesday" | translate }}</label>
+
+                          <div class="form-control">
+                            <p-checkbox
+                              class="aw-checkbox"
+                              binary="true"
+                              [(ngModel)]="laborTemplateFormData.ltIsTuesday"
+                              [disabled]="true"
+                            ></p-checkbox>
+                          </div>
+                        </div>
+
+                        <div class="form-group">
+                          <label class="form-label">{{
+                            componentData.componentId + ".ltIsWednesday" | translate
+                          }}</label>
+
+                          <div class="form-control">
+                            <p-checkbox
+                              class="aw-checkbox"
+                              binary="true"
+                              [(ngModel)]="laborTemplateFormData.ltIsWednesday"
+                              [disabled]="true"
+                            ></p-checkbox>
+                          </div>
+                        </div>
+
+                        <div class="form-group">
+                          <label class="form-label">{{
+                            componentData.componentId + ".ltIsThursday" | translate
+                          }}</label>
+
+                          <div class="form-control">
+                            <p-checkbox
+                              class="aw-checkbox"
+                              binary="true"
+                              [(ngModel)]="laborTemplateFormData.ltIsThursday"
+                              [disabled]="true"
+                            ></p-checkbox>
+                          </div>
+                        </div>
+
+                        <div class="form-group">
+                          <label class="form-label">{{ componentData.componentId + ".ltIsFriday" | translate }}</label>
+
+                          <div class="form-control">
+                            <p-checkbox
+                              class="aw-checkbox"
+                              binary="true"
+                              [(ngModel)]="laborTemplateFormData.ltIsFriday"
+                              [disabled]="true"
+                            ></p-checkbox>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="section">
+                    <h4 class="section-title">{{ "global.weekEnd" | translate }}</h4>
+                    <div class="row">
+                      <div class="form-group">
+                        <label class="form-label">{{ "global.hours" | translate }}</label>
+
+                        <div class="form-control">
+                          <input
+                            type="text"
+                            class="aw-input"
+                            [(ngModel)]="laborTemplateFormData.ltNbHourWe"
+                            [disabled]="true"
+                          />
+                        </div>
+                      </div>
+
+                      <div class="form-group">
+                        <label class="form-label">{{ componentData.componentId + ".ltIsSaturday" | translate }}</label>
+
+                        <div class="form-control">
+                          <p-checkbox
+                            class="aw-checkbox"
+                            binary="true"
+                            [(ngModel)]="laborTemplateFormData.ltIsSaturday"
+                            [disabled]="true"
+                          ></p-checkbox>
+                        </div>
+                      </div>
+
+                      <div class="form-group">
+                        <label class="form-label">{{ componentData.componentId + ".ltIsSunday" | translate }}</label>
+
+                        <div class="form-control">
+                          <p-checkbox
+                            class="aw-checkbox"
+                            binary="true"
+                            [(ngModel)]="laborTemplateFormData.ltIsSunday"
+                            [disabled]="true"
+                          ></p-checkbox>
+                        </div>
+                      </div>
+
+                      <div class="form-group"></div>
+                      <div class="form-group"></div>
+                      <div class="form-group"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid-cell--6">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ componentData.componentId + ".hourlyCosts" | translate }} ({{
+                        bidtHourlyCostDisplayed ? bidtHourlyCostDisplayed.length : 0
+                      }})
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <p-table
+                    [resizableColumns]="true"
+                    #ptableHourlyCost
+                    class="aw-table2"
+                    [columns]="hourlyCostsTableCols"
+                    [value]="bidtHourlyCostDisplayed"
+                    [(selection)]="selectedHourlyCosts"
+                    [scrollable]="true"
+                  >
+                    <ng-template pTemplate="emptymessage">
+                      <span *ngIf="!isLoadingHourlyCostTable"> &nbsp;</span>
+
+                      <div *ngIf="isLoadingHourlyCostTable" class="aw-table-loading-indicator">
+                        <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                        <div class="lds-hourglass"></div>
+                      </div>
+                    </ng-template>
+
+                    <ng-template pTemplate="caption">
+                      <div class="aw-table-header" [ngClass]="{ 'rows-selected': selectedHourlyCosts.length > 0 }">
+                        <div class="aw-table-global-filter">
+                          <label class="aw-table-global-filter-label">
+                            <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                          </label>
+
+                          <input
+                            #ptableHourlyCostGlobalFilter
+                            class="aw-table-global-filter-input"
+                            type="text"
+                            placeholder="{{ 'table.globalFilterText' | translate }}"
+                            (input)="ptableHourlyCost.filterGlobal($event.target.value, 'contains')"
+                          />
+                        </div>
+
+                        <div class="aw-table-actions">
+                          <button
+                            *ngIf="!isReadOpenMode && selectedHourlyCosts.length > 0"
+                            type="button"
+                            mat-raised-button
+                            color="warn"
+                            (click)="deleteHourlyCost()"
+                          >
+                            {{ "global.delete" | translate }}
+                          </button>
+
+                          <button
+                            *ngIf="!isReadOpenMode && selectedHourlyCosts.length === 1"
+                            type="button"
+                            mat-raised-button
+                            (click)="editHourlyCost()"
+                          >
+                            {{ "global.edit" | translate }}
+                          </button>
+
+                          <button
+                            *ngIf="selectedHourlyCosts.length === 1"
+                            type="button"
+                            mat-raised-button
+                            (click)="openHourlyCost()"
+                          >
+                            {{ "global.open" | translate }}
+                          </button>
+
+                          <button
+                            *ngIf="!isReadOpenMode && selectedHourlyCosts.length === 0"
+                            type="button"
+                            mat-raised-button
+                            (click)="createHourlyCost()"
+                          >
+                            {{ "global.add" | translate }}
+                          </button>
+                        </div>
+                      </div>
+                    </ng-template>
+
+                    <ng-template pTemplate="colgroup" let-columns>
+                      <colgroup>
+                        <col class="aw-table-checkbox-wrapper" />
+                        <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                      </colgroup>
+                    </ng-template>
+
+                    <ng-template pTemplate="header" let-columns>
+                      <tr>
+                        <th class="aw-table-checkbox-wrapper">
+                          <p-tableHeaderCheckbox class="aw-table-checkbox"></p-tableHeaderCheckbox>
+                        </th>
+
+                        <th pResizableColumn *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                          {{ componentData.componentId + "." + col.field | translate }}
+                        </th>
+                      </tr>
+                    </ng-template>
+
+                    <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                      <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                        <td class="aw-table-checkbox-wrapper">
+                          <p-tableCheckbox class="aw-table-checkbox" [value]="rowData"></p-tableCheckbox>
+                        </td>
+
+                        <td *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                          {{ rowData[col.field] }}
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-row">
+            <div class="grid-cell--6">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ componentData.componentId + ".evaluation" | translate }} ({{
+                        bidtEvaluationDisplayed ? bidtEvaluationDisplayed.length : 0
+                      }})
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <p-table
+                    [resizableColumns]="true"
+                    #ptableEvaluation
+                    class="aw-table2"
+                    [columns]="evaluationsTableCols"
+                    [value]="bidtEvaluationDisplayed"
+                    [(selection)]="selectedEvaluations"
+                    [scrollable]="true"
+                  >
+                    <ng-template pTemplate="emptymessage">
+                      <span *ngIf="!isLoadingEvaluationTable"> &nbsp;</span>
+
+                      <div *ngIf="isLoadingEvaluationTable" class="aw-table-loading-indicator">
+                        <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                        <div class="lds-hourglass"></div>
+                      </div>
+                    </ng-template>
+
+                    <ng-template pTemplate="caption">
+                      <div class="aw-table-header" [ngClass]="{ 'rows-selected': selectedEvaluations.length > 0 }">
+                        <div class="aw-table-global-filter">
+                          <label class="aw-table-global-filter-label">
+                            <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                          </label>
+
+                          <input
+                            #ptableEvaluationGlobalFilter
+                            class="aw-table-global-filter-input"
+                            type="text"
+                            placeholder="{{ 'table.globalFilterText' | translate }}"
+                            (input)="ptableEvaluation.filterGlobal($event.target.value, 'contains')"
+                          />
+                        </div>
+
+                        <div class="aw-table-actions">
+                          <button
+                            *ngIf="!isReadOpenMode && selectedEvaluations.length > 0"
+                            type="button"
+                            mat-raised-button
+                            color="warn"
+                            (click)="deleteEvaluation()"
+                          >
+                            {{ "global.delete" | translate }}
+                          </button>
+
+                          <button
+                            *ngIf="!isReadOpenMode && selectedEvaluations.length === 1"
+                            type="button"
+                            mat-raised-button
+                            (click)="editEvaluation()"
+                          >
+                            {{ "global.edit" | translate }}
+                          </button>
+
+                          <button
+                            *ngIf="selectedEvaluations.length === 1"
+                            type="button"
+                            mat-raised-button
+                            (click)="openEvaluation()"
+                          >
+                            {{ "global.open" | translate }}
+                          </button>
+
+                          <button
+                            *ngIf="!isReadOpenMode && selectedEvaluations.length === 0"
+                            type="button"
+                            mat-raised-button
+                            (click)="createEvaluation()"
+                          >
+                            {{ "global.add" | translate }}
+                          </button>
+                        </div>
+                      </div>
+                    </ng-template>
+
+                    <ng-template pTemplate="colgroup" let-columns>
+                      <colgroup>
+                        <col class="aw-table-checkbox-wrapper" />
+                        <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                      </colgroup>
+                    </ng-template>
+
+                    <ng-template pTemplate="header" let-columns>
+                      <tr>
+                        <th class="aw-table-checkbox-wrapper">
+                          <p-tableHeaderCheckbox class="aw-table-checkbox"></p-tableHeaderCheckbox>
+                        </th>
+
+                        <th pResizableColumn *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                          {{ componentData.componentId + "." + col.field | translate }}
+                        </th>
+                      </tr>
+                    </ng-template>
+
+                    <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                      <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                        <td class="aw-table-checkbox-wrapper">
+                          <p-tableCheckbox class="aw-table-checkbox" [value]="rowData"></p-tableCheckbox>
+                        </td>
+
+                        <td *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                          <span> {{ rowData[col.field] }} </span>
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </div>
+              </div>
+            </div>
+            <div class="grid-cell--6">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ "global.documents" | translate }} ({{
+                        bidtDocumentDisplayed ? bidtDocumentDisplayed.length : 0
+                      }})
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <p-table
+                    [resizableColumns]="true"
+                    #ptableDocuments
+                    class="aw-table2"
+                    [columns]="documentsTableCols"
+                    [value]="bidtDocumentDisplayed"
+                    [(selection)]="selectedDocuments"
+                    [scrollable]="true"
+                  >
+                    <ng-template pTemplate="emptymessage">
+                      <span *ngIf="!isLoadingDocumentTable"> &nbsp;</span>
+
+                      <div *ngIf="isLoadingDocumentTable" class="aw-table-loading-indicator">
+                        <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                        <div class="lds-hourglass"></div>
+                      </div>
+                    </ng-template>
+
+                    <ng-template pTemplate="caption">
+                      <div class="aw-table-header" [ngClass]="{ 'rows-selected': selectedDocuments.length > 0 }">
+                        <div class="aw-table-global-filter">
+                          <label class="aw-table-global-filter-label">
+                            <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                          </label>
+
+                          <input
+                            #ptableDocumentsGlobalFilter
+                            class="aw-table-global-filter-input"
+                            type="text"
+                            placeholder="{{ 'table.globalFilterText' | translate }}"
+                            (input)="ptableDocuments.filterGlobal($event.target.value, 'contains')"
+                          />
+                        </div>
+
+                        <div class="aw-table-actions">
+                          <p-fileUpload
+                            #fileUploader
+                            *ngIf="!isReadOpenMode && selectedDocuments.length === 0"
+                            class="aw-fileupload aw-table-action"
+                            name="document[]"
+                            customUpload="true"
+                            mode="basic"
+                            auto="true"
+                            chooseLabel="{{ 'global.upload' | translate }}"
+                            (uploadHandler)="uploadDocument($event, fileUploader)"
+                          ></p-fileUpload>
+
+                          <button
+                            *ngIf="!isReadOpenMode && selectedDocuments.length === 0"
+                            type="button"
+                            mat-raised-button
+                            (click)="linkUrl()"
+                          >
+                            {{ componentData.componentId + ".linkUrl" | translate }}
+                          </button>
+
+                          <button
+                            *ngIf="showDownloadDocButton()"
+                            type="button"
+                            mat-raised-button
+                            (click)="downloadFiles()"
+                          >
+                            {{ "global.download" | translate }}
+                          </button>
+
+                          <button *ngIf="showGoToDocButton()" type="button" mat-raised-button (click)="goToDoc()">
+                            {{ "global.goTo" | translate }}
+                          </button>
+
+                          <button
+                            *ngIf="!isReadOpenMode && selectedDocuments.length > 0"
+                            type="button"
+                            mat-raised-button
+                            color="warn"
+                            (click)="deleteSelectedDocuments()"
+                          >
+                            {{ "global.delete" | translate }}
+                          </button>
+
+                          <button
+                            *ngIf="!isReadOpenMode && selectedDocuments.length === 1"
+                            type="button"
+                            mat-raised-button
+                            (click)="editDocument()"
+                          >
+                            {{ "global.edit" | translate }}
+                          </button>
+
+                          <button
+                            *ngIf="selectedDocuments.length === 1"
+                            type="button"
+                            mat-raised-button
+                            (click)="openDocument()"
+                          >
+                            {{ "global.open" | translate }}
+                          </button>
+                        </div>
+                      </div>
+                    </ng-template>
+
+                    <ng-template pTemplate="colgroup" let-columns>
+                      <colgroup>
+                        <col class="aw-table-checkbox-wrapper" />
+                        <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                      </colgroup>
+                    </ng-template>
+
+                    <ng-template pTemplate="header" let-columns>
+                      <tr>
+                        <th class="aw-table-checkbox-wrapper">
+                          <p-tableHeaderCheckbox class="aw-table-checkbox"></p-tableHeaderCheckbox>
+                        </th>
+
+                        <th pResizableColumn *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                          {{ componentData.componentId + "." + col.field | translate }}
+                        </th>
+                      </tr>
+                    </ng-template>
+
+                    <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                      <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                        <td class="aw-table-checkbox-wrapper">
+                          <p-tableCheckbox class="aw-table-checkbox" [value]="rowData"></p-tableCheckbox>
+                        </td>
+
+                        <td
+                          *ngFor="let col of columns"
+                          [ngSwitch]="col.field"
+                          [ngStyle]="{ 'text-align': col.alignment }"
+                        >
+                          {{ rowData[col.field] }}
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Display only in edit and read mode -->
+          <div [style.visibility]="!isCreateOpenMode ? 'visible' : 'hidden'">
+            <div class="grid-row" [style.display]="!showWorkTab ? 'none' : ''">
+              <div class="grid-cell--12">
+                <div class="grid-cell grid-cell--container">
+                  <div class="grid-cell-header">
+                    <div class="grid-cell-title-container">
+                      <h3 class="grid-cell-title">
+                        {{ componentData.componentId + ".works" | translate }} ({{
+                          worksDisplayed ? worksDisplayed.length : 0
+                        }})
+                      </h3>
+                    </div>
+                  </div>
+
+                  <div class="grid-cell-content">
+                    <p-table
+                      [resizableColumns]="true"
+                      #ptableWorks
+                      class="aw-table2"
+                      [columns]="worksTableCols"
+                      [value]="worksDisplayed"
+                      [scrollable]="true"
+                      dataKey="rowIndex"
+                    >
+                      <ng-template pTemplate="emptymessage">
+                        <span *ngIf="!isLoadingWorksTable"> &nbsp;</span>
+
+                        <div *ngIf="isLoadingWorksTable" class="aw-table-loading-indicator">
+                          <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                          <div class="lds-hourglass"></div>
+                        </div>
+                      </ng-template>
+
+                      <ng-template pTemplate="caption">
+                        <div class="aw-table-header">
+                          <div class="aw-table-global-filter">
+                            <label class="aw-table-global-filter-label">
+                              <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                            </label>
+
+                            <input
+                              #ptableHolidaysGlobalFilter
+                              class="aw-table-global-filter-input"
+                              type="text"
+                              placeholder="{{ 'table.globalFilterText' | translate }}"
+                              (input)="ptableWorks.filterGlobal($event.target.value, 'contains')"
+                            />
+                          </div>
+
+                          <div class="aw-table-actions">
+                            <button type="button" mat-raised-button (click)="onExportWorks()">
+                              {{ "global.export" | translate }}
+                            </button>
+                            <div class="aw-table-icon-actions" *ngIf="!isLoadingWorksTable">
+                              <i
+                                class="fa fa-fw fa-filter aw-icon aw-icon-with-border aw-icon-with-overlay"
+                                aria-hidden="true"
+                                pTooltip="{{
+                                  'global' + (workFiltersVisible ? '.hideFilters' : '.showFilters') | translate
+                                }}"
+                                tooltipPosition="top"
+                                [ngClass]="{ active: workFiltersVisible }"
+                                (click)="workFilters.toggle($event)"
+                              ></i>
+                            </div>
+                          </div>
+                        </div>
+                      </ng-template>
+
+                      <ng-template pTemplate="colgroup" let-columns>
+                        <colgroup>
+                          <col
+                            *ngFor="let col of columns"
+                            [ngStyle]="{ 'text-align': col.alignment, width: col.width }"
+                          />
+                          <col [ngStyle]="{ width: '3%' }" />
+                        </colgroup>
+                      </ng-template>
+
+                      <ng-template pTemplate="header" let-columns>
+                        <tr>
+                          <th
+                            pResizableColumn
+                            *ngFor="let col of columns"
+                            [ngStyle]="{ 'text-align': col.alignment, width: col.width }"
+                          >
+                            {{ componentData.componentId + "." + col.field | translate }}
+                          </th>
+                          <th [ngStyle]="{ width: '3%' }"></th>
+                        </tr>
+                      </ng-template>
+
+                      <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                        <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                          <td
+                            *ngFor="let col of columns"
+                            [ngStyle]="{ 'text-align': col.alignment, width: col.width }"
+                            [ngSwitch]="col.field"
+                          >
+                            <a *ngSwitchCase="'originText'" (click)="openOrigin(rowData)">{{ rowData[col.field] }}</a>
+
+                            <a *ngSwitchCase="'workOrder'" (click)="openWorkOrder(rowData)">{{ rowData[col.field] }}</a>
+
+                            <span *ngSwitchDefault>
+                              {{ rowData[col.field] }}
+                            </span>
+                          </td>
+                          <td class="row-expand-wrapper" [pRowToggler]="rowData" [ngStyle]="{ width: '3%' }">
+                            <i
+                              class="fa fa-fw aw-icon aw-icon-with-border"
+                              [ngClass]="rowData.expand ? 'fa-minus' : 'fa-plus'"
+                              aria-hidden="true"
+                              pTooltip="{{ 'global.showTableRowDetails' | translate }}"
+                              tooltipPosition="top"
+                              (click)="toggleRowDetailsVisibility(rowData)"
+                            ></i>
+                          </td>
+                        </tr>
+                        <tr *ngIf="rowData.expand" class="row-expanded">
+                          <td [attr.colspan]="columns.length + 1">
+                            <div class="column forced-backgroung">
+                              <div class="row">
+                                <div class="form-group flex--1">
+                                  <label class="form-label">
+                                    {{ getComponentName() + "." + "relatedItem" | translate }}
+                                  </label>
+
+                                  <div class="form-control">
+                                    <a *ngIf="rowData['isRelatedItemEnabled']" (click)="openRelatedItem(rowData)">{{
+                                      rowData["relatedItem"]
+                                    }}</a>
+                                    <span *ngIf="!rowData['isRelatedItemEnabled']" (click)="openRelatedItem(rowData)">{{
+                                      rowData["relatedItem"]
+                                    }}</span>
+                                  </div>
+                                </div>
+
+                                <div class="form-group flex--1">
+                                  <label class="form-label">
+                                    {{ getComponentName() + "." + "totalElapsed" | translate }}
+                                  </label>
+
+                                  <div class="form-control">
+                                    <input
+                                      type="text"
+                                      class="aw-input"
+                                      [(ngModel)]="rowData.totalElapsed"
+                                      [disabled]="true"
+                                    />
+                                  </div>
+                                </div>
+
+                                <div class="form-group flex--1">
+                                  <label class="form-label">
+                                    {{ getComponentName() + "." + "openingDate" | translate }}
+                                  </label>
+
+                                  <div class="form-control">
+                                    <input
+                                      type="text"
+                                      class="aw-input"
+                                      [(ngModel)]="rowData.openingDate"
+                                      [disabled]="true"
+                                    />
+                                  </div>
+                                </div>
+
+                                <div class="form-group flex--1">
+                                  <label class="form-label">
+                                    {{ getComponentName() + "." + "closingDate" | translate }}
+                                  </label>
+
+                                  <div class="form-control">
+                                    <input
+                                      type="text"
+                                      class="aw-input"
+                                      [(ngModel)]="rowData.closingDate"
+                                      [disabled]="true"
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      </ng-template>
+                    </p-table>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid-row" [style.display]="!showAcrsEventTab ? 'none' : ''">
+              <div class="grid-cell--12">
+                <div class="grid-cell grid-cell--container">
+                  <div class="grid-cell-header">
+                    <div class="grid-cell-title-container">
+                      <h3 class="grid-cell-title">
+                        {{ getComponentName() + "." + "acrs" | translate }} ({{
+                          acrsEventTable.list ? acrsEventTable.list.length : 0
+                        }})
+                      </h3>
+                    </div>
+                  </div>
+
+                  <div class="grid-cell-content">
+                    <p-table
+                      [resizableColumns]="true"
+                      #ptableAcrsEvent
+                      class="aw-table2"
+                      [columns]="acrsEventTableColList"
+                      [value]="acrsEventTable.list"
+                      [(selection)]="acrsEventTableSelectionList"
+                      [scrollable]="true"
+                    >
+                      <ng-template pTemplate="emptymessage">
+                        <span *ngIf="!isLoadingAcrsEventTable"> &nbsp;</span>
+
+                        <div *ngIf="isLoadingAcrsEventTable" class="aw-table-loading-indicator">
+                          <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                          <div class="lds-hourglass"></div>
+                        </div>
+                      </ng-template>
+
+                      <ng-template pTemplate="caption">
+                        <div
+                          class="aw-table-header"
+                          [ngClass]="{ 'rows-selected': acrsEventTableSelectionList.length > 0 }"
+                        >
+                          <div class="aw-table-global-filter">
+                            <label class="aw-table-global-filter-label">
+                              <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                            </label>
+
+                            <input
+                              class="aw-table-global-filter-input"
+                              type="text"
+                              placeholder="{{ 'table.globalFilterText' | translate }}"
+                              (input)="ptableAcrsEvent.filterGlobal($event.target.value, 'contains')"
+                            />
+                          </div>
+                        </div>
+                      </ng-template>
+
+                      <ng-template pTemplate="colgroup" let-columns>
+                        <colgroup>
+                          <col class="aw-table-checkbox-wrapper" />
+                          <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                        </colgroup>
+                      </ng-template>
+
+                      <ng-template pTemplate="header" let-columns>
+                        <tr>
+                          <th class="aw-table-checkbox-wrapper">
+                            <p-tableHeaderCheckbox class="aw-table-checkbox"></p-tableHeaderCheckbox>
+                          </th>
+
+                          <th pResizableColumn *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                            {{ componentData.componentId + "." + col.field | translate }}
+                          </th>
+                        </tr>
+                      </ng-template>
+
+                      <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                        <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                          <td class="aw-table-checkbox-wrapper">
+                            <p-tableCheckbox class="aw-table-checkbox" [value]="rowData"></p-tableCheckbox>
+                          </td>
+
+                          <td
+                            *ngFor="let col of columns"
+                            [ngSwitch]="col.field"
+                            [ngStyle]="{ 'text-align': col.alignment }"
+                          >
+                            <span *ngSwitchCase="'eventCode'">
+                              <a (click)="openEvent(rowData)">{{ rowData[col.field] }}</a>
+                            </span>
+
+                            <span *ngSwitchCase="'asset'">
+                              <a (click)="openEquipment(rowData)">{{ rowData[col.field] }}</a>
+                            </span>
+
+                            <span *ngSwitchDefault> {{ rowData[col.field] }} </span>
+                          </td>
+                        </tr>
+                      </ng-template>
+                    </p-table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+        <mat-tab id="homeTab">
+          <ng-template mat-tab-label>
+            {{ componentData.componentId + ".hrManagement" | translate }}
+          </ng-template>
+          <div class="grid-row">
+            <div class="grid-cell--6">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ componentData.componentId + ".expense" | translate }} ({{
+                        bidtExpenseDisplayed ? bidtExpenseDisplayed.length : 0
+                      }})
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <p-table
+                    [resizableColumns]="true"
+                    #ptableExpenses
+                    class="aw-table2"
+                    [columns]="expensesTableCols"
+                    [value]="bidtExpenseDisplayed"
+                    [(selection)]="selectedExpenses"
+                    [scrollable]="true"
+                  >
+                    <ng-template pTemplate="emptymessage">
+                      <span *ngIf="!isLoadingExpenseTable"> &nbsp;</span>
+
+                      <div *ngIf="isLoadingExpenseTable" class="aw-table-loading-indicator">
+                        <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                        <div class="lds-hourglass"></div>
+                      </div>
+                    </ng-template>
+
+                    <ng-template pTemplate="caption">
+                      <div class="aw-table-header" [ngClass]="{ 'rows-selected': selectedExpenses.length > 0 }">
+                        <div class="aw-table-global-filter">
+                          <label class="aw-table-global-filter-label">
+                            <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                          </label>
+
+                          <input
+                            #ptableExpensesGlobalFilter
+                            class="aw-table-global-filter-input"
+                            type="text"
+                            placeholder="{{ 'table.globalFilterText' | translate }}"
+                            (input)="ptableExpenses.filterGlobal($event.target.value, 'contains')"
+                          />
+                        </div>
+
+                        <div class="aw-table-actions">
+                          <button
+                            *ngIf="!isReadOpenMode && selectedExpenses.length > 0"
+                            type="button"
+                            mat-raised-button
+                            color="warn"
+                            (click)="deleteExpense()"
+                          >
+                            {{ "global.delete" | translate }}
+                          </button>
+
+                          <button
+                            *ngIf="!isReadOpenMode && selectedExpenses.length === 1"
+                            type="button"
+                            mat-raised-button
+                            (click)="editExpense()"
+                          >
+                            {{ "global.edit" | translate }}
+                          </button>
+
+                          <button
+                            *ngIf="selectedExpenses.length === 1"
+                            type="button"
+                            mat-raised-button
+                            (click)="openExpense()"
+                          >
+                            {{ "global.open" | translate }}
+                          </button>
+
+                          <button
+                            *ngIf="!isReadOpenMode && selectedExpenses.length === 0"
+                            type="button"
+                            mat-raised-button
+                            (click)="createExpense()"
+                          >
+                            {{ "global.add" | translate }}
+                          </button>
+                        </div>
+                      </div>
+                    </ng-template>
+
+                    <ng-template pTemplate="colgroup" let-columns>
+                      <colgroup>
+                        <col class="aw-table-checkbox-wrapper" />
+                        <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                      </colgroup>
+                    </ng-template>
+
+                    <ng-template pTemplate="header" let-columns>
+                      <tr>
+                        <th class="aw-table-checkbox-wrapper">
+                          <p-tableHeaderCheckbox class="aw-table-checkbox"></p-tableHeaderCheckbox>
+                        </th>
+
+                        <th pResizableColumn *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                          {{ componentData.componentId + "." + col.field | translate }}
+                        </th>
+                      </tr>
+                    </ng-template>
+
+                    <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                      <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                        <td class="aw-table-checkbox-wrapper">
+                          <p-tableCheckbox class="aw-table-checkbox" [value]="rowData"></p-tableCheckbox>
+                        </td>
+
+                        <td *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                          {{ rowData[col.field] }}
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </div>
+              </div>
+            </div>
+            <div class="grid-cell--6">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ componentData.componentId + ".holidays" | translate }} ({{
+                        bidtHolidayDisplayed ? bidtHolidayDisplayed.length : 0
+                      }})
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <p-table
+                    [resizableColumns]="true"
+                    #ptableHolidays
+                    class="aw-table2"
+                    [columns]="holidaysTableCols"
+                    [value]="bidtHolidayDisplayed"
+                    [(selection)]="selectedHolidays"
+                    [scrollable]="true"
+                  >
+                    <ng-template pTemplate="emptymessage">
+                      <span *ngIf="!isLoadingHolidaysTable"> &nbsp;</span>
+
+                      <div *ngIf="isLoadingHolidaysTable" class="aw-table-loading-indicator">
+                        <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                        <div class="lds-hourglass"></div>
+                      </div>
+                    </ng-template>
+
+                    <ng-template pTemplate="caption">
+                      <div class="aw-table-header" [ngClass]="{ 'rows-selected': selectedHolidays.length > 0 }">
+                        <div class="aw-table-global-filter">
+                          <label class="aw-table-global-filter-label">
+                            <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                          </label>
+
+                          <input
+                            #ptableHolidaysGlobalFilter
+                            class="aw-table-global-filter-input"
+                            type="text"
+                            placeholder="{{ 'table.globalFilterText' | translate }}"
+                            (input)="ptableHolidays.filterGlobal($event.target.value, 'contains')"
+                          />
+                        </div>
+
+                        <div class="aw-table-actions">
+                          <button
+                            *ngIf="!isReadOpenMode && selectedHolidays.length > 0"
+                            type="button"
+                            mat-raised-button
+                            color="warn"
+                            (click)="deleteHoliday()"
+                          >
+                            {{ "global.delete" | translate }}
+                          </button>
+
+                          <button
+                            *ngIf="!isReadOpenMode && selectedHolidays.length === 1"
+                            type="button"
+                            mat-raised-button
+                            (click)="editHoliday()"
+                          >
+                            {{ "global.edit" | translate }}
+                          </button>
+
+                          <button
+                            *ngIf="selectedHolidays.length === 1"
+                            type="button"
+                            mat-raised-button
+                            (click)="openHoliday()"
+                          >
+                            {{ "global.open" | translate }}
+                          </button>
+
+                          <button
+                            *ngIf="!isReadOpenMode && selectedHolidays.length === 0"
+                            type="button"
+                            mat-raised-button
+                            (click)="createHoliday()"
+                          >
+                            {{ "global.add" | translate }}
+                          </button>
+                        </div>
+                      </div>
+                    </ng-template>
+
+                    <ng-template pTemplate="colgroup" let-columns>
+                      <colgroup>
+                        <col class="aw-table-checkbox-wrapper" />
+                        <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                      </colgroup>
+                    </ng-template>
+
+                    <ng-template pTemplate="header" let-columns>
+                      <tr>
+                        <th class="aw-table-checkbox-wrapper">
+                          <p-tableHeaderCheckbox class="aw-table-checkbox"></p-tableHeaderCheckbox>
+                        </th>
+
+                        <th pResizableColumn *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                          {{ componentData.componentId + "." + col.field | translate }}
+                        </th>
+                      </tr>
+                    </ng-template>
+
+                    <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                      <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                        <td class="aw-table-checkbox-wrapper">
+                          <p-tableCheckbox class="aw-table-checkbox" [value]="rowData"></p-tableCheckbox>
+                        </td>
+
+                        <td *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                          {{ rowData[col.field] }}
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-row">
+            <div class="grid-cell--6">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ componentData.componentId + ".absence" | translate }} ({{
+                        bidtAbsenceDisplayed ? bidtAbsenceDisplayed.length : 0
+                      }})
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <p-table
+                    [resizableColumns]="true"
+                    #ptableAbsence
+                    class="aw-table2"
+                    [columns]="absencesTableCols"
+                    [value]="bidtAbsenceDisplayed"
+                    [(selection)]="selectedAbsences"
+                    [scrollable]="true"
+                  >
+                    <ng-template pTemplate="emptymessage">
+                      <span *ngIf="!isLoadingAbsenceTable"> &nbsp;</span>
+
+                      <div *ngIf="isLoadingAbsenceTable" class="aw-table-loading-indicator">
+                        <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                        <div class="lds-hourglass"></div>
+                      </div>
+                    </ng-template>
+
+                    <ng-template pTemplate="caption">
+                      <div class="aw-table-header" [ngClass]="{ 'rows-selected': selectedAbsences.length > 0 }">
+                        <div class="aw-table-global-filter">
+                          <label class="aw-table-global-filter-label">
+                            <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                          </label>
+
+                          <input
+                            #ptableAbsenceGlobalFilter
+                            class="aw-table-global-filter-input"
+                            type="text"
+                            placeholder="{{ 'table.globalFilterText' | translate }}"
+                            (input)="ptableAbsence.filterGlobal($event.target.value, 'contains')"
+                          />
+                        </div>
+
+                        <div class="aw-table-actions">
+                          <button
+                            *ngIf="!isReadOpenMode && selectedAbsences.length > 0"
+                            type="button"
+                            mat-raised-button
+                            color="warn"
+                            (click)="deleteAbsence()"
+                          >
+                            {{ "global.delete" | translate }}
+                          </button>
+
+                          <button
+                            *ngIf="!isReadOpenMode && selectedAbsences.length === 1"
+                            type="button"
+                            mat-raised-button
+                            (click)="editAbsence()"
+                          >
+                            {{ "global.edit" | translate }}
+                          </button>
+
+                          <button
+                            *ngIf="selectedAbsences.length === 1"
+                            type="button"
+                            mat-raised-button
+                            (click)="openAbsence()"
+                          >
+                            {{ "global.open" | translate }}
+                          </button>
+
+                          <button
+                            *ngIf="!isReadOpenMode && selectedAbsences.length === 0"
+                            type="button"
+                            mat-raised-button
+                            (click)="createAbsence()"
+                          >
+                            {{ "global.add" | translate }}
+                          </button>
+                        </div>
+                      </div>
+                    </ng-template>
+
+                    <ng-template pTemplate="colgroup" let-columns>
+                      <colgroup>
+                        <col class="aw-table-checkbox-wrapper" />
+                        <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                      </colgroup>
+                    </ng-template>
+
+                    <ng-template pTemplate="header" let-columns>
+                      <tr>
+                        <th class="aw-table-checkbox-wrapper">
+                          <p-tableHeaderCheckbox class="aw-table-checkbox"></p-tableHeaderCheckbox>
+                        </th>
+
+                        <th pResizableColumn *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                          {{ componentData.componentId + "." + col.field | translate }}
+                        </th>
+                      </tr>
+                    </ng-template>
+
+                    <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                      <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                        <td class="aw-table-checkbox-wrapper">
+                          <p-tableCheckbox class="aw-table-checkbox" [value]="rowData"></p-tableCheckbox>
+                        </td>
+
+                        <td *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                          {{ rowData[col.field] }}
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid-cell--6">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ componentData.componentId + ".medicalExamination" | translate }} ({{
+                        bidtMedicalExaminationDisplayed ? bidtMedicalExaminationDisplayed.length : 0
+                      }})
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <p-table
+                    [resizableColumns]="true"
+                    #ptableMedicalExaminations
+                    class="aw-table2"
+                    [columns]="medicalExaminationsTableCols"
+                    [value]="bidtMedicalExaminationDisplayed"
+                    [(selection)]="selectedMedicalExaminations"
+                    [scrollable]="true"
+                  >
+                    <ng-template pTemplate="emptymessage">
+                      <span *ngIf="!isLoadingMedicalExaminationTable"> &nbsp;</span>
+
+                      <div *ngIf="isLoadingMedicalExaminationTable" class="aw-table-loading-indicator">
+                        <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                        <div class="lds-hourglass"></div>
+                      </div>
+                    </ng-template>
+
+                    <ng-template pTemplate="caption">
+                      <div
+                        class="aw-table-header"
+                        [ngClass]="{ 'rows-selected': selectedMedicalExaminations.length > 0 }"
+                      >
+                        <div class="aw-table-global-filter">
+                          <label class="aw-table-global-filter-label">
+                            <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                          </label>
+
+                          <input
+                            #ptableMedicalExaminationsGlobalFilter
+                            class="aw-table-global-filter-input"
+                            type="text"
+                            placeholder="{{ 'table.globalFilterText' | translate }}"
+                            (input)="ptableMedicalExaminations.filterGlobal($event.target.value, 'contains')"
+                          />
+                        </div>
+
+                        <div class="aw-table-actions">
+                          <button
+                            *ngIf="!isReadOpenMode && selectedMedicalExaminations.length > 0"
+                            type="button"
+                            mat-raised-button
+                            color="warn"
+                            (click)="deleteMedicalExamination()"
+                          >
+                            {{ "global.delete" | translate }}
+                          </button>
+
+                          <button
+                            *ngIf="!isReadOpenMode && selectedMedicalExaminations.length === 1"
+                            type="button"
+                            mat-raised-button
+                            (click)="editMedicalExamination()"
+                          >
+                            {{ "global.edit" | translate }}
+                          </button>
+
+                          <button
+                            *ngIf="selectedMedicalExaminations.length === 1"
+                            type="button"
+                            mat-raised-button
+                            (click)="openMedicalExamination()"
+                          >
+                            {{ "global.open" | translate }}
+                          </button>
+
+                          <button
+                            *ngIf="!isReadOpenMode && selectedMedicalExaminations.length === 0"
+                            type="button"
+                            mat-raised-button
+                            (click)="createMedicalExamination()"
+                          >
+                            {{ "global.add" | translate }}
+                          </button>
+                        </div>
+                      </div>
+                    </ng-template>
+
+                    <ng-template pTemplate="colgroup" let-columns>
+                      <colgroup>
+                        <col class="aw-table-checkbox-wrapper" />
+                        <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                      </colgroup>
+                    </ng-template>
+
+                    <ng-template pTemplate="header" let-columns>
+                      <tr>
+                        <th class="aw-table-checkbox-wrapper">
+                          <p-tableHeaderCheckbox class="aw-table-checkbox"></p-tableHeaderCheckbox>
+                        </th>
+
+                        <th pResizableColumn *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                          {{ componentData.componentId + "." + col.field | translate }}
+                        </th>
+                      </tr>
+                    </ng-template>
+
+                    <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                      <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                        <td class="aw-table-checkbox-wrapper">
+                          <p-tableCheckbox class="aw-table-checkbox" [value]="rowData"></p-tableCheckbox>
+                        </td>
+
+                        <td *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                          {{ rowData[col.field] }}
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+  </div>
+
+  <aw-dialog-search-employee
+    *ngIf="showSuperiorPopup"
+    [(display)]="!!showSuperiorPopup"
+    [employee-name]="superiorFormData.employeeLastName"
+    (onSelected)="setSelectedSuperior($event)"
+  ></aw-dialog-search-employee>
+
+  <aw-absence-popup-form
+    [isReadOnlyForm]="isReadOnlyAbsenceDialog"
+    *ngIf="showAbsencePopup"
+    [(display)]="showAbsencePopup"
+    [component-data]="dataAbsence"
+    (onValidated)="saveAbsence($event)"
+  ></aw-absence-popup-form>
+
+  <aw-evaluation-popup-form
+    [isReadOnlyForm]="isReadOnlyEvaluationDialog"
+    *ngIf="showEvaluationPopup"
+    [(display)]="showEvaluationPopup"
+    [component-data]="dataEvaluation"
+    (onValidated)="saveEvaluation($event)"
+  ></aw-evaluation-popup-form>
+
+  <aw-expense-popup-form
+    [isReadOnlyForm]="isReadOnlyExpenseDialog"
+    *ngIf="showExpensePopup"
+    [(display)]="showExpensePopup"
+    [component-data]="dataExpense"
+    (onValidated)="saveExpense($event)"
+  ></aw-expense-popup-form>
+
+  <aw-holidays-popup-form
+    [isReadOnlyForm]="isReadOnlyHolidayDialog"
+    *ngIf="showHolidayPopup"
+    [(display)]="showHolidayPopup"
+    [component-data]="dataHoliday"
+    (onValidated)="saveHoliday($event)"
+  ></aw-holidays-popup-form>
+
+  <aw-hourly-costs-popup-form
+    [isReadOnlyForm]="isReadOnlyHourlyCostDialog"
+    *ngIf="showHourlyCostPopup"
+    [(display)]="showHourlyCostPopup"
+    [component-data]="dataHourlyCost"
+    (onValidated)="saveHourlyCost($event)"
+  ></aw-hourly-costs-popup-form>
+
+  <aw-medical-examination-popup-form
+    [isReadOnlyForm]="isReadOnlyMedicalExaminationDialog"
+    *ngIf="showMedicalExaminationPopup"
+    [(display)]="showMedicalExaminationPopup"
+    [component-data]="dataMedicalExamination"
+    (onValidated)="saveMedicalExamination($event)"
+  ></aw-medical-examination-popup-form>
+
+  <aw-qualification-popup-form
+    [isReadOnlyForm]="isReadOnlyQualificationDialog"
+    *ngIf="showQualificationPopup"
+    [(display)]="showQualificationPopup"
+    [component-data]="dataQualification"
+    (onValidated)="saveQualification($event)"
+  ></aw-qualification-popup-form>
+
+  <aw-training-popup-form
+    [isReadOnlyForm]="isReadOnlyTrainingDialog"
+    *ngIf="showTrainingPopup"
+    [(display)]="showTrainingPopup"
+    [component-data]="dataTraining"
+    (onValidated)="saveTraining($event)"
+  ></aw-training-popup-form>
+
+  <aw-document-popup-form
+    *ngIf="showDocumentDialog"
+    [document]="currentDocument"
+    [(display)]="showDocumentDialog"
+    [isReadOnlyForm]="isReadOnlyDocumentDialog"
+    (onValidated)="updateDocument($event)"
+  ></aw-document-popup-form>
+
+  <aw-document-url-popup-form
+    *ngIf="showDocumentUrlDialog"
+    [document]="currentDocument"
+    [(display)]="showDocumentUrlDialog"
+    [isReadOnlyForm]="isReadOnlyDocumentDialog"
+    (onValidated)="updateDocumentUrl($event)"
+  ></aw-document-url-popup-form>
+
+  <p-overlayPanel
+    #workFilters
+    class="aw-overlay"
+    (onShow)="workFiltersVisible = true"
+    (onHide)="workFiltersVisible = false"
+    [dismissable]="false"
+  >
+    <aw-work-flight-table-filters
+      [searchCriteria]="searchCriteriaWork"
+      (onFilter)="workFilters.hide(); workFiltersVisible = false; filterWorkWithCriteria()"
+      (onReset)="resetWorkTableFilters()"
+    >
+    </aw-work-flight-table-filters>
+  </p-overlayPanel>
+
+  <p-overlayPanel
+    #flightFilters
+    class="aw-overlay"
+    (onShow)="flightFiltersVisible = true"
+    (onHide)="flightFiltersVisible = false"
+    [dismissable]="false"
+  >
+    <aw-work-flight-table-filters
+      [searchCriteria]="searchCriteriaFlight"
+      (onFilter)="flightFilters.hide(); flightFiltersVisible = false; filterFlightWithCriteria()"
+      (onReset)="resetFlightTableFilters()"
+    >
+    </aw-work-flight-table-filters>
+  </p-overlayPanel>
+</div>

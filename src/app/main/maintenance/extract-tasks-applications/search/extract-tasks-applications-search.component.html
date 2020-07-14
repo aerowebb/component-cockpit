@@ -1,0 +1,715 @@
+<div class="page-header">
+  <div class="page-info">
+    <div>
+      <div class="page-title">
+        {{ "transaction." + componentData.componentId | translate }}
+      </div>
+
+      <div class="page-subtitle">
+        <div class="page-subtitle">- {{ "page.searchPage" | translate }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-actions">
+    <button
+      mat-icon-button
+      class="mat-elevation-z1"
+      matTooltip="{{ 'global.showAllActionTooltip' | translate }}"
+      matTooltipPosition="above"
+      aria-label="Show all actions"
+      [matMenuTriggerFor]="actions"
+    >
+      <mat-icon>more_horiz</mat-icon>
+    </button>
+    <mat-menu #actions="matMenu">
+      <button mat-menu-item (click)="refresh()">{{ "global.refresh" | translate }}</button>
+      <button mat-menu-item (click)="updateFavoriteState()">
+        {{ (isFavoriteEntry ? "page.removeFromFavorites" : "page.addToFavorites") | translate }}
+      </button>
+    </mat-menu>
+  </div>
+</div>
+<div class="page-wrapper">
+  <div class="page-container search-page-container">
+    <div class="page-content">
+      <!-- ASSET SELECTION -->
+      <div class="grid-row">
+        <div class="grid-cell--12">
+          <div class="grid-cell grid-cell--container">
+            <div class="grid-cell-content grid-cell-content-with-section">
+              <div class="section">
+                <h4 class="section-title">
+                  {{ componentData.componentId + ".assetsSelection" | translate }}
+                  ({{ assetsList ? assetsList.length : 0 }})
+                </h4>
+                <div class="section-content">
+                  <div style="width: 100%">
+                    <p-table
+                      [resizableColumns]="true"
+                      #assetsTable
+                      class="aw-table2"
+                      [columns]="assetsCols"
+                      [value]="assetsList"
+                      [(selection)]="selectedAssets"
+                      [scrollable]="true"
+                    >
+                      <ng-template pTemplate="emptymessage">
+                        <span *ngIf="!isLoadingData"> &nbsp;</span>
+
+                        <div *ngIf="isLoadingData" class="aw-table-loading-indicator">
+                          <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                          <div class="lds-hourglass"></div>
+                        </div>
+                      </ng-template>
+
+                      <ng-template pTemplate="caption">
+                        <div class="aw-table-header">
+                          <div class="aw-table-global-filter">
+                            <label class="aw-table-global-filter-label">
+                              <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                            </label>
+
+                            <input
+                              #ptableCusCustomerGlobalFilter
+                              class="aw-table-global-filter-input"
+                              type="text"
+                              placeholder="{{ 'table.globalFilterText' | translate }}"
+                              (input)="assetsTable.filterGlobal($event.target.value, 'contains')"
+                            />
+                          </div>
+
+                          <div class="aw-table-actions">
+                            <button
+                              *ngIf="hasManageAccessRight && selectedAssets.length > 0"
+                              type="button"
+                              mat-raised-button
+                              color="warn"
+                              (click)="deleteSelectedAsset()"
+                            >
+                              {{ "global.delete" | translate }}
+                            </button>
+
+                            <button
+                              *ngIf="selectedAssets.length === 0"
+                              type="button"
+                              mat-raised-button
+                              (click)="showAssetDialog()"
+                            >
+                              {{ "global.add" | translate }}
+                            </button>
+                          </div>
+                        </div>
+                      </ng-template>
+
+                      <ng-template pTemplate="colgroup" let-columns>
+                        <colgroup>
+                          <col class="aw-table-checkbox-wrapper" />
+                          <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                          <col class="row-expand-wrapper" />
+                        </colgroup>
+                      </ng-template>
+
+                      <ng-template pTemplate="header" let-columns>
+                        <tr>
+                          <th class="aw-table-checkbox-wrapper">
+                            <p-tableHeaderCheckbox class="aw-table-checkbox"></p-tableHeaderCheckbox>
+                          </th>
+                          <th pResizableColumn *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                            <span>{{ componentData.componentId + "." + col.field | translate }}</span>
+                          </th>
+                          <th class="row-expand-wrapper"></th>
+                        </tr>
+                      </ng-template>
+
+                      <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                        <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                          <td class="aw-table-checkbox-wrapper">
+                            <p-tableCheckbox class="aw-table-checkbox" [value]="rowData"></p-tableCheckbox>
+                          </td>
+                          <td
+                            *ngFor="let col of columns"
+                            [ngSwitch]="col.field"
+                            [ngStyle]="{ 'text-align': col.alignment }"
+                          >
+                            <div *ngSwitchCase="'asset'" title="{{ rowData[col.field] }}">
+                              <span>
+                                {{ rowData[col.field] }}
+                              </span>
+                            </div>
+                            <div *ngSwitchCase="'equipmentDesignation'" title="{{ rowData[col.field] }}">
+                              <span>
+                                {{ rowData[col.field] }}
+                              </span>
+                            </div>
+                            <span *ngSwitchDefault>
+                              {{ rowData[col.field] }}
+                            </span>
+                          </td>
+                          <td class="row-expand-wrapper" [pRowToggler]="rowData">
+                            <i
+                              class="fa fa-fw aw-icon aw-icon-with-border"
+                              [ngClass]="{
+                                'fa-minus': rowData._expand,
+                                'fa-plus': !rowData._expand
+                              }"
+                              aria-hidden="true"
+                              pTooltip="{{ 'global.showTableRowDetails' | translate }}"
+                              tooltipPosition="left"
+                              (click)="toggleResultTableRowDetailsVisibility(rowData)"
+                            ></i>
+                          </td>
+                        </tr>
+
+                        <tr *ngIf="rowData._expand" class="row-expanded">
+                          <td [attr.colspan]="columns.length + 1">
+                            <div class="row">
+                              <div class="form-group">
+                                <label class="form-label">
+                                  {{ getComponentName() + ".registration" | translate }}
+                                </label>
+
+                                <div class="form-control">
+                                  <span>{{ rowData.registration }}</span>
+                                </div>
+                              </div>
+
+                              <div class="form-group">
+                                <label class="form-label">
+                                  {{ getComponentName() + ".ownerCustomerCode" | translate }}
+                                </label>
+
+                                <div class="form-control">
+                                  <span>{{ rowData.ownerCustomerCode }}</span>
+                                </div>
+                              </div>
+
+                              <div class="form-group">
+                                <label class="form-label">
+                                  {{ getComponentName() + ".operatorCustomerCode" | translate }}
+                                </label>
+
+                                <div class="form-control">
+                                  <span>{{ rowData.operatorCustomerCode }}</span>
+                                </div>
+                              </div>
+
+                              <div class="form-group">
+                                <label class="form-label">
+                                  {{ getComponentName() + ".location" | translate }}
+                                </label>
+
+                                <div class="form-control">
+                                  <span>{{ rowData.location }}</span>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="row">
+                              <div class="form-group">
+                                <label class="form-label">
+                                  {{ getComponentName() + ".equipmentCode" | translate }}
+                                </label>
+
+                                <div class="form-control">
+                                  <span>{{ rowData.equipmentCode }}</span>
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      </ng-template>
+                    </p-table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TASK SELECTION -->
+      <div class="grid-row">
+        <div class="grid-cell--12">
+          <div class="grid-cell grid-cell--container">
+            <div class="grid-cell-content grid-cell-content-with-section">
+              <div class="section">
+                <h4 class="section-title">
+                  {{ componentData.componentId + ".tasksSelection" | translate }}
+                  ({{ tasksList ? tasksList.length : 0 }})
+                </h4>
+                <div class="section-content">
+                  <div style="width: 100%">
+                    <p-table
+                      [resizableColumns]="true"
+                      #tasksTable
+                      class="aw-table2"
+                      [columns]="tasksCols"
+                      [value]="tasksList"
+                      [(selection)]="selectedTasks"
+                      [scrollable]="true"
+                    >
+                      <ng-template pTemplate="emptymessage">
+                        <span *ngIf="!isLoadingData"> &nbsp;</span>
+
+                        <div *ngIf="isLoadingData" class="aw-table-loading-indicator">
+                          <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                          <div class="lds-hourglass"></div>
+                        </div>
+                      </ng-template>
+
+                      <ng-template pTemplate="caption">
+                        <div class="aw-table-header">
+                          <div class="aw-table-global-filter">
+                            <label class="aw-table-global-filter-label">
+                              <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                            </label>
+
+                            <input
+                              #ptableCusCustomerGlobalFilter
+                              class="aw-table-global-filter-input"
+                              type="text"
+                              placeholder="{{ 'table.globalFilterText' | translate }}"
+                              (input)="tasksTable.filterGlobal($event.target.value, 'contains')"
+                            />
+                          </div>
+
+                          <div class="aw-table-actions">
+                            <button
+                              *ngIf="hasManageAccessRight && selectedTasks.length > 0"
+                              type="button"
+                              mat-raised-button
+                              color="warn"
+                              (click)="deleteSelectedTasks()"
+                            >
+                              {{ "global.delete" | translate }}
+                            </button>
+
+                            <button
+                              *ngIf="selectedTasks.length === 0"
+                              type="button"
+                              mat-raised-button
+                              (click)="openTaskDialog()"
+                            >
+                              {{ "global.add" | translate }}
+                            </button>
+                          </div>
+                        </div>
+                      </ng-template>
+
+                      <ng-template pTemplate="colgroup" let-columns>
+                        <colgroup>
+                          <col class="aw-table-checkbox-wrapper" />
+                          <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                          <col class="row-expand-wrapper" />
+                        </colgroup>
+                      </ng-template>
+
+                      <ng-template pTemplate="header" let-columns>
+                        <tr>
+                          <th class="aw-table-checkbox-wrapper">
+                            <p-tableHeaderCheckbox class="aw-table-checkbox"></p-tableHeaderCheckbox>
+                          </th>
+                          <th pResizableColumn *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                            <span>{{ componentData.componentId + "." + col.field | translate }}</span>
+                          </th>
+                          <th class="row-expand-wrapper"></th>
+                        </tr>
+                      </ng-template>
+
+                      <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                        <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                          <td class="aw-table-checkbox-wrapper">
+                            <p-tableCheckbox class="aw-table-checkbox" [value]="rowData"></p-tableCheckbox>
+                          </td>
+                          <td
+                            *ngFor="let col of columns"
+                            [ngSwitch]="col.field"
+                            [ngStyle]="{ 'text-align': col.alignment }"
+                          >
+                            <div *ngSwitchCase="'taskDesignation'" title="{{ rowData[col.field] }}">
+                              <span>
+                                {{ rowData[col.field] }}
+                              </span>
+                            </div>
+                            <span *ngSwitchDefault tooltipPosition="bottom">
+                              {{ rowData[col.field] }}
+                            </span>
+                          </td>
+                          <td class="row-expand-wrapper" [pRowToggler]="rowData">
+                            <i
+                              class="fa fa-fw aw-icon aw-icon-with-border"
+                              [ngClass]="{
+                                'fa-minus': rowData._expand,
+                                'fa-plus': !rowData._expand
+                              }"
+                              aria-hidden="true"
+                              pTooltip="{{ 'global.showTableRowDetails' | translate }}"
+                              tooltipPosition="left"
+                              (click)="toggleTaskTableRowDetailsVisibility(rowData)"
+                            ></i>
+                          </td>
+                        </tr>
+
+                        <tr *ngIf="rowData._expand" class="row-expanded">
+                          <td [attr.colspan]="columns.length + 1">
+                            <div class="row">
+                              <div class="form-group">
+                                <label class="form-label">
+                                  {{ getComponentName() + ".taskChapter" | translate }}
+                                </label>
+
+                                <div class="form-control">
+                                  <span>{{ rowData.taskChapter }}</span>
+                                </div>
+                              </div>
+
+                              <div class="form-group">
+                                <label class="form-label">
+                                  {{ getComponentName() + ".taskSection" | translate }}
+                                </label>
+
+                                <div class="form-control">
+                                  <span>{{ rowData.taskSection }}</span>
+                                </div>
+                              </div>
+
+                              <div class="form-group">
+                                <label class="form-label">
+                                  {{ getComponentName() + ".taskSubject" | translate }}
+                                </label>
+
+                                <div class="form-control">
+                                  <span>{{ rowData.taskSubject }}</span>
+                                </div>
+                              </div>
+
+                              <div class="form-group">
+                                <label class="form-label">
+                                  {{ getComponentName() + ".overhaul" | translate }}
+                                </label>
+
+                                <div class="form-control">
+                                  <span>
+                                    <i *ngIf="rowData['overhaul']" class="fa fa-fw fa-check" aria-hidden="true"></i>
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="row">
+                              <div class="form-group">
+                                <label class="form-label">
+                                  {{ getComponentName() + ".repairCenterCode" | translate }}
+                                </label>
+
+                                <div class="form-control">
+                                  <span>{{ rowData.repairCenterCode }}</span>
+                                </div>
+                              </div>
+                              <div class="form-group">
+                                <label class="form-label">
+                                  {{ getComponentName() + ".groupCode" | translate }}
+                                </label>
+
+                                <div class="form-control">
+                                  <span>{{ rowData.groupCode }}</span>
+                                </div>
+                              </div>
+                              <div class="form-group"></div>
+                              <div class="form-group"></div>
+                            </div>
+                          </td>
+                        </tr>
+                      </ng-template>
+                    </p-table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SEARCH CRITERIA -->
+      <div class="grid-row">
+        <div class="grid-cell--12">
+          <div class="grid-cell grid-cell--container">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">{{ "global.search" | translate }}</h3>
+              </div>
+            </div>
+
+            <div class="grid-cell-content">
+              <div class="column">
+                <div class="row">
+                  <div class="form-group">
+                    <label class="form-label">
+                      {{ componentData.componentId + ".taskToApplyBefore" | translate }}
+                    </label>
+
+                    <div class="form-control">
+                      <p-calendar
+                        showButtonBar="true"
+                        [monthNavigator]="true"
+                        [yearNavigator]="true"
+                        [yearRange]="sessionService.calendarYearRange"
+                        class="aw-calendar"
+                        [dateFormat]="sessionService.dateFormatPrimeNG"
+                        [locale]="sessionService.calendarFormat"
+                        appendTo="body"
+                        [(ngModel)]="toDate"
+                      ></p-calendar>
+                    </div>
+                  </div>
+                  <div class="form-group"></div>
+                  <div class="form-group"></div>
+                  <div class="form-group"></div>
+                </div>
+
+                <div class="row search-criteria-footer">
+                  <div class="search-actions">
+                    <button type="button" mat-raised-button (click)="search()">
+                      <div *ngIf="panelLoading" class="lds-hourglass padding-class"></div>
+                      {{ componentData.componentId + ".extractTasksApplication" | translate }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RESULT TABLE -->
+      <div class="grid-row">
+        <div class="grid-cell--12">
+          <div class="grid-cell grid-cell--container">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">
+                  {{ componentData.componentId + ".tasksApplicationExtraction" | translate }} ({{
+                    extractTableList ? extractTableList.length : 0
+                  }})
+                </h3>
+              </div>
+            </div>
+
+            <div class="grid-cell-content">
+              <p-table
+                [resizableColumns]="true"
+                #extractTable
+                class="aw-table2"
+                [columns]="extractTableCols"
+                [value]="extractTableList"
+                [scrollable]="true"
+              >
+                <ng-template pTemplate="emptymessage">
+                  <span *ngIf="!isLoadingData"> &nbsp;</span>
+
+                  <div *ngIf="isLoadingData" class="aw-table-loading-indicator">
+                    <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                    <div class="lds-hourglass"></div>
+                  </div>
+                </ng-template>
+
+                <ng-template pTemplate="caption">
+                  <div class="aw-table-header">
+                    <div class="aw-table-global-filter">
+                      <label class="aw-table-global-filter-label">
+                        <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                      </label>
+
+                      <input
+                        #ptableCusCustomerGlobalFilter
+                        class="aw-table-global-filter-input"
+                        type="text"
+                        placeholder="{{ 'table.globalFilterText' | translate }}"
+                        (input)="extractTable.filterGlobal($event.target.value, 'contains')"
+                      />
+                    </div>
+
+                    <div class="aw-table-actions">
+                      <button
+                        *ngIf="extractTableList && extractTableList.length > 0"
+                        type="button"
+                        mat-raised-button
+                        (click)="exportTable()"
+                      >
+                        {{ "global.export" | translate }}
+                      </button>
+                    </div>
+                  </div>
+                </ng-template>
+
+                <ng-template pTemplate="colgroup" let-columns>
+                  <colgroup>
+                    <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                    <col class="row-expand-wrapper" />
+                  </colgroup>
+                </ng-template>
+
+                <ng-template pTemplate="header" let-columns>
+                  <tr>
+                    <th pResizableColumn *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                      <span>{{ componentData.componentId + "." + col.field | translate }}</span>
+                    </th>
+                    <th class="row-expand-wrapper"></th>
+                  </tr>
+                </ng-template>
+
+                <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                  <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                    <td *ngFor="let col of columns" [ngSwitch]="col.field" [ngStyle]="{ 'text-align': col.alignment }">
+                      <div *ngSwitchCase="'taskDescription'" title="{{ rowData[col.field] }}">
+                        <span>
+                          {{ rowData[col.field] }}
+                        </span>
+                      </div>
+                      <span *ngSwitchDefault tooltipPosition="bottom">
+                        {{ rowData[col.field] }}
+                      </span>
+                    </td>
+                    <td class="row-expand-wrapper" [pRowToggler]="rowData">
+                      <i
+                        class="fa fa-fw aw-icon aw-icon-with-border"
+                        [ngClass]="{
+                          'fa-minus': rowData._expand,
+                          'fa-plus': !rowData._expand
+                        }"
+                        aria-hidden="true"
+                        pTooltip="{{ 'global.showTableRowDetails' | translate }}"
+                        tooltipPosition="left"
+                        (click)="toggleExtractTaskTableRowDetailsVisibility(rowData)"
+                      ></i>
+                    </td>
+                  </tr>
+                  <tr *ngIf="rowData._expand" class="row-expanded">
+                    <td [attr.colspan]="columns.length + 1">
+                      <div class="row">
+                        <div class="form-group">
+                          <label class="form-label">
+                            {{ getComponentName() + ".counterCode" | translate }}
+                          </label>
+
+                          <div class="form-control">
+                            <span>{{ rowData.counterCode }}</span>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="form-label">
+                            {{ getComponentName() + ".taskPeriodicity" | translate }}
+                          </label>
+
+                          <div class="form-control">
+                            <span>{{ rowData.taskPeriodicity }}</span>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="form-label">
+                            {{ getComponentName() + ".ageing" | translate }}
+                          </label>
+
+                          <div class="form-control">
+                            <span>{{ rowData.ageing }}</span>
+                          </div>
+                        </div>
+
+                        <div class="form-group">
+                          <label class="form-label">
+                            {{ getComponentName() + ".unitCode" | translate }}
+                          </label>
+
+                          <div class="form-control">
+                            <span>{{ rowData.unitCode }}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="form-group">
+                          <label class="form-label">
+                            {{ getComponentName() + ".assetDescription" | translate }}
+                          </label>
+
+                          <div class="form-control">
+                            <span>{{ rowData.assetDescription }}</span>
+                          </div>
+                        </div>
+
+                        <div class="form-group">
+                          <label class="form-label">
+                            {{ getComponentName() + ".topAircraftRegistration" | translate }}
+                          </label>
+
+                          <div class="form-control">
+                            <span>{{ rowData.topAircraftRegistration }}</span>
+                          </div>
+                        </div>
+
+                        <div class="form-group">
+                          <label class="form-label">
+                            {{ getComponentName() + ".nha" | translate }}
+                          </label>
+
+                          <div class="form-control">
+                            <span>{{ rowData.nha }}</span>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="form-label">
+                            {{ getComponentName() + ".nextTerm" | translate }}
+                          </label>
+
+                          <div class="form-control">
+                            <span>{{ rowData.nextTerm }}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="form-group">
+                          <label class="form-label">
+                            {{ getComponentName() + ".wpNumber" | translate }}
+                          </label>
+
+                          <div class="form-control">
+                            <span>{{ rowData.wpNumber }}</span>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="form-label">
+                            {{ getComponentName() + ".woCode" | translate }}
+                          </label>
+
+                          <div class="form-control">
+                            <span>{{ rowData.woCode }}</span>
+                          </div>
+                        </div>
+                        <div class="form-group"></div>
+                        <div class="form-group"></div>
+                      </div>
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ASSET SELECTION DIALOG -->
+<aw-dialog-search-equipment
+  *ngIf="dialogAddAssetVisible"
+  [(display)]="dialogAddAssetVisible"
+  (onSelected)="onAddAsset($event)"
+  [selectionMultiple]="true"
+></aw-dialog-search-equipment>
+
+<!-- TASK SELECTION DIALOG -->
+<aw-dialog-search-task
+  *ngIf="showItemTaskSearchPopup"
+  [(display)]="showItemTaskSearchPopup"
+  (onSelected)="addTask($event)"
+  [selectionMultiple]="true"
+></aw-dialog-search-task>

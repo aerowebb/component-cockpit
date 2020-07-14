@@ -1,0 +1,53 @@
+{
+  "FleetDataCopySearchComponent": {
+    "title": "Copie de données de flotte",
+    "copyData": "Copie de données",
+    "aircraftStatus": "Statut aéronef",
+    "operationalStatus": "Statut Opérationel",
+    "functionalLocation": "Point d'Emploi",
+    "assetCode": "Code individu",
+    "asset": "Individu",
+    "registration": "Immatriculation",
+    "pn": "P/N",
+    "sn": "S/N",
+    "esn": "ESN",
+    "function": "Fonction",
+    "equipment": "Equipement",
+    "equipmentCode": "Code individu",
+    "equipments": "Equipements",
+    "familyVariantCode": "Famille variante",
+    "familyVariant": "Famille variante",
+    "snCode": "S/N",
+    "pnCode": "P/N",
+    "equipmentFunction": "Fonction",
+    "functionCode": "Code fonction",
+    "equipmentDesignation": "Désignation",
+    "ownerCustomerCode": "Propriétaire",
+    "owner": "Propriétaire"
+  },
+  "FleetDataCopyPopupComponent": {
+    "sourceAsset": "Individu source",
+    "dataToCopy": "Données à copier",
+    "maintenancePlan": "Plan de Maintenance",
+    "lifeLimits": "Limites de vie",
+    "usage": "Utilisation",
+    "attributes": "Attributs",
+    "targetAssetsTitle": "Individus cibles",
+    "title": "Copie des données de flotte",
+    "reportTitle": "Rapport - Copie des données de flotte",
+    "report": "Rapport",
+    "pnCode": "P/N",
+    "sn": "S/N",
+    "equipmentDesignation": "Désignation",
+    "ownerCustomerCode": "Propriétaire",
+    "sourceEvolution": "Source de l'évolution",
+    "applicationDate": "Date d'application",
+    "isPartiallyApplied": "Est partiellement appliqué",
+    "sb182": "SB-182 (TGB replacement)",
+    "successMessage": "La copie des données de flotte est OK",
+    "errorMessage": "Erreur apparue durant la copie des données de flotte"
+  },
+  "FleetDataCopyReportPopupComponent": {
+    "title": "Rapport de copie"
+  }
+}

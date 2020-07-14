@@ -1,0 +1,187 @@
+@import "constants";
+@import "mixins";
+
+:host {
+  .custom-progressbar {
+    padding: 0.7em 0;
+  }
+
+  #breadcrumbs-status {
+    overflow: hidden;
+    display: flex;
+  }
+
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .breadcrumbs {
+    display: flex;
+    flex-grow: 1;
+  }
+
+  .bread-crumb-custom-cell {
+    background-color: transparent !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+    padding-bottom: 0 !important;
+  }
+
+  #breadcrumbs-status li {
+    float: left;
+    margin: 0 1em 0 1em;
+  }
+
+  #breadcrumbs-status .current {
+    float: left;
+    margin: 0 1em 0 1em;
+  }
+
+  #breadcrumbs-status .statusLabel {
+    background: #ffffff;
+    padding: 0.3em 1em;
+    float: left;
+    text-decoration: none;
+    color: $primary-text-color;
+    position: relative;
+    white-space: nowrap;
+    min-height: 3em;
+  }
+
+  #breadcrumbs-status .current .statusLabel {
+    background: $accent-color;
+  }
+
+  #breadcrumbs-status .statusLabel::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    margin-top: -1.5em;
+    border-width: 1.5em 0 1.5em 1em;
+    border-style: solid;
+    border-color: #ffffff #ffffff #ffffff transparent;
+    left: -1em;
+  }
+
+  #breadcrumbs-status .current .statusLabel::before {
+    border-color: $accent-color $accent-color $accent-color transparent;
+  }
+
+  #breadcrumbs-status .statusLabel::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    margin-top: -1.5em;
+    border-top: 1.5em solid transparent;
+    border-bottom: 1.5em solid transparent;
+    border-left: 1em solid #ffffff;
+    right: -1em;
+  }
+
+  #breadcrumbs-status .current .statusLabel::after {
+    border-left-color: $accent-color;
+  }
+
+  #breadcrumbs-status .current .statusLabel {
+    color: white;
+    font-weight: bold;
+  }
+
+  #breadcrumbs-status .current::after,
+  #breadcrumbs-status .current::before {
+    content: normal;
+  }
+
+  .breadcrumb-cursor {
+    cursor: pointer;
+  }
+
+  .custom-breadcrumb-padding {
+    padding: 0 !important;
+  }
+
+  .code {
+    display: inline-table;
+    width: 100%;
+  }
+
+  ::ng-deep .name {
+    font-style: italic;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 20em;
+  }
+
+  ::ng-deep .info {
+    overflow: hidden;
+    padding-bottom: 0.4em;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .label-class {
+    padding-right: 5.5em;
+    display: inline-block;
+    width: 3.5em;
+  }
+
+  .custom-width {
+    width: 100%;
+  }
+
+  .custom-form {
+    display: inline;
+  }
+
+  .custom-control {
+    width: max-content !important;
+    margin-top: 1em !important;
+  }
+
+  .custom-label {
+    width: max-content !important;
+    margin-top: 2em !important;
+  }
+
+  .value-class {
+    padding-left: 1em;
+  }
+
+  .value-reserve {
+    color: $green-light1;
+  }
+
+  .value-reserve-for {
+    color: $red-light1;
+  }
+
+  .button-reserve {
+    color: $green-light1 !important;
+    border-color: $green-light1 !important;
+  }
+
+  .button-reserve:hover {
+    background: $green-light1 !important;
+    border-color: $green-light1 !important;
+    color: $primary-background-color !important;
+  }
+
+  .button-cancel {
+    color: $red-light1 !important;
+    border-color: $red-light1 !important;
+  }
+
+  .button-preempter {
+    color: $critical-value-dark !important;
+    border-color: $critical-value-dark !important;
+  }
+
+  .button-preempter:hover {
+    background: $critical-value-dark !important;
+    color: $primary-background-color !important;
+    border-color: $critical-value-dark !important;
+  }
+}

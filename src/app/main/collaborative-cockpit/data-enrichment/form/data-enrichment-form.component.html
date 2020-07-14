@@ -1,0 +1,389 @@
+<div class="page-header-container">
+  <div class="page-context">
+    <div class="page-title-container">
+      <div class="page-title">
+        {{ "transaction." + componentData.componentId | translate }}
+      </div>
+
+      <div class="page-secondary-actions">
+        <i
+          class="fa fa-fw aw-icon aw-icon-with-border"
+          [ngClass]="{ 'fa-star': isFavoriteEntry, 'fa-star-o': !isFavoriteEntry }"
+          aria-hidden="true"
+          (click)="updateFavoriteState()"
+          pTooltip="{{ 'page.' + (isFavoriteEntry ? 'removeFromFavorites' : 'addToFavorites') | translate }}"
+          tooltipPosition="bottom"
+        ></i>
+      </div>
+    </div>
+
+    <div class="page-subtitle-container">
+      <div class="page-subtitle">
+        {{ "page.searchPage" | translate }}
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="page-wrapper">
+  <div class="page-container">
+    <div class="page-content">
+      <!-- ROW 1: DATA PANEL -->
+      <div class="grid-row">
+        <div class="grid-cell--12">
+          <div class="grid-cell grid-cell--container">
+            <div class="grid-cell-content">
+              <div class="column">
+                <div class="row">
+                  <div class="form-group">
+                    <label class="form-label">{{ componentData.componentId + ".type" | translate }}</label>
+                    <div class="form-control custom-margin">
+                      <p-selectButton
+                        [(ngModel)]="selectedType"
+                        [options]="typeList"
+                        (onChange)="checkTypeControl()"
+                        [disabled]="exportLoader || importRunning"
+                      ></p-selectButton>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- PANEL ENABLE BY displayLoadingPanel -->
+                <div class="row">
+                  <div class="form-group">
+                    <label class="form-label">{{ componentData.componentId + ".data" | translate }}</label>
+                    <div class="form-control custom-margin">
+                      <p-selectButton
+                        [(ngModel)]="selectedData"
+                        [options]="dataList"
+                        (onChange)="resetLoadingPanel()"
+                        [disabled]="exportLoader || importRunning"
+                      ></p-selectButton>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- PANEL ENABLE BY LOADING AND IPC -->
+                <div class="row">
+                  <div
+                    class="form-group required"
+                    *ngIf="selectedData === ipcData || selectedData === tlm || selectedData === sbAd"
+                  >
+                    <label class="form-label">{{ componentData.componentId + ".family" | translate }}</label>
+                    <div class="form-control">
+                      <p-dropdown
+                        class="aw-dropdown fixed-width"
+                        [options]="familyList"
+                        [(ngModel)]="selectedFamily"
+                        (onChange)="changeFamilyType($event)"
+                        [disabled]="exportLoader || importRunning"
+                      ></p-dropdown>
+                    </div>
+                  </div>
+
+                  <div
+                    class="form-group required"
+                    *ngIf="selectedData === ipcData || selectedData === tlm || selectedData === sbAd"
+                  >
+                    <label class="form-label">{{ componentData.componentId + ".variant" | translate }}</label>
+                    <div class="form-control">
+                      <p-dropdown
+                        class="aw-dropdown fixed-width"
+                        [options]="variantList"
+                        [(ngModel)]="selectedVariant"
+                        (onChange)="changeVariantType($event)"
+                        [disabled]="exportLoader || importRunning"
+                      ></p-dropdown>
+                    </div>
+                  </div>
+                  <div class="form-group required" *ngIf="selectedData === tlm || selectedData === sbAd"></div>
+                  <div class="form-group required" *ngIf="selectedData === tlm || selectedData === sbAd"></div>
+
+                  <div class="form-group required" *ngIf="selectedData === engineManualData">
+                    <label class="form-label">{{ componentData.componentId + ".wbmRevNum" | translate }}</label>
+                    <div class="form-control">
+                      <p-dropdown
+                        class="aw-dropdown fixed-width"
+                        [options]="wbmRevNumList"
+                        [(ngModel)]="selectedWbm"
+                        (onChange)="getEngineManualComponents($event)"
+                        [disabled]="exportLoader || importRunning"
+                      ></p-dropdown>
+                    </div>
+                  </div>
+
+                  <div class="form-group" *ngIf="selectedData === engineManualData">
+                    <label class="form-label">{{ componentData.componentId + ".name" | translate }}</label>
+                    <div class="form-control">
+                      <input class="aw-input" type="text" [(ngModel)]="name" disabled />
+                    </div>
+                  </div>
+
+                  <div class="form-group" *ngIf="selectedData === ipcData || selectedData === engineManualData">
+                    <label class="form-label">{{ componentData.componentId + ".revNum" | translate }}</label>
+                    <div class="form-control">
+                      <input class="aw-input" type="text" [(ngModel)]="revNum" disabled />
+                    </div>
+                  </div>
+
+                  <div
+                    class="form-group"
+                    *ngIf="selectedData === ipcData || (selectedData === engineManualData && displayLoadingPanel)"
+                  >
+                    <label class="form-label">{{ componentData.componentId + ".revDate" | translate }}</label>
+                    <div class="form-control">
+                      <p-calendar
+                        showButtonBar="true"
+                        [monthNavigator]="true"
+                        [yearNavigator]="true"
+                        [yearRange]="sessionService.calendarYearRange"
+                        class="aw-calendar"
+                        [dateFormat]="sessionService.dateFormatPrimeNG"
+                        [locale]="sessionService.calendarFormat"
+                        [(ngModel)]="revDate"
+                        disabled
+                      ></p-calendar>
+                    </div>
+                  </div>
+                  <div class="form-group" *ngIf="selectedData === ipcData || selectedData === engineManualData">
+                    <label class="form-label">{{ componentData.componentId + ".status" | translate }}</label>
+                    <div class="form-control">
+                      <input class="aw-input" type="text" [(ngModel)]="status" disabled />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ROW 2: EXPORT PANEL -->
+      <div class="grid-row" *ngIf="!displayLoadingPanel">
+        <div class="grid-cell--12">
+          <div class="grid-cell grid-cell--container">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">
+                  {{ getExportHeader() }}
+                </h3>
+              </div>
+            </div>
+            <div class="grid-cell-content">
+              <div class="form-group">
+                <label class="form-label"> &nbsp; </label>
+                <div class="form-control">
+                  <button
+                    type="button"
+                    class="btn-with-spinner"
+                    [disabled]="exportLoader || importRunning"
+                    mat-raised-button
+                    (click)="exportDataEnrichment()"
+                  >
+                    <span class="lds-hourglass" *ngIf="exportLoader"></span>
+                    <span>{{ componentData.componentId + ".export" | translate }}</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ROW 3: IMPORT PANEL -->
+      <div class="grid-row" *ngIf="displayLoadingPanel">
+        <div class="grid-cell--12">
+          <div class="grid-cell grid-cell--container">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">
+                  {{ getImportHeader() }}
+                </h3>
+              </div>
+            </div>
+
+            <div class="grid-cell-content">
+              <!-- IMPORT ROW -->
+              <div class="row grid-cell--12">
+                <div class="row grid-cell--4">
+                  <div class="form-group">
+                    <label class="form-label">{{ componentData.componentId + ".fileToImport" | translate }}</label>
+
+                    <div class="form-control form-control-with-modal" [ngClass]="{ disabled: isReadOpenMode }">
+                      <div class="form-control-data">
+                        {{ fileName }}
+                      </div>
+
+                      <div class="btn-file-upload-wrapper">
+                        <p-fileUpload
+                          #fileUploader
+                          *ngIf="!isReadOpenMode"
+                          class="aw-fileupload"
+                          name="document[]"
+                          customUpload="true"
+                          mode="basic"
+                          auto="true"
+                          chooseLabel=""
+                          (uploadHandler)="uploadDocument($event, fileUploader)"
+                        ></p-fileUpload>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row grid-cell--2">
+                  <div class="form-group">
+                    <label class="form-label"> &nbsp; </label>
+                    <div class="form-control">
+                      <button
+                        type="button"
+                        class="btn-with-spinner"
+                        mat-raised-button
+                        [disabled]="!fileName || importLoader || importRunning"
+                        (click)="import()"
+                      >
+                        <span class="lds-hourglass" *ngIf="importLoader || importRunning"></span>
+                        <i class="fa fa-fw fa-plus" aria-hidden="true"></i>
+                        <span>{{ componentData.componentId + ".importFile" | translate }}</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- PROGRESS ROW -->
+              <ng-container *ngIf="importRunning">
+                <div class="row grid-cell--12" *ngFor="let elt of currentEnrichmentSatuses">
+                  <div class="row grid-cell--6">
+                    <div class="form-group">
+                      <label class="form-label">{{ elt.fileName }} </label>
+                      <div class="form-control">
+                        <p-progressBar [value]="elt.progress"></p-progressBar>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row grid-cell--2">
+                    <div class="form-group">
+                      <label class="form-label"> &nbsp; </label>
+                      <div class="form-control">{{ elt.handled }}/ {{ elt.total }}</div>
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ROW 4: IMPORT REPORT LIST -->
+      <div class="grid-row" *ngIf="displayLoadingPanel">
+        <div class="grid-cell--12">
+          <div class="grid-cell grid-cell--container">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">
+                  {{ componentData.componentId + ".importReports" | translate }} ({{
+                    selectedReports ? selectedReports.length : 0
+                  }})
+                </h3>
+              </div>
+            </div>
+
+            <!--For import reports-->
+            <div class="grid-cell-content">
+              <p-table
+                [resizableColumns]="true"
+                #ptableImportReports
+                class="aw-table2"
+                [columns]="reportTableCols"
+                [value]="reports"
+                [(selection)]="selectedReports"
+                [scrollable]="true"
+              >
+                <ng-template pTemplate="emptymessage">
+                  <span *ngIf="!isReportLoading"> &nbsp;</span>
+
+                  <div *ngIf="isReportLoading" class="aw-table-loading-indicator">
+                    <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                    <div class="lds-hourglass"></div>
+                  </div>
+                </ng-template>
+
+                <ng-template pTemplate="caption">
+                  <div class="aw-table-header" [ngClass]="{ 'rows-selected': selectedReports.length > 0 }">
+                    <div class="aw-table-global-filter">
+                      <label class="aw-table-global-filter-label">
+                        <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                      </label>
+
+                      <input
+                        #ptableImportReportGlobalFilter
+                        class="aw-table-global-filter-input"
+                        type="text"
+                        placeholder="{{ 'table.globalFilterText' | translate }}"
+                        (input)="ptableImportReports.filterGlobal($event.target.value, 'contains')"
+                      />
+                    </div>
+
+                    <div class="aw-table-actions">
+                      <button
+                        *ngIf="selectedReports.length > 0"
+                        type="button"
+                        mat-raised-button
+                        (click)="deleteReports()"
+                      >
+                        {{ "global.delete" | translate }}
+                      </button>
+                    </div>
+                  </div>
+                </ng-template>
+
+                <ng-template pTemplate="colgroup" let-columns>
+                  <colgroup>
+                    <col class="aw-table-checkbox-wrapper" />
+                    <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                  </colgroup>
+                </ng-template>
+
+                <ng-template pTemplate="header" let-columns>
+                  <tr>
+                    <th class="aw-table-checkbox-wrapper">
+                      <p-tableHeaderCheckbox class="aw-table-checkbox"></p-tableHeaderCheckbox>
+                    </th>
+
+                    <th pResizableColumn *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                      {{ componentData.componentId + "." + col.field | translate }}
+                    </th>
+                  </tr>
+                </ng-template>
+
+                <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                  <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                    <td class="aw-table-checkbox-wrapper">
+                      <p-tableCheckbox class="aw-table-checkbox" [value]="rowData"></p-tableCheckbox>
+                    </td>
+
+                    <td *ngFor="let col of columns" [ngSwitch]="col.field" [ngStyle]="{ 'text-align': col.alignment }">
+                      <div *ngSwitchCase="'reportName'">
+                        <span (click)="openReportDetail(rowData)" class="report-name">
+                          {{ rowData[col.field] }}
+                        </span>
+                      </div>
+                      <div *ngSwitchCase="'statusDate'">
+                        <span>
+                          {{ rowData[col.field] | date: "dd/MM/yyyy HH:mm:ss":"":translateService.currentLang }}
+                        </span>
+                      </div>
+                      <div *ngSwitchDefault>
+                        {{ rowData[col.field] }}
+                      </div>
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

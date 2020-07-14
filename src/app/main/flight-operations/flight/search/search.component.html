@@ -1,0 +1,471 @@
+<div class="page-header-container">
+  <div class="page-context">
+    <div class="page-title-container">
+      <div class="page-title">
+        {{ "transaction." + componentData.componentId | translate }}
+      </div>
+
+      <div class="page-secondary-actions">
+        <i
+          class="fa fa-fw aw-icon aw-icon-with-border"
+          [ngClass]="{ 'fa-star': isFavoriteEntry, 'fa-star-o': !isFavoriteEntry }"
+          aria-hidden="true"
+          (click)="updateFavoriteState()"
+          pTooltip="{{ 'page.' + (isFavoriteEntry ? 'removeFromFavorites' : 'addToFavorites') | translate }}"
+          tooltipPosition="bottom"
+        ></i>
+      </div>
+    </div>
+
+    <div class="page-subtitle-container">
+      <div class="page-subtitle">
+        {{ "page.searchPage" | translate }}
+      </div>
+    </div>
+  </div>
+
+  <div class="page-primary-actions">
+    <button
+      *ngIf="isFlightSearch && hasUpdateAccessRight"
+      type="button"
+      mat-raised-button
+      (click)="openNewMissionEquipment()"
+    >
+      {{ "global.create" | translate }}
+    </button>
+  </div>
+</div>
+
+<div class="page-wrapper">
+  <div class="page-container search-page-container">
+    <div class="page-content">
+      <div class="grid-row">
+        <div class="grid-cell--12">
+          <div class="grid-cell grid-cell--container">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">
+                  {{ "global.search" | translate }}
+                </h3>
+              </div>
+            </div>
+
+            <div class="grid-cell-content">
+              <div class="column">
+                <div class="row search-criteria-header">
+                  <aw-manage-search-criteria
+                    [componentId]="SEARCH_CRITERIA_ID"
+                    (onSelected)="loadSearchCriteria($event)"
+                    (onSavedAsked)="saveSearchCriteriaAsked()"
+                    [objectFromPage]="criteriaToSave"
+                  ></aw-manage-search-criteria>
+                </div>
+
+                <div class="row">
+                  <div class="form-group">
+                    <label class="form-label"> {{ componentName + ".aircraftRegistration" | translate }} </label>
+
+                    <div class="form-control">
+                      <input class="aw-input" type="text" [(ngModel)]="criteria.registration" />
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label"> {{ componentName + ".flightType" | translate }} </label>
+
+                    <div class="form-control">
+                      <p-dropdown
+                        class="aw-dropdown fixed-width"
+                        [options]="eventMissionTypeList"
+                        [(ngModel)]="criteria.flightType"
+                        [showClear]="true"
+                        placeholder="&nbsp;"
+                        appendTo="body"
+                      ></p-dropdown>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label"> {{ componentName + ".chronoNumber" | translate }} </label>
+
+                    <div class="form-control">
+                      <input class="aw-input" type="text" [(ngModel)]="criteria.missionInstanceCode" />
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="form-group">
+                    <label class="form-label"> {{ componentName + ".missionCode" | translate }} </label>
+
+                    <div class="form-control">
+                      <input class="aw-input" type="text" [(ngModel)]="criteria.missionCode" />
+                    </div>
+                  </div>
+                  <div id="operatorCode" class="form-group">
+                    <label class="form-label">
+                      {{ componentName + ".operator" | translate }}
+                    </label>
+
+                    <div class="form-control">
+                      <p-dropdown
+                        class="aw-dropdown fixed-width"
+                        [options]="flightOperatorList"
+                        [(ngModel)]="criteria.customerOperatorCode"
+                        [disabled]="isReadOpenMode"
+                        [showClear]="true"
+                        placeholder="&nbsp;"
+                        appendTo="body"
+                      ></p-dropdown>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">
+                      {{ componentName + ".customer" | translate }}
+                    </label>
+
+                    <div class="form-control">
+                      <p-dropdown
+                        class="aw-dropdown fixed-width"
+                        [options]="flightCustomerList"
+                        [(ngModel)]="criteria.customerCode"
+                        [showClear]="true"
+                        placeholder="&nbsp;"
+                        appendTo="body"
+                      ></p-dropdown>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div *ngIf="isFunctionalItemStructure" class="form-group">
+                    <label class="form-label">
+                      {{ componentName + ".operationalConfiguration" | translate }}
+                    </label>
+                    <div class="form-control form-control-with-modal" [ngClass]="{ disabled: isReadOpenMode }">
+                      <div class="form-control-data" (click)="openOperationalConfigDialog()">
+                        {{ criteria.requestedOpeConfigCode }}
+                      </div>
+                      <div *ngIf="criteria.requestedOpeConfigCode" class="btn-clear-wrapper">
+                        <i
+                          class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+                          aria-hidden="true"
+                          (click)="resetConfig()"
+                        ></i>
+                      </div>
+                      <div class="btn-search-wrapper">
+                        <i
+                          class="fa fa-fw fa-search aw-icon btn-search"
+                          aria-hidden="true"
+                          (click)="openOperationalConfigDialog()"
+                        ></i>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label">{{ componentName + ".flightDateFrom" | translate }}</label>
+
+                    <div class="form-control">
+                      <p-calendar
+                        showButtonBar="true"
+                        [monthNavigator]="true"
+                        [yearNavigator]="true"
+                        [yearRange]="sessionService.calendarYearRange"
+                        class="aw-calendar"
+                        [dateFormat]="sessionService.dateFormatPrimeNG"
+                        [locale]="sessionService.calendarFormat"
+                        [showTime]="true"
+                        [defaultDate]="searchFlightDateFromDefault"
+                        [(ngModel)]="criteria.flightDateFrom"
+                        appendTo="body"
+                      ></p-calendar>
+                    </div>
+                  </div>
+
+                  <div class="form-group flex--1">
+                    <label class="form-label">{{ componentName + ".flightDateTo" | translate }}</label>
+
+                    <div class="form-control">
+                      <p-calendar
+                        showButtonBar="true"
+                        [monthNavigator]="true"
+                        [yearNavigator]="true"
+                        [yearRange]="sessionService.calendarYearRange"
+                        class="aw-calendar"
+                        [dateFormat]="sessionService.dateFormatPrimeNG"
+                        [locale]="sessionService.calendarFormat"
+                        [showTime]="true"
+                        [defaultDate]="searchFlightDateToDefault"
+                        [(ngModel)]="criteria.flightDateTo"
+                        appendTo="body"
+                      ></p-calendar>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label"> {{ componentName + ".flightStatus" | translate }} </label>
+
+                    <div class="form-control">
+                      <p-dropdown
+                        class="aw-dropdown fixed-width"
+                        [options]="eventMissionStatusList"
+                        [(ngModel)]="criteria.statusState"
+                        [showClear]="true"
+                        placeholder="&nbsp;"
+                        appendTo="body"
+                      ></p-dropdown>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="form-group">
+                    <label class="form-label">{{ componentName + ".onlyNonAffectedFlights" | translate }}</label>
+
+                    <div class="form-control">
+                      <p-checkbox
+                        binary="true"
+                        class="aw-checkbox"
+                        [(ngModel)]="criteria.onlyNotAffectedFlights"
+                      ></p-checkbox>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="advanced-criteria" [ngClass]="{ 'display--none': !searchAdvancedCriteriaVisible }">
+                  <div class="row">
+                    <div class="form-group">
+                      <label class="form-label"> {{ componentName + ".msn" | translate }} </label>
+
+                      <div class="form-control">
+                        <input class="aw-input" type="text" [(ngModel)]="criteria.msn" />
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-label"> {{ componentName + ".missionNumber" | translate }} </label>
+
+                      <div class="form-control">
+                        <input class="aw-input" type="text" [(ngModel)]="criteria.missionNumber" />
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-label"> {{ componentName + ".sourceSystemId" | translate }} </label>
+
+                      <div class="form-control">
+                        <p-dropdown
+                          class="aw-dropdown fixed-width"
+                          [options]="sourceSystemIdList"
+                          [(ngModel)]="criteria.sourceSystemId"
+                          [showClear]="true"
+                          placeholder="&nbsp;"
+                        ></p-dropdown>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-label"> {{ componentName + ".sourceSystemReference" | translate }} </label>
+
+                      <div class="form-control">
+                        <input class="aw-input" type="text" [(ngModel)]="criteria.sourceSystemReference" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="form-group">
+                      <label class="form-label"> {{ componentName + ".departure" | translate }} </label>
+
+                      <div class="form-control">
+                        <p-dropdown
+                          class="aw-dropdown fixed-width"
+                          [options]="flightBaseList"
+                          [(ngModel)]="criteria.departureLocation"
+                          [showClear]="true"
+                          placeholder="&nbsp;"
+                        ></p-dropdown>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-label"> {{ componentName + ".arrival" | translate }} </label>
+
+                      <div class="form-control">
+                        <p-dropdown
+                          class="aw-dropdown fixed-width"
+                          [options]="flightBaseList"
+                          [(ngModel)]="criteria.arrivalLocation"
+                          [showClear]="true"
+                          placeholder="&nbsp;"
+                        ></p-dropdown>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-label"> {{ componentName + ".pilot" | translate }} </label>
+
+                      <div class="form-control">
+                        <p-dropdown
+                          class="aw-dropdown fixed-width"
+                          [options]="pilotList"
+                          [(ngModel)]="criteria.pilot"
+                          [showClear]="true"
+                          placeholder="&nbsp;"
+                        ></p-dropdown>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-label"> {{ componentName + ".copilot" | translate }} </label>
+
+                      <div class="form-control">
+                        <p-dropdown
+                          class="aw-dropdown fixed-width"
+                          [options]="copilotList"
+                          [(ngModel)]="criteria.copilot"
+                          [showClear]="true"
+                          placeholder="&nbsp;"
+                        ></p-dropdown>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row search-criteria-footer">
+                  <button mat-button (click)="searchAdvancedCriteriaVisible = !searchAdvancedCriteriaVisible">
+                    <ng-container *ngIf="searchAdvancedCriteriaVisible">
+                      <mat-icon>remove</mat-icon>
+                      {{ "global.collapseCriteria" | translate }}
+                    </ng-container>
+                    <ng-container *ngIf="!searchAdvancedCriteriaVisible">
+                      <mat-icon>add</mat-icon>
+                      {{ "global.expandCriteria" | translate }}
+                    </ng-container>
+                  </button>
+
+                  <div class="search-actions">
+                    <button
+                      type="button"
+                      mat-raised-button
+                      (click)="search()"
+                      color="primary"
+                      appKeyPress
+                      [keyCode]="'Enter'"
+                      (keyPress)="search()"
+                    >
+                      {{ "global.toSearch" | translate }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-row">
+        <div class="grid-cell--12">
+          <div #resultsContainerAnchor class="grid-cell grid-cell--container">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">
+                  {{ "global.results" | translate }} ({{ resultsTableDataSource.dataCount }})
+                </h3>
+              </div>
+            </div>
+
+            <div class="grid-cell-content">
+              <div class="column">
+                <div class="row">
+                  <div class="form-group">
+                    <label class="form-label"> {{ "global.timeZone" | translate }} </label>
+
+                    <div class="form-control">
+                      <p-dropdown
+                        class="aw-dropdown fixed-width"
+                        [options]="timeZoneList"
+                        [(ngModel)]="currentTimeZone"
+                        [showClear]="true"
+                        (onChange)="updateMissionEquipmentDates()"
+                      ></p-dropdown>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <a-table [dataSource]="resultsTableDataSource">
+                    <ng-template tableActionsDef>
+                      <button
+                        *ngIf="hasManageAccessRight && resultsTableDataSource.hasDataSelection"
+                        type="button"
+                        mat-raised-button
+                        color="warn"
+                        (click)="deleteMissionEquipmentSelectedList()"
+                      >
+                        {{ "global.delete" | translate }}
+                      </button>
+
+                      <button
+                        *ngIf="resultsTableDataSource.hasDataSelection"
+                        type="button"
+                        mat-raised-button
+                        (click)="openMissionEquipmentSelectedList()"
+                      >
+                        {{ "global.open" | translate }}
+                      </button>
+
+                      <button
+                        *ngIf="resultsTableDataSource.dataCount === 1 && exportFlightLogbookVisible()"
+                        type="button"
+                        mat-raised-button
+                        (click)="exportFlightLogbook()"
+                      >
+                        {{ componentName + ".exportFlightLogbook" | translate }}
+                      </button>
+
+                      <button
+                        *ngIf="resultsTableDataSource.hasData && !resultsTableDataSource.hasDataSelection"
+                        type="button"
+                        mat-raised-button
+                        (click)="exportMissionEquipmentTable()"
+                      >
+                        {{ "global.export" | translate }}
+                      </button>
+                    </ng-template>
+                    <ng-template columnDef="asset" let-rowData="rowData">
+                      <span>
+                        <a (click)="openAircraft(rowData)">{{ rowData["asset"] }}</a>
+                      </span>
+                    </ng-template>
+                    <ng-template columnDef="chronoNumber" let-rowData="rowData">
+                      <span>
+                        <a (click)="openFlight(rowData)">{{ rowData["chronoNumber"] }}</a>
+                      </span>
+                    </ng-template>
+                    <ng-template columnDef="missionCode" let-rowData="rowData">
+                      <span>
+                        <a (click)="openMission(rowData)">{{ rowData["missionCode"] }}</a>
+                      </span>
+                    </ng-template>
+                    <ng-template columnDef="customerOperatorCode" let-rowData="rowData">
+                      <span>
+                        {{ rowData["customerOperatorCode"] | formatSelectOption: flightOperatorList }}
+                      </span>
+                    </ng-template>
+                  </a-table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<aw-dialog-search-operational-config
+  *ngIf="showOperationalConfigDialog"
+  [(display)]="showOperationalConfigDialog"
+  [config-name]="configName"
+  [operationalConfigs]="operationalConfigs"
+  (requestedOpeConfigCodeSelected)="setSelectedConfig($event)"
+></aw-dialog-search-operational-config>

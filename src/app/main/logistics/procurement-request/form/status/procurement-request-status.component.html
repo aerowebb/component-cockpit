@@ -1,0 +1,114 @@
+<div class="overlay">
+  <div class="stepper">
+    <aw-stepper [steps]="steps"></aw-stepper>
+  </div>
+
+  <div class="status-info" *ngIf="currentStatus == constants.PROCUREMENT_REQUEST_STATUS_SIMULATED">
+    <p class="bold end">
+      {{ getComponentName() + ".simulatedRow1" | translate }}
+    </p>
+
+    <p>
+      {{ getComponentName() + ".simulatedRow2" | translate }}
+    </p>
+
+    <div class="actions">
+      <button mat-raised-button (click)="updateStatus(constants.PROCUREMENT_REQUEST_STATUS_CANCELED)">
+        {{ getComponentName() + ".passToCanceled" | translate }}
+      </button>
+    </div>
+  </div>
+
+  <div class="status-info" *ngIf="currentStatus == constants.PROCUREMENT_REQUEST_STATUS_PLANNED">
+    <p class="bold">
+      {{ getComponentName() + ".scheduledRow1" | translate }}
+    </p>
+
+    <p class="bold">
+      {{ getComponentName() + ".scheduledRow2" | translate }}
+    </p>
+
+    <p class="bold end">
+      {{ getComponentName() + ".scheduledRow3" | translate }}
+    </p>
+
+    <p>
+      {{ getComponentName() + ".scheduledRow4" | translate }}
+    </p>
+
+    <div class="actions">
+      <button mat-raised-button (click)="updateStatus(constants.PROCUREMENT_REQUEST_STATUS_CANCELED)">
+        {{ getComponentName() + ".passToCanceled" | translate }}
+      </button>
+    </div>
+  </div>
+
+  <div class="status-info" *ngIf="currentStatus == constants.PROCUREMENT_REQUEST_STATUS_DRAFT">
+    <p class="bold">
+      {{ getComponentName() + ".draftRow1" | translate }}
+    </p>
+
+    <p class="bold end">
+      {{ getComponentName() + ".draftRow2" | translate }}
+    </p>
+
+    <p>
+      {{ getComponentName() + ".draftRow3" | translate }}
+    </p>
+
+    <div class="actions">
+      <button mat-raised-button (click)="updateStatus(constants.PROCUREMENT_REQUEST_STATUS_RELEASED)">
+        {{ getComponentName() + ".passToReleased" | translate }}
+      </button>
+    </div>
+  </div>
+
+  <div class="status-info" *ngIf="currentStatus == constants.PROCUREMENT_REQUEST_STATUS_RELEASED">
+    <p class="bold">
+      {{ getComponentName() + ".releasedRow1" | translate }}
+    </p>
+
+    <p class="bold end">
+      {{ getComponentName() + ".releasedRow2" | translate }}
+    </p>
+
+    <p>
+      {{ getComponentName() + ".releasedRow3" | translate }}
+    </p>
+
+    <div class="actions">
+      <button mat-raised-button (click)="updateStatus(constants.PROCUREMENT_REQUEST_STATUS_DRAFT)">
+        {{ getComponentName() + ".passToDraft" | translate }}
+      </button>
+      <button mat-raised-button (click)="updateStatus(constants.PROCUREMENT_REQUEST_STATUS_CANCELED)">
+        {{ getComponentName() + ".passToCanceled" | translate }}
+      </button>
+    </div>
+  </div>
+
+  <div class="status-info" *ngIf="currentStatus == constants.PROCUREMENT_REQUEST_STATUS_ONGOING">
+    <p class="bold">
+      {{ getComponentName() + ".onGoingRow1" | translate }}
+    </p>
+
+    <p class="bold end">
+      {{ getComponentName() + ".onGoingRow2" | translate }}
+    </p>
+
+    <p>
+      {{ getComponentName() + ".onGoingRow3" | translate }}
+    </p>
+
+    <div class="actions" *ngIf="showClosedButton">
+      <button mat-raised-button (click)="updateStatus(constants.PROCUREMENT_REQUEST_STATUS_CLOSED)">
+        {{ getComponentName() + ".passToClosed" | translate }}
+      </button>
+    </div>
+  </div>
+
+  <div class="status-info" *ngIf="currentStatus == constants.PROCUREMENT_REQUEST_STATUS_CLOSED">
+    <p class="bold end">
+      {{ getComponentName() + ".closedRow1" | translate }}
+    </p>
+  </div>
+</div>

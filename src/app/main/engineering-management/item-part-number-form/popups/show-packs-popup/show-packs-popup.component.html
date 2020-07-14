@@ -1,0 +1,55 @@
+<a-modal class="aw-modal" [(visible)]="display" [width]="30">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".title" | translate }} ({{ packsDataSource.dataCount }})</div>
+  </a-header>
+
+  <a-content>
+    <div class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+      <div class="form-control">
+        <a-table [dataSource]="packsDataSource">
+          <ng-template tableActionsDef>
+            <button
+              *ngIf="!isReadOpenMode && packsDataSource.hasDataSelection"
+              type="button"
+              mat-raised-button
+              color="warn"
+              (click)="deleteSelectedPacks()"
+            >
+              {{ "global.delete" | translate }}
+            </button>
+
+            <button
+              type="button"
+              *ngIf="!isReadOpenMode && !packsDataSource.hasDataSelection"
+              mat-raised-button
+              (click)="addPacksDialog()"
+            >
+              {{ "global.add" | translate }}
+            </button>
+          </ng-template>
+        </a-table>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button *ngIf="isReadOpenMode" type="button" mat-raised-button (click)="onCancel()">
+      <span>{{ "global.close" | translate }}</span>
+    </button>
+
+    <button *ngIf="!isReadOpenMode" type="button" mat-raised-button (click)="onCancel()">
+      <span>{{ "global.cancel" | translate }}</span>
+    </button>
+
+    <button *ngIf="!isReadOpenMode" color="primary" type="button" mat-raised-button (click)="onValidate()">
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>
+
+<aw-add-associated-config-pack-popup
+  *ngIf="showAssociatedPackPopup"
+  [(display)]="showAssociatedPackPopup"
+  (onAdded)="onAssociatedPackAdd($event)"
+  [data]="data"
+></aw-add-associated-config-pack-popup>

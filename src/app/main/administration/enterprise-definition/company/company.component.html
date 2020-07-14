@@ -1,0 +1,72 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div class="modal-title">{{ "company" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="column">
+      <div class="row">
+        <div class="form-group required">
+          <label class="form-label">{{ getComponentName() + ".code" | translate }}</label>
+
+          <div class="form-control">
+            <input class="aw-input" type="text" maxlength="50" [(ngModel)]="company.companyCode" />
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group">
+          <label class="form-label">{{ getComponentName() + ".name" | translate }}</label>
+
+          <div class="form-control">
+            <input class="aw-input" type="text" maxlength="100" [(ngModel)]="company.companyName" />
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group">
+          <label class="form-label">{{ getComponentName() + ".type" | translate }}</label>
+
+          <div class="form-control">
+            <p-dropdown
+              class="aw-dropdown fixed-width"
+              appendTo="body"
+              placeholder="&nbsp;"
+              [options]="companyTypes"
+              [showClear]="true"
+              [(ngModel)]="company.companyType"
+            ></p-dropdown>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group">
+          <label class="form-label">{{ getComponentName() + ".description" | translate }}</label>
+
+          <div class="form-control">
+            <textarea
+              class="aw-textarea"
+              pInputTextarea
+              maxlength="300"
+              [rows]="3"
+              [(ngModel)]="company.companyDescription"
+            ></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button type="button" mat-raised-button (click)="closeDialog()">
+      {{ "cancel" | translate }}
+    </button>
+
+    <button [disabled]="!company.companyCode" type="button" mat-raised-button (click)="save()">
+      {{ "save" | translate }}
+    </button>
+  </a-footer>
+</a-modal>

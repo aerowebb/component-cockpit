@@ -1,0 +1,71 @@
+@import "constants";
+@import "mixins";
+@import "modifiers";
+:host {
+  .custom-field-padding {
+    padding-top: 0.6em !important;
+  }
+  .chart-container {
+    @include flex-row();
+
+    @media screen and (max-width: 1280px) {
+      flex-direction: column;
+    }
+
+    .chart-legend {
+      @include flex-column();
+
+      justify-content: center;
+      margin-left: $margin-value;
+
+      .chart-legend-label {
+        @include flex-row();
+
+        align-items: center;
+
+        .chart-legend-label-color {
+          height: 0.75rem;
+          margin-right: $margin-value;
+          width: 2rem;
+
+          &.completed {
+            background-color: $green-light1;
+          }
+
+          &.not-completed {
+            background-color: $orange;
+          }
+        }
+      }
+
+      .chart-value {
+        font-weight: 700;
+        margin-left: $margin-value;
+      }
+    }
+
+    .chart-wrapper {
+      position: relative;
+      height: 10rem;
+      width: 8rem;
+      margin-top: 0.5em;
+    }
+
+    width: fit-content;
+    margin-right: auto;
+    margin-left: auto;
+  }
+
+  .custom-height {
+    min-height: 12.438em;
+  }
+
+  .custom-span {
+    color: #01579b;
+  }
+
+  .custom-padding {
+    padding-left: 1.2em;
+    padding-top: 0.5em;
+  }
+}

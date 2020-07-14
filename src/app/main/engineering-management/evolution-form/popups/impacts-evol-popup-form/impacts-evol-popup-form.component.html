@@ -1,0 +1,398 @@
+<a-modal class="aw-modal" [(visible)]="display" [width]="60">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".titlePopup" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="column">
+      <div class="row"></div>
+      <div class="row">
+        <div class="form-group" [ngClass]="{ required: !isReadOnlyForm }">
+          <label class="form-label">{{ getComponentName() + ".item" | translate }}</label>
+
+          <div class="form-control form-control-with-modal" [ngClass]="{ disabled: isReadOnlyForm || !isEditable }">
+            <div class="form-control-data" (click)="openItemTableDialog()">
+              {{ bireItemDTO.chapter }}
+              <span *ngIf="bireItemDTO.section"> - {{ bireItemDTO.section }}</span>
+              <span *ngIf="bireItemDTO.subject"> - {{ bireItemDTO.subject }}</span>
+              <span *ngIf="bireItemDTO.sheet"> - {{ bireItemDTO.sheet }}</span>
+              <span *ngIf="bireItemDTO.marks"> - {{ bireItemDTO.marks }}</span>
+            </div>
+
+            <div
+              *ngIf="
+                bireItemDTO.chapter &&
+                bireItemDTO.section &&
+                bireItemDTO.subject &&
+                bireItemDTO.sheet &&
+                bireItemDTO.marks &&
+                !isReadOnlyForm
+              "
+              class="btn-clear-wrapper"
+            >
+              <i
+                class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+                aria-hidden="true"
+                (click)="
+                  bireItemDTO.chapter = undefined;
+                  bireItemDTO.section = undefined;
+                  bireItemDTO.subject = undefined;
+                  bireItemDTO.sheet = undefined;
+                  bireItemDTO.marks = undefined;
+                  bireItemDTO.versionNumber = undefined
+                "
+              ></i>
+            </div>
+            <div class="btn-search-wrapper" *ngIf="!isReadOnlyForm">
+              <i class="fa fa-fw fa-search aw-icon btn-search" aria-hidden="true" (click)="openItemTableDialog()"></i>
+            </div>
+          </div>
+        </div>
+        <div class="form-group" [ngClass]="{ required: !isReadOnlyForm }">
+          <label class="form-label">{{ getComponentName() + ".pnBefore" | translate }}</label>
+
+          <div *ngIf="selectedItem != null" class="form-control">
+            <p-dropdown
+              [ngClass]="{ inactive: isReadOnlyForm || !isEditable }"
+              [disabled]="isReadOnlyForm"
+              class="aw-dropdown fixed-width"
+              [showClear]="true"
+              [(ngModel)]="newEvol.pnCode"
+              placeholder="&nbsp;"
+              [options]="pnBefore"
+              appendTo="body"
+            ></p-dropdown>
+          </div>
+
+          <div
+            *ngIf="selectedItem == null"
+            class="form-control form-control-with-modal"
+            [ngClass]="{ disabled: isReadOpenMode }"
+          >
+            <div class="form-control-data" (click)="searchPnCodeBefore()">{{ selectedPnBefore }}</div>
+
+            <div *ngIf="selectedPnBefore" class="btn-clear-wrapper">
+              <i
+                class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+                aria-hidden="true"
+                (click)="selectedPnBefore = undefined"
+              ></i>
+            </div>
+            <div class="btn-search-wrapper">
+              <i class="fa fa-fw fa-search aw-icon btn-search" aria-hidden="true" (click)="searchPnCodeBefore()"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group" [ngClass]="{ required: !isReadOnlyForm }">
+          <label class="form-label">{{ getComponentName() + ".existingPnAfter" | translate }}</label>
+
+          <div class="form-control">
+            <p-radioButton
+              class="aw-radiobutton"
+              [disabled]="isReadOnlyForm"
+              value="existing"
+              [(ngModel)]="optionExisting"
+              inputId="existing"
+              (onClick)="onChangeRadio()"
+            ></p-radioButton>
+          </div>
+        </div>
+
+        <div class="form-group" [ngClass]="{ required: !isReadOnlyForm }">
+          <label class="form-label">{{ getComponentName() + ".newPnAfter" | translate }}</label>
+
+          <div class="form-control">
+            <p-radioButton
+              class="aw-radiobutton"
+              value="new"
+              [disabled]="isReadOnlyForm"
+              [(ngModel)]="optionExisting"
+              inputId="new"
+              (onClick)="onChangeRadio()"
+            ></p-radioButton>
+          </div>
+        </div>
+
+        <div
+          *ngIf="optionExisting && optionExisting === 'existing'"
+          class="form-group"
+          [ngClass]="{ required: !isReadOpenMode }"
+        >
+          <label class="form-label">{{ "global.pn" | translate }}</label>
+
+          <div class="form-control">
+            <p-dropdown
+              [disabled]="optionExisting !== 'existing' || isReadOnlyForm"
+              [showClear]="true"
+              placeholder="&nbsp;"
+              class="aw-dropdown fixed-width"
+              [options]="pnAfter"
+              [(ngModel)]="pnPnCode"
+              (onChange)="onChangePnPnCode()"
+              appendTo="body"
+            ></p-dropdown>
+          </div>
+        </div>
+
+        <div
+          *ngIf="optionExisting && optionExisting !== 'existing'"
+          class="form-group"
+          [ngClass]="{ required: !isReadOnlyForm }"
+        >
+          <label class="form-label">{{ "global.pn" | translate }}</label>
+
+          <div class="form-control form-control-with-modal" [ngClass]="{ disabled: isReadOnlyForm }">
+            <div class="form-control-data" (click)="searchPnCodeAfter()">{{ pnPnCodeInput }}</div>
+            <!-- <div class="form-control-data">
+                <input
+                type="text"
+                class="aw-input"
+                [disabled]="isReadOnlyForm"
+                [(ngModel)]="pnPnCodeInput"
+                style="border-width: 0px"
+              />
+            </div> -->
+            <div *ngIf="pnPnCodeInput" class="btn-clear-wrapper">
+              <i
+                class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+                aria-hidden="true"
+                (click)="pnPnCodeInput = undefined"
+              ></i>
+            </div>
+            <div class="btn-search-wrapper">
+              <i class="fa fa-fw fa-search aw-icon btn-search" aria-hidden="true" (click)="searchPnCodeAfter()"></i>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="optionExisting" class="form-group"></div>
+        <div *ngIf="!optionExisting" class="form-group flex--2"></div>
+      </div>
+
+      <div *ngIf="optionExisting == 'new'" class="row">
+        <div class="form-group" [ngClass]="{ required: !isReadOnlyForm }">
+          <label class="form-label">{{ getComponentName() + ".itemVersion" | translate }}</label>
+
+          <div class="form-control">
+            <p-dropdown
+              class="aw-dropdown fixed-width"
+              [disabled]="isReadOnlyForm"
+              [showClear]="true"
+              placeholder="&nbsp;"
+              [options]="versions"
+              [(ngModel)]="newEvol.versionNumber"
+              appendTo="body"
+            ></p-dropdown>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">{{ getComponentName() + ".isn" | translate }}</label>
+
+          <div class="form-control">
+            <p-dropdown
+              class="aw-dropdown fixed-width"
+              [showClear]="true"
+              [disabled]="isReadOnlyForm"
+              placeholder="&nbsp;"
+              [options]="isn"
+              [(ngModel)]="selectedIsn"
+              appendTo="body"
+            ></p-dropdown>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">{{ getComponentName() + ".pnApplicability" | translate }}</label>
+
+          <div class="form-control form-control-with-modal" [ngClass]="{ disabled: isReadOnlyForm }">
+            <div class="form-control-data" (click)="searchApplicability(true)">{{ pnApplicability }}</div>
+
+            <div *ngIf="newEvol.pnApplicability" class="btn-clear-wrapper">
+              <i
+                class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+                aria-hidden="true"
+                (click)="newEvol.pnApplicability = undefined"
+              ></i>
+            </div>
+            <div class="btn-search-wrapper">
+              <i
+                class="fa fa-fw fa-search aw-icon btn-search"
+                aria-hidden="true"
+                (click)="searchApplicability(true)"
+              ></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">{{ getComponentName() + ".duplicateISN" | translate }}</label>
+
+          <div class="form-control">
+            <p-checkbox class="aw-checkbox" [disabled]="isReadOnlyForm" value="duplicateISN" binary="true"></p-checkbox>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group" [ngClass]="{ required: !isReadOnlyForm }">
+          <label class="form-label">{{ getComponentName() + ".actionType" | translate }}</label>
+
+          <div class="form-control">
+            <p-dropdown
+              class="aw-dropdown fixed-width"
+              [disabled]="isReadOnlyForm"
+              [showClear]="true"
+              placeholder="&nbsp;"
+              [options]="actionType"
+              [(ngModel)]="newEvol.actionTypeCode"
+              (click)="onSelectedActionType()"
+              appendTo="body"
+            ></p-dropdown>
+          </div>
+        </div>
+
+        <div *ngIf="actionInterchangeability" class="form-group">
+          <label class="form-label">{{ getComponentName() + ".interchangeability" | translate }} </label>
+
+          <div class="form-control">
+            <p-dropdown
+              class="aw-dropdown fixed-width"
+              [disabled]="isReadOnlyForm"
+              [showClear]="true"
+              placeholder="&nbsp;"
+              [options]="interchangeability"
+              [(ngModel)]="newEvol.interchangeability"
+              appendTo="body"
+            ></p-dropdown>
+          </div>
+        </div>
+
+        <div *ngIf="actionInterchangeability" class="form-group flex--2"></div>
+        <div *ngIf="!actionInterchangeability" class="form-group flex--3"></div>
+      </div>
+
+      <div class="row">
+        <div class="form-group">
+          <label class="form-label">{{ getComponentName() + ".applicability" | translate }}</label>
+
+          <div class="form-control form-control-with-modal" [ngClass]="{ disabled: isReadOnlyForm }">
+            <div class="form-control-data" (click)="searchApplicability(false)">{{ newEvol.applicability }}</div>
+
+            <div *ngIf="newEvol.applicability" class="btn-clear-wrapper">
+              <i
+                class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+                aria-hidden="true"
+                (click)="newEvol.applicability = undefined"
+              ></i>
+            </div>
+            <div class="btn-search-wrapper" *ngIf="!isReadOnlyForm">
+              <i
+                class="fa fa-fw fa-search aw-icon btn-search"
+                aria-hidden="true"
+                (click)="searchApplicability(false)"
+              ></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">{{ getComponentName() + ".quantBefore" | translate }}</label>
+
+          <div class="form-control">
+            <input
+              type="text"
+              maxlength="3"
+              class="aw-input"
+              [disabled]="isReadOnlyForm"
+              [(ngModel)]="newEvol.quantityBefore"
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">{{ getComponentName() + ".quantAfter" | translate }}</label>
+
+          <div class="form-control">
+            <input
+              type="text"
+              maxlength="3"
+              class="aw-input"
+              [disabled]="isReadOnlyForm"
+              [(ngModel)]="newEvol.quantityAfter"
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">{{ getComponentName() + ".comments" | translate }}</label>
+
+          <div class="form-control">
+            <textarea
+              class="aw-textarea"
+              [rows]="3"
+              [disabled]="isReadOnlyForm"
+              pInputTextarea
+              [(ngModel)]="newEvol.evolutionRemarks"
+            ></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button *ngIf="isReadOnlyForm" type="button" mat-raised-button (click)="onHide()">
+      <span>{{ "global.close" | translate }}</span>
+    </button>
+
+    <button *ngIf="!isReadOnlyForm" type="button" mat-raised-button (click)="onHide()">
+      <span>{{ "global.cancel" | translate }}</span>
+    </button>
+
+    <button
+      *ngIf="!isReadOnlyForm"
+      type="button"
+      mat-raised-button
+      color="primary"
+      (click)="onValidate()"
+      [disabled]="!isValidateEnabled()"
+    >
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>
+
+<aw-dialog-table
+  *ngIf="showPnBeforeDialog"
+  [(display)]="showPnBeforeDialog"
+  [data]="dialogTableDataPnBefore"
+  (onSelected)="setSelectedPnBefore($event)"
+></aw-dialog-table>
+<aw-dialog-search-part
+  *ngIf="showPnAfterDialog"
+  [(display)]="showPnAfterDialog"
+  (onValidated)="setSelectedPnAfter($event)"
+  [searchObject]="partsSearch"
+></aw-dialog-search-part>
+<aw-dialog-table
+  *ngIf="showPnApplicabilityDialog"
+  [(display)]="showPnApplicabilityDialog"
+  [data]="dialogTableDataApplicability"
+  (onSelected)="setPnSelectedApplicability($event)"
+></aw-dialog-table>
+<aw-dialog-table
+  *ngIf="showApplicabilityDialog"
+  [(display)]="showApplicabilityDialog"
+  [data]="dialogTableDataApplicability"
+  (onSelected)="setSelectedApplicability($event)"
+></aw-dialog-table>
+
+<aw-dialog-search-item
+  *ngIf="showItemTableDialog"
+  [(display)]="showItemTableDialog"
+  (onValidated)="onSelectedItem($event)"
+></aw-dialog-search-item>

@@ -1,0 +1,152 @@
+<div class="table-header">
+  <div class="table-global-filter" *ngIf="dataSource.dataCount > 0">
+    <label><i class="fa fa-fw fa-search" aria-hidden="true"></i></label>
+
+    <input
+      type="text"
+      placeholder="{{ 'table.globalFilterText' | translate }}"
+      (input)="onUpdateGlobalFilter($event.target.value)"
+    />
+  </div>
+
+  <div class="table-actions" *ngIf="actionsTemplate">
+    <ng-container
+      *ngTemplateOutlet="actionsTemplate; context: { selectedData: dataSource.dataSelection }"
+    ></ng-container>
+  </div>
+
+  <div>
+    <i
+      class="fa fa-fw fa-filter filter-toggle aw-icon aw-icon-with-border"
+      aria-hidden="true"
+      (click)="toggleColumnFilterVisibility()"
+      [ngClass]="{ active: showColumnFilter }"
+      *ngIf="hasColumnsWithReferenceData && dataSource.dataCount > 0"
+    ></i>
+  </div>
+</div>
+
+<p-table
+  class="table"
+  dataKey="_id"
+  [columns]="dataSource.columns"
+  [customSort]="enableCustomSort"
+  [paginator]="dataSource.enablePaginator"
+  [resizableColumns]="dataSource.allowResizableColumns"
+  [rows]="dataSource.itemsPerPage"
+  [selectionMode]="dataSource.enableSelection ? (dataSource.allowMultiSelect ? 'multiple' : 'single') : null"
+  [value]="dataSource.data$ | async"
+  [(selection)]="dataSource.dataSelection"
+  (onRowSelect)="dataSource.enableSelection && selectRow($event)"
+  (onRowUnselect)="dataSource.enableSelection && unselectRow($event)"
+  (onSort)="onSortTable($event)"
+  (sortFunction)="sort($event)"
+  [ngClass]="{ 'no-paginator': dataSource.dataCount <= dataSource.itemsPerPage }"
+>
+  <ng-template pTemplate="emptymessage">
+    <span *ngIf="!dataSource.isLoading"> &nbsp;</span>
+
+    <div *ngIf="dataSource.isLoading" class="aw-table-loading-indicator">
+      <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+      <div class="lds-hourglass"></div>
+    </div>
+  </ng-template>
+
+  <ng-template pTemplate="header" let-columns>
+    <ng-container *ngIf="headerTemplate; else fallbackBlock">
+      <ng-container *ngTemplateOutlet="headerTemplate"></ng-container>
+    </ng-container>
+    <ng-template #fallbackBlock>
+      <tr>
+        <th class="checkbox-col" *ngIf="dataSource.enableSelection && dataSource.allowMultiSelect">
+          <mat-checkbox
+            [checked]="dataSource.dataSelectionCount === dataSource.dataCount"
+            [indeterminate]="dataSource.dataSelectionCount < dataSource.dataCount && dataSource.dataSelectionCount > 0"
+            (click)="toggleAllRows($event)"
+            *ngIf="dataSource.dataCount > 0"
+          ></mat-checkbox>
+        </th>
+        <th class="checkbox-col" *ngIf="dataSource.enableSelection && !dataSource.allowMultiSelect"></th>
+
+        <th
+          class="col"
+          pResizableColumn
+          [pSortableColumn]="col"
+          [ngStyle]="{ width: col.width }"
+          *ngFor="let col of columns"
+        >
+          <div>
+            <span class="label" [ngStyle]="{ 'text-align': col.alignment }">
+              {{ col.translateKey || col.field | translate }}
+            </span>
+
+            <i
+              class="ui-sortable-column-icon pi pi-fw"
+              [ngClass]="{
+                'pi-sort-up': col['_sorted'] === 1,
+                'pi-sort-down': col['_sorted'] === -1
+              }"
+            ></i>
+          </div>
+        </th>
+
+        <th class="row-expansion-col" *ngIf="rowExpansionTemplate"></th>
+      </tr>
+
+      <tr *ngIf="showColumnFilter">
+        <th class="checkbox-col" *ngIf="dataSource.enableSelection">
+          <i class="fa fa-fw fa-filter filter-toggle" aria-hidden="true"></i>
+        </th>
+
+        <th *ngFor="let col of columns">
+          <p-multiSelect
+            appendTo="body"
+            [defaultLabel]="'all' | translate"
+            [options]="col.referenceData"
+            [(ngModel)]="col._selectedReferenceData"
+            (onChange)="onSelectColumnReferenceData()"
+            *ngIf="col.referenceData"
+          ></p-multiSelect>
+        </th>
+
+        <th class="row-expansion-col" *ngIf="rowExpansionTemplate"></th>
+      </tr>
+    </ng-template>
+  </ng-template>
+
+  <ng-template pTemplate="body" let-rowData let-columns="columns" let-expanded="expanded" let-rowIndex="rowIndex">
+    <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+      <td class="checkbox-col" *ngIf="dataSource.enableSelection && dataSource.allowMultiSelect">
+        <mat-checkbox [(ngModel)]="rowData['_checked']" (click)="onClickCheckbox($event)"></mat-checkbox>
+      </td>
+      <td class="checkbox-col" *ngIf="dataSource.enableSelection && !dataSource.allowMultiSelect">
+        <mat-radio-group [(ngModel)]="rowData['_checked']">
+          <mat-radio-button [value]="true" (click)="onClickCheckbox($event)"></mat-radio-button>
+        </mat-radio-group>
+      </td>
+
+      <td class="ui-resizable-column" [ngStyle]="{ 'text-align': col.alignment }" *ngFor="let col of columns">
+        <ng-container *ngIf="bodyTemplates[col.field]; else fallbackBlock">
+          <ng-container
+            *ngTemplateOutlet="bodyTemplates[col.field]; context: { cellData: rowData[col.field], rowData: rowData }"
+          ></ng-container>
+        </ng-container>
+        <ng-template #fallbackBlock>{{ rowData[col.field] }}</ng-template>
+      </td>
+
+      <td class="row-expansion-toggler" *ngIf="rowExpansionTemplate">
+        <a href="#" [pRowToggler]="rowData" (click)="onClickRowToggler($event, rowData)">
+          <i class="material-icons" [ngClass]="{ expanded: expanded }">chevron_right</i>
+        </a>
+      </td>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="rowexpansion" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+    <tr>
+      <td [attr.colspan]="columns.length + 2">
+        <ng-container *ngTemplateOutlet="rowExpansionTemplate; context: { rowData: rowData }"></ng-container>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>

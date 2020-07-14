@@ -1,0 +1,57 @@
+{
+  "DialogFolderTypeComponent": {
+    "code": "Code",
+    "confirmDeleteSelectedFolderType": "Voulez-vous supprimer l'opération sélectionnée ?",
+    "confirmDeleteSelectedFolderTypes": "Voulez-vous supprimer les opérations sélectionnées ?",
+    "designation": "Désignation",
+    "dftCode": "Code",
+    "dftDesignation": "Désignation",
+    "dftopeKey": "Opération",
+    "dftopeSequenceNumber": "Numéro de séquence",
+    "docCategorie": "Type de catégorie",
+    "errorOnLoadingMaterialType": "Erreur au chargement des catégories de documents",
+    "item": "Item",
+    "linkedDocCategories": "Catégorie de document lié",
+    "materialTypes": "Types de matériel",
+    "moveDown": "Descendre",
+    "moveUp": "Monter",
+    "objectType": "Type d'élément",
+    "operations": "Opérations",
+    "package": "Colis",
+    "pnType": "Type de matériel",
+    "receipt": "Type de réception",
+    "shipment": "Type d'expédition",
+    "taskTypeCode": "Type de tâche",
+    "transferType": "Type de transfert"
+  },
+  "DialogOperationCatalogComponent": {
+    "editOperation": "Éditer opération",
+    "elementType": "Type d'élément",
+    "item": "Item",
+    "newOperation": "Nouvelle opération",
+    "operation": "Opération",
+    "package": "Colis",
+    "taskType": "Type de tâche",
+    "code": "Code"
+  },
+  "ReceiptTypeComponent": {
+    "code": "Code",
+    "confirmDeleteSelectedReceiptType": "Voulez-vous supprimer le type de réception sélectionné ?",
+    "confirmDeleteSelectedReceiptTypes": "Voulez-vous supprimer les types de réception sélectionnés ?",
+    "designation": "Désignation",
+    "noOfOperations": "Nombre d'opérations",
+    "successOnDeleteReceiptType": "Type de réception supprimé",
+    "successOnDeleteReceiptTypes": "Types de réception supprimés",
+    "title": "Type de réception"
+  },
+  "ShipmentTypeComponent": {
+    "code": "Code",
+    "confirmDeleteSelectedShimpentTypes": "Voulez-vous supprimer le type d'expédition sélectionné ?",
+    "confirmDeleteSelectedShipmentType": "Voulez-vous supprimer les types d'expédition sélectionnés ?",
+    "designation": "Désignation",
+    "noOfOperations": "Nombre d'opérations",
+    "successOnDeleteShimpmentType": "Type d'expédition supprimé",
+    "successOnDeleteShimpmentTypes": "Types d'expédition supprimés",
+    "title": "Type de d'expédition"
+  }
+}

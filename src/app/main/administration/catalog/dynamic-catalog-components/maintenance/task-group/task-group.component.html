@@ -1,0 +1,57 @@
+<div class="grid-row">
+  <div class="grid-cell--12">
+    <div class="grid-cell grid-cell--container">
+      <div class="grid-cell-header">
+        <div class="grid-cell-title-container">
+          <h3 class="grid-cell-title">
+            {{ getComponentName() + ".taskList" | translate }} ({{ taskGroupTableDataSource.dataCount }})
+          </h3>
+        </div>
+      </div>
+
+      <div class="grid-cell-content">
+        <a-table [dataSource]="taskGroupTableDataSource">
+          <ng-template tableActionsDef>
+            <button
+              *ngIf="taskGroupTableDataSource.hasDataSelection"
+              type="button"
+              mat-raised-button
+              color="warn"
+              (click)="deleteSelectedTask()"
+            >
+              {{ "global.delete" | translate }}
+            </button>
+
+            <button
+              *ngIf="taskGroupTableDataSource.dataSelectionCount === 1"
+              type="button"
+              mat-raised-button
+              (click)="editSelectedTask()"
+            >
+              {{ "global.edit" | translate }}
+            </button>
+
+            <button
+              *ngIf="!taskGroupTableDataSource.hasDataSelection"
+              type="button"
+              mat-raised-button
+              (click)="addTask()"
+            >
+              {{ "global.add" | translate }}
+            </button>
+          </ng-template>
+        </a-table>
+      </div>
+    </div>
+  </div>
+
+  <aw-dialog-task-group
+    *ngIf="showTaskGroupDialog"
+    [(display)]="showTaskGroupDialog"
+    [data]="selectedTaskGroupTableDialogData"
+    [openMode]="taskGroupDialogOpenMode"
+    (onValidated)="onAddTask($event)"
+    (onUpdate)="updateTask($event)"
+    [taskList]="taskGroupTableDataSource.dataSrc"
+  ></aw-dialog-task-group>
+</div>

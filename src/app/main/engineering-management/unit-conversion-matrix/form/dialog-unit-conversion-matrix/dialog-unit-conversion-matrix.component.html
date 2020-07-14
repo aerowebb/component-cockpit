@@ -1,0 +1,43 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".title" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+      <label class="form-label">{{ getComponentName() + ".unit" | translate }}</label>
+
+      <div class="form-control">
+        <p-dropdown
+          class="aw-dropdown fixed-width"
+          [options]="unitCodes"
+          [(ngModel)]="measure.unitCode"
+          appendTo="body"
+          [showClear]="true"
+          placeholder="&nbsp;"
+        ></p-dropdown>
+      </div>
+    </div>
+    <div class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+      <label class="form-label">{{ getComponentName() + ".fhEquivalent" | translate }}</label>
+
+      <div class="form-control"><input type="number" class="aw-input" [(ngModel)]="measure.fhEquivalent" /></div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button type="button" mat-raised-button (click)="cancel()">
+      <span>{{ "global.cancel" | translate }}</span>
+    </button>
+    <button
+      type="button"
+      mat-raised-button
+      color="primary"
+      (click)="validate()"
+      [ngClass]="{ inactive: !enableValidate() }"
+      [disabled]="!enableValidate()"
+    >
+      <span>{{ "global.validate" | translate }}</span>
+    </button>
+  </a-footer>
+</a-modal>

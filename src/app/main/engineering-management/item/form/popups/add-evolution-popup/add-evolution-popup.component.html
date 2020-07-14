@@ -1,0 +1,28 @@
+<a-modal class="aw-modal" [(visible)]="display" [width]="50">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".title" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="section">
+      <h4 class="section-title">{{ "global.results" | translate }} ({{ evolutionsTableDataSource?.dataCount }})</h4>
+      <div class="section-content">
+        <a-table [dataSource]="evolutionsTableDataSource"> </a-table>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button type="button" mat-raised-button (click)="onCancel()">{{ "global.cancel" | translate }}</button>
+
+    <button
+      type="button"
+      mat-raised-button
+      color="primary"
+      (click)="onValidate()"
+      [disabled]="!evolutionsTableDataSource.hasDataSelection"
+    >
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>

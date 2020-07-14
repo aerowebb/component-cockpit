@@ -1,0 +1,77 @@
+@import "constants";
+@import "mixins";
+
+:host {
+  .pointer {
+    cursor: pointer;
+  }
+
+  .grid-cell-configuration-control {
+    .list-with-details {
+      .details,
+      .list {
+        max-height: 50rem;
+      }
+
+      .details {
+        flex-grow: 1;
+
+        .configuration-control-node-action-list {
+          justify-content: flex-end;
+
+          & > button {
+            margin-right: $margin-value;
+
+            &:last-of-type {
+              margin-right: 0;
+            }
+          }
+        }
+
+        .configuration-control-node-image {
+          & > img {
+            max-width: 100%;
+            min-width: 100%;
+          }
+        }
+      }
+
+      .list {
+        max-width: 40%;
+        min-width: 40%;
+      }
+    }
+  }
+
+  .grid-cell-summary {
+    .table-summary-wrapper {
+      margin: 0 auto;
+      max-width: 70%;
+    }
+  }
+}
+
+::ng-deep .grid-cell-configuration-control .list .asset {
+  @include flex-row();
+}
+
+::ng-deep .grid-cell-configuration-control .list .asset-type {
+  @include flex-row();
+
+  align-items: center;
+  font-size: 1.25rem;
+  margin-right: $margin-value;
+}
+
+::ng-deep .grid-cell-configuration-control .list .asset-data {
+  @include flex-column();
+}
+
+::ng-deep .grid-cell-configuration-control .list .structure {
+  display: inline-block;
+  font-weight: 600;
+}
+
+::ng-deep .grid-cell-configuration-control .list .asset {
+  font-style: italic;
+}

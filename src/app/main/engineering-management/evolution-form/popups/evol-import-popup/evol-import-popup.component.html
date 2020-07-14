@@ -1,0 +1,95 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".docManagement" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="row">
+      <div class="form-group">
+        <label class="form-label">{{ getComponentName() + ".docName" | translate }}</label>
+
+        <div class="form-control form-control-with-btn">
+          <input
+            class="aw-input"
+            type="text"
+            [(ngModel)]="document.docName"
+            [disabled]="isReadOnlyForm"
+            style="width:79%"
+          />
+          <p-fileUpload
+            #fileUploader
+            *ngIf="!isReadOnlyForm"
+            name="document[]"
+            customUpload="true"
+            mode="basic"
+            auto="true"
+            chooseLabel="{{ 'global.upload' | translate }}"
+            (uploadHandler)="uploadDocument($event, fileUploader)"
+          ></p-fileUpload>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="form-group">
+        <label class="form-label">{{ getComponentName() + ".docSource" | translate }}</label>
+
+        <div class="form-control">
+          <input class="aw-input" type="text" [(ngModel)]="document.docSource" [disabled]="isReadOnlyForm" />
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="form-group">
+        <label class="form-label">{{ getComponentName() + ".docPublicationDate" | translate }}</label>
+
+        <div class="form-control">
+          <p-calendar
+            showButtonBar="true"
+            [monthNavigator]="true"
+            [yearNavigator]="true"
+            [yearRange]="sessionService.calendarYearRange"
+            class="aw-calendar"
+            [dateFormat]="sessionService.dateFormatPrimeNG"
+            [locale]="sessionService.calendarFormat"
+            [(ngModel)]="document.docPublicationDate"
+            [disabled]="isReadOnlyForm"
+            appendTo="body"
+          ></p-calendar>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="form-group">
+        <label class="form-label">{{ getComponentName() + ".docDescription" | translate }}</label>
+
+        <div class="form-control">
+          <textarea
+            class="aw-textarea"
+            [rows]="3"
+            pInputTextarea
+            autoResize="autoResize"
+            [(ngModel)]="document.docDescription"
+            [disabled]="isReadOnlyForm"
+          ></textarea>
+        </div>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button type="button" mat-raised-button (click)="closeDialog()">{{ "global.cancel" | translate }}</button>
+    <button
+      *ngIf="!isReadOnlyForm"
+      type="button"
+      mat-raised-button
+      (click)="validate()"
+      color="primary"
+      [disabled]="!isValidateEnabled()"
+    >
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>

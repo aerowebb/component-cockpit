@@ -1,0 +1,281 @@
+<div class="page-header">
+  <div class="page-info">
+    <div>
+      <div class="page-title">
+        {{ "transaction." + componentData.componentId | translate }}
+      </div>
+
+      <div class="page-subtitle">
+        <div class="page-subtitle">- {{ "page.searchPage" | translate }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-actions">
+    <button type="button" mat-raised-button (click)="openNewUser()" *ngIf="hasUpdateAccessRight">
+      {{ "global.create" | translate }}
+    </button>
+    <button
+      id="actions"
+      mat-icon-button
+      class="mat-elevation-z1"
+      matTooltip="{{ 'global.showAllActionTooltip' | translate }}"
+      matTooltipPosition="above"
+      aria-label="Show all actions"
+      [matMenuTriggerFor]="actions"
+    >
+      <mat-icon>more_horiz</mat-icon>
+    </button>
+
+    <mat-menu #actions="matMenu">
+      <button id="favorites" mat-menu-item (click)="updateFavoriteState()">
+        {{ (isFavoriteEntry ? "page.removeFromFavorites" : "page.addToFavorites") | translate }}
+      </button>
+    </mat-menu>
+  </div>
+</div>
+
+<div class="page-wrapper">
+  <div class="page-container search-page-container">
+    <div class="page-content">
+      <div class="grid-row">
+        <div class="grid-cell--12">
+          <div class="grid-cell grid-cell--container">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">{{ "global.search" | translate }}</h3>
+              </div>
+            </div>
+
+            <div class="grid-cell-content">
+              <div class="column">
+                <div class="row search-criteria-header">
+                  <i
+                    class="fa fa-fw fa-undo aw-icon aw-icon-with-border search-criteria-action"
+                    aria-hidden="true"
+                    pTooltip="{{ 'global.reset' | translate }}"
+                    tooltipPosition="top"
+                    (click)="resetSearchCriteria()"
+                  ></i>
+                </div>
+
+                <div class="row">
+                  <div class="form-group">
+                    <label class="form-label"> {{ componentData.componentId + ".lastname" | translate }} </label>
+
+                    <div class="form-control">
+                      <input type="text" class="aw-input" [(ngModel)]="searchObject.bidoUserDTO.lastname" />
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label"> {{ componentData.componentId + ".firstname" | translate }} </label>
+
+                    <div class="form-control">
+                      <input type="text" class="aw-input" [(ngModel)]="searchObject.bidoUserDTO.firstname" />
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label"> {{ componentData.componentId + ".login" | translate }} </label>
+
+                    <div class="form-control">
+                      <input type="text" class="aw-input" [(ngModel)]="searchObject.bidoUserDTO.login" />
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label"> {{ componentData.componentId + ".company" | translate }} </label>
+
+                    <div class="form-control">
+                      <p-dropdown
+                        class="aw-dropdown fixed-width"
+                        [options]="company"
+                        [(ngModel)]="searchObject.companyName"
+                        placeholder="&nbsp;"
+                        [showClear]="true"
+                        (keyup.enter)="search()"
+                      ></p-dropdown>
+                    </div>
+                  </div>
+                </div>
+                <div class="row search-criteria-footer">
+                  <div class="search-actions">
+                    <button
+                      type="button"
+                      mat-raised-button
+                      class="btn-with-spinner"
+                      color="primary"
+                      appKeyPress
+                      [keyCode]="'Enter'"
+                      (keyPress)="search()"
+                      (click)="search()"
+                    >
+                      <span *ngIf="isLoading" class="lds-hourglass"></span>
+                      {{ "global.toSearch" | translate }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-row">
+        <div class="grid-cell--12">
+          <div #resultsContainerAnchor class="grid-cell grid-cell--container">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">
+                  {{ "global.results" | translate }} ({{ userTableDataSource ? userTableDataSource.dataCount : 0 }})
+                </h3>
+              </div>
+            </div>
+
+            <div class="grid-cell-content users-program-list-table">
+              <a-table [dataSource]="userTableDataSource">
+                <ng-template tableActionsDef>
+                  <button
+                    *ngIf="userTableDataSource.hasData && !userTableDataSource.hasDataSelection"
+                    type="button"
+                    mat-raised-button
+                    (click)="exportTable()"
+                  >
+                    {{ "global.export" | translate }}
+                  </button>
+
+                  <button
+                    *ngIf="hasManageAccessRight && userTableDataSource.hasDataSelection"
+                    type="button"
+                    mat-raised-button
+                    color="warn"
+                    (click)="deleteSelectedUsers()"
+                  >
+                    {{ "global.delete" | translate }}
+                  </button>
+                  <button
+                    *ngIf="userTableDataSource.hasDataSelection"
+                    type="button"
+                    mat-raised-button
+                    pTooltip="{{ componentData.componentId + '.updateUsers' | translate }}"
+                    tooltipPosition="top"
+                    (click)="updateProfileRights()"
+                  >
+                    {{ componentData.componentId + ".updateProfiles" | translate }}
+                  </button>
+                  <button
+                    *ngIf="userTableDataSource.hasDataSelection"
+                    type="button"
+                    mat-raised-button
+                    (click)="openSelectedUsers()"
+                  >
+                    {{ "global.open" | translate }}
+                  </button>
+                </ng-template>
+
+                <ng-template columnDef="isUserService" let-rowData="rowData">
+                  <i
+                    class="fa fa-check compliance-icon green"
+                    aria-hidden="true"
+                    *ngIf="rowData.isUserService !== null && rowData.isUserService"
+                  ></i>
+                </ng-template>
+
+                <ng-template columnDef="company" let-rowData="rowData">
+                  <span pTooltip="{{ rowData.company && rowData.company.length > 30 ? rowData.company : '' }}">
+                    {{ rowData.company }}
+                  </span>
+                </ng-template>
+
+                <ng-template columnDef="isUserMobile" let-rowData="rowData">
+                  <i
+                    class="fa fa-check compliance-icon green"
+                    aria-hidden="true"
+                    *ngIf="rowData.isUserMobile !== null && rowData.isUserMobile"
+                  ></i>
+                </ng-template>
+                <ng-template columnDef="validityDate" let-rowData="rowData">
+                  {{ rowData.validityDate | date: "yyyy/MM/dd" }}
+                </ng-template>
+                <ng-template columnDef="lastLoginDate" let-rowData="rowData">
+                  {{ rowData.lastLoginDate | date: "yyyy/MM/dd HH:mm:ss" }}
+                </ng-template>
+                <ng-template columnDef="logIN" let-rowData="rowData">
+                  <i
+                    class="fa fa-circle amp-status-icon red"
+                    aria-hidden="true"
+                    *ngIf="rowData.logIN !== null && rowData.logIN === 'red'"
+                  ></i>
+                  <i
+                    class="fa fa-circle amp-status-icon green"
+                    aria-hidden="true"
+                    *ngIf="rowData.logIN !== null && rowData.logIN === 'green'"
+                  ></i>
+                </ng-template>
+                <ng-template rowExpansionDef let-rowData="rowData">
+                  <div class="row">
+                    <div class="form-group">
+                      <label class="form-label"> {{ getComponentName() + ".employee" | translate }} </label>
+
+                      <div class="form-control">
+                        <input class="aw-input" type="text" [(ngModel)]="rowData.employee" [disabled]="true" />
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-label">
+                        {{ getComponentName() + ".userComment" | translate }}
+                      </label>
+
+                      <div class="form-control">
+                        <span
+                          pTooltip="{{
+                            rowData.userComment && rowData.userComment.length > 30 ? rowData.userComment : ''
+                          }}"
+                        >
+                          <input class="aw-input" type="text" [(ngModel)]="rowData.userComment" [disabled]="true" />
+                        </span>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-label">
+                        {{ getComponentName() + ".lastLogoutDate" | translate }}
+                      </label>
+
+                      <div class="form-control">
+                        <input class="aw-input" type="text" [(ngModel)]="rowData.lastLogoutDate" [disabled]="true" />
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-label">
+                        {{ getComponentName() + ".lastPasswordChangeDate" | translate }}
+                      </label>
+
+                      <div class="form-control">
+                        <input
+                          class="aw-input"
+                          type="text"
+                          [(ngModel)]="rowData.lastPasswordChangeDate"
+                          [disabled]="true"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </ng-template>
+              </a-table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<aw-update-profile-rights-popup-form
+  *ngIf="showUserProfileForm"
+  [(display)]="showUserProfileForm"
+  [selectedUsers]="editSelectedUsers"
+>
+</aw-update-profile-rights-popup-form>

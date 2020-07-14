@@ -1,0 +1,598 @@
+<div class="page-header">
+  <div class="page-info">
+    <div>
+      <div class="page-title">
+        {{ "transaction." + componentData.componentId | translate }}
+      </div>
+
+      <div class="page-subtitle">
+        <div class="page-subtitle">
+          - {{ bsdeProjectDTO.projectNumber }}
+          <span *ngIf="selectedBireItemDTO">
+            - {{ selectedBireItemDTO.chapter }}-{{ selectedBireItemDTO.section }}-{{ selectedBireItemDTO.subject }}-{{
+              selectedBireItemDTO.sheet
+            }}-{{ selectedBireItemDTO.marks }}
+            <span *ngIf="!!selectedBireItemDTO.name">- {{ selectedBireItemDTO.name }}</span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-actions">
+    <button
+      id="actions"
+      mat-icon-button
+      class="mat-elevation-z1"
+      matTooltip="{{ 'global.showAllActionTooltip' | translate }}"
+      matTooltipPosition="above"
+      aria-label="Show all actions"
+      [matMenuTriggerFor]="actions"
+    >
+      <mat-icon>more_horiz</mat-icon>
+    </button>
+
+    <mat-menu #actions="matMenu">
+      <button type="button" mat-menu-item (click)="refresh()">
+        {{ "global.refresh" | translate }}
+      </button>
+      <button id="favorites" mat-menu-item (click)="updateFavoriteState()">
+        {{ (isFavoriteEntry ? "page.removeFromFavorites" : "page.addToFavorites") | translate }}
+      </button>
+    </mat-menu>
+  </div>
+</div>
+
+<div class="page-wrapper">
+  <div class="page-container">
+    <div class="page-content">
+      <div class="grid-row">
+        <div class="grid-cell--10 custom-breadcrumb-padding"></div>
+
+        <!-- SIBLINGS DROPDOWN TO NAVIGATE BETWEEN SIBLINGS -->
+        <div class="grid-cell--2" *ngIf="siblingsList.length > 0">
+          <div class="form-group">
+            <label class="form-label"></label>
+            <div class="form-control sibling-list">
+              <p-dropdown
+                class="aw-dropdown custom-width"
+                [options]="siblingsList"
+                [(ngModel)]="selectedSibling"
+                (onChange)="loadSibling()"
+              >
+                <ng-template let-item pTemplate="selectedItem">
+                  <div>{{ item?.label }}</div>
+                  <div>
+                    <i>{{ item?.subtitle }}</i>
+                  </div>
+                </ng-template>
+                <ng-template let-group pTemplate="item">
+                  <div>{{ group?.label }}</div>
+                  <div>
+                    <i>{{ group?.subtitle }}</i>
+                  </div>
+                </ng-template>
+              </p-dropdown>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <!-- ITEM BLOCK -->
+          <div
+            [ngClass]="{
+              'grid-cell--6': !!selectedSubAssembly.bireDocumentDTO && !!selectedSubAssembly.bireDocumentDTO.docFile,
+              'grid-cell--4': !!selectedSubAssembly.bireDocumentDTO && !selectedSubAssembly.bireDocumentDTO.docFile
+            }"
+          >
+            <div class="grid-cell grid-cell--container grid-cell-scope  custom-height">
+              <div class="grid-cell-header">
+                <div class="grid-cell-title-container">
+                  <h3 class="grid-cell-title">
+                    {{ getComponentName() + ".item" | translate }}
+                  </h3>
+                </div>
+              </div>
+
+              <div class="grid-cell-content">
+                <div class="column">
+                  <div class="row">
+                    <div class="form-group">
+                      <label class="form-label">{{ getComponentName() + ".family" | translate }}</label>
+                      <div class="form-control">
+                        <b>{{ itemFamily }}</b>
+                        <i>{{ isSerialized }}</i>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">{{ getComponentName() + ".expectedQuantity" | translate }}</label>
+                      <div class="form-control">
+                        <b>{{ selectedSubAssembly.expectedQuantity }}</b>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="form-group">
+                      <label class="form-label">{{ getComponentName() + ".functionCode" | translate }}</label>
+                      <div class="form-control">
+                        <b>{{ selectedSubAssembly.functionCode }}</b>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">{{ getComponentName() + ".realQuantity" | translate }}</label>
+                      <div class="form-control">
+                        <b>{{ selectedSubAssembly.realQuantity }}</b>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="column"
+                  *ngIf="!!selectedSubAssembly.bireDocumentDTO && !!selectedSubAssembly.bireDocumentDTO.docFile"
+                >
+                  <div class="illustration">
+                    <img
+                      class="img-class"
+                      [src]="selectedSubAssembly.additionalData"
+                      (click)="openImage(selectedSubAssembly.additionalData)"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Control Configuration -->
+          <div
+            [ngClass]="{
+              'grid-cell--3': !!selectedSubAssembly.bireDocumentDTO && !!selectedSubAssembly.bireDocumentDTO.docFile,
+              'grid-cell--4': !!selectedSubAssembly.bireDocumentDTO && !selectedSubAssembly.bireDocumentDTO.docFile
+            }"
+          >
+            <div class="grid-cell grid-cell--container grid-cell-scope custom-height">
+              <div class="grid-cell-header">
+                <div class="grid-cell-title-container  loading-indicator">
+                  <h3 class="grid-cell-title">
+                    {{ getComponentName() + ".configurationControl" | translate }}
+                    <div *ngIf="isTechnicalTableLoaded" class="lds-hourglass"></div>
+                  </h3>
+                </div>
+              </div>
+              <div class="grid-cell-content">
+                <div class="column">
+                  <div class="row">
+                    <p-table class="aw-table2" [columns]="confControlCols" [value]="confControlList">
+                      <ng-template pTemplate="emptymessage">
+                        <span *ngIf="!isfilterTable"> &nbsp;</span>
+
+                        <div *ngIf="isfilterTable" class="aw-table-loading-indicator">
+                          <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                          <div class="lds-hourglass"></div>
+                        </div>
+                      </ng-template>
+                      <ng-template pTemplate="colgroup" let-columns>
+                        <colgroup>
+                          <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                        </colgroup>
+                      </ng-template>
+
+                      <ng-template pTemplate="header" let-columns>
+                        <tr>
+                          <th *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                            <span *ngIf="col.field !== 'label'">{{
+                              getComponentName() + "." + col.field | translate
+                            }}</span>
+                          </th>
+                        </tr>
+                      </ng-template>
+
+                      <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                        <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                          <td
+                            *ngFor="let col of columns"
+                            [ngSwitch]="col.field"
+                            [ngStyle]="{ 'text-align': col.alignment }"
+                          >
+                            <!-- CONTROL -->
+                            <span *ngSwitchCase="'ok'">
+                              <div [style.textAlign]="col.alignment">
+                                <span
+                                  [ngClass]="calculateOKColorCode(rowData) ? 'alert alert--ok' : 'alert alert--none'"
+                                >
+                                  {{ rowData[col.field] }}
+                                </span>
+                              </div>
+                            </span>
+                            <span *ngSwitchCase="'nok'">
+                              <div [style.textAlign]="col.alignment">
+                                <span *ngIf="!rowData[col.field]" class="alert alert--none">
+                                  {{ rowData[col.field] }}
+                                </span>
+                                <span *ngIf="!!rowData[col.field]" class="alert alert--nok">
+                                  {{ rowData[col.field] }}
+                                </span>
+                              </div>
+                            </span>
+                            <span *ngSwitchCase="'warning'">
+                              <div [style.textAlign]="col.alignment">
+                                <span
+                                  [ngClass]="
+                                    calculateWarningColorCode(rowData) ? 'alert alert--warning' : 'alert alert--none'
+                                  "
+                                >
+                                  {{ rowData[col.field] }}
+                                </span>
+                              </div>
+                            </span>
+                            <span *ngSwitchDefault>{{ rowData[col.field] }}</span>
+                          </td>
+                        </tr>
+                      </ng-template>
+                    </p-table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- PROGRESS -->
+          <div
+            [ngClass]="{
+              'grid-cell--3': !!selectedSubAssembly.bireDocumentDTO && !!selectedSubAssembly.bireDocumentDTO.docFile,
+              'grid-cell--4': !!selectedSubAssembly.bireDocumentDTO && !selectedSubAssembly.bireDocumentDTO.docFile
+            }"
+          >
+            <div class="grid-cell grid-cell--container grid-cell-scope custom-height">
+              <div class="grid-cell-header">
+                <div class="grid-cell-title-container  loading-indicator">
+                  <h3 class="grid-cell-title">
+                    {{ getComponentName() + ".progress" | translate }}
+                    <div *ngIf="isTechnicalTableLoaded" class="lds-hourglass"></div>
+                  </h3>
+                </div>
+              </div>
+
+              <div class="grid-cell-content">
+                <div class="column custom-chart-height">
+                  <div class="chart-container" *ngIf="showSubAssemblyTree">
+                    <div class="chart-wrapper">
+                      <p-chart
+                        [type]="chartType"
+                        [data]="chartData"
+                        [options]="chartOptions"
+                        width="100%"
+                        height="100%"
+                      ></p-chart>
+                    </div>
+
+                    <div class="chart-legend">
+                      <div class="chart-legend-label">
+                        <div class="chart-legend-label-color completed"></div>
+                        {{ chartData.labels[0] }}
+                        <span class="chart-value">{{ completedNb }} </span>
+                      </div>
+
+                      <div class="chart-legend-label">
+                        <div class="chart-legend-label-color not-completed"></div>
+                        {{ chartData.labels[1] }}
+                        <span class="chart-value">{{ notCompletedNb }} </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Technical Quotation Table -->
+          <div class="grid-cell--12">
+            <div class="grid-cell grid-cell--container grid-cell-scope">
+              <div class="grid-cell-header">
+                <div class="grid-cell-title-container  loading-indicator">
+                  <h3 class="grid-cell-title">
+                    {{ getComponentName() + ".technicalQuotation" | translate }}
+                    <div *ngIf="isTechnicalTableLoaded" class="lds-hourglass"></div>
+                  </h3>
+                </div>
+              </div>
+
+              <div class="grid-cell-content">
+                <div class="grid-cell--12">
+                  <div class="grid-row">
+                    <p-table
+                      [resizableColumns]="true"
+                      #ptableFilterElement
+                      class="aw-table2"
+                      [columns]="technicalQuotationCols"
+                      [value]="technicalQuotationList"
+                      [(selection)]="selectedElements"
+                      [scrollable]="true"
+                      dataKey="index"
+                    >
+                      <ng-template pTemplate="emptymessage">
+                        <span *ngIf="!isfilterTable"> &nbsp;</span>
+
+                        <div *ngIf="isfilterTable" class="aw-table-loading-indicator">
+                          <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                          <div class="lds-hourglass"></div>
+                        </div>
+                      </ng-template>
+                      <ng-template pTemplate="caption">
+                        <div class="aw-table-header" [ngClass]="{ 'rows-selected': selectedElements.length > 0 }">
+                          <div class="aw-table-global-filter">
+                            <label class="aw-table-global-filter-label">
+                              <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                            </label>
+
+                            <input
+                              #ptableCusCustomerGlobalFilter
+                              class="aw-table-global-filter-input"
+                              type="text"
+                              placeholder="{{ 'table.globalFilterText' | translate }}"
+                              (input)="ptableFilterElement.filterGlobal($event.target.value, 'contains')"
+                            />
+                          </div>
+
+                          <div class="aw-table-actions">
+                            <button
+                              type="button"
+                              mat-raised-button
+                              *ngIf="selectedElements.length === 1"
+                              (click)="openMeasure()"
+                            >
+                              {{ getComponentName() + ".showMeasures" | translate }}
+                            </button>
+                            <button
+                              type="button"
+                              mat-raised-button
+                              *ngIf="selectedElements.length === 0"
+                              (click)="openQuotationPanel()"
+                            >
+                              {{ "global.add" | translate }}
+                            </button>
+                            <button
+                              type="button"
+                              mat-raised-button
+                              *ngIf="technicalQuotationList.length !== 0"
+                              (click)="editInventory()"
+                            >
+                              {{ "global.edit" | translate }}
+                            </button>
+                            <button
+                              type="button"
+                              *ngIf="selectedElements.length > 0"
+                              mat-raised-button
+                              (click)="printPDF()"
+                            >
+                              {{ getComponentName() + ".print" | translate }}
+                            </button>
+                          </div>
+                          <div class="aw-table-icon-actions">
+                            <i
+                              class="fa fa-fw fa-filter aw-icon aw-icon-with-border aw-icon-with-overlay"
+                              aria-hidden="true"
+                              [ngClass]="{ active: filtersVisible }"
+                              (click)="opFilters.toggle($event)"
+                            ></i>
+                          </div>
+                        </div>
+                      </ng-template>
+
+                      <ng-template pTemplate="colgroup" let-columns>
+                        <colgroup>
+                          <col class="aw-table-checkbox-wrapper" />
+                          <col *ngFor="let col of columns" [ngStyle]="{ width: col.width, display: col.display }" />
+                        </colgroup>
+                      </ng-template>
+
+                      <ng-template pTemplate="header" let-columns>
+                        <tr>
+                          <th class="aw-table-checkbox-wrapper">
+                            <p-tableHeaderCheckbox class="aw-table-checkbox"></p-tableHeaderCheckbox>
+                          </th>
+
+                          <th
+                            pResizableColumn
+                            *ngFor="let col of columns"
+                            [ngStyle]="{ 'text-align': col.alignment, display: col.display }"
+                          >
+                            {{ getComponentName() + "." + col.field | translate }}
+                          </th>
+                        </tr>
+                      </ng-template>
+
+                      <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                        <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                          <td class="aw-table-checkbox-wrapper">
+                            <p-tableCheckbox class="aw-table-checkbox" [value]="rowData"></p-tableCheckbox>
+                          </td>
+
+                          <td
+                            *ngFor="let col of columns"
+                            [ngSwitch]="col.field"
+                            [ngStyle]="{ 'text-align': col.alignment, display: col.display }"
+                          >
+                            <span *ngSwitchCase="'equipment'">
+                              <div class="code">
+                                <div (click)="openPartNumberLink(rowData['pn'])" *ngIf="!!rowData['pn']">
+                                  <span *ngIf="!rowData.isOtherPN">{{ getComponentName() + ".pn" | translate }}</span>
+                                  <span *ngIf="rowData.isOtherPN">{{
+                                    getComponentName() + ".otherPN" | translate
+                                  }}</span>
+                                  :
+                                  <span class="custom-span custom-font-style cursor-class padding-class">{{
+                                    rowData["pn"]
+                                  }}</span>
+                                </div>
+                                <div *ngIf="!!rowData['sn'] && isItemSerialized">
+                                  <span>{{ getComponentName() + ".sn" | translate }}:</span>
+                                  <span class="custom-span custom-font-style padding-class">{{ rowData["sn"] }}</span>
+                                </div>
+                                <div *ngIf="!isItemSerialized && !!rowData['tn']">
+                                  <span>{{ getComponentName() + ".tn" | translate }}:</span>
+                                  <span class="custom-span custom-font-style padding-class">{{ rowData["tn"] }}</span>
+                                </div>
+                              </div>
+                            </span>
+
+                            <span *ngSwitchCase="'sentenceValue'" class="custom-font-style">
+                              {{ rowData["sentenceValue"] }}
+                            </span>
+
+                            <span *ngSwitchCase="'targetPn'">
+                              <span
+                                class="custom-span custom-font-style cursor-class"
+                                (click)="openPartNumberLink(rowData['targetPn'])"
+                                >{{ rowData["targetPn"] }}</span
+                              >
+                            </span>
+
+                            <span *ngSwitchCase="'decisionValue'">
+                              <div class="custom-font-style">
+                                {{ rowData["decisionValue"] }}
+                              </div>
+                              <div
+                                class="div-padding"
+                                *ngIf="!!rowData['issueWareHouse'] || !!rowData['receiptWareHouse']"
+                              >
+                                <div>
+                                  {{ getComponentName() + ".issue" | translate }}:
+                                  <span class="custom-font-style padding-class">{{ rowData["issueWareHouse"] }}</span>
+                                </div>
+                                <div>
+                                  {{ getComponentName() + ".receipt" | translate }}:
+                                  <span class="custom-font-style">{{ rowData["receiptWareHouse"] }}</span>
+                                </div>
+                              </div>
+                            </span>
+
+                            <span *ngSwitchCase="'iwbTask'">
+                              <div *ngFor="let task of rowData['iwbTask']" title="{{ rowData['iwbTaskHover'] }}">
+                                <span>{{ task }}</span>
+                              </div>
+                            </span>
+
+                            <span *ngSwitchCase="'iwbFindingsToDisplay'">
+                              <div
+                                *ngFor="let finding of rowData['iwbFindingsToDisplay']"
+                                title="{{ rowData['iwbFindingsToDisplayHover'] }}"
+                              >
+                                <span>{{ finding }}</span>
+                              </div>
+                            </span>
+
+                            <!-- CONTROL -->
+                            <span *ngSwitchCase="'control'">
+                              <div [style.textAlign]="col.alignment">
+                                <span
+                                  *ngIf="rowData['targetResultMatchingIcon'] === controlConfigConstants.ICON_RED"
+                                  class="alert alert--nok"
+                                  title="{{ rowData['targetResultMatchingAlt'] }}"
+                                >
+                                  {{ getComponentName() + ".alertNok" | translate }}
+                                </span>
+                                <span
+                                  *ngIf="rowData['targetResultMatchingIcon'] === controlConfigConstants.ICON_GREEN"
+                                  class="alert alert--ok"
+                                  title="{{ rowData['targetResultMatchingAlt'] }}"
+                                >
+                                  {{ getComponentName() + ".alertOk" | translate }}
+                                </span>
+                              </div>
+                            </span>
+                            <span *ngSwitchCase="'woCode'">
+                              <div
+                                *ngIf="!!rowData[col.field]"
+                                class="code breadcrumb-cursor"
+                                (click)="openWorkOrderLink(rowData)"
+                              >
+                                <span class="custom-span custom-font-style padding-class ">{{
+                                  rowData[col.field]
+                                }}</span>
+                              </div>
+                              <div *ngIf="!!rowData[col.field]" class="table-cell progress">
+                                <span>
+                                  <p-progressBar [value]="rowData['woProgress']"></p-progressBar>
+                                </span>
+                              </div>
+                              <div></div>
+                            </span>
+                            <span *ngSwitchDefault>{{ rowData[col.field] }}</span>
+                          </td>
+                        </tr>
+                      </ng-template>
+                    </p-table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TREE TABLE ITEM STRUCTURE-->
+          <div class="grid-cell--12" *ngIf="!!subAssemblys && subAssemblys.length > 0">
+            <div class="grid-cell grid-cell--container grid-cell-scope  grid-cell-item-structure">
+              <div class="grid-cell-header">
+                <div class="grid-cell-title-container  loading-indicator">
+                  <h3 class="grid-cell-title">
+                    {{ getComponentName() + ".subAssemblies" | translate }}
+                    <div *ngIf="chartContentReady" class="lds-hourglass"></div>
+                  </h3>
+                </div>
+              </div>
+
+              <div class="grid-cell-content">
+                <aw-tree-sub-assembly
+                  *ngIf="showSubAssemblyTree"
+                  [bsdeProjectDTO]="bsdeProjectDTO"
+                  (openImageEmitter)="openImage($event)"
+                  [subAssemblys]="subAssemblys"
+                  (openSubAssemblyEmitter)="openSubAssembly($event)"
+                  (renderProgress)="renderProgress($event)"
+                ></aw-tree-sub-assembly>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- IMAGE DIALOG -->
+  <a-modal class="aw-modal" *ngIf="openImageDialog" [(visible)]="openImageDialog">
+    <a-header>
+      <div class="modal-title">{{ getComponentName() + ".dialogTitle" | translate }}</div>
+    </a-header>
+
+    <a-content>
+      <div class="illustration">
+        <img class="expanded-img-class" [src]="dialogImgSrc" />
+      </div>
+    </a-content>
+
+    <a-footer>
+      <button type="button" mat-raised-button (click)="closeDialog()">
+        <span>{{ "global.close" | translate }}</span>
+      </button>
+    </a-footer>
+  </a-modal>
+
+  <!-- Filter for Technical Quotation -->
+  <p-overlayPanel
+    #opFilters
+    [appendTo]="'body'"
+    class="aw-overlay"
+    (onShow)="filtersVisible = true"
+    (onHide)="filtersVisible = false"
+  >
+    <aw-technical-quotation-table-filters
+      [decisionList]="decisionList"
+      [configurationList]="configurationList"
+      [sentenceList]="sentenceList"
+      [pnList]="pnList"
+      [woCodeList]="woCodeList"
+      [(searchCriteria)]="searchCriteria"
+      (onFilter)="opFilters.hide(); filtersVisible = false; filterWithCriteria()"
+      (onReset)="resetTableFilters()"
+    ></aw-technical-quotation-table-filters>
+  </p-overlayPanel>
+</div>

@@ -1,0 +1,34 @@
+@import "mixins";
+
+:host {
+  .separator {
+    @include flex-row();
+
+    align-items: center;
+  }
+
+  .list-with-details {
+    .details {
+      flex-grow: 1;
+    }
+
+    .list {
+      min-width: 9rem;
+    }
+  }
+
+  .input-item-code {
+    width: 10% !important;
+  }
+
+  .input-item-code-5 {
+    width: auto;
+    min-width: 10% !important;
+    max-width: 22% !important;
+  }
+
+  .tiret {
+    margin-top: 4px !important;
+    margin-right: 4px !important;
+  }
+}

@@ -1,0 +1,74 @@
+@import "constants";
+@import "mixins";
+
+:host {
+  .grid-cell-item-structure {
+    .list-with-details {
+      .details,
+      .list {
+        max-height: 50rem;
+      }
+
+      .details {
+        flex-grow: 1;
+
+        .item-structure-node-action-list {
+          justify-content: flex-end;
+
+          & > button {
+            margin-right: $margin-value;
+
+            &:last-of-type {
+              margin-right: 0;
+            }
+          }
+        }
+
+        .item-structure-node-image {
+          & > img {
+            max-width: 25%;
+            min-width: 25%;
+          }
+        }
+      }
+
+      .list {
+        min-width: 25rem;
+      }
+    }
+  }
+}
+
+::ng-deep .export-methods {
+  list-style-type: none;
+  margin: 0;
+  min-width: 100px;
+  padding: 0;
+
+  .export-method-wrapper {
+    cursor: pointer;
+    font-size: 0.8rem;
+    padding: 5px 0;
+
+    .export-method {
+      padding-left: 5px;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+::ng-deep .grid-cell-item-structure .list .chapter,
+::ng-deep .grid-cell-item-structure .list .section,
+::ng-deep .grid-cell-item-structure .list .subject,
+::ng-deep .grid-cell-item-structure .list .sheet,
+::ng-deep .grid-cell-item-structure .list .marks {
+  display: inline-block;
+  font-weight: 600;
+}
+
+::ng-deep .grid-cell-item-structure .list .name {
+  font-style: italic;
+}

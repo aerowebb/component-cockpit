@@ -1,0 +1,652 @@
+<div class="page-header">
+  <div class="page-info">
+    <div>
+      <h2 class="page-title">
+        {{ "transaction." + componentData.componentId | translate }}
+      </h2>
+
+      <div class="page-subtitle" *ngIf="!isCreateOpenMode && componentData && componentData.objectId">
+        - {{ subtitle }}
+      </div>
+    </div>
+    <div
+      class="object-status"
+      [ngClass]="{ disabled: isCreateOpenMode }"
+      *ngIf="operation.statusState"
+      (click)="showStatus()"
+    >
+      {{ operation.statusState | formatSelectOption: statusList }}
+    </div>
+  </div>
+
+  <div class="page-actions">
+    <button *ngIf="isReadOpenMode && hasUpdateAccessRight" type="button" mat-raised-button (click)="edit()">
+      {{ "global.edit" | translate }}
+    </button>
+    <button
+      *ngIf="!isReadOpenMode && !isCreateOpenMode"
+      color="warn"
+      type="button"
+      mat-raised-button
+      (click)="cancelOperation()"
+    >
+      {{ "global.cancel" | translate }}
+    </button>
+    <button
+      *ngIf="!isReadOpenMode"
+      type="button"
+      color="primary"
+      class="btn-with-spinner"
+      mat-raised-button
+      (click)="saveOperation()"
+    >
+      <span class="lds-hourglass" *ngIf="showSaveSpinner"></span>
+      {{ "global.save" | translate }}
+    </button>
+    <button
+      mat-icon-button
+      class="mat-elevation-z1"
+      matTooltip="{{ 'global.showAllActionTooltip' | translate }}"
+      matTooltipPosition="above"
+      aria-label="Show all actions"
+      [matMenuTriggerFor]="actions"
+    >
+      <mat-icon>more_horiz</mat-icon>
+    </button>
+    <mat-menu #actions="matMenu">
+      <button mat-menu-item id="status" (click)="openStatusUpdatesPopup()">{{ "updates" | translate }}</button>
+      <button
+        mat-menu-item
+        id="refresh"
+        *ngIf="isReadOpenMode && componentData && componentData.objectId"
+        type="button"
+        (click)="reloadOperation()"
+      >
+        {{ "global.refresh" | translate }}
+      </button>
+      <button mat-menu-item (click)="updateFavoriteState()">
+        {{ (isFavoriteEntry ? "page.removeFromFavorites" : "page.addToFavorites") | translate }}
+      </button>
+    </mat-menu>
+  </div>
+</div>
+
+<div class="page-wrapper">
+  <div class="page-container search-page-container">
+    <div class="page-content">
+      <mat-tab-group animationDuration="0ms" dynamicHeight>
+        <mat-tab>
+          <ng-template mat-tab-label>
+            {{ "home" | translate }}
+          </ng-template>
+          <div class="grid-row">
+            <div
+              #mainInformationAnchor
+              class="grid-cell--equally"
+              (click)="selectPageTocEntry(form.MAIN_INFORMATION_ANCHOR_ID)"
+            >
+              <div
+                class="grid-cell grid-cell--container"
+                [ngClass]="{ active: isPageTocEntrySelected(form.MAIN_INFORMATION_ANCHOR_ID) }"
+              >
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">{{ "page.mainData" | translate }}</h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <div class="column">
+                    <div class="grid-row">
+                      <div class="form-group flex--2 required" [ngClass]="{ required: !isReadOpenMode }">
+                        <label class="form-label">{{ componentData.componentId + ".opeCode" | translate }}</label>
+
+                        <div class="form-control">
+                          <input
+                            class="aw-input"
+                            type="text"
+                            [(ngModel)]="operation.opeCode"
+                            [disabled]="!isCreateOpenMode"
+                          />
+                        </div>
+                      </div>
+
+                      <div class="form-group flex--2 required" [ngClass]="{ required: !isReadOpenMode }">
+                        <label class="form-label">{{ componentData.componentId + ".opeVersion" | translate }}</label>
+
+                        <div class="form-control">
+                          <input
+                            class="aw-input"
+                            type="text"
+                            [(ngModel)]="operation.opeVersion"
+                            [disabled]="!isCreateOpenMode"
+                          />
+                        </div>
+                      </div>
+
+                      <div class="form-group flex--2 required" [ngClass]="{ required: !isReadOpenMode }">
+                        <label class="form-label">{{ componentData.componentId + ".rangeCode" | translate }}</label>
+
+                        <div class="form-control form-control-with-modal" [ngClass]="{ disabled: !isCreateOpenMode }">
+                          <div class="form-control-data" (click)="isCreateOpenMode && searchRangeCode()">
+                            {{ operation.rangeCode }}
+                          </div>
+
+                          <div *ngIf="isCreateOpenMode && operation.rangeCode !== undefined" class="btn-clear-wrapper">
+                            <i
+                              class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+                              aria-hidden="true"
+                              (click)="operation.rangeCode = undefined"
+                            ></i>
+                          </div>
+                          <div class="btn-search-wrapper">
+                            <i
+                              class="fa fa-fw fa-search aw-icon btn-search"
+                              aria-hidden="true"
+                              (click)="isCreateOpenMode && searchRangeCode()"
+                            ></i>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="grid-row">
+                      <div class="form-group flex--1">
+                        <label class="form-label">
+                          {{ componentData.componentId + ".ataChapter" | translate }}
+                        </label>
+
+                        <div class="form-control">
+                          <input
+                            type="text"
+                            class="aw-input"
+                            [(ngModel)]="operation.opeChapter"
+                            maxlength="2"
+                            [disabled]="isReadOpenMode"
+                          />
+                        </div>
+                      </div>
+
+                      <div class="form-group flex--1">
+                        <label class="form-label">
+                          {{ componentData.componentId + ".ataSection" | translate }}
+                        </label>
+
+                        <div class="form-control">
+                          <input
+                            type="text"
+                            class="aw-input"
+                            [(ngModel)]="operation.opeSection"
+                            maxlength="2"
+                            [disabled]="isReadOpenMode"
+                          />
+                        </div>
+                      </div>
+
+                      <div class="form-group flex--1">
+                        <label class="form-label">
+                          {{ componentData.componentId + ".ataSubject" | translate }}
+                        </label>
+
+                        <div class="form-control">
+                          <input
+                            type="text"
+                            class="aw-input"
+                            [(ngModel)]="operation.opeSubject"
+                            maxlength="2"
+                            [disabled]="isReadOpenMode"
+                          />
+                        </div>
+                      </div>
+                      <div class="form-group flex--1">
+                        <label class="form-label">
+                          {{ componentData.componentId + ".ataSheet" | translate }}
+                        </label>
+
+                        <div class="form-control">
+                          <input
+                            type="text"
+                            class="aw-input"
+                            [(ngModel)]="operation.opeSheet"
+                            maxlength="5"
+                            [disabled]="isReadOpenMode"
+                          />
+                        </div>
+                      </div>
+
+                      <div class="form-group flex--2">
+                        <label class="form-label">
+                          {{ componentData.componentId + ".ataMarks" | translate }}
+                        </label>
+
+                        <div class="form-control">
+                          <input
+                            type="text"
+                            class="aw-input"
+                            [(ngModel)]="operation.opeMarks"
+                            maxlength="5"
+                            [disabled]="isReadOpenMode"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div class="grid-row">
+                      <div class="form-group flex--3">
+                        <label class="form-label">{{
+                          componentData.componentId + ".opeDesignation" | translate
+                        }}</label>
+
+                        <div class="form-control">
+                          <textarea
+                            class="aw-textarea"
+                            [rows]="3"
+                            pInputTextarea
+                            [(ngModel)]="operation.opeDesignation"
+                            [disabled]="isReadOpenMode"
+                          ></textarea>
+                        </div>
+                      </div>
+
+                      <div class="form-group flex--3">
+                        <label class="form-label">{{
+                          componentData.componentId + ".opeDescription" | translate
+                        }}</label>
+
+                        <div class="form-control">
+                          <textarea
+                            class="aw-textarea"
+                            [rows]="3"
+                            pInputTextarea
+                            [(ngModel)]="operation.opeDescription"
+                            [disabled]="isReadOpenMode"
+                          ></textarea>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="grid-cell--equally">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">{{ "page.additionalData" | translate }}</h3>
+                  </div>
+                </div>
+                <div class="grid-cell-content">
+                  <div class="column">
+                    <div class="grid-row">
+                      <div class="form-group">
+                        <label class="form-label">{{
+                          componentData.componentId + ".technicalLevel" | translate
+                        }}</label>
+
+                        <div class="form-control">
+                          <p-dropdown
+                            class="aw-dropdown fixed-width"
+                            [options]="technicalLevelsToDisplayList"
+                            [(ngModel)]="operation.technicalLevel"
+                            placeholder="&nbsp;"
+                            [showClear]="true"
+                            (onChange)="onTilSelected($event)"
+                            [disabled]="isReadOpenMode"
+                          ></p-dropdown>
+                        </div>
+                      </div>
+
+                      <div class="form-group">
+                        <label class="form-label">{{ componentData.componentId + ".opeWorkcenter" | translate }}</label>
+
+                        <div class="form-control">
+                          <p-dropdown
+                            class="aw-dropdown fixed-width"
+                            [options]="workcentersToDisplayList"
+                            placeholder="&nbsp;"
+                            [(ngModel)]="operation.opeWorkcenter"
+                            [showClear]="true"
+                            [disabled]="isReadOpenMode"
+                            maxlength="50"
+                          >
+                          </p-dropdown>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label">{{
+                          componentData.componentId + ".opeSequenceNumber" | translate
+                        }}</label>
+
+                        <div class="form-control">
+                          <input
+                            #sequenceNumber="ngModel"
+                            type="number"
+                            pKeyFilter="int"
+                            class="aw-input"
+                            [(ngModel)]="operation.opeSequenceNumber"
+                            [disabled]="isReadOpenMode"
+                            [pKeyFilter]="inputValidationService.validatorOfNumber()"
+                            [pValidateOnly]="true"
+                          />
+                          <!-- <p-message
+                            *ngIf="sequenceNumber.invalid && (sequenceNumber.dirty || sequenceNumber.touched)"
+                            severity="error"
+                            [text]="inputValidationService.formatOfNumber()"
+                          ></p-message> -->
+                        </div>
+                      </div>
+                    </div>
+                    <div class="grid-row">
+                      <div class="form-group">
+                        <label class="form-label">{{
+                          componentData.componentId + ".opeQualification" | translate
+                        }}</label>
+
+                        <div class="form-control">
+                          <p-dropdown
+                            class="aw-dropdown fixed-width"
+                            [options]="qualificationsToDisplayList"
+                            placeholder="&nbsp;"
+                            [(ngModel)]="operation.opeQualification"
+                            [showClear]="true"
+                            (onChange)="onChangeQualification($event)"
+                            [disabled]="isReadOpenMode"
+                          >
+                          </p-dropdown>
+                        </div>
+                      </div>
+
+                      <div class="form-group">
+                        <label class="form-label">{{
+                          componentData.componentId + ".opeDurationTime" | translate
+                        }}</label>
+
+                        <div class="form-control">
+                          <input
+                            #opeDurationTime="ngModel"
+                            type="text"
+                            [pKeyFilter]="inputValidationService.validatorOfPositiveNumber()"
+                            [pValidateOnly]="true"
+                            class="aw-input"
+                            [(ngModel)]="operation.opeDurationTime"
+                            (change)="calculateCost()"
+                            [disabled]="isReadOpenMode"
+                          />
+                          <p-message
+                            *ngIf="opeDurationTime.invalid && (opeDurationTime.dirty || opeDurationTime.touched)"
+                            severity="error"
+                            [text]="inputValidationService.formatOfPositiveNumber()"
+                          ></p-message>
+                        </div>
+                      </div>
+
+                      <div class="form-group">
+                        <label class="form-label">{{ componentData.componentId + ".opeManHour" | translate }}</label>
+
+                        <div class="form-control">
+                          <input
+                            #opeManHour="ngModel"
+                            type="text"
+                            [pKeyFilter]="inputValidationService.validatorOfPositiveNumber()"
+                            [pValidateOnly]="true"
+                            class="aw-input"
+                            [(ngModel)]="operation.opeManHour"
+                            (change)="calculateCost()"
+                            [disabled]="isReadOpenMode"
+                          />
+                          <p-message
+                            *ngIf="opeManHour.invalid && (opeManHour.dirty || opeManHour.touched)"
+                            severity="error"
+                            [text]="inputValidationService.formatOfPositiveNumber()"
+                          ></p-message>
+                        </div>
+                      </div>
+                    </div>
+                    <div *ngIf="isCostSettingEnabled" class="grid-row">
+                      <div class="form-group">
+                        <label class="form-label">
+                          {{ componentData.componentId + ".opeCost" | translate }}
+                          <span *ngIf="qualifRateCurrency">({{ qualifRateCurrency }})</span>
+                        </label>
+
+                        <div class="form-control">
+                          <input
+                            #opeCost="ngModel"
+                            type="text"
+                            [pKeyFilter]="inputValidationService.validatorOfPositiveNumber()"
+                            [pValidateOnly]="true"
+                            class="aw-input"
+                            [(ngModel)]="operation.opeCost"
+                            [disabled]="isReadOpenMode || hasHourlyRateValue || !isCreateOpenMode"
+                          />
+                          <p-message
+                            *ngIf="opeCost.invalid && (opeCost.dirty || opeCost.touched)"
+                            severity="error"
+                            [text]="inputValidationService.formatOfPositiveNumber()"
+                          ></p-message>
+                        </div>
+                      </div>
+
+                      <div class="form-group flex--3">
+                        <span [ngClass]="{ 'display--none': !hasHourlyRateValue }">
+                          {{ componentData.componentId + ".hourlyRate" | translate }} = {{ qualifAverageHourRate }}
+                          {{ qualifRateCurrency }}
+                        </span>
+
+                        <span [ngClass]="{ 'display--none': !hasHourlyRateValue }">
+                          {{ componentData.componentId + ".opeCost" | translate }} = [
+                          {{ componentData.componentId + ".opeHourlyRateQualification" | translate }} ] x [
+                          {{ componentData.componentId + ".opeManHour" | translate }} ] x [
+                          {{ componentData.componentId + ".durationTime" | translate }} ] +
+                          {{ componentData.componentId + ".opeSubcontractingCost" | translate }}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="grid-row">
+            <div
+              #mainInformationAnchor
+              class="grid-cell--12"
+              (click)="selectPageTocEntry(form.MAIN_INFORMATION_ANCHOR_ID)"
+            >
+              <div
+                class="grid-cell grid-cell--container"
+                [ngClass]="{ active: isPageTocEntrySelected(form.MAIN_INFORMATION_ANCHOR_ID) }"
+              >
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ componentData.componentId + ".components" | translate }} ({{
+                        componentsTableDataSource ? componentsTableDataSource.dataCount : 0
+                      }})
+                    </h3>
+                  </div>
+                </div>
+                <div class="grid-cell-content">
+                  <a-table [dataSource]="componentsTableDataSource">
+                    <ng-template tableActionsDef>
+                      <button
+                        *ngIf="!isReadOpenMode && componentsTableDataSource.hasDataSelection"
+                        type="button"
+                        mat-raised-button
+                        color="warn"
+                        (click)="deleteComponents()"
+                      >
+                        {{ "global.delete" | translate }}
+                      </button>
+
+                      <button
+                        *ngIf="!isReadOpenMode && componentsTableDataSource.dataSelectionCount === 1"
+                        type="button"
+                        mat-raised-button
+                        (click)="editComponents()"
+                      >
+                        {{ "global.edit" | translate }}
+                      </button>
+
+                      <button
+                        *ngIf="!isReadOpenMode && componentsTableDataSource.dataSelectionCount === 1"
+                        type="button"
+                        mat-raised-button
+                        (click)="openComponents()"
+                      >
+                        {{ "global.open" | translate }}
+                      </button>
+
+                      <button
+                        *ngIf="!isReadOpenMode && !componentsTableDataSource.hasDataSelection"
+                        type="button"
+                        mat-raised-button
+                        (click)="addComponent()"
+                      >
+                        {{ "global.add" | translate }}
+                      </button>
+                    </ng-template>
+                    <ng-template columnDef="pnCode" let-rowData="rowData">
+                      <a (click)="redirect(rowData)"> {{ rowData.pnCode }} </a>
+                    </ng-template>
+                  </a-table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+        <mat-tab *ngIf="dynamicAttributes.length > 0">
+          <ng-template mat-tab-label>
+            {{ "global.attributes" | translate }}
+          </ng-template>
+          <div class="grid-row">
+            <div #mainDataAnchor class="grid-cell--12" (click)="selectPageTocEntry(form.ADD_INFORMATION_ANCHOR_ID)">
+              <div
+                class="grid-cell grid-cell--container"
+                [ngClass]="{ active: isPageTocEntrySelected(form.ADD_INFORMATION_ANCHOR_ID) }"
+              >
+                <div class="grid-cell-content grid-cell-content-with-section">
+                  <aw-dynamic-attributes
+                    [attributes]="dynamicAttributes"
+                    [isReadOpenMode]="isReadOpenMode"
+                  ></aw-dynamic-attributes>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+        <mat-tab>
+          <ng-template mat-tab-label>
+            {{ "global.documents" | translate }}
+          </ng-template>
+          <div class="grid-row">
+            <div #documentTableAnchor class="grid-cell--12" (click)="selectPageTocEntry(form.DOCUMENTS_ANCHOR_ID)">
+              <!-- Documents table -->
+
+              <div
+                class="grid-cell grid-cell--container"
+                [ngClass]="{ active: isPageTocEntrySelected(form.DOCUMENTS_ANCHOR_ID) }"
+              >
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ "global.documents" | translate }} ({{
+                        documentsTableDataSource ? documentsTableDataSource.dataCount : 0
+                      }})
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <a-table [dataSource]="documentsTableDataSource">
+                    <ng-template tableActionsDef>
+                      <button
+                        *ngIf="!isReadOpenMode && documentsTableDataSource.hasDataSelection"
+                        type="button"
+                        mat-raised-button
+                        color="warn"
+                        (click)="deleteDocuments()"
+                      >
+                        {{ "global.delete" | translate }}
+                      </button>
+
+                      <button
+                        *ngIf="!isReadOpenMode && documentsTableDataSource.dataSelectionCount === 1"
+                        type="button"
+                        mat-raised-button
+                        (click)="editDocument()"
+                      >
+                        {{ "global.edit" | translate }}
+                      </button>
+
+                      <button
+                        *ngIf="documentsTableDataSource.dataSelectionCount === 1"
+                        type="button"
+                        mat-raised-button
+                        (click)="openDocument()"
+                      >
+                        {{ "global.open" | translate }}
+                      </button>
+
+                      <button
+                        *ngIf="!isReadOpenMode && !documentsTableDataSource.hasDataSelection"
+                        type="button"
+                        mat-raised-button
+                        (click)="addDocument()"
+                      >
+                        {{ "global.add" | translate }}
+                      </button>
+                    </ng-template>
+                    <ng-template columnDef="docName" let-rowData="rowData">
+                      <a (click)="downloadFile(rowData)">{{ rowData.docName }}</a>
+                    </ng-template>
+                  </a-table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+  </div>
+
+  <aw-status-update-history
+    *ngIf="showStatusUpdatesPopup"
+    [object]="operation"
+    [data]="tableStatusUpdatesData"
+    [deleteApi]="deleteApi"
+    [(display)]="showStatusUpdatesPopup"
+    [keyMap]="updatesKeyMap"
+    [isStatusEditable]="false"
+    (onUpdated)="updateObjectStatusFromStatusUpdatesHistory($event)"
+  ></aw-status-update-history>
+
+  <aw-dialog-table
+    *ngIf="displayRangeCodeDialog"
+    [data]="rangeCodeTableData"
+    [(display)]="displayRangeCodeDialog"
+    (onSelected)="onSelectedRangeCode($event)"
+  ></aw-dialog-table>
+
+  <aw-dialog-component
+    *ngIf="displayComponentDialog"
+    [operationComponent]="currentComponent"
+    [(display)]="displayComponentDialog"
+    [isReadOnlyComponentDialog]="isReadOnlyComponentDialog"
+    (onValidated)="onValidateComponent($event)"
+  ></aw-dialog-component>
+
+  <aw-dialog-bire-document
+    *ngIf="showAddDocumentDialog"
+    [document]="currentDocument"
+    [(display)]="showAddDocumentDialog"
+    [isReadOnlyForm]="isReadOnlyDocumentDialog"
+    (onValidated)="onAddDocument($event)"
+  ></aw-dialog-bire-document>
+
+  <aw-operation-import-popup
+    *ngIf="displayDocumentDialog"
+    [document]="currentDocument"
+    [(display)]="displayDocumentDialog"
+    [isReadOnlyForm]="isReadOnlyDocumentDialog"
+    (onValidated)="addNewDocument($event)"
+  ></aw-operation-import-popup>
+</div>

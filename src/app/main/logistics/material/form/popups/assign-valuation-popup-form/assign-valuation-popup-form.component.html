@@ -1,0 +1,66 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".title" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+      <label class="form-label">{{ getComponentName() + ".valuation" | translate }}</label>
+
+      <div class="form-control">
+        <p-dropdown
+          class="aw-dropdown fixed-width"
+          placeholder="&nbsp;"
+          [options]="valuation"
+          [(ngModel)]="valuationGroupId"
+          [showClear]="true"
+          appendTo="body"
+          [disabled]="isReadOpenMode"
+        ></p-dropdown>
+      </div>
+    </div>
+    <div class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+      <label class="form-label">{{ getComponentName() + ".value" | translate }}</label>
+
+      <div class="form-control">
+        <input
+          #priceValue="ngModel"
+          type="text"
+          class="aw-input"
+          style="width:45%"
+          [pKeyFilter]="inputValidationService.validatorOfNumber()"
+          [pValidateOnly]="true"
+          maxlength="50"
+          [(ngModel)]="valuationDetail.priceValue"
+          [disabled]="isReadOpenMode"
+        />
+        <span style="width:55%;padding-top:1em; float:right" *ngIf="priceCurrency">{{ priceCurrency }}</span>
+        <p-message
+          *ngIf="priceValue.invalid && (priceValue.dirty || priceValue.touched)"
+          severity="error"
+          [text]="inputValidationService.formatOfNumber()"
+        ></p-message>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button *ngIf="!isReadOpenMode" type="button" mat-raised-button (click)="cancel()">
+      <span>{{ "global.cancel" | translate }}</span>
+    </button>
+
+    <button
+      *ngIf="!isReadOpenMode"
+      type="button"
+      mat-raised-button
+      color="primary"
+      (click)="validate()"
+      [disabled]="(priceValue.invalid && (priceValue.dirty || priceValue.touched)) || !isScreenValid()"
+    >
+      {{ "global.validate" | translate }}
+    </button>
+    <button *ngIf="isReadOpenMode" type="button" mat-raised-button (click)="cancel()">
+      {{ "global.close" | translate }}
+    </button>
+  </a-footer>
+</a-modal>

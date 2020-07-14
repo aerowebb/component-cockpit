@@ -1,0 +1,14 @@
+<div class="column" *ngIf="mvts.length">
+  <div class="row" style="justify-content: flex-end;">
+    <button mat-raised-button (click)="schowDetails()" style="width: 16rem;" *ngIf="!showDetails">
+      {{ getComponentName() + ".showMouvement" | translate }}
+    </button>
+    <button mat-raised-button (click)="schowDetails()" style="width: 16rem;" *ngIf="showDetails">
+      {{ getComponentName() + ".hideMouvement" | translate }}
+    </button>
+  </div>
+
+  <div class="row" style="justify-content: center; margin-top: 40px">
+    <aw-stepper [steps]="steps"></aw-stepper>
+  </div>
+</div>

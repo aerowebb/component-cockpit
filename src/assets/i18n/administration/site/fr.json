@@ -1,0 +1,29 @@
+{
+  "SiteSearchComponent": {
+    "bidtCompanyId": "Compagnie",
+    "siteCode": "Code",
+    "siteCompany": "Compagnie",
+    "siteDescription": "Description",
+    "siteName": "Nom",
+    "confirmDeleteSelectedSite": "Voulez-vous supprimer le site sélectionné ?",
+    "confirmDeleteSelectedSites": "Voulez-vous supprimer les sites sélectionnés ?",
+    "successOnDeleteSite": "Site supprimé avec succès !",
+    "errorOnMissingSiteCode": "Impossible d'ouvrir : manque le code du site"
+  },
+  "SiteFormComponent": {
+    "availabilityDate": "Date de validité",
+    "bidtCompanyId": "Compagnie",
+    "capabilities": "Capaliste",
+    "cost": "Coût",
+    "pnCode": "Numéro d'article",
+    "siteCode": "Code",
+    "siteDescription": "Description",
+    "siteName": "Nom",
+    "tat": "TAT (jours)",
+    "technicalLevel": "Niveau technique",
+    "successOnSave": "Sauvé avec succès",
+    "errorOnSave": "Impossible de sauver",
+    "warningOnCapabilityExists": "Cette capaliste existe déjà",
+    "errorOnDuplicateSite": " Ce site (code) existe déjà"
+  }
+}

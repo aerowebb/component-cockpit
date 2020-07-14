@@ -1,0 +1,12 @@
+{
+  "DeaDiaSearchComponent": {
+    "articleDesignation": "Article Designation",
+    "errorOnGetPartGuidelineStatus": "Unable to retrieve request status list",
+    "errorOnGetPartGuidelineTypes": "Unable to retrieve request Type list",
+    "isUrgent": "Urgent Request",
+    "pnCode": "Material code",
+    "pugCode": "Request Reference",
+    "pugStatus": "Request status",
+    "pugType": "Request Type"
+  }
+}

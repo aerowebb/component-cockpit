@@ -1,0 +1,52 @@
+<div class="column">
+  <div class="row">
+    <p-table [resizableColumns]="true" #ptable class="aw-table2" [columns]="remainingTableCols" [value]="remainingTable" [scrollable]="true">
+      <ng-template pTemplate="emptymessage">
+        <span *ngIf="!remainingTableLoading"> &nbsp;</span>
+
+        <div *ngIf="remainingTableLoading" class="aw-table-loading-indicator">
+          <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+          <div class="lds-hourglass"></div>
+        </div>
+      </ng-template>
+
+      <ng-template pTemplate="colgroup" let-columns>
+        <colgroup>
+          <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+        </colgroup>
+      </ng-template>
+
+      <ng-template pTemplate="header" let-columns>
+        <tr>
+          <th pResizableColumn *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+            {{ getComponentName() + "." + col.field + (fullTable ? "" : "Short") | translate }}
+          </th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+        <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+          <td *ngFor="let col of columns" [ngSwitch]="col.field" [ngStyle]="{ 'text-align': col.alignment }">
+            <span
+              *ngSwitchCase="'elementDesignation'"
+              pTooltip="{{ rowData['elementDesignationTooltip'] }}"
+              tooltipPosition="top"
+            >
+              {{ rowData[col.field] }}
+            </span>
+
+            <span *ngSwitchCase="'elementId'" pTooltip="{{ rowData['elementIdTooltip'] }}" tooltipPosition="top">
+              <span *ngIf="fullTable">{{ rowData[col.field] }}</span>
+              <span *ngIf="!fullTable && !rowData['elementDesignation']">{{ rowData[col.field] }}</span>
+              <span *ngIf="!fullTable && rowData['elementDesignation']"
+                >{{ rowData[col.field] }} - {{ rowData["elementDesignation"] }}</span
+              >
+            </span>
+
+            <span *ngSwitchDefault> {{ rowData[col.field] }} </span>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>

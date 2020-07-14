@@ -1,0 +1,7 @@
+<router-outlet></router-outlet>
+
+<p-toast position="top-right" [style]="{ marginTop: '30px' }">
+  <ng-template let-message pTemplate="message">
+    <div class="toast-message">{{ message.summary }}</div>
+  </ng-template>
+</p-toast>

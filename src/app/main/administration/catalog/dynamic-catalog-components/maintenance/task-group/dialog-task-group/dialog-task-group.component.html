@@ -1,0 +1,52 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".title" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="form-group required">
+      <label class="form-label">{{ getComponentName() + ".groupCode" | translate }}</label>
+      <div class="form-control">
+        <input
+          type="text"
+          name="groupCode"
+          [(ngModel)]="bireTaskGroupDTO.groupCode"
+          class="aw-input"
+          maxlength="50"
+          [disabled]="isReadOpenMode || !isCreateOpenMode"
+          required
+        />
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">{{ getComponentName() + ".groupName" | translate }}</label>
+      <div class="form-control">
+        <input
+          type="text"
+          name="groupName"
+          [(ngModel)]="bireTaskGroupDTO.groupName"
+          class="aw-input"
+          maxlength="100"
+          [disabled]="isReadOpenMode"
+          required
+        />
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button *ngIf="isReadOpenMode" type="button" mat-raised-button (click)="closeDialog()">
+      {{ "global.close" | translate }}
+    </button>
+    <button type="button" mat-raised-button (click)="closeDialog()">{{ "global.cancel" | translate }}</button>
+    <button
+      type="button"
+      mat-raised-button
+      color="primary"
+      (click)="validate()"
+      [disabled]="!bireTaskGroupDTO.groupCode"
+    >
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>

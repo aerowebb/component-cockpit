@@ -1,0 +1,32 @@
+@import "constants";
+@import "mixins";
+
+:host {
+  .heightClass {
+    height: 46em;
+  }
+
+  .cell-grey {
+    background-color: #e1e1e1 !important;
+  }
+
+  .alertIcon {
+    height: 0.8em;
+    width: 0.8em;
+    border-radius: 50%;
+    display: inline-block;
+    margin-left: 0.5em;
+  }
+
+  .ok {
+    background-color: $green-light1 !important;
+  }
+
+  .none {
+    background-color: $grey1 !important;
+  }
+
+  .nok {
+    background-color: $red-light1 !important;
+  }
+}

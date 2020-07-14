@@ -1,0 +1,32 @@
+export interface BidoEquipmentDTO {
+  equipmentCode?: string;
+  familyVariantCode?: string;
+  equEquipmentCode?: string;
+  ownerCustomerCode?: string;
+  pnCode?: string;
+  operatorCustomerCode?: string;
+  sn?: string;
+  snManufacturer?: string;
+  equipmentDesignation?: string;
+  equipmentFunction?: string;
+  manufacturingDate?: Date;
+  chapter?: string;
+  section?: string;
+  subject?: string;
+  sheet?: string;
+  marks?: string;
+  equiPosition?: string;
+  sentence?: string;
+  manufacturingConfiguration?: boolean;
+  functionCode?: string;
+  zone?: string;
+  country?: string;
+  registration?: string;
+  eisDate?: Date;
+  lifeRestriction?: boolean;
+  operationalStatus?: string;
+  modelCode?: string;
+  statusState?: string;
+  statusUser?: string;
+  statusDate?: Date;
+}

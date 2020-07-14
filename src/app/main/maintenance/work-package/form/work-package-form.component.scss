@@ -1,0 +1,281 @@
+@import "constants";
+@import "mixins";
+
+:host {
+  .main-creation {
+    max-width: 25%;
+  }
+  .main-update {
+    min-width: 50%;
+  }
+  .outgoingConf {
+    input,
+    label {
+      text-align: center;
+    }
+
+    .ok {
+      background-color: $green-light1 !important;
+    }
+
+    .outgoing-conf-warning {
+      background-color: $orange !important;
+    }
+
+    .outgoing-conf-nok {
+      background-color: $red-light1 !important;
+    }
+  }
+  .full-height {
+    height: 100%;
+  }
+
+  .alignLeft {
+    text-align: left;
+  }
+
+  /deep/ .colored-field {
+    padding: 5px 0px !important;
+    input {
+      padding: 3px 0px !important;
+      width: 100px !important;
+    }
+    .error-field {
+      background-color: $red-light1 !important;
+    }
+    .ok-field {
+      background-color: $green-light1 !important;
+    }
+    .warning-field {
+      background-color: $orange !important;
+    }
+  }
+
+  .custoPadding1 {
+    padding-right: 4vw !important;
+  }
+
+  .custoPadding2 {
+    padding-right: 2vw !important;
+  }
+
+  .tableDisplayTypeList {
+    text-align: left;
+    margin-left: $margin-value;
+  }
+
+  .grid-cell-workload-chart,
+  .grid-cell-duration-chart,
+  .grid-cell-costs-chart {
+    .chart-container {
+      @include flex-row();
+
+      @media screen and (max-width: 1280px) {
+        flex-direction: row;
+      }
+    }
+    .chart-wrapper {
+      position: relative;
+      height: 17rem;
+      width: 99%;
+    }
+  }
+
+  .grid-cell-work-in-progress {
+    .chart-container {
+      @include flex-row();
+
+      @media screen and (max-width: 1280px) {
+        flex-direction: row;
+      }
+
+      .chart-legend {
+        @include flex-column();
+
+        justify-content: center;
+        margin-left: $margin-value;
+
+        .chart-legend-label {
+          @include flex-row();
+
+          align-items: center;
+
+          .chart-legend-label-color {
+            height: 0.75rem;
+            margin-right: $margin-value;
+            width: 2rem;
+
+            &.airworthy {
+              background-color: $green-light1;
+            }
+
+            &.airworthy-with-alerts {
+              background-color: $orange;
+            }
+
+            &.not-airworthy {
+              background-color: $red-light1;
+            }
+          }
+        }
+
+        .chart-value {
+          font-weight: 700;
+          text-align: end;
+          padding-right: 5px;
+        }
+      }
+
+      .chart-wrapper {
+        position: relative;
+        height: 14rem;
+        width: 99%;
+      }
+    }
+  }
+}
+
+#breadcrumbs-status {
+  overflow: hidden;
+  display: flex;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+#breadcrumbs-status li {
+  float: left;
+  margin: 0 1em 0 1em;
+}
+
+#breadcrumbs-status .current {
+  float: left;
+  margin: 0 25px 0 20px;
+}
+
+#breadcrumbs-status .statusLabel {
+  background: #ddd;
+  padding: 0.7em 1em;
+  float: left;
+  text-decoration: none;
+  color: $primary-text-color;
+  position: relative;
+  white-space: nowrap;
+}
+
+#breadcrumbs-status .current .statusLabel {
+  background: $accent-color;
+}
+
+#breadcrumbs-status .statusLabel::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  margin-top: -1.5em;
+  border-width: 1.5em 0 1.5em 1em;
+  border-style: solid;
+  border-color: #ddd #ddd #ddd transparent;
+  left: -1em;
+}
+
+#breadcrumbs-status .current .statusLabel::before {
+  border-color: $accent-color $accent-color $accent-color transparent;
+}
+
+#breadcrumbs-status .statusLabel::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  margin-top: -1.5em;
+  border-top: 1.5em solid transparent;
+  border-bottom: 1.5em solid transparent;
+  border-left: 1em solid #ddd;
+  right: -1em;
+}
+
+#breadcrumbs-status .current .statusLabel::after {
+  border-left-color: $accent-color;
+}
+
+#breadcrumbs-status .current .statusLabel {
+  color: white;
+  font-weight: bold;
+  font-size: 20px;
+  padding-bottom: 6px;
+  padding-top: 7px;
+}
+
+#breadcrumbs-status .current::after,
+#breadcrumbs-status .current::before {
+  content: normal;
+}
+
+.woDisplayType-btn {
+  padding-left: 8px;
+}
+
+.outgoingConf.section {
+  flex-grow: 1;
+  text-align: center;
+}
+
+.outgoingConf.row {
+  flex-wrap: nowrap !important;
+}
+
+.outgoing-conf-lds-hourglass {
+  padding-left: calc(#{$margin-value} * 2);
+  padding-top: $margin-value;
+  padding-bottom: $margin-value;
+}
+
+.action-list {
+  align-items: flex-end;
+  display: flex;
+  flex-grow: 1;
+  justify-content: center;
+
+  .aw-btn {
+    margin-left: $margin-value;
+
+    &:first-of-type {
+      margin-left: 0;
+    }
+  }
+}
+
+.status-actions {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 100%;
+  justify-content: flex-end;
+}
+
+.status-actions button {
+  margin-left: $margin-value;
+}
+
+.breadcrumbs {
+  display: flex;
+  flex-grow: 1;
+}
+
+.readyOnlyField {
+  padding: 8px 0;
+}
+
+.display-asset-nav {
+  display: block !important;
+}
+
+.hide-asset-nav {
+  display: none !important;
+}
+
+.table-display-type {
+  margin-left: 8px;
+}

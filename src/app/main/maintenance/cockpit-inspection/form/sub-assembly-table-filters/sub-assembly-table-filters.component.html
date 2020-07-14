@@ -1,0 +1,64 @@
+<div class="grid-row">
+  <!-- COMPONENT COCKPIT PANEL -->
+  <div class="grid-cell--12">
+    <div class="grid-cell grid-cell--container grid-cell-scope">
+      <div class="grid-cell-content">
+        <div class="table-filters-overlay">
+          <div class="column">
+            <div class="filters">
+              <div class="form-group">
+                <label class="form-label"> &nbsp; </label>
+
+                <div class="form-control aw-selectbutton-wrapper">
+                  <p-selectButton
+                    [options]="progressList"
+                    multiple="multiple"
+                    [(ngModel)]="searchCriteria.progress"
+                  ></p-selectButton>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label"> {{ getComponentName() + ".family" | translate }} </label>
+
+                <div class="form-control">
+                  <p-dropdown
+                    class="aw-dropdown fixed-width"
+                    [options]="itemFamilyList"
+                    [showClear]="true"
+                    placeholder="&nbsp;"
+                    [(ngModel)]="searchCriteria.family"
+                  ></p-dropdown>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="column">
+            <div class="filters">
+              <div class="form-group">
+                <label class="form-label"> &nbsp; </label>
+
+                <div class="form-control aw-selectbutton-wrapper">
+                  <p-selectButton
+                    [options]="configurationList"
+                    multiple="multiple"
+                    [(ngModel)]="searchCriteria.configuration"
+                  ></p-selectButton>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row action-buttons">
+        <button type="button" mat-raised-button class="custom-padding" (click)="reset()">
+          {{ getComponentName() + ".reset" | translate }}
+        </button>
+        <button type="button" mat-raised-button (click)="filter()">
+          {{ getComponentName() + ".filter" | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

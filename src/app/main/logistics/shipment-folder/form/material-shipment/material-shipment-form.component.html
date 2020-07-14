@@ -1,0 +1,199 @@
+<div class="page-header-container">
+  <div class="page-context">
+    <div class="page-title-container">
+      <div class="page-title">
+        {{ "transaction." + componentData.componentId | translate }}
+      </div>
+
+      <div class="page-secondary-actions">
+        <i
+          class="fa fa-fw aw-icon aw-icon-with-border"
+          [ngClass]="{ 'fa-star': isFavoriteEntry, 'fa-star-o': !isFavoriteEntry }"
+          aria-hidden="true"
+          (click)="updateFavoriteState()"
+          pTooltip="{{ 'page.' + (isFavoriteEntry ? 'removeFromFavorites' : 'addToFavorites') | translate }}"
+          tooltipPosition="bottom"
+        ></i>
+      </div>
+    </div>
+
+    <div class="page-subtitle-container">
+      <div class="page-subtitle">{{ materialInfo.obj.dfCode }}</div>
+    </div>
+  </div>
+
+  <div class="page-primary-actions">
+    <button type="button" class="aw-btn" (click)="refresh()">
+      {{ "global.refresh" | translate }}
+    </button>
+  </div>
+</div>
+<div class="page-wrapper">
+  <div class="page-container">
+    <div class="page-content">
+      <div class="grid-row">
+        <div class="grid-cell--12 custom-breadcrumb-padding">
+          <div class="grid-cell grid-cell--container bread-crumb-custom-cell">
+            <div class="grid-cell-content">
+              <div class="row">
+                <div class="grid-cell--12">
+                  <div class="breadcrumbs flex-row">
+                    <ul id="breadcrumbs-status">
+                      <li [class.current]="true">
+                        <div class="statusLabel">
+                          <div class="title">{{ getComponentName() + ".title" | translate }}</div>
+                          <div class="subtitle">
+                            {{ subtitle }} - <i>{{ whName }}</i>
+                          </div>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="grid-cell--12">
+          <div class="grid-cell grid-cell--container">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">{{ getComponentName() + ".criteria" | translate }}</h3>
+              </div>
+            </div>
+
+            <div class="grid-cell-content grid-cell-content-with-section">
+              <div class="section">
+                <div class="section-content">
+                  <div class="row">
+                    <div class="form-group">
+                      <label class="form-label">{{ getComponentName() + ".shipmentNo" | translate }}</label>
+
+                      <div class="form-control">
+                        <input class="aw-input" type="text" disabled [(ngModel)]="materialInfo.obj.dfCode" />
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">{{ getComponentName() + ".type" | translate }}</label>
+
+                      <div class="form-control">
+                        <input
+                          class="aw-input"
+                          type="text"
+                          disabled
+                          [(ngModel)]="materialInfo.bidtDfType.dftDesignation"
+                        />
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">{{ getComponentName() + ".plannedDate" | translate }}</label>
+
+                      <div class="form-control">
+                        <p-calendar
+                          showButtonBar="true"
+                          [monthNavigator]="true"
+                          [yearNavigator]="true"
+                          [yearRange]="sessionService.calendarYearRange"
+                          class="aw-calendar"
+                          [dateFormat]="sessionService.dateFormatPrimeNG"
+                          [locale]="sessionService.calendarFormat"
+                          appendTo="body"
+                          [(ngModel)]="materialInfo.obj.plannedDate"
+                          disabled
+                        ></p-calendar>
+                      </div>
+                    </div>
+                    <div class="form-group"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- RECEPTION -->
+              <div class="section">
+                <h4 class="section-title">{{ getComponentName() + ".location" | translate }}</h4>
+
+                <div class="section-content">
+                  <div class="row">
+                    <div class="form-group">
+                      <label class="form-label">{{ getComponentName() + ".site" | translate }}</label>
+
+                      <div class="form-control">
+                        <input class="aw-input" type="text" disabled [(ngModel)]="senderSiteName" />
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">{{ getComponentName() + ".workShop" | translate }}</label>
+
+                      <div class="form-control">
+                        <input
+                          class="aw-input"
+                          type="text"
+                          disabled
+                          [(ngModel)]="materialInfo.bidtWarehouseSender.whName"
+                        />
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">{{ getComponentName() + ".partner" | translate }}</label>
+
+                      <div class="form-control">
+                        <input
+                          class="aw-input"
+                          type="text"
+                          disabled
+                          [(ngModel)]="materialInfo.bidoCustomerReceiver.customerName"
+                        />
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">{{ getComponentName() + ".site" | translate }}</label>
+
+                      <div class="form-control">
+                        <input
+                          class="aw-input"
+                          type="text"
+                          disabled
+                          [(ngModel)]="materialInfo.bidtWarehouseSender.whName"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-row">
+        <div class="grid-cell--12">
+          <div class="grid-cell grid-cell--container">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">
+                  {{ componentData.componentId + ".materials" | translate }} ({{
+                    materialShipmentTableDataSource.dataCount
+                  }})
+                </h3>
+              </div>
+            </div>
+
+            <div class="grid-cell-content">
+              <a-table [dataSource]="materialShipmentTableDataSource">
+                <ng-template tableActionsDef>
+                  <div class="aw-table-icon-actions">
+                    <i
+                      class="fa fa-fw fa-filter aw-icon aw-icon-with-border aw-icon-with-overlay"
+                      aria-hidden="true"
+                      tooltipPosition="top"
+                    ></i>
+                  </div>
+                </ng-template>
+              </a-table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

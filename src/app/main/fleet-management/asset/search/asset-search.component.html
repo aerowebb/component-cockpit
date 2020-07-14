@@ -1,0 +1,1465 @@
+<div class="page-header">
+  <div class="page-info">
+    <div>
+      <div class="page-title">
+        {{ "transaction." + componentData.componentId | translate }}
+      </div>
+
+      <div class="page-subtitle">
+        <div class="page-subtitle">- {{ "global.search" | translate }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-actions">
+    <button type="button" mat-raised-button (click)="openNewEquipment()" *ngIf="hasUpdateAccessRight">
+      {{ "global.create" | translate }}
+    </button>
+    <button
+      id="actions"
+      mat-icon-button
+      class="mat-elevation-z1"
+      matTooltip="{{ 'global.showAllActionTooltip' | translate }}"
+      matTooltipPosition="above"
+      aria-label="Show All Actions"
+      [matMenuTriggerFor]="actions"
+    >
+      <mat-icon>more_horiz</mat-icon>
+    </button>
+
+    <mat-menu #actions="matMenu">
+      <button id="favorites" mat-menu-item (click)="updateFavoriteState()">
+        {{ (isFavoriteEntry ? "page.removeFromFavorites" : "page.addToFavorites") | translate }}
+      </button>
+    </mat-menu>
+  </div>
+</div>
+
+<div class="page-wrapper">
+  <div class="page-container search-page-container">
+    <div class="page-content">
+      <div class="grid-row">
+        <div class="grid-cell--12">
+          <div class="grid-cell grid-cell--container">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">{{ "global.search" | translate }}</h3>
+              </div>
+            </div>
+
+            <div class="grid-cell-content">
+              <div class="column">
+                <div class="row search-criteria-header">
+                  <aw-manage-search-criteria
+                    [componentId]="SEARCH_CRITERIA_ID"
+                    (onSelected)="loadSearchCriteria($event)"
+                    (onSavedAsked)="saveSearchCriteriaAsked()"
+                    [objectFromPage]="criteriaToSave"
+                  ></aw-manage-search-criteria>
+                </div>
+
+                <div class="row">
+                  <div class="form-group">
+                    <label class="form-label"> {{ componentData.componentId + ".familyVariant" | translate }} </label>
+
+                    <div class="form-control">
+                      <p-dropdown
+                        class="aw-dropdown fixed-width"
+                        [options]="propertyVariant"
+                        [(ngModel)]="searchObject.familyVariantCode"
+                        [showClear]="true"
+                        (onChange)="changeFamilyVariant()"
+                        placeholder="&nbsp;"
+                        (keyup.enter)="searchWithoutCounters()"
+                        appendTo="body"
+                      >
+                      </p-dropdown>
+                    </div>
+                  </div>
+                  <div class="form-group"></div>
+                  <div class="form-group"></div>
+                  <div class="form-group"></div>
+                </div>
+
+                <div class="row">
+                  <div *ngIf="!isAircraft()" class="form-group">
+                    <label class="form-label"> {{ componentData.componentId + ".pn" | translate }} </label>
+
+                    <div class="form-control">
+                      <input type="text" class="aw-input" [(ngModel)]="searchObject.pnCode" />
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label"> {{ componentData.componentId + ".sn" | translate }} </label>
+
+                    <div class="form-control"><input type="text" class="aw-input" [(ngModel)]="searchObject.sn" /></div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label">
+                      {{ componentData.componentId + ".equipmentDesignation" | translate }}
+                    </label>
+
+                    <div class="form-control">
+                      <input type="text" class="aw-input" [(ngModel)]="searchObject.equipmentDesignation" />
+                    </div>
+                  </div>
+
+                  <div *ngIf="isAircraft()" class="form-group">
+                    <label class="form-label">
+                      {{ componentData.componentId + ".registration" | translate }}
+                    </label>
+
+                    <div class="form-control">
+                      <input type="text" class="aw-input" [(ngModel)]="searchObject.registration" />
+                    </div>
+                  </div>
+
+                  <div *ngIf="isTool()" class="form-group">
+                    <label class="form-label">
+                      {{ componentData.componentId + ".groundEquipmentType" | translate }}
+                    </label>
+
+                    <div class="form-control">
+                      <p-dropdown
+                        class="aw-dropdown fixed-width"
+                        [options]="groundEquipmentTypes"
+                        [(ngModel)]="searchObject.equipmentFunction"
+                        [showClear]="true"
+                        placeholder="&nbsp;"
+                        (keyup.enter)="searchWithoutCounters()"
+                        appendTo="body"
+                      >
+                      </p-dropdown>
+                    </div>
+                  </div>
+
+                  <div *ngIf="!isTool()" class="form-group"></div>
+                </div>
+
+                <div class="row">
+                  <div class="form-group">
+                    <label class="form-label">
+                      {{ componentData.componentId + ".operationalStatus" | translate }}
+                    </label>
+
+                    <div class="form-control">
+                      <p-dropdown
+                        class="aw-dropdown fixed-width"
+                        [options]="propertyOperationalStatus"
+                        [(ngModel)]="searchObject.operationalStatus"
+                        [showClear]="true"
+                        placeholder="&nbsp;"
+                        (keyup.enter)="searchWithoutCounters()"
+                        appendTo="body"
+                      >
+                      </p-dropdown>
+                    </div>
+                  </div>
+
+                  <div *ngIf="!isTool()" class="form-group">
+                    <label class="form-label">
+                      {{ componentData.componentId + ".potentialInfo" | translate }}
+                    </label>
+
+                    <div class="form-control">
+                      <p-checkbox class="aw-checkbox" binary="true" [(ngModel)]="isSearchWithCounters"></p-checkbox>
+                    </div>
+                  </div>
+
+                  <div *ngIf="isTool()" class="form-group">
+                    <label class="form-label">{{ componentData.componentId + ".eisDate" | translate }}</label>
+
+                    <div class="form-control">
+                      <p-calendar
+                        showButtonBar="true"
+                        [monthNavigator]="true"
+                        [yearNavigator]="true"
+                        [yearRange]="sessionService.calendarYearRange"
+                        class="aw-calendar"
+                        [dateFormat]="sessionService.dateFormatPrimeNG"
+                        [locale]="sessionService.calendarFormat"
+                        [(ngModel)]="searchObject.eisDate"
+                        appendTo="body"
+                      >
+                      </p-calendar>
+                    </div>
+                  </div>
+
+                  <div *ngIf="isTool()" class="form-group">
+                    <label class="form-label"> {{ componentData.componentId + ".assetCode" | translate }} </label>
+
+                    <div class="form-control">
+                      <input type="text" class="aw-input" [(ngModel)]="searchObject.equipmentCode" />
+                    </div>
+                  </div>
+
+                  <div *ngIf="isTool()" class="form-group">
+                    <label class="form-label">
+                      {{ componentData.componentId + ".warehouseType" | translate }}
+                    </label>
+
+                    <div class="form-control">
+                      <p-dropdown
+                        class="aw-dropdown fixed-width"
+                        [options]="warehouseTypes"
+                        [(ngModel)]="selectedWarehouse"
+                        [showClear]="true"
+                        placeholder="&nbsp;"
+                        (keyup.enter)="searchWithoutCounters()"
+                        appendTo="body"
+                      >
+                      </p-dropdown>
+                    </div>
+                  </div>
+                  <div *ngIf="!isTool()" class="form-group"></div>
+                  <div *ngIf="!isTool()" class="form-group"></div>
+                </div>
+                <div>
+                  <div class="advanced-criteria" [ngClass]="{ 'display--none': !showAdvancedCriteria }">
+                    <div *ngIf="!isTool()" class="row">
+                      <div class="form-group">
+                        <label class="form-label">{{ componentData.componentId + ".owner" | translate }}</label>
+
+                        <div class="form-control form-control-with-modal" [ngClass]="{ disabled: isReadOpenMode }">
+                          <div class="form-control-data" (click)="searchOwners()">
+                            {{ searchObject.ownerCustomerCode }}
+                          </div>
+
+                          <div *ngIf="searchObject.ownerCustomerCode" class="btn-clear-wrapper">
+                            <i
+                              class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+                              aria-hidden="true"
+                              (click)="searchObject.ownerCustomerCode = undefined"
+                            ></i>
+                          </div>
+                          <div class="btn-search-wrapper">
+                            <i
+                              class="fa fa-fw fa-search aw-icon btn-search"
+                              aria-hidden="true"
+                              (click)="searchOwners()"
+                            ></i>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="form-group">
+                        <label class="form-label">{{ componentData.componentId + ".operator" | translate }}</label>
+
+                        <div class="form-control form-control-with-modal" [ngClass]="{ disabled: isReadOpenMode }">
+                          <div class="form-control-data" (click)="searchOperator()">
+                            {{ searchObject.operatorCustomerCode }}
+                          </div>
+
+                          <div *ngIf="searchObject.operatorCustomerCode" class="btn-clear-wrapper">
+                            <i
+                              class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+                              aria-hidden="true"
+                              (click)="searchObject.operatorCustomerCode = undefined"
+                            ></i>
+                          </div>
+                          <div class="btn-search-wrapper">
+                            <i
+                              class="fa fa-fw fa-search aw-icon btn-search"
+                              aria-hidden="true"
+                              (click)="searchOperator()"
+                            ></i>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="form-group">
+                        <label class="form-label">
+                          {{ componentData.componentId + ".functionalLocation" | translate }}
+                        </label>
+
+                        <div class="form-control">
+                          <input type="text" class="aw-input" [(ngModel)]="functionalLocation" />
+                        </div>
+                      </div>
+
+                      <div *ngIf="!isEngine() && !isAircraft()" class="form-group">
+                        <label class="form-label"> {{ componentData.componentId + ".function" | translate }} </label>
+
+                        <div class="form-control">
+                          <p-dropdown
+                            class="aw-dropdown fixed-width"
+                            [options]="propertyFunction"
+                            [(ngModel)]="searchObject.equipmentFunction"
+                            [showClear]="true"
+                            placeholder="&nbsp;"
+                            (keyup.enter)="searchWithoutCounters()"
+                            appendTo="body"
+                          >
+                          </p-dropdown>
+                        </div>
+                      </div>
+                      <div *ngIf="isEngine() || isAircraft()" class="form-group"></div>
+                    </div>
+
+                    <div *ngIf="!isTool()" class="row">
+                      <div class="grid-cell--3">
+                        <div class="form-group">
+                          <label class="form-label">{{ componentData.componentId + ".eisDate" | translate }}</label>
+
+                          <div class="form-control">
+                            <p-calendar
+                              showButtonBar="true"
+                              [monthNavigator]="true"
+                              [yearNavigator]="true"
+                              [yearRange]="sessionService.calendarYearRange"
+                              class="aw-calendar"
+                              [dateFormat]="sessionService.dateFormatPrimeNG"
+                              [locale]="sessionService.calendarFormat"
+                              [(ngModel)]="searchObject.eisDate"
+                              appendTo="body"
+                            >
+                            </p-calendar>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="grid-cell--3">
+                        <div class="form-group">
+                          <label class="form-label"> {{ componentData.componentId + ".assetCode" | translate }} </label>
+
+                          <div class="form-control">
+                            <input type="text" class="aw-input" [(ngModel)]="searchObject.equipmentCode" />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div *ngIf="!isAircraft()" class="form-group">
+                        <label class="form-label"> {{ componentData.componentId + ".itemNumber" | translate }} </label>
+
+                        <div class="form-control"><input type="text" class="aw-input" [(ngModel)]="itemNumber" /></div>
+                      </div>
+
+                      <div *ngIf="!isAircraft()" class="form-group">
+                        <label class="form-label">
+                          {{ componentData.componentId + ".functionCode" | translate }}
+                        </label>
+
+                        <div class="form-control">
+                          <input type="text" class="aw-input" [(ngModel)]="searchObject.functionCode" />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div *ngIf="!isTool() || withTopAsset" class="row">
+                      <div *ngIf="!isTool()" class="form-group">
+                        <label class="form-label">
+                          {{ componentData.componentId + ".sourceSystemId" | translate }}
+                        </label>
+
+                        <div class="form-control">
+                          <p-dropdown
+                            class="aw-dropdown fixed-width"
+                            [options]="propertySourceSystemId"
+                            [(ngModel)]="sourceSystemId"
+                            [showClear]="true"
+                            placeholder="&nbsp;"
+                            (keyup.enter)="searchWithoutCounters()"
+                            appendTo="body"
+                          ></p-dropdown>
+                        </div>
+                      </div>
+
+                      <div *ngIf="!isTool()" class="form-group">
+                        <label class="form-label">
+                          {{ componentData.componentId + ".sourceSystemReference" | translate }}
+                        </label>
+
+                        <div class="form-control">
+                          <input type="text" class="aw-input" [(ngModel)]="sourceSystemReference" />
+                        </div>
+                      </div>
+
+                      <div *ngIf="!isTool()" class="form-group">
+                        <label class="form-label"> {{ componentData.componentId + ".location" | translate }} </label>
+
+                        <div class="form-control">
+                          <p-dropdown
+                            class="aw-dropdown fixed-width"
+                            [options]="propertyLocation"
+                            [(ngModel)]="location"
+                            [showClear]="true"
+                            placeholder="&nbsp;"
+                            (keyup.enter)="searchWithoutCounters()"
+                            appendTo="body"
+                          ></p-dropdown>
+                        </div>
+                      </div>
+
+                      <div *ngIf="withTopAsset" class="form-group">
+                        <label class="form-label">
+                          {{ componentData.componentId + ".aircraft" | translate }}
+                        </label>
+
+                        <div class="form-control">
+                          <p-dropdown
+                            class="aw-dropdown fixed-width"
+                            [options]="filteredAircraftList"
+                            [(ngModel)]="topAsset"
+                            [showClear]="true"
+                            placeholder="&nbsp;"
+                            (keyup.enter)="searchWithoutCounters()"
+                            appendTo="body"
+                          ></p-dropdown>
+                        </div>
+                      </div>
+                      <div *ngIf="!withTopAsset && !isTool()" class="form-group"></div>
+                      <div *ngIf="withTopAsset && isTool()" class="form-group flex--3"></div>
+                    </div>
+
+                    <div *ngIf="!isTool()" class="row">
+                      <div class="form-group">
+                        <label class="form-label">
+                          {{ componentData.componentId + ".attributeName" | translate }}
+                        </label>
+
+                        <div class="form-control">
+                          <p-dropdown
+                            class="aw-dropdown fixed-width"
+                            [options]="propertyAttributeName"
+                            [(ngModel)]="attributeName"
+                            (onChange)="changeAttribute()"
+                            [showClear]="true"
+                            placeholder="&nbsp;"
+                            (keyup.enter)="searchWithoutCounters()"
+                            appendTo="body"
+                          ></p-dropdown>
+                        </div>
+                      </div>
+
+                      <div *ngIf="isDdl && attributeName" class="form-group">
+                        <label class="form-label">
+                          {{ componentData.componentId + ".attributeDdl" | translate }}
+                        </label>
+
+                        <div class="form-control">
+                          <p-dropdown
+                            class="aw-dropdown fixed-width"
+                            [options]="propertyAttributeDdl"
+                            [(ngModel)]="attributeDdl"
+                            [showClear]="true"
+                            placeholder="&nbsp;"
+                            (keyup.enter)="searchWithoutCounters()"
+                            appendTo="body"
+                          ></p-dropdown>
+                        </div>
+                      </div>
+
+                      <div *ngIf="isInput && attributeName" class="form-group">
+                        <label class="form-label">
+                          {{ componentData.componentId + ".attributeInput" | translate }}
+                        </label>
+
+                        <div class="form-control">
+                          <input type="text" class="aw-input" [(ngModel)]="attributeInput" />
+                        </div>
+                      </div>
+
+                      <div *ngIf="isDate && attributeName" class="form-group">
+                        <label class="form-label">
+                          {{ componentData.componentId + ".attributeStartDate" | translate }}
+                        </label>
+
+                        <div class="form-control">
+                          <p-calendar
+                            showButtonBar="true"
+                            [monthNavigator]="true"
+                            [yearNavigator]="true"
+                            [yearRange]="sessionService.calendarYearRange"
+                            class="aw-calendar"
+                            [dateFormat]="sessionService.dateFormatPrimeNG"
+                            [locale]="sessionService.calendarFormat"
+                            [(ngModel)]="attributeStartDate"
+                          ></p-calendar>
+                        </div>
+                      </div>
+
+                      <div *ngIf="isDate && attributeName" class="form-group">
+                        <label class="form-label">
+                          {{ componentData.componentId + ".attributeEndDate" | translate }}
+                        </label>
+
+                        <div class="form-control">
+                          <p-calendar
+                            showButtonBar="true"
+                            [monthNavigator]="true"
+                            [yearNavigator]="true"
+                            [yearRange]="sessionService.calendarYearRange"
+                            class="aw-calendar"
+                            [dateFormat]="sessionService.dateFormatPrimeNG"
+                            [locale]="sessionService.calendarFormat"
+                            [(ngModel)]="attributeEndDate"
+                          ></p-calendar>
+                        </div>
+                      </div>
+
+                      <div *ngIf="isBoolean && attributeName" class="form-group">
+                        <label class="form-label">
+                          {{ componentData.componentId + ".attributeBoolean" | translate }}
+                        </label>
+
+                        <div class="form-control">
+                          <p-checkbox
+                            class="aw-checkbox"
+                            binary="true"
+                            [(ngModel)]="attributeBooleanValue"
+                          ></p-checkbox>
+                        </div>
+                      </div>
+
+                      <div *ngIf="!isDate && !isDdl && !isInput && !isBoolean" class="form-group flex--3"></div>
+                      <div *ngIf="isDate" class="form-group flex"></div>
+                      <div *ngIf="isDdl" class="form-group flex--2"></div>
+                      <div *ngIf="isInput" class="form-group flex--2"></div>
+                      <div *ngIf="isBoolean" class="form-group flex--2"></div>
+                    </div>
+
+                    <div class="row">
+                      <div *ngIf="!isTool && !isEngine() && !isAircraft()" class="form-group">
+                        <label class="form-label">
+                          {{ componentData.componentId + ".lifeRestrictionLabel" | translate }}
+                        </label>
+
+                        <div class="form-control">
+                          <p-checkbox class="aw-checkbox" binary="true" [(ngModel)]="searchObject.lifeRestriction">
+                          </p-checkbox>
+                        </div>
+                      </div>
+
+                      <div class="form-group">
+                        <label class="form-label">
+                          {{ componentData.componentId + ".withMP" | translate }}
+                        </label>
+
+                        <div class="form-control">
+                          <p-checkbox class="aw-checkbox" binary="true" [(ngModel)]="withMP"> </p-checkbox>
+                        </div>
+                      </div>
+
+                      <div *ngIf="!isAircraft() && !isTool()" class="form-group">
+                        <label class="form-label">
+                          {{ componentData.componentId + ".withAircraft" | translate }}
+                        </label>
+
+                        <div class="form-control">
+                          <p-checkbox class="aw-checkbox" binary="true" [(ngModel)]="withTopAsset"> </p-checkbox>
+                        </div>
+                      </div>
+
+                      <div *ngIf="!isAircraft() && !isEngine()" class="form-group flex--2"></div>
+                      <div *ngIf="!isAircraft()" class="form-group flex"></div>
+                    </div>
+                  </div>
+
+                  <div class="row search-criteria-footer">
+                    <button mat-button (click)="showAdvancedCriteria = !showAdvancedCriteria">
+                      <ng-container *ngIf="showAdvancedCriteria">
+                        <mat-icon>remove</mat-icon>
+                        {{ "global.collapseCriteria" | translate }}
+                      </ng-container>
+                      <ng-container *ngIf="!showAdvancedCriteria">
+                        <mat-icon>add</mat-icon>
+                        {{ "global.expandCriteria" | translate }}
+                      </ng-container>
+                    </button>
+
+                    <div class="search-actions">
+                      <button
+                        type="button"
+                        color="primary"
+                        mat-raised-button
+                        class="btn-with-spinner"
+                        (click)="searchWithoutCounters()"
+                        appKeyPress
+                        [keyCode]="'Enter'"
+                        (keyPress)="searchWithoutCounters()"
+                      >
+                        <span *ngIf="isLoading" class="lds-hourglass"></span>
+                        {{ "global.toSearch" | translate }}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-row">
+          <div class="grid-cell--12">
+            <div #resultsContainerAnchor class="grid-cell grid-cell--container">
+              <div class="grid-cell-header">
+                <div class="grid-cell-title-container">
+                  <h3 class="grid-cell-title">
+                    {{ "global.results" | translate }}
+                    ({{ resultsTable.list ? resultsTable.list.length : 0
+                    }}<ng-container *ngIf="resultsTable.moreResults">+</ng-container>)
+                  </h3>
+                </div>
+              </div>
+
+              <div class="grid-cell-content">
+                <!-- EQUIPMENT -->
+                <div *ngIf="!isEngine() && !isAircraft() && !isTool()" class="table-wrapper">
+                  <p-table
+                    [resizableColumns]="true"
+                    #ptableEquipment
+                    class="aw-table2"
+                    [columns]="getCols()"
+                    [value]="equipmentData"
+                    [(selection)]="selectedEquipments"
+                    [scrollable]="true"
+                    dataKey="equipmentCode"
+                  >
+                    <ng-template pTemplate="emptymessage">
+                      <span *ngIf="!isLoading"> &nbsp;</span>
+
+                      <div *ngIf="isLoading" class="aw-table-loading-indicator">
+                        <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                        <div class="lds-hourglass"></div>
+                      </div>
+                    </ng-template>
+
+                    <ng-template pTemplate="caption">
+                      <div class="aw-table-header" [ngClass]="{ 'rows-selected': selectedEquipments.length > 0 }">
+                        <div class="aw-table-global-filter">
+                          <label class="aw-table-global-filter-label">
+                            <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                          </label>
+
+                          <input
+                            #ptableGlobalFilter
+                            class="aw-table-global-filter-input"
+                            type="text"
+                            placeholder="{{ 'table.globalFilterText' | translate }}"
+                            (input)="ptableEquipment.filterGlobal($event.target.value, 'contains')"
+                          />
+                        </div>
+
+                        <div class="aw-table-actions">
+                          <button
+                            *ngIf="selectedEquipments.length == 1 && showSendToRepairButton(selectedEquipments[0])"
+                            type="button"
+                            mat-raised-button
+                            (click)="openSendToRepairPopup()"
+                          >
+                            {{ getComponentName() + ".openRepair" | translate }}
+                          </button>
+                          <button
+                            *ngIf="selectedEquipments.length === 1 && showLockButton(selectedEquipments[0])"
+                            type="button"
+                            mat-raised-button
+                            (click)="lock(selectedEquipments[0])"
+                          >
+                            {{ componentData.componentId + ".lock" | translate }}
+                          </button>
+
+                          <button
+                            *ngIf="selectedEquipments.length === 1 && showUnlockButton(selectedEquipments[0])"
+                            type="button"
+                            mat-raised-button
+                            (click)="unlock(selectedEquipments[0])"
+                          >
+                            {{ componentData.componentId + ".unlock" | translate }}
+                          </button>
+
+                          <button
+                            *ngIf="!isAircraft() && selectedEquipments.length > 0"
+                            type="button"
+                            mat-raised-button
+                            (click)="installSelectedEquipments()"
+                          >
+                            {{ componentData.componentId + ".install" | translate }}
+                          </button>
+                          <button
+                            *ngIf="!isAircraft() && selectedEquipments.length > 0"
+                            type="button"
+                            mat-raised-button
+                            (click)="removeSelectedEquipments()"
+                          >
+                            {{ componentData.componentId + ".removal" | translate }}
+                          </button>
+                          <button
+                            *ngIf="resultsTable.list && resultsTable.list.length > 0 && selectedEquipments.length === 0"
+                            type="button"
+                            mat-raised-button
+                            (click)="exportTable()"
+                          >
+                            {{ "global.export" | translate }}
+                          </button>
+
+                          <button
+                            *ngIf="hasManageAccessRight && selectedEquipments.length > 0"
+                            type="button"
+                            mat-raised-button
+                            color="warn"
+                            (click)="deleteSelectedEquipments()"
+                          >
+                            {{ "global.delete" | translate }}
+                          </button>
+
+                          <button
+                            *ngIf="selectedEquipments.length > 0"
+                            type="button"
+                            mat-raised-button
+                            (click)="openSelectedEquipment()"
+                          >
+                            {{ "global.open" | translate }}
+                          </button>
+                        </div>
+                      </div>
+                    </ng-template>
+
+                    <ng-template pTemplate="colgroup" let-columns>
+                      <colgroup>
+                        <col class="aw-table-checkbox-wrapper" />
+                        <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                        <col class="row-expand-wrapper" />
+                      </colgroup>
+                    </ng-template>
+
+                    <ng-template pTemplate="header" let-columns>
+                      <tr>
+                        <th class="aw-table-checkbox-wrapper">
+                          <p-tableHeaderCheckbox class="aw-table-checkbox"></p-tableHeaderCheckbox>
+                        </th>
+
+                        <th pResizableColumn *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                          {{ componentData.componentId + "." + col.field | translate }}
+                        </th>
+
+                        <th class="row-expand-wrapper"></th>
+                      </tr>
+                    </ng-template>
+
+                    <ng-template
+                      pTemplate="body"
+                      let-rowData
+                      let-columns="columns"
+                      let-rowIndex="rowIndex"
+                      let-expanded="expanded"
+                    >
+                      <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                        <td class="aw-table-checkbox-wrapper">
+                          <p-tableCheckbox class="aw-table-checkbox" [value]="rowData"></p-tableCheckbox>
+                        </td>
+
+                        <td
+                          *ngFor="let col of columns"
+                          [ngSwitch]="col.field"
+                          [ngStyle]="{ 'text-align': col.alignment }"
+                          [ngClass]="!showLockButton(rowData) ? 'lock-row' : null"
+                        >
+                          <span *ngSwitchCase="'sn'">
+                            <span
+                              class="anchor-custom"
+                              [ngClass]="
+                                !showLockButton(rowData) && selectedEquipments.length === 0 ? 'anchor-lock-row' : null
+                              "
+                              *ngIf="rowData['sn']"
+                              (click)="openLinkEquipment(rowData['equipmentCode'])"
+                            >
+                              {{ rowData["sn"] }}
+                            </span>
+                          </span>
+
+                          <span *ngSwitchCase="'eisDate'">
+                            {{ rowData[col.field] | date: "yyyy/MM/dd" }}
+                          </span>
+
+                          <span *ngSwitchDefault>{{ rowData[col.field] }}</span>
+                        </td>
+
+                        <td class="row-expand-wrapper" [pRowToggler]="rowData">
+                          <i
+                            class="fa fa-fw aw-icon aw-icon-with-border"
+                            [ngClass]="expanded ? 'fa-minus' : 'fa-plus'"
+                            aria-hidden="true"
+                            pTooltip="{{ 'global.showTableRowDetails' | translate }}"
+                            tooltipPosition="top"
+                            (click)="toggleRowDetailsVisibilityEquipment(rowData)"
+                          ></i>
+                        </td>
+                      </tr>
+                    </ng-template>
+
+                    <ng-template pTemplate="rowexpansion" let-rowData let-columns="columns">
+                      <tr class="row-expanded">
+                        <td [attr.colspan]="columns.length + 2">
+                          <aw-asset-remaining-table-values
+                            [row]="rowData"
+                            [remainingTable]="remainingTable"
+                            [remainingTableCols1]="
+                              withTopAsset ? resultsTableColsWithAircraftExpanded1 : resultsTableColsExpanded1
+                            "
+                            [remainingTableCols2]="
+                              withMP ? resultsTableColsWithMPCodeExpanded2 : resultsTableColsExpanded2
+                            "
+                            [singleRow]="false"
+                          >
+                          </aw-asset-remaining-table-values>
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </div>
+                <!-- ENGINE -->
+                <div *ngIf="isEngine() && !isAircraft() && !isTool()" class="table-wrapper">
+                  <p-table
+                    [resizableColumns]="true"
+                    #ptableEquipment
+                    class="aw-table2"
+                    [columns]="getCols()"
+                    [value]="engineData"
+                    [(selection)]="selectedEngine"
+                    [scrollable]="true"
+                    dataKey="equipmentCode"
+                  >
+                    <ng-template pTemplate="emptymessage">
+                      <span *ngIf="!isLoading"> &nbsp;</span>
+
+                      <div *ngIf="isLoading" class="aw-table-loading-indicator">
+                        <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                        <div class="lds-hourglass"></div>
+                      </div>
+                    </ng-template>
+
+                    <ng-template pTemplate="caption">
+                      <div class="aw-table-header" [ngClass]="{ 'rows-selected': selectedEngine.length > 0 }">
+                        <div class="aw-table-global-filter">
+                          <label class="aw-table-global-filter-label">
+                            <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                          </label>
+
+                          <input
+                            #ptableGlobalFilter
+                            class="aw-table-global-filter-input"
+                            type="text"
+                            placeholder="{{ 'table.globalFilterText' | translate }}"
+                            (input)="ptableEquipment.filterGlobal($event.target.value, 'contains')"
+                          />
+                        </div>
+
+                        <div class="aw-table-actions">
+                          <button
+                            *ngIf="selectedEngine.length === 1 && showLockButton(selectedEngine[0])"
+                            type="button"
+                            mat-raised-button
+                            (click)="lock(selectedEngine[0])"
+                          >
+                            {{ componentData.componentId + ".lock" | translate }}
+                          </button>
+
+                          <button
+                            *ngIf="selectedEngine.length === 1 && showUnlockButton(selectedEngine[0])"
+                            type="button"
+                            mat-raised-button
+                            (click)="unlock(selectedEngine[0])"
+                          >
+                            {{ componentData.componentId + ".unlock" | translate }}
+                          </button>
+
+                          <button
+                            *ngIf="selectedEngine.length > 0"
+                            type="button"
+                            mat-raised-button
+                            (click)="installSelectedEngine()"
+                          >
+                            {{ componentData.componentId + ".install" | translate }}
+                          </button>
+                          <button
+                            *ngIf="selectedEngine.length > 0"
+                            type="button"
+                            mat-raised-button
+                            (click)="removeSelectedEngine()"
+                          >
+                            {{ componentData.componentId + ".removal" | translate }}
+                          </button>
+                          <button
+                            *ngIf="resultsTable.list && resultsTable.list.length > 0 && selectedEngine.length === 0"
+                            type="button"
+                            mat-raised-button
+                            (click)="exportTable()"
+                          >
+                            {{ "global.export" | translate }}
+                          </button>
+
+                          <button
+                            *ngIf="hasManageAccessRight && selectedEngine.length > 0"
+                            type="button"
+                            mat-raised-button
+                            color="warn"
+                            (click)="deleteSelectedEngine()"
+                          >
+                            {{ "global.delete" | translate }}
+                          </button>
+
+                          <button
+                            *ngIf="selectedEngine.length > 0"
+                            type="button"
+                            mat-raised-button
+                            (click)="openSelectedEquipment()"
+                          >
+                            {{ "global.open" | translate }}
+                          </button>
+                        </div>
+                      </div>
+                    </ng-template>
+
+                    <ng-template pTemplate="colgroup" let-columns>
+                      <colgroup>
+                        <col class="aw-table-checkbox-wrapper" />
+                        <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                        <col class="row-expand-wrapper" />
+                      </colgroup>
+                    </ng-template>
+
+                    <ng-template pTemplate="header" let-columns>
+                      <tr>
+                        <th class="aw-table-checkbox-wrapper">
+                          <p-tableHeaderCheckbox class="aw-table-checkbox"></p-tableHeaderCheckbox>
+                        </th>
+
+                        <th pResizableColumn *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                          {{ componentData.componentId + "." + col.field | translate }}
+                        </th>
+
+                        <th class="row-expand-wrapper"></th>
+                      </tr>
+                    </ng-template>
+
+                    <ng-template
+                      pTemplate="body"
+                      let-rowData
+                      let-columns="columns"
+                      let-rowIndex="rowIndex"
+                      let-expanded="expanded"
+                    >
+                      <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                        <td class="aw-table-checkbox-wrapper">
+                          <p-tableCheckbox class="aw-table-checkbox" [value]="rowData"></p-tableCheckbox>
+                        </td>
+
+                        <td
+                          *ngFor="let col of columns"
+                          [ngSwitch]="col.field"
+                          [ngStyle]="{ 'text-align': col.alignment }"
+                          [ngClass]="!showLockButton(rowData) ? 'lock-row' : null"
+                        >
+                          <span *ngSwitchCase="'sn'">
+                            <span
+                              class="anchor-custom"
+                              [ngClass]="
+                                !showLockButton(rowData) && selectedEquipments.length === 0 ? 'anchor-lock-row' : null
+                              "
+                              *ngIf="rowData['sn']"
+                              (click)="openLinkEquipment(rowData['equipmentCode'])"
+                            >
+                              {{ rowData["sn"] }}
+                            </span>
+                          </span>
+
+                          <span *ngSwitchCase="'eisDate'">
+                            {{ rowData[col.field] | date: "yyyy/MM/dd" }}
+                          </span>
+
+                          <span *ngSwitchDefault>{{ rowData[col.field] }}</span>
+                        </td>
+
+                        <td class="row-expand-wrapper" [pRowToggler]="rowData">
+                          <i
+                            class="fa fa-fw aw-icon aw-icon-with-border"
+                            [ngClass]="expanded ? 'fa-minus' : 'fa-plus'"
+                            aria-hidden="true"
+                            pTooltip="{{ 'global.showTableRowDetails' | translate }}"
+                            tooltipPosition="top"
+                            (click)="toggleRowDetailsVisibilityEngine(rowData)"
+                          ></i>
+                        </td>
+                      </tr>
+                    </ng-template>
+
+                    <ng-template pTemplate="rowexpansion" let-rowData let-columns="columns">
+                      <tr class="row-expanded">
+                        <td [attr.colspan]="columns.length + 2">
+                          <aw-asset-remaining-table-values
+                            [row]="rowData"
+                            [remainingTable]="remainingTable"
+                            [remainingTableCols1]="
+                              withTopAsset ? resultsTableColsWithAircraftExpanded1 : resultsTableColsExpanded1
+                            "
+                            [remainingTableCols2]="
+                              withMP ? resultsTableColsWithMPCodeExpanded2 : resultsTableColsExpanded2
+                            "
+                            [singleRow]="false"
+                          >
+                          </aw-asset-remaining-table-values>
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </div>
+
+                <!-- AIRCRAFT -->
+                <div *ngIf="isAircraft() && !isEngine() && !isTool()" class="table-wrapper">
+                  <p-table
+                    [resizableColumns]="true"
+                    #ptableEquipment
+                    class="aw-table2"
+                    [columns]="getCols()"
+                    [value]="aircraftData"
+                    [(selection)]="selectedAircraft"
+                    [scrollable]="true"
+                    dataKey="equipmentCode"
+                  >
+                    <ng-template pTemplate="emptymessage">
+                      <span *ngIf="!isLoading"> &nbsp;</span>
+
+                      <div *ngIf="isLoading" class="aw-table-loading-indicator">
+                        <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                        <div class="lds-hourglass"></div>
+                      </div>
+                    </ng-template>
+
+                    <ng-template pTemplate="caption">
+                      <div class="aw-table-header" [ngClass]="{ 'rows-selected': selectedAircraft.length > 0 }">
+                        <div class="aw-table-global-filter">
+                          <label class="aw-table-global-filter-label">
+                            <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                          </label>
+
+                          <input
+                            #ptableGlobalFilter
+                            class="aw-table-global-filter-input"
+                            type="text"
+                            placeholder="{{ 'table.globalFilterText' | translate }}"
+                            (input)="ptableEquipment.filterGlobal($event.target.value, 'contains')"
+                          />
+                        </div>
+
+                        <div class="aw-table-actions">
+                          <button
+                            *ngIf="selectedAircraft.length === 1 && showLockButton(selectedAircraft[0])"
+                            type="button"
+                            mat-raised-button
+                            (click)="lock(selectedAircraft[0])"
+                          >
+                            {{ componentData.componentId + ".lock" | translate }}
+                          </button>
+
+                          <button
+                            *ngIf="selectedAircraft.length === 1 && showUnlockButton(selectedAircraft[0])"
+                            type="button"
+                            mat-raised-button
+                            (click)="unlock(selectedAircraft[0])"
+                          >
+                            {{ componentData.componentId + ".unlock" | translate }}
+                          </button>
+
+                          <button
+                            *ngIf="resultsTable.list && resultsTable.list.length > 0 && selectedAircraft.length === 0"
+                            type="button"
+                            mat-raised-button
+                            (click)="exportTable()"
+                          >
+                            {{ "global.export" | translate }}
+                          </button>
+
+                          <button
+                            *ngIf="hasManageAccessRight && selectedAircraft.length > 0"
+                            type="button"
+                            mat-raised-button
+                            color="warn"
+                            (click)="deleteSelectedAircraft()"
+                          >
+                            {{ "global.delete" | translate }}
+                          </button>
+
+                          <button
+                            *ngIf="selectedAircraft.length > 0"
+                            type="button"
+                            mat-raised-button
+                            (click)="openSelectedEquipment()"
+                          >
+                            {{ "global.open" | translate }}
+                          </button>
+                        </div>
+                      </div>
+                    </ng-template>
+
+                    <ng-template pTemplate="colgroup" let-columns>
+                      <colgroup>
+                        <col class="aw-table-checkbox-wrapper" />
+                        <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                        <col class="row-expand-wrapper" />
+                      </colgroup>
+                    </ng-template>
+
+                    <ng-template pTemplate="header" let-columns>
+                      <tr>
+                        <th class="aw-table-checkbox-wrapper">
+                          <p-tableHeaderCheckbox class="aw-table-checkbox"></p-tableHeaderCheckbox>
+                        </th>
+
+                        <th pResizableColumn *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                          {{ componentData.componentId + "." + col.field | translate }}
+                        </th>
+
+                        <th class="row-expand-wrapper"></th>
+                      </tr>
+                    </ng-template>
+
+                    <ng-template
+                      pTemplate="body"
+                      let-rowData
+                      let-columns="columns"
+                      let-rowIndex="rowIndex"
+                      let-expanded="expanded"
+                    >
+                      <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                        <td class="aw-table-checkbox-wrapper">
+                          <p-tableCheckbox class="aw-table-checkbox" [value]="rowData"></p-tableCheckbox>
+                        </td>
+
+                        <td
+                          *ngFor="let col of columns"
+                          [ngSwitch]="col.field"
+                          [ngStyle]="{ 'text-align': col.alignment }"
+                          [ngClass]="!showLockButton(rowData) ? 'lock-row' : null"
+                        >
+                          <span *ngSwitchCase="'sn'">
+                            <span
+                              class="anchor-custom"
+                              [ngClass]="
+                                !showLockButton(rowData) && selectedEquipments.length === 0 ? 'anchor-lock-row' : null
+                              "
+                              *ngIf="rowData['sn']"
+                              (click)="openLinkEquipment(rowData['equipmentCode'])"
+                            >
+                              {{ rowData["sn"] }}
+                            </span>
+                          </span>
+
+                          <span *ngSwitchCase="'eisDate'">
+                            {{ rowData[col.field] | date: "yyyy/MM/dd" }}
+                          </span>
+
+                          <span *ngSwitchDefault>{{ rowData[col.field] }}</span>
+                        </td>
+
+                        <td class="row-expand-wrapper" [pRowToggler]="rowData">
+                          <i
+                            class="fa fa-fw aw-icon aw-icon-with-border"
+                            [ngClass]="expanded ? 'fa-minus' : 'fa-plus'"
+                            aria-hidden="true"
+                            pTooltip="{{ 'global.showTableRowDetails' | translate }}"
+                            tooltipPosition="top"
+                            (click)="toggleRowDetailsVisibilityAircraft(rowData)"
+                          ></i>
+                        </td>
+                      </tr>
+                    </ng-template>
+
+                    <ng-template pTemplate="rowexpansion" let-rowData let-columns="columns">
+                      <tr class="row-expanded">
+                        <td [attr.colspan]="columns.length + 2">
+                          <div class="row">
+                            <div class="form-group">
+                              <label class="form-label">
+                                {{ getComponentName() + ".functionalLocation" | translate }}
+                              </label>
+
+                              <div class="form-control">
+                                <input
+                                  class="aw-input"
+                                  type="text"
+                                  [(ngModel)]="rowData.functionalLocation"
+                                  [disabled]="true"
+                                />
+                              </div>
+                            </div>
+                            <div class="form-group">
+                              <label class="form-label">
+                                {{ getComponentName() + ".ownerCustomerCode" | translate }}
+                              </label>
+
+                              <div class="form-control">
+                                <input
+                                  class="aw-input"
+                                  type="text"
+                                  [(ngModel)]="rowData.ownerCustomerCode"
+                                  [disabled]="true"
+                                />
+                              </div>
+                            </div>
+                            <div class="form-group">
+                              <label class="form-label">
+                                {{ getComponentName() + ".operatorCustomerCode" | translate }}
+                              </label>
+
+                              <div class="form-control">
+                                <input
+                                  class="aw-input"
+                                  type="text"
+                                  [(ngModel)]="rowData.operatorCustomerCode"
+                                  [disabled]="true"
+                                />
+                              </div>
+                            </div>
+                            <div class="form-group">
+                              <label class="form-label"> {{ getComponentName() + ".location" | translate }} </label>
+
+                              <div class="form-control">
+                                <input class="aw-input" type="text" [(ngModel)]="rowData.location" [disabled]="true" />
+                              </div>
+                            </div>
+                            <div *ngIf="withMP" class="form-group">
+                              <label class="form-label">
+                                {{ getComponentName() + ".maintenanceProgramm" | translate }}
+                              </label>
+
+                              <div class="form-control">
+                                <input
+                                  class="aw-input"
+                                  type="text"
+                                  [(ngModel)]="rowData.maintenanceProgramm"
+                                  [disabled]="true"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </div>
+
+                <!-- Tool -->
+                <div *ngIf="isTool() && !isAircraft() && !isEngine()" class="table-wrapper">
+                  <p-table
+                    [resizableColumns]="true"
+                    #ptableEquipment
+                    class="aw-table2"
+                    [columns]="resultsTableCols"
+                    [value]="toolData"
+                    [(selection)]="selectedTool"
+                    [scrollable]="true"
+                    dataKey="equipmentCode"
+                  >
+                    <ng-template pTemplate="emptymessage">
+                      <span *ngIf="!isLoading"> &nbsp;</span>
+
+                      <div *ngIf="isLoading" class="aw-table-loading-indicator">
+                        <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                        <div class="lds-hourglass"></div>
+                      </div>
+                    </ng-template>
+
+                    <ng-template pTemplate="caption">
+                      <div class="aw-table-header" [ngClass]="{ 'rows-selected': selectedTool.length > 0 }">
+                        <div class="aw-table-global-filter">
+                          <label class="aw-table-global-filter-label">
+                            <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                          </label>
+
+                          <input
+                            #ptableGlobalFilter
+                            class="aw-table-global-filter-input"
+                            type="text"
+                            placeholder="{{ 'table.globalFilterText' | translate }}"
+                            (input)="ptableEquipment.filterGlobal($event.target.value, 'contains')"
+                          />
+                        </div>
+
+                        <div class="aw-table-actions">
+                          <button
+                            *ngIf="selectedTool.length === 1 && showLockButton(selectedTool[0])"
+                            type="button"
+                            mat-raised-button
+                            (click)="lock(selectedTool[0])"
+                          >
+                            {{ componentData.componentId + ".lock" | translate }}
+                          </button>
+
+                          <button
+                            *ngIf="selectedTool.length === 1 && showUnlockButton(selectedTool[0])"
+                            type="button"
+                            mat-raised-button
+                            (click)="unlock(selectedTool[0])"
+                          >
+                            {{ componentData.componentId + ".unlock" | translate }}
+                          </button>
+
+                          <button
+                            *ngIf="resultsTable.list && resultsTable.list.length > 0 && selectedTool.length === 0"
+                            type="button"
+                            mat-raised-button
+                            (click)="exportTable()"
+                          >
+                            {{ "global.export" | translate }}
+                          </button>
+
+                          <button
+                            *ngIf="hasManageAccessRight && selectedTool.length > 0"
+                            type="button"
+                            mat-raised-button
+                            color="warn"
+                            (click)="deleteSelectedTool()"
+                          >
+                            {{ "global.delete" | translate }}
+                          </button>
+
+                          <button
+                            *ngIf="selectedTool.length > 0"
+                            type="button"
+                            mat-raised-button
+                            (click)="openSelectedEquipment()"
+                          >
+                            {{ "global.open" | translate }}
+                          </button>
+                        </div>
+                      </div>
+                    </ng-template>
+
+                    <ng-template pTemplate="colgroup" let-columns>
+                      <colgroup>
+                        <col class="aw-table-checkbox-wrapper" />
+                        <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                        <col class="row-expand-wrapper" />
+                      </colgroup>
+                    </ng-template>
+
+                    <ng-template pTemplate="header" let-columns>
+                      <tr>
+                        <th class="aw-table-checkbox-wrapper">
+                          <p-tableHeaderCheckbox class="aw-table-checkbox"></p-tableHeaderCheckbox>
+                        </th>
+
+                        <th pResizableColumn *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                          {{ componentData.componentId + "." + col.field | translate }}
+                        </th>
+
+                        <th class="row-expand-wrapper"></th>
+                      </tr>
+                    </ng-template>
+
+                    <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                      <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                        <td class="aw-table-checkbox-wrapper">
+                          <p-tableCheckbox class="aw-table-checkbox" [value]="rowData"></p-tableCheckbox>
+                        </td>
+
+                        <td
+                          *ngFor="let col of columns"
+                          [ngSwitch]="col.field"
+                          [ngStyle]="{ 'text-align': col.alignment }"
+                          [ngClass]="!showLockButton(rowData) ? 'lock-row' : null"
+                        >
+                          <span *ngSwitchCase="'sn'">
+                            <span
+                              class="anchor-custom"
+                              [ngClass]="
+                                !showLockButton(rowData) && selectedEquipments.length === 0 ? 'anchor-lock-row' : null
+                              "
+                              *ngIf="rowData['sn']"
+                              (click)="openLinkEquipment(rowData['equipmentCode'])"
+                            >
+                              {{ rowData["sn"] }}
+                            </span>
+                          </span>
+
+                          <span *ngSwitchCase="'eisDate'">
+                            {{ rowData[col.field] | date: "yyyy/MM/dd" }}
+                          </span>
+
+                          <span *ngSwitchDefault>{{ rowData[col.field] }}</span>
+                        </td>
+                        <td *ngIf="withTopAsset || withMP" class="row-expand-wrapper" [pRowToggler]="rowData">
+                          <i
+                            class="fa fa-fw aw-icon aw-icon-with-border"
+                            [ngClass]="expanded ? 'fa-minus' : 'fa-plus'"
+                            aria-hidden="true"
+                            pTooltip="{{ 'global.showTableRowDetails' | translate }}"
+                            tooltipPosition="top"
+                            (click)="toggleRowDetailsVisibilityTool(rowData)"
+                          ></i>
+                        </td>
+                      </tr>
+                    </ng-template>
+
+                    <ng-template pTemplate="rowexpansion" let-rowData let-columns="columns">
+                      <tr class="row-expanded">
+                        <td [attr.colspan]="columns.length + 2">
+                          <div class="row">
+                            <div *ngIf="withTopAsset" class="form-group">
+                              <label class="form-label">
+                                {{ getComponentName() + ".topEquipment" | translate }}
+                              </label>
+
+                              <div class="form-control">
+                                <input
+                                  class="aw-input"
+                                  type="text"
+                                  [(ngModel)]="rowData.topEquipment"
+                                  [disabled]="true"
+                                />
+                              </div>
+                            </div>
+                            <div *ngIf="withMP" class="form-group">
+                              <label class="form-label">
+                                {{ getComponentName() + ".maintenanceProgramm" | translate }}
+                              </label>
+
+                              <div class="form-control">
+                                <input
+                                  class="aw-input"
+                                  type="text"
+                                  [(ngModel)]="rowData.maintenanceProgramm"
+                                  [disabled]="true"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <aw-dialog-table
+      *ngIf="showDialogOwner"
+      [(display)]="showDialogOwner"
+      [data]="dialogTableDataOwner"
+      (onSelected)="setSelectedOwner($event)"
+    ></aw-dialog-table>
+
+    <aw-dialog-table
+      *ngIf="showDialogOperator"
+      [(display)]="showDialogOperator"
+      [data]="dialogTableDataOperator"
+      (onSelected)="setSelectedOperator($event)"
+    ></aw-dialog-table>
+  </div>
+</div>
+
+<aw-send-to-repair-popup
+  *ngIf="sendToRepairPopupVisible"
+  [(display)]="sendToRepairPopupVisible"
+  [(siteList)]="siteList"
+  [(partnerList)]="partnerList"
+  [pnCode]="selectedEquipments[0].pnCode"
+  [sn]="selectedEquipments[0].sn"
+  (onValidate)="onValidateSendToRepair($event)"
+></aw-send-to-repair-popup>

@@ -1,0 +1,47 @@
+import { BidmWorkOrderDTOId } from './bidm-work-order-dto-id.interface';
+import { BidoEquipmentDTO } from './bido-equipment-dto.interface';
+import { BidoNotificationDTO } from './bido-notification-dto.interface';
+import { BidtStockMvtDTO } from './bidt-stock-mvt-dto.interface';
+import { BidtWarehouseDTO } from './bidt-warehouse-dto.interface';
+import { BireItemDTOId } from './bire-item-dto-id.interface';
+import { BireItemDTO } from './bire-item-dto.interface';
+import { BirePnDTO } from './bire-pn-dto.interface';
+import { FlDTO } from './fl-dto.interface';
+
+export interface WoAssetManagementDTO {
+  notificationType: string;
+  selectedPn?: string;
+  selectedDesignation?: string;
+  selectedRemovalReason?: string;
+  selectedStatus?: string;
+  selectedWarehouseId?: number;
+  selectedBidoEquipmentDTO?: BidoEquipmentDTO;
+  selectedSuperiorBidoEquipmentDTO: BidoEquipmentDTO;
+  selectedBireItemDTO?: BireItemDTO;
+  selectedFunctionCode?: string;
+  bidoNotificationDTO?: BidoNotificationDTO;
+  selectedFlCode?: string;
+  notificationDate?: Date;
+  bidtStockMvtDTO?: BidtStockMvtDTO;
+  avaialableSuperiorAssetList?: BidoEquipmentDTO[];
+  availablePNDTOList?: BirePnDTO[];
+  availableBidoEquipmentList?: BidoEquipmentDTO[];
+  availableItemDTOList?: BireItemDTO[];
+  availableFunctionCodeList?: string[];
+  availableWarehouseList?: BidtWarehouseDTO[];
+  availableFlDTOList?: FlDTO[];
+  alertIcon?: string;
+  alertMessage?: string;
+  bidmWorkOrderDTOId?: BidmWorkOrderDTOId;
+  woEquipmentDTO?: BidoEquipmentDTO;
+  wpEquipmentDTO?: BidoEquipmentDTO;
+  woBireItemDTOId?: BireItemDTOId;
+  woFlCode?: string;
+  woFunctionCode?: string;
+  woSuperiorAssetCode?: string;
+  allEquipmentsMap?: Map<String, BidoEquipmentDTO>;
+  itemKeyBidoEquipmentMap?: Map<String, BidoEquipmentDTO[]>;
+  functionCodeBidoEquipmentMap?: Map<String, BidoEquipmentDTO[]>;
+  fatherEquipmentCodeBidoEquipmentMap?: Map<String, BidoEquipmentDTO[]>;
+  createReverseTransfer?: boolean;
+}

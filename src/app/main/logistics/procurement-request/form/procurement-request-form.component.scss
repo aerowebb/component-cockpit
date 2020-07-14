@@ -1,0 +1,78 @@
+@import "constants";
+
+:host {
+  .grid-cell-items {
+    .section {
+      &:first-of-type,
+      &:nth-of-type(2) {
+        width: 20%;
+      }
+
+      &:last-of-type {
+        padding-left: 1px;
+        width: 60%;
+      }
+
+      &:nth-of-type(2) {
+        border-left: 1px solid $secondary-text-color;
+        border-right: 1px solid $secondary-text-color;
+        padding-left: 1px;
+      }
+    }
+  }
+
+  .green {
+    color: $green-light1 !important;
+  }
+
+  .red {
+    color: $red-light1 !important;
+  }
+
+  .yellow {
+    color: $orange !important;
+  }
+
+  .alert {
+    display: inline-block;
+    width: 50%;
+  }
+
+  .served--nok {
+    background-color: $red-light1 !important;
+  }
+
+  .served--ok {
+    background-color: $green-light1 !important;
+  }
+
+  .served--warning {
+    background-color: $orange !important;
+  }
+
+  .procurement--nok {
+    background-color: $red-light1;
+  }
+
+  .procurement--ok {
+    background-color: $green-light1;
+  }
+
+  .procurement--warning {
+    background-color: $orange;
+  }
+
+  .procurement-type--in {
+    color: $green-light1;
+    transform: rotate(320deg);
+  }
+
+  .procurement-type--out {
+    color: $red-light1;
+    transform: rotate(45deg);
+  }
+
+  .procurement-type--transfer {
+    color: $blue-dark1;
+  }
+}

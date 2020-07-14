@@ -1,0 +1,1240 @@
+<div class="page-header-container">
+  <div class="page-context">
+    <div class="page-title-container">
+      <div class="page-title">
+        {{ "transaction." + componentData.componentId | translate }}
+      </div>
+
+      <div class="page-secondary-actions">
+        <i
+          class="fa fa-fw aw-icon aw-icon-with-border"
+          [ngClass]="{ 'fa-star': isFavoriteEntry, 'fa-star-o': !isFavoriteEntry }"
+          aria-hidden="true"
+          (click)="updateFavoriteState()"
+          pTooltip="{{ 'page.' + (isFavoriteEntry ? 'removeFromFavorites' : 'addToFavorites') | translate }}"
+          tooltipPosition="bottom"
+        ></i>
+      </div>
+    </div>
+
+    <div class="page-subtitle-container">
+      <div class="page-subtitle">
+        {{ "page.searchPage" | translate }}
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="page-wrapper">
+  <div class="page-container search-page-container">
+    <div class="page-content">
+      <div class="grid-row">
+        <div class="grid-cell--12">
+          <div class="grid-cell grid-cell--container">
+            <div class="grid-cell-content grid-cell-content-with-section">
+              <div class="row">
+                <div class="section flex--1">
+                  <h4 class="section-title">{{ componentData.componentId + ".type" | translate }}</h4>
+                  <div class="section-content">
+                    <div class="form-group form-group-select-buton">
+                      <label class="form-label"> &nbsp; </label>
+
+                      <div class="form-control aw-selectbutton-wrapper">
+                        <p-selectButton
+                          [(ngModel)]="type"
+                          [options]="propertyTypeList"
+                          (onChange)="onTypeChange($event)"
+                        ></p-selectButton>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="section flex--1">
+                  <h4 class="section-title">{{ componentData.componentId + ".format" | translate }}</h4>
+                  <div class="section-content">
+                    <div class="form-group form-group-select-buton">
+                      <label class="form-label"> &nbsp; </label>
+
+                      <div class="form-control aw-selectbutton-wrapper">
+                        <p-selectButton
+                          [(ngModel)]="format"
+                          [options]="propertyFormatList"
+                          (onChange)="onFormatChange($event)"
+                        ></p-selectButton>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="section flex--1"></div>
+              </div>
+
+              <div class="section">
+                <h4 class="section-title">{{ componentData.componentId + ".data" | translate }}</h4>
+                <div class="section-content">
+                  <div class="form-group form-group-select-buton">
+                    <label class="form-label"> &nbsp; </label>
+
+                    <div class="form-control aw-selectbutton-wrapper">
+                      <p-selectButton
+                        [(ngModel)]="data"
+                        [options]="propertyDataList"
+                        (onChange)="setSearchCriteriaVisibility($event)"
+                      ></p-selectButton>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="section" *ngIf="showSearchCriteria">
+                <div class="row">
+                  <div class="form-group flex--4" [ngClass]="{ required: true }">
+                    <label class="form-label"> {{ componentData.componentId + ".family" | translate }} </label>
+                    <div class="form-control">
+                      <p-dropdown
+                        (onChange)="onFamilyChange($event)"
+                        class="aw-dropdown fixed-width"
+                        [(ngModel)]="selectedFamily"
+                        [options]="familyValues"
+                        placeholder="&nbsp;"
+                      ></p-dropdown>
+                    </div>
+                  </div>
+
+                  <div class="form-group flex--4" [ngClass]="{ required: true }">
+                    <label class="form-label"> {{ componentData.componentId + ".variant" | translate }} </label>
+                    <div class="form-control">
+                      <p-dropdown
+                        (onChange)="setImportSectionVisibility($event)"
+                        class="aw-dropdown fixed-width"
+                        [showClear]="true"
+                        [(ngModel)]="selectedVariant"
+                        [options]="variantValues"
+                        placeholder="&nbsp;"
+                      >
+                      </p-dropdown>
+                    </div>
+                  </div>
+
+                  <div class="form-group flex--4"></div>
+                  <div class="form-group flex--4"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-row" *ngIf="visibilityImport()">
+        <div class="grid-cell--12">
+          <div class="grid-cell grid-cell--container">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title" *ngIf="format === EXCEL && data === IPC">
+                  {{ componentData.componentId + ".importExcelIpc" | translate }}
+                </h3>
+
+                <h3 class="grid-cell-title" *ngIf="format === EXCEL && data === MAINTENANCE">
+                  {{ componentData.componentId + ".importExcelMaintenance" | translate }}
+                </h3>
+
+                <h3 class="grid-cell-title" *ngIf="format === EXCEL && data === LOGISTIC">
+                  {{ componentData.componentId + ".importExcelLogistics" | translate }}
+                </h3>
+
+                <h3 class="grid-cell-title" *ngIf="format === EXCEL && data === FEEDBACK">
+                  {{ componentData.componentId + ".importExcelExperienceFeedback" | translate }}
+                </h3>
+
+                <h3 class="grid-cell-title" *ngIf="format === EXCEL && data === FUNCTIONAL">
+                  {{ componentData.componentId + ".importFunctionalLocations" | translate }}
+                </h3>
+
+                <h3 class="grid-cell-title" *ngIf="format === EXCEL && data === AMG">
+                  {{ componentData.componentId + ".importExcelAmg" | translate }}
+                </h3>
+
+                <h3 class="grid-cell-title" *ngIf="format === 'XML' && data === 'IPC'">
+                  {{ componentData.componentId + ".importXmlIpc" | translate }}
+                </h3>
+
+                <h3 class="grid-cell-title" *ngIf="format === 'XML' && data === 'Maintenance'">
+                  {{ componentData.componentId + ".importXmlMaintenance" | translate }}
+                </h3>
+              </div>
+            </div>
+            <div class="grid-cell-content">
+              <div class="column">
+                <div *ngIf="validTypeFormatDataCombination()" class="grid-row">
+                  <div class="form-group">
+                    <span
+                      class="form-label"
+                      (click)="openTemplate(loadTemplate())"
+                      style="cursor: pointer; text-decoration: underline; color: blue; width: min-content"
+                    >
+                      {{ loadTemplate() }}
+                    </span>
+                  </div>
+                </div>
+                <div *ngIf="selectedVariant !== '' && showSearchCriteria" class="grid-row">
+                  <div class="form-group">
+                    <label class="form-label">
+                      {{ componentData.componentId + ".selectedFamilyVariant" | translate }}:
+                      {{ familyAndVariantSelected() }}
+                    </label>
+                  </div>
+                </div>
+                <div class="grid-row  grid-cell--6">
+                  <div class="form-group">
+                    <label class="form-label"> {{ componentData.componentId + ".fileToImport" | translate }}</label>
+
+                    <div class="form-control form-control-with-modal" [ngClass]="{ disabled: isReadOpenMode }">
+                      <div class="form-control-data">
+                        {{ fileName }}
+                      </div>
+
+                      <div class="btn-file-upload-wrapper">
+                        <p-fileUpload
+                          #fileUploader
+                          *ngIf="!isReadOpenMode"
+                          class="aw-fileupload"
+                          name="document[]"
+                          customUpload="true"
+                          mode="basic"
+                          auto="true"
+                          chooseLabel=""
+                          (uploadHandler)="uploadDocument($event, fileUploader)"
+                          [disabled]="enableImport()"
+                        >
+                        </p-fileUpload>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- <div class="form-group">
+                    <label class="form-label selectedFV">
+                      {{ componentData.componentId + ".fileToImport" | translate }}
+                    </label>
+                    <div style="width: 28rem" class="form-control form-control-with-btn selectedFV" [ngClass]="{ disabled: isReadOpenMode }">
+                      <input class="aw-input" type="text" [(ngModel)]="fileName" [disabled]="true" />
+
+                      <div>
+                        <p-fileUpload
+                          #fileUploader
+                          class="aw-fileupload"
+                          name="document"
+                          customUpload="true"
+                          mode="basic"
+                          auto="true"
+                          chooseLabel="{{'global.upload' | translate}}"
+                          (uploadHandler)="uploadDocument($event, fileUploader)"
+                          [disabled]="enableImport()"
+                        ></p-fileUpload>
+                      </div>
+                    </div>
+                  </div> -->
+                </div>
+
+                <div class="grid-row">
+                  <div class="form-group">
+                    <label *ngIf="format === 'EXCEL' && data === 'IPC'" class="form-label selectedFV">
+                      {{ componentData.componentId + ".ipcCheckbox" | translate }}
+                    </label>
+                    <label *ngIf="format === 'EXCEL' && data === 'Maintenance'" class="form-label selectedFV">
+                      {{ componentData.componentId + ".maintenanceCheckbox" | translate }}
+                    </label>
+                    <label *ngIf="format === 'XML' && data === 'IPC'" class="form-label selectedFV">
+                      {{ componentData.componentId + ".ipcCheckbox" | translate }}
+                    </label>
+                    <label *ngIf="format === 'XML' && data === 'Maintenance'" class="form-label selectedFV">
+                      {{ componentData.componentId + ".maintenanceCheckbox" | translate }}
+                    </label>
+                    <label *ngIf="data === 'Logistics'" class="form-label selectedFV">
+                      {{ componentData.componentId + ".logisticsCheckbox" | translate }}
+                    </label>
+                    <label *ngIf="data === 'Experience Feedback'" class="form-label selectedFV">
+                      {{ componentData.componentId + ".experienceFeedbackCheckbox" | translate }}
+                    </label>
+                    <div class="form-control">
+                      <p-checkbox
+                        *ngIf="format === 'EXCEL' && data === 'IPC'"
+                        binary="true"
+                        class="aw-checkbox"
+                        [(ngModel)]="ipcExcelCheckbox"
+                        [disabled]=""
+                      ></p-checkbox>
+                      <p-checkbox
+                        *ngIf="format === 'EXCEL' && data === 'Maintenance'"
+                        binary="true"
+                        class="aw-checkbox"
+                        [(ngModel)]="maintenanceExcelCheckbox"
+                        [disabled]=""
+                      ></p-checkbox>
+                      <p-checkbox
+                        *ngIf="format === 'XML' && data === 'IPC'"
+                        binary="true"
+                        class="aw-checkbox"
+                        [(ngModel)]="ipcXmlCheckbox"
+                        [disabled]=""
+                      ></p-checkbox>
+                      <p-checkbox
+                        *ngIf="format === 'XML' && data === 'Maintenance'"
+                        binary="true"
+                        class="aw-checkbox"
+                        [(ngModel)]="maintenanceXmlCheckbox"
+                        [disabled]=""
+                      ></p-checkbox>
+                      <p-checkbox
+                        *ngIf="data === 'Logistics'"
+                        binary="true"
+                        class="aw-checkbox"
+                        [(ngModel)]="logisticsCheckbox"
+                        [disabled]=""
+                      ></p-checkbox>
+                      <p-checkbox
+                        *ngIf="data === 'Experience Feedback'"
+                        binary="true"
+                        class="aw-checkbox"
+                        [(ngModel)]="experienceFeedbackCheckbox"
+                        [disabled]=""
+                      ></p-checkbox>
+                    </div>
+                  </div>
+                </div>
+
+                <div *ngIf="format !== ''" class="grid-row search-criteria-footer">
+                  <div class="search-actions">
+                    <button
+                      *ngIf="format === 'XML'"
+                      type="button"
+                      class="btn-with-spinner"
+                      mat-raised-button
+                      (click)="simulate()"
+                    >
+                      <span class="lds-hourglass" *ngIf="showSimulateSpinner"></span>
+                      {{ componentData.componentId + ".simulateFile" | translate }}
+                    </button>
+
+                    &nbsp;&nbsp;&nbsp;
+
+                    <button type="button" mat-raised-button class="btn-with-spinner" (click)="import()">
+                      <span class="lds-hourglass" *ngIf="showSpinner"></span>
+                      {{ componentData.componentId + ".importFile" | translate }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-row" *ngIf="visibilityImport()">
+        <div class="grid-cell--12">
+          <div #resultsContainer class="grid-cell grid-cell--container">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">{{ componentData.componentId + ".importReportList" | translate }}</h3>
+              </div>
+            </div>
+            <div class="grid-cell-content">
+              <p-table
+                [resizableColumns]="true"
+                #ptable
+                class="aw-table2"
+                [columns]="reportTableCols"
+                [value]="importReport"
+                [(selection)]="selectedReports"
+                [scrollable]="true"
+              >
+                <ng-template pTemplate="emptymessage">
+                  <span *ngIf="!isLoading"> &nbsp;</span>
+
+                  <div *ngIf="isLoading" class="aw-table-loading-indicator">
+                    <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                    <div class="lds-hourglass"></div>
+                  </div>
+                </ng-template>
+
+                <ng-template pTemplate="caption">
+                  <div class="aw-table-header" [ngClass]="{ 'rows-selected': selectedReports.length > 0 }">
+                    <div class="aw-table-global-filter">
+                      <label class="aw-table-global-filter-label">
+                        <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                      </label>
+
+                      <input
+                        #ptableGlobalFilter
+                        class="aw-table-global-filter-input"
+                        type="text"
+                        placeholder="{{ 'table.globalFilterText' | translate }}"
+                        (input)="ptable.filterGlobal($event.target.value, 'contains')"
+                      />
+                    </div>
+
+                    <div class="aw-table-actions">
+                      <div class="aw-btn-group aw-table-actions">
+                        <button
+                          *ngIf="hasManageAccessRight && selectedReports.length > 0"
+                          type="button"
+                          mat-raised-button
+                          color="warn"
+                          (click)="deleteReports()"
+                        >
+                          {{ "global.delete" | translate }}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </ng-template>
+
+                <ng-template pTemplate="colgroup" let-columns>
+                  <colgroup>
+                    <col class="aw-table-checkbox-wrapper" />
+                    <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                  </colgroup>
+                </ng-template>
+
+                <ng-template pTemplate="header" let-columns>
+                  <tr>
+                    <th class="aw-table-checkbox-wrapper">
+                      <p-tableHeaderCheckbox class="aw-table-checkbox"></p-tableHeaderCheckbox>
+                    </th>
+
+                    <th pResizableColumn *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                      {{ componentData.componentId + "." + col.field | translate }}
+                    </th>
+                  </tr>
+                </ng-template>
+
+                <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                  <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                    <td class="aw-table-checkbox-wrapper">
+                      <p-tableCheckbox class="aw-table-checkbox" [value]="rowData"></p-tableCheckbox>
+                    </td>
+
+                    <td
+                      style="overflow: hidden; text-overflow: ellipsis;"
+                      *ngFor="let col of columns"
+                      [ngSwitch]="col.field"
+                      [ngStyle]="{ 'text-align': col.alignment }"
+                    >
+                      <div *ngSwitchCase="'reportName'">
+                        <span
+                          (click)="openReportDetail(rowData)"
+                          style="cursor: pointer; text-decoration: underline; color: blue"
+                        >
+                          {{ rowData[col.field] }}
+                        </span>
+                      </div>
+                      <div *ngSwitchCase="'familyCode'">
+                        <span> {{ rowData.labelValueDTO.label }} </span>
+                      </div>
+                      <div *ngSwitchCase="'statusDate'">
+                        <span>
+                          {{ rowData[col.field] | date: "yyyy/MM/dd HH:mm":"":translateService.currentLang }}
+                        </span>
+                      </div>
+                      <div *ngSwitchDefault>{{ rowData[col.field] }}</div>
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- For Type Export > Excel > IPC -->
+      <div class="grid-row" *ngIf="visibilityExportExcelIpc()">
+        <div class="grid-cell--12">
+          <div #resultsContainer class="grid-cell grid-cell--container">
+            <div class="grid-cell-header" *ngIf="selectedVariant !== ''">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">{{ componentData.componentId + ".exportIPC" | translate }}</h3>
+              </div>
+            </div>
+            <div *ngIf="selectedVariant !== ''" class="grid-cell-content">
+              <div class="column">
+                <div class="grid-row search-criteria-footer">
+                  <div class="search-actions">
+                    <div class="form-control">
+                      <button type="button" class="btn-with-spinner" mat-raised-button (click)="exportExcelIpc()">
+                        <span class="lds-hourglass" *ngIf="showSpinner"></span>
+                        {{ componentData.componentId + ".export" | translate }}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- For Type Export > Excel > Maintenance -->
+      <div class="grid-row" *ngIf="visibilityExportExcelMaintenance()">
+        <div class="grid-cell--12">
+          <div #resultsContainer class="grid-cell grid-cell--container">
+            <div class="grid-cell-header" *ngIf="selectedVariant !== ''">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">{{ componentData.componentId + ".maintenanceData" | translate }}</h3>
+              </div>
+            </div>
+            <div *ngIf="selectedVariant !== ''" class="grid-cell-content">
+              <div class="column">
+                <div class="grid-row">
+                  <div class="form-group flex--4">
+                    <label class="form-label"> {{ componentData.componentId + ".taskGroup" | translate }} </label>
+                    <div class="form-control">
+                      <p-dropdown
+                        class="aw-dropdown fixed-width"
+                        [(ngModel)]="selectedTaskGroup"
+                        [options]="taskGroups"
+                        [showClear]="true"
+                        placeholder="&nbsp;"
+                      ></p-dropdown>
+                    </div>
+                  </div>
+                  <div class="form-group flex--4"></div>
+                  <div class="form-group flex--4"></div>
+                  <div class="form-group flex--4"></div>
+                </div>
+                <div class="grid-row search-criteria-footer">
+                  <div class="search-actions">
+                    <div class="form-control">
+                      <button
+                        type="button"
+                        class="btn-with-spinner"
+                        mat-raised-button
+                        (click)="exportMaintenanceExcel()"
+                      >
+                        <span class="lds-hourglass" *ngIf="showSpinner"></span>
+                        {{ componentData.componentId + ".export" | translate }}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- For Type Export > XML > IPC -->
+      <div class="grid-row" *ngIf="visibilityExportXmlIpc()">
+        <div class="grid-cell--12">
+          <div #resultsContainer class="grid-cell grid-cell--container">
+            <div class="grid-cell-header" *ngIf="selectedVariant !== ''">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">{{ componentData.componentId + ".exportIPC" | translate }}</h3>
+              </div>
+            </div>
+            <div *ngIf="selectedVariant !== ''" class="grid-cell-content">
+              <div class="column">
+                <div class="grid-row">
+                  <div class="form-group">
+                    <label class="form-label">
+                      {{ componentData.componentId + ".selectedFamilyVariant" | translate }}:
+                      {{ familyAndVariantSelected() }}
+                    </label>
+                  </div>
+                </div>
+                <div class="grid-row">
+                  <div class="grid-cell--3">
+                    <div class="form-group">
+                      <label class="form-label">
+                        {{ componentData.componentId + ".identifyRevision" | translate }}:
+                      </label>
+                      <div class="form-control">
+                        <p-calendar
+                          showButtonBar="true"
+                          [monthNavigator]="true"
+                          [yearNavigator]="true"
+                          [yearRange]="sessionService.calendarYearRange"
+                          class="aw-calendar"
+                          [dateFormat]="sessionService.dateFormatPrimeNG"
+                          [locale]="sessionService.calendarFormat"
+                          [(ngModel)]="ipcExportData.lastPublicationDate"
+                          appendTo="body"
+                        ></p-calendar>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="grid-row">
+                  <div class="grid-cell--12">
+                    <div class="grid-cell grid-cell--container">
+                      <div class="grid-cell-content grid-cell-content-with-section">
+                        <div class="section">
+                          <h4 class="section-title">
+                            {{ componentData.componentId + ".selectExportData" | translate }}
+                          </h4>
+                          <div class="section-content">
+                            <div class="form-group">
+                              <label class="form-label">
+                                {{ componentData.componentId + ".ipcStructureCheckbox" | translate }}
+                              </label>
+
+                              <div class="form-control">
+                                <p-checkbox
+                                  binary="true"
+                                  class="aw-checkbox general-type-checkbox"
+                                  [(ngModel)]="ipcExportData.withFamilyVariant"
+                                ></p-checkbox>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="section">
+                          <h4 class="section-title">{{ componentData.componentId + ".itemFilter" | translate }}</h4>
+                          <div class="section-content">
+                            <div class="column">
+                              <!-- Item -->
+                              <div class="row">
+                                <div class="form-group flex--3">
+                                  <!-- <label class="form-label">{{ getComponentName() + ".itemGroup" | translate }}</label> -->
+
+                                  <div class="form-control form-control-with-modal">
+                                    <div class="form-control-data" (click)="openItemTableDialog()">
+                                      {{ ipcExportData.chapter }}
+                                      <span *ngIf="ipcExportData.section"> - {{ ipcExportData.section }}</span>
+                                      <span *ngIf="ipcExportData.subject"> - {{ ipcExportData.subject }}</span>
+                                      <span *ngIf="ipcExportData.sheet"> - {{ ipcExportData.sheet }}</span>
+                                      <span *ngIf="ipcExportData.mark"> - {{ ipcExportData.mark }}</span>
+                                    </div>
+
+                                    <div
+                                      *ngIf="
+                                        ipcExportData.chapter &&
+                                        ipcExportData.section &&
+                                        ipcExportData.subject &&
+                                        ipcExportData.sheet &&
+                                        ipcExportData.mark
+                                      "
+                                      class="btn-clear-wrapper"
+                                    >
+                                      <i
+                                        class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+                                        aria-hidden="true"
+                                        (click)="
+                                          ipcExportData.chapter = undefined;
+                                          ipcExportData.section = undefined;
+                                          ipcExportData.subject = undefined;
+                                          ipcExportData.sheet = undefined;
+                                          ipcExportData.mark = undefined;
+                                          ipcExportData.versionNumber = undefined
+                                        "
+                                      ></i>
+                                    </div>
+                                    <div class="btn-search-wrapper">
+                                      <i
+                                        class="fa fa-fw fa-search aw-icon btn-search"
+                                        aria-hidden="true"
+                                        (click)="openItemTableDialog()"
+                                      ></i>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div class="form-group flex--3"></div>
+                                <div class="form-group flex--3"></div>
+                              </div>
+
+                              <!-- Checkbox -->
+                              <div class="row">
+                                <div class="form-group flex--4">
+                                  <label class="form-label">{{
+                                    componentData.componentId + ".part" | translate
+                                  }}</label>
+                                  <div class="form-control">
+                                    <p-checkbox class="aw-checkbox" binary="true" [(ngModel)]="ipcExportData.withPn">
+                                    </p-checkbox>
+                                  </div>
+                                </div>
+
+                                <div class="form-group flex--4">
+                                  <label class="form-label">{{
+                                    componentData.componentId + ".refMgmt" | translate
+                                  }}</label>
+                                  <div class="form-control">
+                                    <p-checkbox
+                                      class="aw-checkbox"
+                                      binary="true"
+                                      [(ngModel)]="ipcExportData.withMeasureReference"
+                                    ></p-checkbox>
+                                  </div>
+                                </div>
+
+                                <div class="form-group flex--4">
+                                  <label class="form-label">{{
+                                    componentData.componentId + ".measureUnit" | translate
+                                  }}</label>
+                                  <div class="form-control">
+                                    <p-checkbox
+                                      class="aw-checkbox"
+                                      binary="true"
+                                      [(ngModel)]="ipcExportData.withUnitMeasure"
+                                    ></p-checkbox>
+                                  </div>
+                                </div>
+
+                                <div class="form-group flex--4"></div>
+                              </div>
+
+                              <div class="row">
+                                <div class="form-group flex--4">
+                                  <label class="form-label">{{
+                                    componentData.componentId + ".evolution" | translate
+                                  }}</label>
+                                  <div class="form-control">
+                                    <p-checkbox
+                                      class="aw-checkbox"
+                                      binary="true"
+                                      [(ngModel)]="ipcExportData.withEvolution"
+                                    ></p-checkbox>
+                                  </div>
+                                </div>
+
+                                <div class="form-group flex--4">
+                                  <label class="form-label">{{
+                                    componentData.componentId + ".sbad" | translate
+                                  }}</label>
+                                  <div class="form-control">
+                                    <p-checkbox class="aw-checkbox" binary="true" [(ngModel)]="ipcExportData.withSb">
+                                    </p-checkbox>
+                                  </div>
+                                </div>
+
+                                <div class="form-group flex--4">
+                                  <label class="form-label">{{
+                                    componentData.componentId + ".modification" | translate
+                                  }}</label>
+                                  <div class="form-control">
+                                    <p-checkbox
+                                      class="aw-checkbox"
+                                      binary="true"
+                                      [(ngModel)]="ipcExportData.withModification"
+                                    ></p-checkbox>
+                                  </div>
+                                </div>
+
+                                <div class="form-group flex--4"></div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- <div class="section">
+                          <h4 class="section-title">
+                            {{ componentData.componentId + ".selectExportData" | translate }}
+                          </h4>
+
+                          <div class="section-content">
+                            <div class="column">
+                              <div class="grid-row">
+                                <div class="form-group">
+                                  <label class="form-label">
+                                    {{ componentData.componentId + ".ipcStructureCheckbox" | translate }}
+                                  </label>
+
+                                  <div class="form-control">
+                                    <p-checkbox
+                                      binary="true"
+                                      class="aw-checkbox general-type-checkbox"
+                                      [(ngModel)]="ipcExportData.withFamilyVariant"
+                                    ></p-checkbox>
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="grid-row">
+                                <div class="section">
+                                <div class="section-title-wrapper">
+                                  <h4 class="section-title">
+                                    {{ componentData.componentId + ".itemFilter" | translate }}
+                                  </h4>
+                                </div>
+
+                                <div class="section-content">
+                                  <div class="column">
+                                    <div class="grid-row">
+                                      <div class="form-group">
+                                        <div class="grid-cell--3">
+                                          <label class="form-label">
+                                            {{ componentData.componentId + ".selectCode" | translate }}
+                                          </label>
+                                          <div class="form-control">
+                                            <p-dropdown
+                                              class="aw-dropdown fixed-width"
+                                              [showClear]="true"
+                                              [options]="ataCodes"
+                                              [(ngModel)]="selectedATACode"
+                                              placeholder="&nbsp;"
+                                              (onChange)="setATACodeComponents($event)"
+                                            ></p-dropdown>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div class="grid-row">
+                                      <div class="form-group">
+                                        <label class="form-label">
+                                          {{ componentData.componentId + ".searchCode" | translate }}
+                                        </label>
+                                      </div>
+                                    </div>
+                                    <div class="grid-row">
+                                      <div class="grid-cell--2">
+                                        <div class="form-group">
+                                          <div class="form-control" style="display: inherit">
+                                            <input
+                                              type="text"
+                                              class="aw-input minus-input"
+                                              [(ngModel)]="ipcExportData.chapter"
+                                            />
+                                            <h2>-</h2>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div class="grid-cell--2">
+                                        <div class="form-group">
+                                          <div class="form-control" style="display: inherit">
+                                            <input
+                                              type="text"
+                                              class="aw-input minus-input"
+                                              [(ngModel)]="ipcExportData.section"
+                                            />
+                                            <h2>-</h2>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div class="grid-cell--2">
+                                        <div class="form-group">
+                                          <div class="form-control" style="display: inherit">
+                                            <input
+                                              type="text"
+                                              class="aw-input minus-input"
+                                              [(ngModel)]="ipcExportData.subject"
+                                            />
+                                            <h2>-</h2>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div class="grid-cell--2">
+                                        <div class="form-group">
+                                          <div class="form-control" style="display: inherit">
+                                            <input
+                                              type="text"
+                                              class="aw-input minus-input"
+                                              [(ngModel)]="ipcExportData.sheet"
+                                            />
+                                            <h2>-</h2>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div class="grid-cell--2">
+                                        <div class="form-group">
+                                          <div
+                                            class="form-control form-control-with-btn"
+                                            style="display: inherit"
+                                            [ngClass]="{ disabled: isReadOpenMode }"
+                                          >
+                                            <input
+                                              type="text"
+                                              class="aw-input minus-input"
+                                              [(ngModel)]="ipcExportData.mark"
+                                            />
+                                            <i
+                                              class="fa fa-fw fa-search aw-icon"
+                                              aria-hidden="true"
+                                              pTooltip="{{ 'global.search' | translate }}"
+                                              tooltipPosition="top"
+                                              (click)="openItemTableDialog()"
+                                            ></i>
+                                            &nbsp;
+                                            <i
+                                              class="fa fa-fw fa-undo aw-icon"
+                                              aria-hidden="true"
+                                              pTooltip="{{ 'global.reset' | translate }}"
+                                              tooltipPosition="top"
+                                              (click)="resetATAData()"
+                                            ></i>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div class="grid-row">
+                                      <div class="grid-cell--3">
+                                        <div class="form-group">
+                                          <label class="form-label">{{
+                                            componentData.componentId + ".part" | translate
+                                          }}</label>
+                                          <div class="form-control">
+                                            <p-checkbox
+                                              class="aw-checkbox"
+                                              binary="true"
+                                              [(ngModel)]="ipcExportData.withPn"
+                                            ></p-checkbox>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                    <div class="grid-row">
+                                      <div class="grid-cell--3">
+                                        <div class="form-group">
+                                          <label class="form-label">{{
+                                            componentData.componentId + ".evolution" | translate
+                                          }}</label>
+                                          <div class="form-control">
+                                            <p-checkbox
+                                              class="aw-checkbox"
+                                              binary="true"
+                                              [(ngModel)]="ipcExportData.withEvolution"
+                                            ></p-checkbox>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div class="grid-cell--3">
+                                        <div class="form-group">
+                                          <label class="form-label">{{
+                                            componentData.componentId + ".refMgmt" | translate
+                                          }}</label>
+                                          <div class="form-control">
+                                            <p-checkbox
+                                              class="aw-checkbox"
+                                              binary="true"
+                                              [(ngModel)]="ipcExportData.withMeasureReference"
+                                            ></p-checkbox>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div class="grid-cell--3">
+                                        <div class="form-group">
+                                          <label class="form-label">{{
+                                            componentData.componentId + ".sbad" | translate
+                                          }}</label>
+                                          <div class="form-control">
+                                            <p-checkbox
+                                              class="aw-checkbox"
+                                              binary="true"
+                                              [(ngModel)]="ipcExportData.withSb"
+                                            ></p-checkbox>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                    <div class="grid-row">
+                                      <div class="grid-cell--3">
+                                        <div class="form-group">
+                                          <label class="form-label">{{
+                                            componentData.componentId + ".modification" | translate
+                                          }}</label>
+                                          <div class="form-control">
+                                            <p-checkbox
+                                              class="aw-checkbox"
+                                              binary="true"
+                                              [(ngModel)]="ipcExportData.withModification"
+                                            ></p-checkbox>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div class="grid-cell--3">
+                                        <div class="form-group">
+                                          <label class="form-label">{{
+                                            componentData.componentId + ".measureUnit" | translate
+                                          }}</label>
+                                          <div class="form-control">
+                                            <p-checkbox
+                                              class="aw-checkbox"
+                                              binary="true"
+                                              [(ngModel)]="ipcExportData.withUnitMeasure"
+                                            ></p-checkbox>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        </div> -->
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="grid-row search-criteria-footer">
+                  <div class="search-actions">
+                    <div class="form-control">
+                      <button type="button" class="btn-with-spinner" mat-raised-button (click)="exportIPC()">
+                        <span class="lds-hourglass" *ngIf="showSpinner"></span>
+                        {{ componentData.componentId + ".export" | translate }}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- For Type Export > XML > Maintenance -->
+      <div class="grid-row" *ngIf="visibilityExportXmlMaintenance()">
+        <div class="grid-cell--12">
+          <div #resultsContainer class="grid-cell grid-cell--container">
+            <div class="grid-cell-header" *ngIf="selectedVariant !== ''">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">{{ componentData.componentId + ".maintenanceData" | translate }}</h3>
+              </div>
+            </div>
+            <div *ngIf="selectedVariant !== ''" class="grid-cell-content">
+              <div class="column">
+                <div class="grid-row">
+                  <div class="form-group">
+                    <label class="form-label">
+                      {{ componentData.componentId + ".selectedfamilyAndVariant" | translate }}:
+                      {{ familyAndVariantSelected() }}
+                    </label>
+                  </div>
+                </div>
+
+                <div class="grid-row">
+                  <div class="grid-cell--12">
+                    <div class="grid-cell grid-cell--container">
+                      <div class="grid-cell-header">
+                        <div class="grid-cell-title-container">
+                          <h3 class="grid-cell-title">{{ componentData.componentId + ".dataToExport" | translate }}</h3>
+                        </div>
+                      </div>
+                      <div class="grid-cell-content grid-cell-content-with-section">
+                        <div class="section">
+                          <h4 class="section-title">{{ componentData.componentId + ".taskData" | translate }}</h4>
+
+                          <div class="section-content">
+                            <div class="grid-row">
+                              <div class="form-group">
+                                <label class="form-label">{{
+                                  componentData.componentId + ".shopManual" | translate
+                                }}</label>
+                                <div class="form-control">
+                                  <p-checkbox
+                                    class="aw-checkbox"
+                                    binary="true"
+                                    [(ngModel)]="maintenanceExportData.withShopManual"
+                                  ></p-checkbox>
+                                </div>
+                              </div>
+
+                              <div class="form-group">
+                                <label class="form-label">{{ componentData.componentId + ".range" | translate }}</label>
+                                <div class="form-control">
+                                  <p-checkbox
+                                    class="aw-checkbox"
+                                    binary="true"
+                                    [(ngModel)]="maintenanceExportData.withRange"
+                                  ></p-checkbox>
+                                </div>
+                              </div>
+
+                              <div class="form-group">
+                                <label class="form-label">{{
+                                  componentData.componentId + ".taskStructure" | translate
+                                }}</label>
+                                <div class="form-control">
+                                  <p-checkbox
+                                    class="aw-checkbox"
+                                    binary="true"
+                                    [(ngModel)]="maintenanceExportData.withTaskStructure"
+                                  ></p-checkbox>
+                                </div>
+                              </div>
+
+                              <div class="form-group">
+                                <label class="form-label">{{
+                                  componentData.componentId + ".taskGroup" | translate
+                                }}</label>
+                                <div class="form-control">
+                                  <p-checkbox
+                                    class="aw-checkbox"
+                                    binary="true"
+                                    [(ngModel)]="maintenanceExportData.withTaskGroup"
+                                  ></p-checkbox>
+                                </div>
+                              </div>
+
+                              <div class="form-group">
+                                <label class="form-label">{{
+                                  componentData.componentId + ".maintainProg" | translate
+                                }}</label>
+                                <div class="form-control">
+                                  <p-checkbox
+                                    class="aw-checkbox"
+                                    binary="true"
+                                    [(ngModel)]="maintenanceExportData.withMaintenancePlan"
+                                  ></p-checkbox>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="section">
+                          <h4 class="section-title">{{ componentData.componentId + ".catalogData" | translate }}</h4>
+
+                          <div class="section-content">
+                            <div class="grid-row">
+                              <div class="form-group">
+                                <label class="form-label">{{
+                                  componentData.componentId + ".qualification" | translate
+                                }}</label>
+                                <div class="form-control">
+                                  <p-checkbox
+                                    class="aw-checkbox"
+                                    binary="true"
+                                    [(ngModel)]="maintenanceExportData.withQualification"
+                                  ></p-checkbox>
+                                </div>
+                              </div>
+
+                              <div class="form-group">
+                                <label class="form-label">{{
+                                  componentData.componentId + ".techIntervLevel" | translate
+                                }}</label>
+                                <div class="form-control">
+                                  <p-checkbox
+                                    class="aw-checkbox"
+                                    binary="true"
+                                    [(ngModel)]="maintenanceExportData.withTechnicalLevel"
+                                  ></p-checkbox>
+                                </div>
+                              </div>
+
+                              <div class="form-group">
+                                <label class="form-label">{{
+                                  componentData.componentId + ".damage" | translate
+                                }}</label>
+                                <div class="form-control">
+                                  <p-checkbox
+                                    class="aw-checkbox"
+                                    binary="true"
+                                    [(ngModel)]="maintenanceExportData.withDamage"
+                                  ></p-checkbox>
+                                </div>
+                              </div>
+
+                              <div class="form-group">
+                                <label class="form-label">{{
+                                  componentData.componentId + ".localisation" | translate
+                                }}</label>
+                                <div class="form-control">
+                                  <p-checkbox
+                                    class="aw-checkbox"
+                                    binary="true"
+                                    label=""
+                                    [(ngModel)]="maintenanceExportData.withLocalisation"
+                                  ></p-checkbox>
+                                </div>
+                              </div>
+
+                              <div class="form-group">
+                                <label class="form-label">{{
+                                  componentData.componentId + ".consumable" | translate
+                                }}</label>
+                                <div class="form-control">
+                                  <p-checkbox
+                                    class="aw-checkbox"
+                                    binary="true"
+                                    [(ngModel)]="maintenanceExportData.withComponent"
+                                  ></p-checkbox>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="grid-row search-criteria-footer">
+                  <div class="search-actions">
+                    <div class="form-control">
+                      <button
+                        type="button"
+                        class="btn-with-spinner"
+                        mat-raised-button
+                        class="search"
+                        (click)="exportMaintenance()"
+                      >
+                        <span class="lds-hourglass" *ngIf="showSpinner"></span>
+                        <span>{{ componentData.componentId + ".export" | translate }}</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- For Type Export > XML > EIPC -->
+      <div class="grid-row" *ngIf="visibilityExportXmlEipc()">
+        <div class="grid-cell--12">
+          <div #resultsContainer class="grid-cell grid-cell--container">
+            <div class="grid-cell-header" *ngIf="selectedVariant !== ''">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">{{ componentData.componentId + ".eipcData" | translate }}</h3>
+              </div>
+            </div>
+            <div *ngIf="selectedVariant !== ''" class="grid-cell-content">
+              <div class="column">
+                <div class="grid-row">
+                  <div class="form-group">
+                    <label class="form-label">
+                      {{ componentData.componentId + ".selectedfamilyAndVariant" | translate }}:
+                      {{ familyAndVariantSelected() }}
+                    </label>
+                  </div>
+                </div>
+                <div class="grid-row search-criteria-footer">
+                  <div class="search-actions">
+                    <div class="form-control">
+                      <button
+                        type="button"
+                        class="btn-with-spinner"
+                        mat-raised-button
+                        class="search"
+                        (click)="exportEIPC()"
+                      >
+                        <span class="lds-hourglass" *ngIf="showSpinner"></span>
+                        <span>{{ componentData.componentId + ".export" | translate }}</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aw-import-report-popup
+        *ngIf="showImportReportMessage"
+        [importReportMessage]="importReportMessage"
+        [(display)]="showImportReportMessage"
+      ></aw-import-report-popup>
+
+      <aw-dialog-search-item
+        *ngIf="showItemTableDialog"
+        [(display)]="showItemTableDialog"
+        (onValidated)="onSelectedItem($event)"
+      ></aw-dialog-search-item>
+    </div>
+  </div>
+</div>

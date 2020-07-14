@@ -1,0 +1,1091 @@
+<div class="page-header">
+  <div class="page-info">
+    <div>
+      <h2 class="page-title">
+        {{ "transaction." + componentData.componentId | translate }}
+      </h2>
+
+      <div class="page-subtitle">
+        <div *ngIf="!isCreateOpenMode && componentData && componentData.objectId" class="page-subtitle">
+          - {{ componentDesignation }}
+        </div>
+      </div>
+    </div>
+    <div class="object-status" *ngIf="applicableConfiguration.statusState" (click)="showStatus()">
+      {{ applicableConfiguration.statusState | formatSelectOption: status }}
+    </div>
+  </div>
+
+  <div class="page-actions">
+    <button
+      *ngIf="isReadOpenMode && hasUpdateAccessRight"
+      type="button"
+      mat-raised-button
+      (click)="editApplicableConfiguration()"
+    >
+      {{ "global.edit" | translate }}
+    </button>
+
+    <button
+      *ngIf="!isReadOpenMode && !isCreateOpenMode"
+      type="button"
+      mat-raised-button
+      (click)="cancelApplicableConfiguration()"
+    >
+      {{ "global.cancel" | translate }}
+    </button>
+
+    <button
+      *ngIf="!isReadOpenMode"
+      class="btn-with-spinner"
+      color="primary"
+      type="button"
+      mat-raised-button
+      (click)="saveApplicableConfiguration()"
+    >
+      <span class="lds-hourglass" *ngIf="showSaveSpinner"></span>
+      {{ "global.save" | translate }}
+    </button>
+
+    <button
+      mat-icon-button
+      *ngIf="!isCreateOpenMode"
+      class="mat-elevation-z1"
+      matTooltip="{{ 'global.showAllActionTooltip' | translate }}"
+      matTooltipPosition="above"
+      aria-label="Show all actions"
+      [matMenuTriggerFor]="actions"
+    >
+      <mat-icon>more_horiz</mat-icon>
+    </button>
+    <mat-menu #actions="matMenu">
+      <button type="button" mat-menu-item (click)="controlIpcData()">
+        {{ getComponentName() + ".controlIpcData" | translate }}
+      </button>
+      <button type="button" mat-menu-item (click)="openStatusUpdatesPopup()">
+        {{ getComponentName() + ".updates" | translate }}
+      </button>
+      <button
+        *ngIf="isReadOpenMode && !isCreateOpenMode"
+        type="button"
+        mat-menu-item
+        (click)="reloadApplicableConfiguration()"
+      >
+        {{ "global.refresh" | translate }}
+      </button>
+      <button type="button" mat-menu-item (click)="updateFavoriteState()">
+        {{ (isFavoriteEntry ? "removeFromFavorite" : "page.addToFavorites") | translate }}
+      </button>
+    </mat-menu>
+  </div>
+</div>
+
+<div class="page-wrapper">
+  <div class="page-container">
+    <div class="page-content">
+      <mat-tab-group animationDuration="0ms" dynamicHeight>
+        <!-- MAIN -->
+        <mat-tab>
+          <ng-template mat-tab-label>
+            {{ getComponentName() + ".home" | translate }}
+          </ng-template>
+
+          <div class="grid-row">
+            <div #mainInfoAnchor class="grid-cell--equally" (click)="selectPageTocEntry('mainInfoAnchor')">
+              <div
+                class="grid-cell grid-cell--container"
+                [ngClass]="{ active: isPageTocEntrySelected('mainInfoAnchor') }"
+              >
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">{{ "page.mainData" | translate }}</h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <div class="column">
+                    <div class="row">
+                      <div class="form-group" [ngClass]="{ required: !isReadOpenMode && isCreateOpenMode }">
+                        <label class="form-label">{{ componentData.componentId + ".familycode" | translate }}</label>
+
+                        <div
+                          class="form-control form-control-with-modal"
+                          [ngClass]="{ disabled: isReadOpenMode || !isCreateOpenMode }"
+                        >
+                          <div class="form-control-data" (click)="openFamilyPopup()">
+                            {{ applicableConfiguration.familyCode }}
+                          </div>
+
+                          <div *ngIf="applicableConfiguration.familyCode" class="btn-clear-wrapper">
+                            <i
+                              class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+                              aria-hidden="true"
+                              (click)="applicableConfiguration.familyCode = undefined"
+                            ></i>
+                          </div>
+                          <div class="btn-search-wrapper">
+                            <i
+                              class="fa fa-fw fa-search aw-icon btn-search"
+                              aria-hidden="true"
+                              (click)="openFamilyPopup()"
+                            ></i>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="form-group">
+                        <label class="form-label">{{
+                          componentData.componentId + ".familyFunction" | translate
+                        }}</label>
+
+                        <div class="form-control">
+                          <input
+                            type="text"
+                            class="aw-input"
+                            [(ngModel)]="selectedFamilyFunctionDisplayed"
+                            [disabled]="true"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div
+                        class="form-group"
+                        [ngClass]="{ required: !isReadOpenMode && isCreateOpenMode }"
+                        [ngClass]="{ disabled: isReadOpenMode || !isCreateOpenMode }"
+                      >
+                        <label class="form-label">{{ componentData.componentId + ".variantcode" | translate }}</label>
+
+                        <div class="form-control">
+                          <input
+                            type="text"
+                            class="aw-input"
+                            [(ngModel)]="applicableConfiguration.variantCode"
+                            [disabled]="isReadOpenMode || !isCreateOpenMode"
+                            [maxLength]="50"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div
+                        class="form-group"
+                        [ngClass]="{ required: !isReadOpenMode }"
+                        [ngClass]="{ disabled: isReadOpenMode }"
+                      >
+                        <label class="form-label">{{ componentData.componentId + ".variantname" | translate }}</label>
+
+                        <div class="form-control">
+                          <input
+                            type="text"
+                            class="aw-input"
+                            [(ngModel)]="applicableConfiguration.variantName"
+                            [disabled]="isReadOpenMode"
+                            [maxLength]="100"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="form-group">
+                        <label class="form-label">{{ componentData.componentId + ".structuretype" | translate }}</label>
+
+                        <div class="form-control">
+                          <input type="text" class="aw-input" [ngModel]="formatStructureText()" [disabled]="true" />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="form-group">
+                        <label class="form-label">{{
+                          componentData.componentId + ".variantRevisionDate" | translate
+                        }}</label>
+
+                        <div class="form-control">
+                          <p-calendar
+                            showButtonBar="true"
+                            [monthNavigator]="true"
+                            [yearNavigator]="true"
+                            [yearRange]="sessionService.calendarYearRange"
+                            class="aw-calendar"
+                            [dateFormat]="sessionService.dateFormatPrimeNG"
+                            [locale]="sessionService.calendarFormat"
+                            [disabled]="isReadOpenMode"
+                            [(ngModel)]="applicableConfiguration.variantRevisionDate"
+                          ></p-calendar>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="form-group">
+                        <label class="form-label">{{
+                          componentData.componentId + ".variantRevisionNumber" | translate
+                        }}</label>
+
+                        <div class="form-control">
+                          <input
+                            type="text"
+                            class="aw-input"
+                            [(ngModel)]="applicableConfiguration.variantRevisionNumber"
+                            [disabled]="isReadOpenMode"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div #itemStrucutre class="grid-cell--grow4" (click)="selectPageTocEntry('itemStrucutre')">
+              <div
+                class="grid-cell grid-cell--container grid-cell-item-structure"
+                [ngClass]="{ active: isPageTocEntrySelected('itemStrucutre') }"
+              >
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container loading-indicator">
+                    <div class="grid-cell-title">
+                      {{ "global.itemStructure" | translate }} ({{
+                        itemStructureDisplayed ? itemStructureDisplayed.length : 0
+                      }})
+                      <div *ngIf="itemStructureLoading" class="lds-hourglass"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <div *ngIf="!itemStructureLoading" class="column">
+                    <div class="list-with-details">
+                      <div class="list">
+                        <div class="list-header">
+                          <div class="aw-tree-global-filter">
+                            <label class="aw-tree-global-filter-label">
+                              <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                            </label>
+
+                            <input
+                              class="aw-tree-global-filter-input"
+                              type="text"
+                              placeholder="{{ 'tree.globalFilterText' | translate }}"
+                              [(ngModel)]="searchItemStructureGlobalFilter"
+                              (keyup)="filterItemStructure(searchItemStructureGlobalFilter)"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="list-with-details">
+                      <div class="list">
+                        <p-tree
+                          [value]="itemStructureDisplayed"
+                          selectionMode="single"
+                          [(selection)]="itemStructureNodeSelected"
+                          (onNodeSelect)="onSelectNode()"
+                        >
+                          <ng-template let-node pTemplate="default">
+                            <div class="code">
+                              <div class="chapter">{{ node.data.chapter }}</div>
+                              -
+                              <div class="section">{{ node.data.section }}</div>
+                              -
+                              <div class="subject">{{ node.data.subject }}</div>
+                              -
+                              <div class="sheet">{{ node.data.sheet }}</div>
+                              -
+                              <div class="marks">{{ node.data.marks }}</div>
+                            </div>
+                            <div class="name">{{ node.data.name }}</div>
+                          </ng-template>
+                        </p-tree>
+                      </div>
+
+                      <div
+                        class="details"
+                        [ngClass]="{
+                          'visibility--hidden': !itemStructureDisplayed || itemStructureDisplayed.length === 0
+                        }"
+                      >
+                        <div *ngIf="itemStructureNodeSelected" class="column">
+                          <div class="section">
+                            <div class="section-content">
+                              <div class="row item-structure-node-action-list">
+                                <button type="button" mat-raised-button (click)="openItem()">
+                                  {{ getComponentName() + ".openItem" | translate }}
+                                </button>
+
+                                <button type="button" mat-raised-button (click)="openConfigurationDiagram()">
+                                  {{ getComponentName() + ".openConfigurationDiagram" | translate }}
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="section">
+                            <div class="section-content">
+                              <div class="row">
+                                <div class="flex--2">
+                                  <div class="row">
+                                    <div class="form-group">
+                                      <label class="form-label">
+                                        {{ getComponentName() + ".itemFamily" | translate }}
+                                      </label>
+
+                                      <div class="form-control">
+                                        <input
+                                          type="text"
+                                          class="aw-input"
+                                          [(ngModel)]="itemFamilyCode"
+                                          [disabled]="true"
+                                        />
+                                      </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                      <label class="form-label">
+                                        {{ getComponentName() + ".serializedPart" | translate }}
+                                      </label>
+
+                                      <div class="form-control">
+                                        <p-checkbox
+                                          binary="true"
+                                          class="aw-checkbox"
+                                          [(ngModel)]="itemStructureNodeSelected.data.serializedPart"
+                                          [disabled]="true"
+                                        >
+                                        </p-checkbox>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  <div class="row">
+                                    <div class="form-group">
+                                      <label class="form-label">
+                                        {{ getComponentName() + ".functionCode" | translate }}
+                                      </label>
+
+                                      <div class="form-control">
+                                        <input
+                                          type="text"
+                                          class="aw-input"
+                                          [(ngModel)]="itemStructureNodeSelected.data.functionCode"
+                                          [disabled]="true"
+                                        />
+                                      </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                      <label class="form-label">
+                                        {{ getComponentName() + ".itemNumber" | translate }}
+                                      </label>
+
+                                      <div class="form-control">
+                                        <input
+                                          type="text"
+                                          class="aw-input"
+                                          [(ngModel)]="itemStructureNodeSelected.data.itemNumber"
+                                          [disabled]="true"
+                                        />
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div class="flex--1 item-structure-node-image">
+                                  <img
+                                    *ngIf="itemStructureNodeImageList && itemStructureNodeImageList.length > 0"
+                                    [src]="itemStructureNodeImageList[0]"
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="section">
+                            <h4 class="section-title">
+                              {{ getComponentName() + ".partNumbers" | translate }}
+                            </h4>
+
+                            <!-- Node part numbers table -->
+
+                            <div class="section-content">
+                              <a-table [dataSource]="nodePartTableDataSource">
+                                <ng-template columnDef="pnCode" let-rowData="rowData">
+                                  <a (click)="openItemPartNumber(rowData)">{{ rowData.pnCode }}</a>
+                                </ng-template>
+                              </a-table>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+
+        <!-- RATINGS -->
+        <mat-tab *ngIf="!!selectedFamilyFunction && selectedFamilyFunction === '2-eng'">
+          <ng-template mat-tab-label>
+            {{ getComponentName() + ".ratings" | translate }}
+          </ng-template>
+
+          <div class="section">
+            <h4 class="section-title">
+              {{ componentData.componentId + ".ratings" | translate }} ({{
+                ratingTableDataSource ? ratingTableDataSource.dataCount : 0
+              }})
+            </h4>
+
+            <div class="section-content">
+              <div class="form-group">
+                <label class="form-label">
+                  {{ componentData.componentId + ".isFollowedInRating" | translate }}
+                </label>
+                <div class="form-control">
+                  <p-checkbox
+                    binary="true"
+                    class="aw-checkbox"
+                    [disabled]="isReadOpenMode || (!!ratingTable && ratingTable.length > 0)"
+                    [(ngModel)]="isDisplayRatingTable"
+                  ></p-checkbox>
+                </div>
+              </div>
+
+              <a-table [dataSource]="ratingTableDataSource">
+                <ng-template tableActionsDef>
+                  <button
+                    *ngIf="!isReadOpenMode && ratingTableDataSource.hasDataSelection"
+                    type="button"
+                    mat-raised-button
+                    color="warn"
+                    (click)="deleteSelectedRating()"
+                  >
+                    {{ "global.delete" | translate }}
+                  </button>
+                  <button
+                    *ngIf="!isReadOpenMode && !ratingTableDataSource.hasDataSelection"
+                    type="button"
+                    mat-raised-button
+                    (click)="createRating()"
+                  >
+                    {{ "global.add" | translate }}
+                  </button>
+                  <button
+                    *ngIf="ratingTableDataSource.dataSelectionCount === 1"
+                    type="button"
+                    mat-raised-button
+                    (click)="openRating()"
+                  >
+                    {{ "global.open" | translate }}
+                  </button>
+                </ng-template>
+              </a-table>
+            </div>
+          </div>
+        </mat-tab>
+
+        <!-- AIRWORTHINESS DOCUMENTS -->
+        <mat-tab>
+          <ng-template mat-tab-label>
+            {{ getComponentName() + ".airworthinessDocuments" | translate }}
+          </ng-template>
+
+          <div class="grid-row">
+            <div #configDoc class="grid-cell--12" (click)="selectPageTocEntry('configDoc')">
+              <div class="grid-cell grid-cell--container" [ngClass]="{ active: isPageTocEntrySelected('configDoc') }">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ getComponentName() + ".airworthinessDocuments" | translate }} ({{
+                        configurationDocumentsTableDataSource ? configurationDocumentsTableDataSource.dataCount : 0
+                      }})
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <a-table [dataSource]="configurationDocumentsTableDataSource">
+                    <ng-template tableActionsDef>
+                      <button
+                        *ngIf="!isReadOpenMode && configurationDocumentsTableDataSource.hasDataSelection"
+                        type="button"
+                        mat-raised-button
+                        color="warn"
+                        (click)="deleteConfigurationDocuments()"
+                      >
+                        {{ "global.delete" | translate }}
+                      </button>
+                      <button
+                        *ngIf="!isReadOpenMode && configurationDocumentsTableDataSource.dataSelectionCount === 1"
+                        type="button"
+                        mat-raised-button
+                        (click)="editConfigurationDocument()"
+                      >
+                        {{ "global.edit" | translate }}
+                      </button>
+                      <button
+                        *ngIf="!isReadOpenMode && !configurationDocumentsTableDataSource.hasDataSelection"
+                        type="button"
+                        mat-raised-button
+                        (click)="openDocumentMatchingModel()"
+                      >
+                        {{ "global.add" | translate }}
+                      </button>
+                      <button
+                        *ngIf="configurationDocumentsTableDataSource.dataSelectionCount === 1"
+                        type="button"
+                        mat-raised-button
+                        (click)="openConfigurationDocuments()"
+                      >
+                        {{ "global.open" | translate }}
+                      </button>
+                    </ng-template>
+                    <ng-template columnDef="number" let-rowData="rowData">
+                      <a (click)="openDocumentForm(rowData)">{{ rowData.number }}</a>
+                    </ng-template>
+                  </a-table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+
+        <!-- DOCUMENTS -->
+        <mat-tab>
+          <ng-template mat-tab-label>
+            {{ getComponentName() + ".document" | translate }}
+          </ng-template>
+
+          <div class="grid-row">
+            <div #docMatching class="grid-cell--12" (click)="selectPageTocEntry('docMatching')">
+              <div class="grid-cell grid-cell--container" [ngClass]="{ active: isPageTocEntrySelected('docMatching') }">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ "global.documentsMatching" | translate }} ({{
+                        evolutionModificationTableDataSource ? evolutionModificationTableDataSource.dataCount : 0
+                      }})
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <a-table [dataSource]="evolutionModificationTableDataSource">
+                    <ng-template columnDef="evolutionNumber" let-rowData="rowData">
+                      <a
+                        (click)="
+                          openEvolution({
+                            number: rowData.evolutionNumber,
+                            revisionNumber: rowData.evolutionRevisionNumber
+                          })
+                        "
+                      >
+                        {{ rowData.evolutionNumber }}
+                      </a>
+                    </ng-template>
+                    <ng-template columnDef="modificationNumber" let-rowData="rowData">
+                      <span pTooltip="{{ rowData['modificationDesignation'] }}" tooltipPosition="top">{{
+                        rowData.modificationNumber
+                      }}</span>
+                    </ng-template>
+                    <ng-template columnDef="sbAdNumber" let-rowData="rowData">
+                      <span pTooltip="{{ rowData['sbDesignation'] }}" tooltipPosition="top">{{
+                        rowData.sbAdNumber
+                      }}</span>
+                    </ng-template>
+                  </a-table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+
+        <!-- EVOLUTION IN -->
+        <mat-tab>
+          <ng-template mat-tab-label>
+            {{ getComponentName() + ".evolutionInterdependences" | translate }}
+          </ng-template>
+
+          <div class="grid-row">
+            <div
+              #evolutionInterdependences
+              class="grid-cell--12"
+              (click)="selectPageTocEntry('evolutionInterdependences')"
+            >
+              <div
+                class="grid-cell grid-cell--container"
+                [ngClass]="{ active: isPageTocEntrySelected('evolutionInterdependences') }"
+              >
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ "global.evolutionInterdependences" | translate }} ({{
+                        evolutionInterdependencesTableDataSource
+                          ? evolutionInterdependencesTableDataSource.dataCount
+                          : 0
+                      }})
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <a-table [dataSource]="evolutionInterdependencesTableDataSource">
+                    <ng-template tableActionsDef>
+                      <button
+                        *ngIf="!isReadOpenMode && evolutionInterdependencesTableDataSource.hasDataSelection"
+                        type="button"
+                        mat-raised-button
+                        color="warn"
+                        (click)="deleteInterdependence()"
+                      >
+                        {{ "global.delete" | translate }}
+                      </button>
+
+                      <button
+                        *ngIf="!isReadOpenMode && !evolutionInterdependencesTableDataSource.hasDataSelection"
+                        type="button"
+                        mat-raised-button
+                        (click)="createInterdependence()"
+                      >
+                        {{ "global.add" | translate }}
+                      </button>
+
+                      <button
+                        *ngIf="evolutionInterdependencesTableDataSource.dataSelectionCount === 1"
+                        type="button"
+                        mat-raised-button
+                        (click)="openInterdependence()"
+                      >
+                        {{ "global.open" | translate }}
+                      </button>
+                    </ng-template>
+                    <ng-template columnDef="evolutionNumber" let-rowData="rowData">
+                      <a
+                        (click)="
+                          openEvolution({
+                            number: rowData.evolutionNumber,
+                            revisionNumber: rowData.evolutionRevisionNumber
+                          })
+                        "
+                      >
+                        {{ rowData.evolutionNumber }}
+                      </a>
+                    </ng-template>
+                  </a-table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+
+        <mat-tab>
+          <ng-template mat-tab-label>
+            {{ getComponentName() + ".disassemblyGroups" | translate }}
+          </ng-template>
+
+          <div class="grid-row">
+            <div #disassemblyGroups class="grid-cell--equally" (click)="selectPageTocEntry('disassemblyGroups')">
+              <div
+                class="grid-cell grid-cell--container"
+                [ngClass]="{ active: isPageTocEntrySelected('disassemblyGroups') }"
+              >
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">{{ "global.disassemblyGroups" | translate }}</h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content grid-cell-content-with-section">
+                  <div class="section">
+                    <h4 class="section-title">
+                      {{ componentData.componentId + ".disassemblyGroupsList" | translate }} ({{
+                        disassemblyGroupTableDataSource ? disassemblyGroupTableDataSource.dataCount : 0
+                      }})
+                    </h4>
+
+                    <div class="section-content">
+                      <a-table [dataSource]="disassemblyGroupTableDataSource">
+                        <ng-template tableActionsDef>
+                          <button
+                            *ngIf="!isReadOpenMode && disassemblyGroupTableDataSource.hasDataSelection"
+                            type="button"
+                            mat-raised-button
+                            color="warn"
+                            (click)="deleteDisassembly()"
+                          >
+                            {{ "global.delete" | translate }}
+                          </button>
+                          <button
+                            *ngIf="disassemblyGroupTableDataSource.dataSelectionCount === 1"
+                            type="button"
+                            mat-raised-button
+                            color="warn"
+                            (click)="displayStatusForDisassemblyGroup()"
+                          >
+                            {{ componentData.componentId + ".displayStatus" | translate }}
+                          </button>
+                          <button
+                            *ngIf="!isReadOpenMode && !disassemblyGroupTableDataSource.hasDataSelection"
+                            type="button"
+                            mat-raised-button
+                            (click)="createDisassembly()"
+                          >
+                            {{ "global.add" | translate }}
+                          </button>
+                          <button
+                            *ngIf="disassemblyGroupTableDataSource.dataSelectionCount === 1"
+                            type="button"
+                            mat-raised-button
+                            (click)="openDisassembly()"
+                          >
+                            {{ "global.open" | translate }}
+                          </button>
+                        </ng-template>
+                      </a-table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div #disassemblyGroups class="grid-cell--equally" (click)="selectPageTocEntry('disassemblyGroups')">
+              <div
+                class="grid-cell grid-cell--container"
+                [ngClass]="{ active: isPageTocEntrySelected('disassemblyGroups') }"
+              >
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">{{ componentData.componentId + ".removalOrders" | translate }}</h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content grid-cell-content-with-section">
+                  <div class="section">
+                    <h4 class="section-title">
+                      {{ componentData.componentId + ".removalOrdersList" | translate }} ({{
+                        removalOrderTableDataSource ? removalOrderTableDataSource.dataCount : 0
+                      }})
+                    </h4>
+
+                    <div class="section-content">
+                      <a-table [dataSource]="removalOrderTableDataSource">
+                        <ng-template tableActionsDef>
+                          <button
+                            *ngIf="!isReadOpenMode && removalOrderTableDataSource.hasDataSelection"
+                            type="button"
+                            mat-raised-button
+                            color="warn"
+                            (click)="deleteRemovalOrder()"
+                          >
+                            {{ "global.delete" | translate }}
+                          </button>
+
+                          <button
+                            *ngIf="removalOrderTableDataSource.dataSelectionCount === 1"
+                            type="button"
+                            mat-raised-button
+                            color="warn"
+                            (click)="displayStatusForRemovalOrder()"
+                          >
+                            {{ componentData.componentId + ".displayStatus" | translate }}
+                          </button>
+
+                          <button
+                            *ngIf="!isReadOpenMode && !removalOrderTableDataSource.hasDataSelection"
+                            type="button"
+                            mat-raised-button
+                            (click)="createRemovalOrder()"
+                          >
+                            {{ "global.add" | translate }}
+                          </button>
+                          <button
+                            *ngIf="removalOrderTableDataSource.dataSelectionCount === 1"
+                            type="button"
+                            mat-raised-button
+                            (click)="openRemovalOrder()"
+                          >
+                            {{ "global.open" | translate }}
+                          </button>
+                        </ng-template>
+                      </a-table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+
+        <mat-tab>
+          <ng-template mat-tab-label>
+            {{ getComponentName() + ".additionalInformation" | translate }}
+          </ng-template>
+
+          <div class="grid-row">
+            <div #generalAnchor class="grid-cell--equally" (click)="selectPageTocEntry('generalAnchor')">
+              <div
+                class="grid-cell grid-cell--container"
+                [ngClass]="{ active: isPageTocEntrySelected('generalAnchor') }"
+              >
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">{{ componentData.componentId + ".oemPartners" | translate }}</h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content grid-cell-content-with-section">
+                  <div class="section">
+                    <!-- Oem partners table -->
+
+                    <h4 class="section-title">
+                      {{ componentData.componentId + ".oemPartnersList" | translate }} ({{
+                        oemPartnersTableDataSource ? oemPartnersTableDataSource.dataCount : 0
+                      }})
+                    </h4>
+
+                    <div class="section-content">
+                      <a-table [dataSource]="oemPartnersTableDataSource">
+                        <ng-template tableActionsDef>
+                          <button
+                            *ngIf="!isReadOpenMode && oemPartnersTableDataSource.hasDataSelection"
+                            type="button"
+                            mat-raised-button
+                            color="warn"
+                            (click)="deleteSelectedOEMPartner()"
+                          >
+                            {{ "global.delete" | translate }}
+                          </button>
+                          <button
+                            *ngIf="!isReadOpenMode && oemPartnersTableDataSource.dataSelectionCount === 1"
+                            type="button"
+                            mat-raised-button
+                            (click)="editSelectedOEMPartner()"
+                          >
+                            {{ "global.edit" | translate }}
+                          </button>
+                          <button
+                            *ngIf="!isReadOpenMode && !oemPartnersTableDataSource.hasDataSelection"
+                            type="button"
+                            mat-raised-button
+                            (click)="createOEMPartner()"
+                          >
+                            {{ "global.add" | translate }}
+                          </button>
+                          <button
+                            *ngIf="oemPartnersTableDataSource.dataSelectionCount === 1"
+                            type="button"
+                            mat-raised-button
+                            (click)="openSelectedOEMPartner()"
+                          >
+                            {{ "global.open" | translate }}
+                          </button>
+                        </ng-template>
+                      </a-table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div #generalAnchor class="grid-cell--equally" (click)="selectPageTocEntry('generalAnchor')">
+              <div
+                class="grid-cell grid-cell--container"
+                [ngClass]="{ active: isPageTocEntrySelected('generalAnchor') }"
+              >
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ componentData.componentId + ".associatedQualification" | translate }}
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content grid-cell-content-with-section">
+                  <div class="section">
+                    <h4 class="section-title">
+                      {{ componentData.componentId + ".associatedQualificationList" | translate }} ({{
+                        associatedQualificationTableDataSource ? associatedQualificationTableDataSource.dataCount : 0
+                      }})
+                    </h4>
+
+                    <div class="section-content">
+                      <a-table [dataSource]="associatedQualificationTableDataSource">
+                        <ng-template tableActionsDef>
+                          <button
+                            *ngIf="!isReadOpenMode && associatedQualificationTableDataSource.hasDataSelection"
+                            type="button"
+                            mat-raised-button
+                            color="warn"
+                            (click)="deleteSelectedAssociatedQual()"
+                          >
+                            {{ "global.delete" | translate }}
+                          </button>
+                          <button
+                            *ngIf="!isReadOpenMode && !associatedQualificationTableDataSource.hasDataSelection"
+                            type="button"
+                            mat-raised-button
+                            (click)="createAssociatedQual()"
+                          >
+                            {{ "global.add" | translate }}
+                          </button>
+                          <button
+                            *ngIf="associatedQualificationTableDataSource.dataSelectionCount === 1"
+                            type="button"
+                            mat-raised-button
+                            (click)="openAssociatedQual()"
+                          >
+                            {{ "global.open" | translate }}
+                          </button>
+                        </ng-template>
+                      </a-table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+
+        <mat-tab>
+          <ng-template mat-tab-label>
+            {{ getComponentName() + ".attributes" | translate }}
+          </ng-template>
+
+          <div class="grid-row">
+            <div #attributes class="grid-cell--12" (click)="selectPageTocEntry('attributes')">
+              <div class="grid-cell grid-cell--container" [ngClass]="{ active: isPageTocEntrySelected('attributes') }">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">{{ "global.attributes" | translate }}</h3>
+                  </div>
+                </div>
+                <div class="grid-cell-content grid-cell-content-with-section">
+                  <div class="section">
+                    <div class="section-content">
+                      <aw-dynamic-attributes
+                        [attributes]="dynamicAttributesForAppConfig"
+                        [history]="dynamicAttributesHistoric"
+                        [showHistory]="false"
+                        [isReadOpenMode]="isReadOpenMode"
+                      >
+                      </aw-dynamic-attributes>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+
+      <aw-dialog-evolution-interdependence
+        *ngIf="showEvolutionInterdependencesDialog"
+        [evolutionInterdependence]="currentEvolutionInterdependences"
+        [bireVariantVersionSelected]="bireVariantVersionSelected"
+        [(display)]="showEvolutionInterdependencesDialog"
+        [openMode]="evolutionInterdependencesDialogOpenMode"
+        (onValidated)="onAddEvolutionInterdependences($event)"
+      >
+      </aw-dialog-evolution-interdependence>
+      <aw-dialog-disassembly
+        *ngIf="showDisassemblyGroupDialog"
+        [disassemblyGroup]="currentDisassemblyGroup"
+        [(display)]="showDisassemblyGroupDialog"
+        [openMode]="disassemblyGroupDialogOpenMode"
+        (onValidated)="onAddDisassembly($event)"
+      ></aw-dialog-disassembly>
+      <aw-dialog-removal-order
+        *ngIf="showRemovalOrderDialog"
+        [bireVariantVersionSelected]="bireVariantVersionSelected"
+        [removalOrder]="currentRemovalOrderGroup"
+        [(display)]="showRemovalOrderDialog"
+        [disassemblyGroupRemoved]="disassemblyGroupRemoved"
+        [openMode]="removalOrderDialogOpenMode"
+        (onValidated)="onAddRemovalOrder($event)"
+        [disassemblyList]="disassemblyList"
+      ></aw-dialog-removal-order>
+      <aw-dialog-oem-partner
+        *ngIf="showOEMPartnerDialog"
+        [openMode]="oemPartnerOpenMode"
+        [oemPartners]="oemPartnersTableDataSource.dataSrc"
+        [oemPartnerMaxSelected]="currentOEMPartnerMax"
+        [oemPartnerMinSelected]="currentOEMPartnerMin"
+        [(display)]="showOEMPartnerDialog"
+        (onValidated)="onAddOEMPartner($event)"
+      ></aw-dialog-oem-partner>
+      <aw-dialog-associated-qualification
+        *ngIf="showAssociatedQualificationDialog"
+        [qualification]="selectedAssociatedQualifications"
+        [openMode]="associatedQualificationOpenMode"
+        [(display)]="showAssociatedQualificationDialog"
+        (onValidated)="onAddAssociatedQualification($event)"
+      >
+      </aw-dialog-associated-qualification>
+      <aw-dialog-table
+        *ngIf="showFamilyCodeDialog"
+        [keyMap]="keyMap"
+        [(display)]="showFamilyCodeDialog"
+        [data]="dialogTableDataFamilyCode"
+        (onSelected)="setSelectedFamilyCode($event)"
+      ></aw-dialog-table>
+      <aw-dialog-document-config
+        *ngIf="showDocumentMatchingDialog"
+        [(display)]="showDocumentMatchingDialog"
+        [openMode]="documentMatchingDialogOpenMode"
+        [component-data]="applicableConfiguration"
+        [currentConfigurationDoc]="currentConfigurationDoc"
+        (onValidated)="onAddDocumentParmas($event)"
+      >
+      </aw-dialog-document-config>
+      <aw-dialog-status
+        *ngIf="displayStatusPopup"
+        [isStatusEditable]="isStatusEditable"
+        [item]="currentAsset"
+        [itemId]="currentAssetId"
+        [(display)]="displayStatusPopup"
+      ></aw-dialog-status>
+      <aw-dialog-status
+        *ngIf="displayStatusRemovalPopup"
+        [isStatusEditable]="isStatusEditable"
+        [item]="currentRemovalAsset"
+        [itemId]="currentAssetId"
+        [(display)]="displayStatusRemovalPopup"
+      >
+      </aw-dialog-status>
+
+      <aw-dialog-status
+        *ngIf="showStatusUpdatesPopup"
+        [isStatusEditable]="false"
+        [item]="applicableConfiguration"
+        [(display)]="showStatusUpdatesPopup"
+        [isObjectTypeOfBireMaintenancePlanDTO]="true"
+      >
+      </aw-dialog-status>
+
+      <aw-dialog-applicable-configuration-control-ipc-data
+        *ngIf="controlIpcDataVisible"
+        [(display)]="controlIpcDataVisible"
+        [applicableConfiguration]="applicableConfiguration"
+      >
+      </aw-dialog-applicable-configuration-control-ipc-data>
+      <aw-dialog-followed-rating
+        *ngIf="showRatingDialog"
+        [openMode]="ratingDialogOpenMode"
+        [(display)]="showRatingDialog"
+        [bireRatingInput]="bireRatingInput"
+        (onValidated)="onAddRating($event)"
+      >
+      </aw-dialog-followed-rating>
+    </div>
+  </div>
+</div>

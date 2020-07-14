@@ -1,0 +1,518 @@
+<div class="page-header">
+  <div class="page-info">
+    <div>
+      <div class="page-title">
+        {{ "transaction." + componentData.componentId | translate }}
+      </div>
+
+      <div class="page-subtitle">
+        <div *ngIf="!isCreateOpenMode && componentData && componentData.objectId" class="page-subtitle">
+          - {{ headerValue }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-actions">
+    <button
+      id="actions"
+      mat-icon-button
+      class="mat-elevation-z1"
+      matTooltip="{{ 'global.showAllActionTooltip' | translate }}"
+      matTooltipPosition="above"
+      aria-label="Show all actions"
+      [matMenuTriggerFor]="actions"
+    >
+      <mat-icon>more_horiz</mat-icon>
+    </button>
+    <mat-menu #actions="matMenu">
+      <button id="refresh" mat-menu-item (click)="reload()">{{ "global.refresh" | translate }}</button>
+      <button id="favorites" mat-menu-item (click)="updateFavoriteState()">
+        {{ (isFavoriteEntry ? "page.removeFromFavorites" : "page.addToFavorites") | translate }}
+      </button>
+    </mat-menu>
+  </div>
+</div>
+
+<div class="page-wrapper">
+  <div class="page-container search-page-container">
+    <div class="page-content">
+      <div class="grid-row">
+        <div #measureAnchor class="grid-cell--12" (click)="setSelectedAnchor('measureAnchor')">
+          <div class="grid-cell grid-cell--container" [ngClass]="{ active: isSelectedAnchor('measureAnchor') }">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">
+                  <span
+                    >{{ componentData.componentId + ".measureEvolution" | translate }} ({{
+                      measureEvolutionTable ? measureEvolutionTable.length : 0
+                    }})</span
+                  >
+                  <span
+                    *ngIf="measureLoading && !isCreateOpenMode"
+                    class="lds-hourglass"
+                    style="position: absolute"
+                  ></span>
+                </h3>
+              </div>
+            </div>
+
+            <div class="grid-cell-content">
+              <div class="grid-cell--12">
+                <div class="grid-cell-chart">
+                  <div class="grid-cell-header">
+                    <div class="grid-cell-title-container loading-indicator"></div>
+                    <div class="row">
+                      <div class="form-group flex--1">
+                        <label class="form-label"> {{ measureCounterCode }} </label>
+
+                        <div class="form-control">
+                          <input
+                            type="text"
+                            class="aw-input"
+                            [(ngModel)]="code"
+                            [disabled]="isReadOpenMode || !isCreateOpenMode"
+                            style="color: #D3C632;"
+                          />
+                        </div>
+                      </div>
+                      <div class="form-group flex--3"></div>
+                      <div class="form-group flex--1">
+                        <label class="form-label">{{ componentData.componentId + ".from" | translate }}</label>
+
+                        <div class="form-control">
+                          <p-calendar
+                            showButtonBar="true"
+                            [monthNavigator]="true"
+                            [yearNavigator]="true"
+                            [yearRange]="sessionService.calendarYearRange"
+                            class="aw-calendar"
+                            [dateFormat]="sessionService.dateFormatPrimeNG"
+                            [locale]="sessionService.calendarFormat"
+                            [(ngModel)]="startDate"
+                            (onSelect)="setChartData(true, false)"
+                            (onInput)="setChartData(true, false)"
+                          ></p-calendar>
+                        </div>
+                      </div>
+
+                      <div class="form-group flex--1">
+                        <label class="form-label">{{ componentData.componentId + ".to" | translate }}</label>
+
+                        <div class="form-control">
+                          <p-calendar
+                            showButtonBar="true"
+                            [monthNavigator]="true"
+                            [yearNavigator]="true"
+                            [yearRange]="sessionService.calendarYearRange"
+                            class="aw-calendar"
+                            [dateFormat]="sessionService.dateFormatPrimeNG"
+                            [locale]="sessionService.calendarFormat"
+                            [(ngModel)]="endDate"
+                            (onSelect)="setChartData(false, true)"
+                            (onInput)="setChartData(false, true)"
+                          ></p-calendar>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="grid-cell-content">
+                    <div class="row flex-row--justify-center">
+                      <div *ngIf="chartContentReady" class="chart-container flex--1">
+                        <div class="chart-wrapper flex--1">
+                          <p-chart
+                            type="line"
+                            [data]="measureVariationData"
+                            [options]="measureChartOptions"
+                            width="100%"
+                            height="100%"
+                          ></p-chart>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="grid-cell-content">
+                <div class="table-wrapper">
+                  <p-table
+                    [resizableColumns]="true"
+                    #ptableMeasureEvolution
+                    class="aw-table2"
+                    [columns]="measureEvolutionTableCols1"
+                    [value]="measureEvolutionTable"
+                    [(selection)]="selectedMeasures"
+                    dataKey="measureId"
+                    [scrollable]="true"
+                  >
+                    <ng-template pTemplate="emptymessage">
+                      <span *ngIf="!isMeasureLoading"> &nbsp;</span>
+
+                      <div *ngIf="isMeasureLoading" class="aw-table-loading-indicator">
+                        <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                        <div class="lds-hourglass"></div>
+                      </div>
+                    </ng-template>
+                    <ng-template pTemplate="caption">
+                      <div class="aw-table-header" [ngClass]="{ 'rows-selected': selectedMeasures.length > 0 }">
+                        <div class="aw-table-global-filter">
+                          <label class="aw-table-global-filter-label">
+                            <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                          </label>
+
+                          <input
+                            #ptableMeasureEvolutionGlobalFilter
+                            class="aw-table-global-filter-input"
+                            type="text"
+                            placeholder="{{ 'table.globalFilterText' | translate }}"
+                            (input)="ptableMeasureEvolution.filterGlobal($event.target.value, 'contains')"
+                          />
+                        </div>
+                        <div class="aw-table-actions">
+                          <button
+                            *ngIf="showButtonCorrectMeasure(selectedMeasures[0])"
+                            type="button"
+                            mat-raised-button
+                            (click)="onClickCorrect()"
+                          >
+                            {{ componentData.componentId + ".correct" | translate }}
+                          </button>
+                          <button
+                            *ngIf="showButtonCancelMeasure(selectedMeasures[0])"
+                            type="button"
+                            mat-raised-button
+                            (click)="onClickCancel()"
+                          >
+                            {{ componentData.componentId + ".cancel" | translate }}
+                          </button>
+                          <button
+                            *ngIf="showButtonPropagateMeasure(selectedMeasures[0])"
+                            type="button"
+                            mat-raised-button
+                            (click)="onClickPropogate()"
+                          >
+                            {{ componentData.componentId + ".propogate" | translate }}
+                          </button>
+                          <button
+                            *ngIf="selectedMeasures.length === 0"
+                            type="button"
+                            mat-raised-button
+                            (click)="exportMeasureTable()"
+                          >
+                            {{ "global.export" | translate }}
+                          </button>
+                        </div>
+                      </div>
+                    </ng-template>
+
+                    <ng-template pTemplate="colgroup" let-columns>
+                      <colgroup>
+                        <col class="aw-table-checkbox-wrapper" />
+                        <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                        <col class="row-expand-wrapper" />
+                      </colgroup>
+                    </ng-template>
+
+                    <ng-template pTemplate="header" let-columns>
+                      <tr>
+                        <th class="aw-table-checkbox-wrapper">
+                          <p-tableHeaderCheckbox class="aw-table-checkbox"></p-tableHeaderCheckbox>
+                        </th>
+
+                        <th pResizableColumn *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                          {{ componentData.componentId + "." + col.field | translate }}
+                        </th>
+                        <th class="row-expand-wrapper"></th>
+                      </tr>
+                    </ng-template>
+
+                    <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                      <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                        <td class="aw-table-checkbox-wrapper">
+                          <p-tableCheckbox class="aw-table-checkbox" [value]="rowData"></p-tableCheckbox>
+                        </td>
+
+                        <td
+                          *ngFor="let col of columns"
+                          [ngSwitch]="col.field"
+                          [ngStyle]="{ 'text-align': col.alignment }"
+                        >
+                          <span *ngSwitchCase="'isDiff'">
+                            <span *ngIf="rowData[col.field] !== null && rowData[col.field] === true">
+                              <i class="fa fa-fw fa-check" aria-hidden="true"></i>
+                            </span>
+                          </span>
+                          <span *ngSwitchDefault>{{ rowData[col.field] }}</span>
+                        </td>
+                        <td class="row-expand-wrapper" [pRowToggler]="rowData">
+                          <i
+                            class="fa fa-fw aw-icon aw-icon-with-border"
+                            [ngClass]="rowData._expand ? 'fa-minus' : 'fa-plus'"
+                            aria-hidden="true"
+                            pTooltip="{{ 'global.showTableRowDetails' | translate }}"
+                            tooltipPosition="top"
+                            (click)="toggleRowDetailsVisibilityVisit(rowData)"
+                          ></i>
+                        </td>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="rowexpansion" let-rowData let-columns="columns">
+                      <tr class="row-expanded" *ngIf="rowData._expand">
+                        <td [attr.colspan]="columns.length + component.COLSPAN_CONSTANT_VALUE">
+                          <div class="row">
+                            <div class="form-group">
+                              <label class="form-label">
+                                {{ getComponentName() + ".source" | translate }}
+                              </label>
+                              <div class="form-control">
+                                <input class="aw-input" type="text" [(ngModel)]="rowData.source" [disabled]="true" />
+                              </div>
+                            </div>
+                            <div class="form-group">
+                              <label class="form-label">
+                                {{ getComponentName() + ".status" | translate }}
+                              </label>
+
+                              <div class="form-control">
+                                <input class="aw-input" type="text" [(ngModel)]="rowData.status" [disabled]="true" />
+                              </div>
+                            </div>
+                            <div class="form-group">
+                              <label class="form-label">
+                                {{ getComponentName() + ".statusDate" | translate }}
+                              </label>
+                              <div class="form-control">
+                                <p-calendar
+                                  class="aw-calendar"
+                                  [monthNavigator]="true"
+                                  [yearNavigator]="true"
+                                  [yearRange]="sessionService.calendarYearRange"
+                                  [dateFormat]="sessionService.dateFormatPrimeNG"
+                                  [locale]="sessionService.calendarFormat"
+                                  [(ngModel)]="rowData.statusDate"
+                                  [disabled]="true"
+                                ></p-calendar>
+                              </div>
+                            </div>
+                            <div class="form-group">
+                              <label class="form-label">
+                                {{ getComponentName() + ".statusUser" | translate }}
+                              </label>
+
+                              <div class="form-control">
+                                <input
+                                  class="aw-input"
+                                  type="text"
+                                  [(ngModel)]="rowData.statusUser"
+                                  [disabled]="true"
+                                />
+                              </div>
+                            </div>
+                            <div class="form-group">
+                              <label class="form-label">
+                                {{ getComponentName() + ".statusState" | translate }}
+                              </label>
+
+                              <div class="form-control">
+                                <input
+                                  class="aw-input"
+                                  type="text"
+                                  [(ngModel)]="rowData.statusState"
+                                  [disabled]="true"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-row">
+        <div #structureAnchor class="grid-cell--12" (click)="setSelectedAnchor('structureAnchor')">
+          <div class="grid-cell grid-cell--container" [ngClass]="{ active: isSelectedAnchor('structureAnchor') }">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">
+                  {{ componentData.componentId + ".structureDetails" | translate }} ({{
+                    structureDetailsTable ? structureDetailsTable.length : 0
+                  }})
+                </h3>
+              </div>
+            </div>
+
+            <div class="grid-cell-content">
+              <div class="table-wrapper">
+                <p-table
+                  [resizableColumns]="true"
+                  #ptableStructureDetails
+                  class="aw-table2"
+                  [columns]="structureDetailsTableCols1"
+                  [value]="structureDetailsTable"
+                  [scrollable]="true"
+                  dataKey="equipmentRepresentation"
+                >
+                  <ng-template pTemplate="emptymessage">
+                    <span *ngIf="!isLoading"> &nbsp;</span>
+
+                    <div *ngIf="isLoading" class="aw-table-loading-indicator">
+                      <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                      <div class="lds-hourglass"></div>
+                    </div>
+                  </ng-template>
+
+                  <ng-template pTemplate="caption">
+                    <div class="aw-table-header">
+                      <div class="aw-table-global-filter">
+                        <label class="aw-table-global-filter-label">
+                          <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                        </label>
+
+                        <input
+                          #ptableStructureDetailsGlobalFilter
+                          class="aw-table-global-filter-input"
+                          type="text"
+                          placeholder="{{ 'table.globalFilterText' | translate }}"
+                          (input)="ptableStructureDetails.filterGlobal($event.target.value, 'contains')"
+                        />
+                      </div>
+                      <div class="aw-table-actions">
+                        <button type="button" mat-raised-button (click)="exportStructureTable()">
+                          {{ "global.export" | translate }}
+                        </button>
+                      </div>
+                    </div>
+                  </ng-template>
+
+                  <ng-template pTemplate="colgroup" let-columns>
+                    <colgroup>
+                      <col class="aw-table-checkbox-wrapper" />
+                      <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                      <col class="row-expand-wrapper" />
+                    </colgroup>
+                  </ng-template>
+                  <ng-template pTemplate="header" let-columns>
+                    <tr>
+                      <th></th>
+
+                      <th pResizableColumn *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                        {{ componentData.componentId + "." + col.field | translate }}
+                      </th>
+                      <th class="row-expand-wrapper"></th>
+                    </tr>
+                  </ng-template>
+
+                  <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                    <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                      <td></td>
+
+                      <td
+                        *ngFor="let col of columns"
+                        [ngSwitch]="col.field"
+                        [ngStyle]="{ 'text-align': col.alignment }"
+                        [ngClass]="{
+                          'value-none':
+                            col.field === 'formattedRemainingValue' && rowData.alertIcon === 'ICON_NONE_LIGHT',
+                          'value-red':
+                            col.field === 'formattedRemainingValue' && rowData.alertIcon === 'ICON_RED_LIGHT',
+                          'value-green':
+                            col.field === 'formattedRemainingValue' && rowData.alertIcon === 'ICON_GREEN_LIGHT',
+                          'value-yellow':
+                            col.field === 'formattedRemainingValue' && rowData.alertIcon === 'ICON_YELLOW_LIGHT'
+                        }"
+                      >
+                        <span *ngSwitchCase="'formattedRemainingValue'"
+                          ><span *ngIf="showTooltip === true" title="{{ tooltip }}">{{ rowData[col.field] }}</span>
+                        </span>
+                        <a *ngSwitchCase="'equipmentRepresentation'" (click)="openEquipmentForm(rowData)">
+                          {{ rowData[col.field] }}
+                        </a>
+                        <span *ngSwitchDefault>{{ rowData[col.field] }}</span>
+                      </td>
+                      <td class="row-expand-wrapper" [pRowToggler]="rowData">
+                        <i
+                          class="fa fa-fw aw-icon aw-icon-with-border"
+                          [ngClass]="rowData._expand ? 'fa-minus' : 'fa-plus'"
+                          aria-hidden="true"
+                          pTooltip="{{ 'global.showTableRowDetails' | translate }}"
+                          tooltipPosition="top"
+                          (click)="toggleRowDetailsVisibilityVisit(rowData)"
+                        ></i>
+                      </td>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="rowexpansion" let-rowData let-columns="columns">
+                    <tr class="row-expanded" *ngIf="rowData._expand">
+                      <td [attr.colspan]="columns.length + component.COLSPAN_CONSTANT_VALUE">
+                        <div class="row">
+                          <div class="form-group">
+                            <label class="form-label">
+                              {{ getComponentName() + ".source" | translate }}
+                            </label>
+                            <div class="form-control">
+                              <input class="aw-input" type="text" [(ngModel)]="rowData.source" [disabled]="true" />
+                            </div>
+                          </div>
+                          <div class="form-group">
+                            <label class="form-label">
+                              {{ getComponentName() + ".status" | translate }}
+                            </label>
+
+                            <div class="form-control">
+                              <input class="aw-input" type="text" [(ngModel)]="rowData.status" [disabled]="true" />
+                            </div>
+                          </div>
+                          <div class="form-group">
+                            <label class="form-label">
+                              {{ getComponentName() + ".statusDate" | translate }}
+                            </label>
+                            <div class="form-control">
+                              <input class="aw-input" type="text" [(ngModel)]="rowData.statusDate" [disabled]="true" />
+                            </div>
+                          </div>
+                          <div class="form-group">
+                            <label class="form-label">
+                              {{ getComponentName() + ".statusUser" | translate }}
+                            </label>
+
+                            <div class="form-control">
+                              <input class="aw-input" type="text" [(ngModel)]="rowData.statusUser" [disabled]="true" />
+                            </div>
+                          </div>
+                          <div class="form-group">
+                            <label class="form-label">
+                              {{ getComponentName() + ".statusState" | translate }}
+                            </label>
+
+                            <div class="form-control">
+                              <input class="aw-input" type="text" [(ngModel)]="rowData.statusState" [disabled]="true" />
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<aw-value-form-popup
+  *ngIf="showValueForm"
+  [(display)]="showValueForm"
+  [isReadOnlyForm]="isReadOnlyValueDialog"
+  (onAdded)="onAddOperation($event)"
+  [measureDetail]="editSelectedMeasure"
+>
+</aw-value-form-popup>

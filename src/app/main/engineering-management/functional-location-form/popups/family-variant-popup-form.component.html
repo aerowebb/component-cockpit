@@ -1,0 +1,101 @@
+<a-modal class="aw-modal" [(visible)]="display" [width]="20">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".titlePopup" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="column">
+      <!-- <div class="row">
+        <div class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+          <label class="form-label">{{ getComponentName() + ".familyVariantCode" | translate }}</label>
+
+          <div class="form-control">
+            <p-dropdown
+              class="aw-dropdown fixed-width"
+              [options]="familyVariants"
+              [(ngModel)]="familyVariantCode"
+              [disabled]="isReadOpenMode"
+              [showClear]="true"
+              placeholder="&nbsp;"
+              (onChange)="onFamilyVariantSelected($event)"
+              appendTo="body"
+            ></p-dropdown>
+          </div>
+        </div>
+      </div> -->
+
+      <div class="row">
+        <div class="form-group" [ngClass]="{ required: !isReadOnlyForm }">
+          <label class="form-label">{{ getComponentName() + ".item" | translate }}</label>
+
+          <div class="form-control form-control-with-modal" *ngIf="!isReadOpenMode">
+            <div class="form-control-data" (click)="openItemTableDialog()">
+              {{ bireItemDTO.chapter }}
+              <span *ngIf="bireItemDTO.section"> - {{ bireItemDTO.section }}</span>
+              <span *ngIf="bireItemDTO.subject"> - {{ bireItemDTO.subject }}</span>
+              <span *ngIf="bireItemDTO.sheet"> - {{ bireItemDTO.sheet }}</span>
+              <span *ngIf="bireItemDTO.marks"> - {{ bireItemDTO.marks }}</span>
+            </div>
+
+            <div
+              *ngIf="
+                bireItemDTO.chapter &&
+                bireItemDTO.section &&
+                bireItemDTO.subject &&
+                bireItemDTO.sheet &&
+                bireItemDTO.marks
+              "
+              class="btn-clear-wrapper"
+            >
+              <i
+                class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+                aria-hidden="true"
+                (click)="
+                  bireItemDTO.chapter = undefined;
+                  bireItemDTO.section = undefined;
+                  bireItemDTO.subject = undefined;
+                  bireItemDTO.sheet = undefined;
+                  bireItemDTO.marks = undefined;
+                  bireItemDTO.versionNumber = undefined
+                "
+              ></i>
+            </div>
+            <div class="btn-search-wrapper">
+              <i class="fa fa-fw fa-search aw-icon btn-search" aria-hidden="true" (click)="openItemTableDialog()"></i>
+            </div>
+          </div>
+          <div class="form-control form-control-with-modal" *ngIf="isReadOpenMode">
+            <div class="form-control-data" (click)="openItemTableDialog()">
+              {{ bireItemDTO.chapter }}
+              <span *ngIf="bireItemDTO.section"> - {{ bireItemDTO.section }}</span>
+              <span *ngIf="bireItemDTO.subject"> - {{ bireItemDTO.subject }}</span>
+              <span *ngIf="bireItemDTO.sheet"> - {{ bireItemDTO.sheet }}</span>
+              <span *ngIf="bireItemDTO.marks"> - {{ bireItemDTO.marks }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button *ngIf="isReadOpenMode" type="button" mat-raised-button (click)="onCancel()">
+      <span>{{ "global.close" | translate }}</span>
+    </button>
+
+    <button *ngIf="!isReadOpenMode" type="button" mat-raised-button (click)="onCancel()">
+      <span>{{ "global.cancel" | translate }}</span>
+    </button>
+
+    <button *ngIf="!isReadOpenMode" color="primary" type="button" mat-raised-button (click)="onSave()">
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>
+
+<aw-dialog-search-item
+  *ngIf="showItemTableDialog"
+  [(display)]="showItemTableDialog"
+  [searchObject]="bireItemDTO"
+  (onValidated)="onSelectedItem($event)"
+></aw-dialog-search-item>

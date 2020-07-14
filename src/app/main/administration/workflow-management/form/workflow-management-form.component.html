@@ -1,0 +1,283 @@
+<div class="page-header">
+  <div class="page-info">
+    <div>
+      <div class="page-title">
+        {{ "transaction." + componentData.componentId | translate }}
+      </div>
+
+      <div class="page-subtitle-">
+        <div class="page-subtitle">- {{ subtitle }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-actions">
+    <button *ngIf="isReadOpenMode && hasUpdateAccessRight" type="button" mat-raised-button (click)="editScenario()">
+      {{ "global.edit" | translate }}
+    </button>
+
+    <button
+      *ngIf="!isReadOpenMode && !isCreateOpenMode"
+      type="button"
+      color="warn"
+      mat-raised-button
+      (click)="cancel()"
+    >
+      {{ "global.cancel" | translate }}
+    </button>
+
+    <button
+      *ngIf="!isReadOpenMode"
+      class="btn-with-spinner"
+      color="primary"
+      type="button"
+      mat-raised-button
+      (click)="saveScenario()"
+    >
+      <span class="lds-hourglass" *ngIf="showSaveSpinner"></span>
+      {{ "global.save" | translate }}
+    </button>
+
+    <button
+      id="actions"
+      mat-icon-button
+      class="mat-elevation-z1"
+      matTooltip="{{ 'global.showAllActionTooltip' | translate }}"
+      matTooltipPosition="above"
+      aria-label="Show all actions"
+      [matMenuTriggerFor]="actions"
+    >
+      <mat-icon>more_horiz</mat-icon>
+    </button>
+
+    <mat-menu #actions="matMenu">
+      <button *ngIf="isReadOpenMode && !isCreateOpenMode" type="button" mat-menu-item (click)="reload()">
+        {{ "global.refresh" | translate }}
+      </button>
+
+      <button id="favorites" mat-menu-item (click)="updateFavoriteState()">
+        {{ (isFavoriteEntry ? "page.removeFromFavorites" : "page.addToFavorites") | translate }}
+      </button>
+    </mat-menu>
+  </div>
+</div>
+
+<div class="page-wrapper">
+  <div class="page-container">
+    <div class="page-content">
+      <div class="grid-row">
+        <div
+          #mainInformationAnchor
+          class="grid-cell--12"
+          (click)="selectPageTocEntry(component.MAIN_INFORMATION_ANCHOR_ID)"
+        >
+          <div
+            class="grid-cell grid-cell--container"
+            [ngClass]="{ active: isPageTocEntrySelected(component.MAIN_INFORMATION_ANCHOR_ID) }"
+          >
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">
+                  {{ "page.mainData" | translate }}
+                </h3>
+              </div>
+            </div>
+
+            <div class="grid-cell-content">
+              <div class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+                <label class="form-label">
+                  {{ "global.name" | translate }}
+                </label>
+
+                <div class="form-control">
+                  <input
+                    type="text"
+                    class="aw-input"
+                    [disabled]="!isCreateOpenMode"
+                    maxlength="100"
+                    [(ngModel)]="bidtScenario.name"
+                  />
+                </div>
+              </div>
+
+              <div class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+                <label class="form-label">
+                  {{ componentData.componentId + ".bidtFuncObjectIdStr" | translate }}
+                </label>
+
+                <div class="form-control">
+                  <p-dropdown
+                    class="aw-dropdown fixed-width"
+                    [options]="functionObjectList"
+                    [(ngModel)]="selectedFuncObjectId"
+                    [showClear]="true"
+                    placeholder="&nbsp;"
+                    [disabled]="!isCreateOpenMode"
+                    (onChange)="onFuncObjectChange()"
+                  ></p-dropdown>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">
+                  {{ componentData.componentId + ".initialStatusStr" | translate }}
+                </label>
+
+                <div class="form-control">
+                  <p-dropdown
+                    *ngIf="statusObjectList"
+                    class="aw-dropdown fixed-width"
+                    [options]="statusObjectList"
+                    [(ngModel)]="bidtScenario.initialStatusKey"
+                    [showClear]="true"
+                    placeholder="&nbsp;"
+                    [disabled]="!isCreateOpenMode"
+                  ></p-dropdown>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-row">
+        <div class="grid-cell--12">
+          <div class="grid-cell grid-cell--container">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">
+                  {{ componentData.componentId + ".assignmentOfProfiles" | translate }}
+                  ({{ profilesTableDataSource ? profilesTableDataSource.dataCount : 0 }})
+                </h3>
+              </div>
+            </div>
+            <div class="grid-cell-content grid-cell-content-with-section">
+              <!-- Assignment of profiles table -->
+
+              <div class="section">
+                <div class="section-content">
+                  <div style="width: 100%">
+                    <a-table [dataSource]="profilesTableDataSource">
+                      <ng-template columnDef="isAffected" let-rowData="rowData">
+                        <div class="ui-g-12">
+                          <p-checkbox
+                            value="profilesList"
+                            [(ngModel)]="rowData.isAffected"
+                            [disabled]="isReadOpenMode"
+                            binary="true"
+                          >
+                          </p-checkbox>
+                        </div>
+                      </ng-template>
+                    </a-table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="grid-row">
+        <div class="grid-cell--12">
+          <div class="grid-cell grid-cell--container">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">
+                  {{ componentData.componentId + ".controlsManagement" | translate }}
+                  ({{ controlMgmtTableDataSource ? controlMgmtTableDataSource.dataCount : 0 }})
+                </h3>
+              </div>
+            </div>
+            <div class="grid-cell-content grid-cell-content-with-section">
+              <!-- Controls management table -->
+
+              <div class="section">
+                <div class="section-content">
+                  <div style="width: 100%">
+                    <a-table [dataSource]="controlMgmtTableDataSource">
+                      <ng-template columnDef="isManaged" let-rowData="rowData">
+                        <div class="ui-g-12">
+                          <p-checkbox
+                            value="controlsManagement"
+                            [(ngModel)]="rowData.isManaged"
+                            [disabled]="isReadOpenMode"
+                            binary="true"
+                          >
+                          </p-checkbox>
+                        </div>
+                      </ng-template>
+
+                      <ng-template columnDef="isVisible" let-rowData="rowData">
+                        <div class="ui-g-12">
+                          <p-checkbox
+                            value="controlsManagement"
+                            [(ngModel)]="rowData.isVisible"
+                            [disabled]="isReadOpenMode"
+                            binary="true"
+                          >
+                          </p-checkbox>
+                        </div>
+                      </ng-template>
+
+                      <ng-template columnDef="isReadOnly" let-rowData="rowData">
+                        <div class="ui-g-12">
+                          <p-checkbox
+                            value="controlsManagement"
+                            [(ngModel)]="rowData.isReadOnly"
+                            [disabled]="isReadOpenMode"
+                            binary="true"
+                          >
+                          </p-checkbox>
+                        </div>
+                      </ng-template>
+
+                      <ng-template columnDef="isMandatory" let-rowData="rowData">
+                        <div class="ui-g-12">
+                          <p-checkbox
+                            value="controlsManagement"
+                            [(ngModel)]="rowData.isMandatory"
+                            [disabled]="isReadOpenMode"
+                            binary="true"
+                          >
+                          </p-checkbox>
+                        </div>
+                      </ng-template>
+
+                      <ng-template columnDef="groupName" let-rowData="rowData">
+                        <span pTooltip="{{ rowData['description'] }}" tooltipPosition="bottom">
+                          {{ rowData.groupName }}
+                        </span>
+                      </ng-template>
+                    </a-table>
+                  </div>
+                </div>
+              </div>
+              <!-- Target Status table -->
+              <div class="section" *ngIf="showTargetStatusTable()">
+                <div class="section-content">
+                  <h4 class="section-title">
+                    {{ componentData.componentId + ".assignmentOfTargetStatus" | translate }}
+                    ({{ targetStatusTableDataSource ? targetStatusTableDataSource.dataCount : 0 }})
+                  </h4>
+                  <a-table [dataSource]="targetStatusTableDataSource">
+                    <ng-template columnDef="isAffected" let-rowData="rowData">
+                      <div class="ui-g-12">
+                        <p-checkbox
+                          value="targetStatus"
+                          [(ngModel)]="rowData.isAffected"
+                          [disabled]="isReadOpenMode"
+                          binary="true"
+                        >
+                        </p-checkbox>
+                      </div>
+                    </ng-template>
+                  </a-table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

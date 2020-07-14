@@ -1,0 +1,30 @@
+<div class="stepper">
+  <ng-container *ngFor="let step of steps; index as i">
+    <div>
+      <div>
+        <div class="step-join" [ngClass]="{ 'visibility--hidden': i == 0 }"></div>
+
+        <div
+          class="step current mat-elevation-z2"
+          *ngIf="step.status == 'current'"
+          matTooltip="{{ step.tooltip }}"
+          matTooltipPosition="above"
+        >
+          {{ step.label | translate }}
+        </div>
+
+        <div class="step previous" *ngIf="step.status == 'previous'">
+          <mat-icon>check</mat-icon>
+        </div>
+
+        <div class="step" *ngIf="step.status == 'next'"></div>
+
+        <div class="step-join" [ngClass]="{ 'visibility--hidden': i == steps.length - 1 }"></div>
+      </div>
+
+      <span class="step-label" *ngIf="step.status != 'current'">
+        {{ step.label | translate }}
+      </span>
+    </div>
+  </ng-container>
+</div>

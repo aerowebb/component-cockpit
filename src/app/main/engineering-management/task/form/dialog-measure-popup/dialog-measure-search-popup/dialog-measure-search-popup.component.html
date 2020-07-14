@@ -1,0 +1,73 @@
+<a-modal class="aw-modal" [(visible)]="display" [width]="60">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".measureAdvancedSearch" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="search-dialog-container">
+      <div class="section search-criteria-section">
+        <h4 class="section-title">{{ "global.search" | translate }}</h4>
+
+        <div class="section-content">
+          <div class="column">
+            <div class="row">
+              <div class="form-group">
+                <label class="form-label">{{ getComponentName() + ".unit" | translate }}</label>
+
+                <div class="form-control">
+                  <p-dropdown
+                    class="aw-dropdown fixed-width"
+                    [options]="unitCodeList"
+                    [(ngModel)]="bireMeasureRefDTO.unitCode"
+                    [showClear]="true"
+                    placeholder="&nbsp;"
+                    appendTo="body"
+                  ></p-dropdown>
+                </div>
+              </div>
+              <div class="form-group flex--2">
+                <label class="form-label">{{ getComponentName() + ".description" | translate }}</label>
+                <div class="form-control">
+                  <input type="text" class="aw-input" [(ngModel)]="bireMeasureRefDTO.counterRemarks" />
+                </div>
+              </div>
+              <div class="form-control"></div>
+            </div>
+
+            <div class="row search-criteria-footer">
+              <div class="search-actions">
+                <button mat-raised-button color="primary" type="button" (click)="search()">
+                  <span>{{ "global.toSearch" | translate }}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h4 class="section-title">
+          {{ "global.results" | translate }} ({{
+            measurementPointTableDataSource ? measurementPointTableDataSource.dataCount : 0
+          }})
+        </h4>
+
+        <div class="section-content">
+          <a-table [dataSource]="measurementPointTableDataSource"> </a-table>
+        </div>
+      </div>
+    </div>
+  </a-content>
+  <a-footer>
+    <button mat-raised-button (click)="closeDialog()">{{ "global.cancel" | translate }}</button>
+    <button
+      color="primary"
+      type="button"
+      mat-raised-button
+      (click)="validate()"
+      [disabled]="!measurementPointTableDataSource.hasDataSelection"
+    >
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>

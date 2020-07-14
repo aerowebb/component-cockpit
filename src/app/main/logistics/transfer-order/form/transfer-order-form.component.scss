@@ -1,0 +1,186 @@
+@import "constants";
+
+:host {
+  .grid-cell-item-movement {
+    .list-with-details {
+      .details {
+        flex-grow: 1;
+        width: 60%;
+
+        .item-structure-node-action-list {
+          justify-content: flex-end;
+
+          & > button {
+            margin-right: $margin-value;
+
+            &:last-of-type {
+              margin-right: 0;
+            }
+          }
+        }
+
+        .item-structure-node-image {
+          & > img {
+            max-width: 100%;
+            min-width: 100%;
+          }
+        }
+      }
+
+      .list {
+        width: 20%;
+        min-width: 17em;
+      }
+    }
+  }
+
+  .alert {
+    display: inline-block;
+    width: 50%;
+
+    &.alert--ok {
+      background-color: $green-light1;
+    }
+
+    &.alert--warning {
+      background-color: $orange;
+    }
+
+    &.alert--nok {
+      background-color: $red-light1;
+    }
+
+    &.alert--none {
+      background-color: $grey1;
+    }
+  }
+
+  .custom-width {
+    width: 50%;
+  }
+
+  .custom-div {
+    padding-left: 1.2em;
+  }
+
+  .custom-control {
+    padding-top: 0.4em;
+  }
+
+  .custom-anchor {
+    padding: 0.7em 0;
+  }
+
+  .code {
+    display: inline-table;
+    width: 100%;
+  }
+
+  ::ng-deep .name {
+    font-style: italic;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 20em;
+  }
+
+  ::ng-deep .info {
+    overflow: hidden;
+    padding-bottom: 0.4em;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  ::ng-deep .table-name {
+    font-style: italic;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 20em;
+  }
+
+  ::ng-deep .table-info {
+    overflow: hidden;
+    padding-bottom: 0.4em;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .custom-padding {
+    padding-left: 1em;
+  }
+
+  .label-class {
+    padding-right: 4.5em;
+    display: inline-block;
+    width: 3.5em;
+  }
+
+  .display-custom {
+    display: inline !important;
+    font-weight: bold;
+  }
+
+  .icon-custom {
+    float: right;
+  }
+
+  .custom-border {
+    border-right: 1px solid #595959;
+  }
+
+  .custom-float {
+    float: right;
+  }
+
+  .alert-msg {
+    color: $red-light1;
+  }
+
+  .type-in {
+    color: $green-light1;
+    transform: rotate(320deg);
+  }
+
+  .type-out {
+    color: $red-light1;
+    transform: rotate(45deg);
+  }
+
+  .type-transfer {
+    color: $blue-dark1;
+  }
+
+  .procurement--nok {
+    background-color: $red-light1;
+  }
+
+  .procurement--ok {
+    background-color: $green-light1;
+  }
+
+  .procurement--warning {
+    background-color: $orange;
+  }
+
+  .procurement-type--in {
+    color: $green-light1;
+    transform: rotate(320deg);
+  }
+
+  .procurement-type--out {
+    color: $red-light1;
+    transform: rotate(45deg);
+  }
+
+  .procurement-type--transfer {
+    color: $blue-dark1;
+  }
+
+  .link {
+    cursor: pointer;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}

@@ -1,0 +1,243 @@
+<div class="page-header-container">
+  <div class="page-context">
+    <div class="page-title-container">
+      <div class="page-title">
+        {{ componentData.componentId + ".title" | translate }}
+      </div>
+
+      <div class="page-secondary-actions">
+        <i
+          class="fa fa-fw aw-icon aw-icon-with-border"
+          [ngClass]="{ 'fa-star': isFavoriteEntry, 'fa-star-o': !isFavoriteEntry }"
+          aria-hidden="true"
+          (click)="updateFavoriteState()"
+          pTooltip="{{ 'page.' + (isFavoriteEntry ? 'removeFromFavorites' : 'addToFavorites') | translate }}"
+          tooltipPosition="bottom"
+        ></i>
+      </div>
+    </div>
+    <div class="page-subtitle-container">
+      <div class="page-subtitle">
+        {{ "page.searchPage" | translate }}
+      </div>
+    </div>
+  </div>
+
+  <div class="page-primary-actions">
+    <button type="button" mat-raised-button (click)="refresh()">
+      {{ "global.refresh" | translate }}
+    </button>
+
+    <button type="button" mat-raised-button (click)="openNewFilter()" *ngIf="hasUpdateAccessRight">
+      {{ "global.create" | translate }}
+    </button>
+  </div>
+</div>
+
+<div class="page-wrapper">
+  <div class="page-container search-page-container">
+    <div class="page-content">
+      <div class="grid-row">
+        <div class="grid-cell--12">
+          <div #resultsContainerAnchor class="grid-cell grid-cell--container">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">
+                  {{ "global.results" | translate }}
+                  ({{ resultsTable ? resultsTable.length : 0 }})
+                </h3>
+              </div>
+            </div>
+
+            <div class="grid-cell-content">
+              <p-table
+                [resizableColumns]="true"
+                #table
+                class="aw-table2"
+                [columns]="resultsTableCols"
+                [value]="resultsTable"
+                [style]="{ margin: '0 auto', width: '100%' }"
+                [(selection)]="selectedFilterList"
+                [scrollable]="true"
+              >
+                <ng-template pTemplate="emptymessage">
+                  <span *ngIf="!isLoading"> &nbsp;</span>
+
+                  <div *ngIf="isLoading" class="aw-table-loading-indicator">
+                    <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                    <div class="lds-hourglass"></div>
+                  </div>
+                </ng-template>
+
+                <ng-template pTemplate="caption">
+                  <div class="aw-table-header" [ngClass]="{ 'rows-selected': selectedFilterList.length > 0 }">
+                    <div class="aw-table-global-filter">
+                      <label class="aw-table-global-filter-label">
+                        <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                      </label>
+
+                      <input
+                        #ptableGlobalFilter
+                        class="aw-table-global-filter-input"
+                        type="text"
+                        placeholder="{{ 'table.globalFilterText' | translate }}"
+                        (input)="table.filterGlobal($event.target.value, 'contains')"
+                      />
+                    </div>
+
+                    <div class="aw-table-actions">
+                      <button
+                        *ngIf="resultsTable && resultsTable.length > 0 && selectedFilterList.length === 0"
+                        type="button"
+                        mat-raised-button
+                        (click)="exportTable()"
+                      >
+                        {{ "global.export" | translate }}
+                      </button>
+                      <button
+                        *ngIf="hasManageAccessRight && selectedFilterList.length > 0"
+                        type="button"
+                        mat-raised-button
+                        color="warn"
+                        (click)="deleteSelectedFilterList()"
+                      >
+                        {{ "global.delete" | translate }}
+                      </button>
+                      <button
+                        *ngIf="selectedFilterList.length > 0"
+                        type="button"
+                        mat-raised-button
+                        (click)="openSelectedFilterList()"
+                      >
+                        {{ "global.open" | translate }}
+                      </button>
+                    </div>
+                  </div>
+                </ng-template>
+                <ng-template pTemplate="colgroup" let-columns>
+                  <colgroup>
+                    <col class="aw-table-checkbox-wrapper" />
+                    <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                  </colgroup>
+                </ng-template>
+
+                <ng-template pTemplate="header" let-columns>
+                  <tr>
+                    <th class="aw-table-checkbox-wrapper">
+                      <p-tableHeaderCheckbox class="aw-table-checkbox"></p-tableHeaderCheckbox>
+                    </th>
+
+                    <th pResizableColumn *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                      {{ componentData.componentId + "." + col.field | translate }}
+                    </th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                  <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                    <td class="aw-table-checkbox-wrapper">
+                      <p-tableCheckbox class="aw-table-checkbox" [value]="rowData"></p-tableCheckbox>
+                    </td>
+                    <td *ngFor="let col of columns" [ngSwitch]="col.field" [ngStyle]="{ 'text-align': col.alignment }">
+                      <span *ngSwitchCase="'isPersistent'">
+                        <i
+                          *ngIf="rowData[col.field] !== null && rowData[col.field]"
+                          class="fa fa-fw fa-check"
+                          aria-hidden="true"
+                        ></i>
+                      </span>
+
+                      <span *ngSwitchCase="'isPublic'">
+                        <i
+                          *ngIf="rowData[col.field] !== null && rowData[col.field]"
+                          class="fa fa-fw fa-check"
+                          aria-hidden="true"
+                        ></i>
+                      </span>
+                      <span *ngSwitchCase="'graphicalReference'">
+                        <span *ngIf="rowData[col.field] !== null && rowData[col.field] === 'RedTriangle'">
+                          <i
+                            class="fa fa-fw fa-caret-up"
+                            style="color: red;font-size: 30px;margin-left: -7px;"
+                            aria-hidden="true"
+                          ></i>
+                        </span>
+                        <span *ngIf="rowData[col.field] !== null && rowData[col.field] === 'RedSquare'">
+                          <i class="fa fa-fw fa-square" style="color: red;font-size: 18px;" aria-hidden="true"></i>
+                        </span>
+                        <span *ngIf="rowData[col.field] !== null && rowData[col.field] === 'RedCircle'">
+                          <i class="fa fa-fw fa-circle" style="color: red;font-size: 18px;" aria-hidden="true"></i>
+                        </span>
+                        <span *ngIf="rowData[col.field] !== null && rowData[col.field] === 'YellowTriangle'">
+                          <i
+                            class="fa fa-fw fa-caret-up"
+                            style="color: #FFBF00;font-size: 30px;margin-left: -7px;"
+                            aria-hidden="true"
+                          ></i>
+                        </span>
+                        <span *ngIf="rowData[col.field] !== null && rowData[col.field] === 'YellowSquare'">
+                          <i class="fa fa-fw fa-square" style="color: #FFBF00;font-size: 18px;" aria-hidden="true"></i>
+                        </span>
+                        <span *ngIf="rowData[col.field] !== null && rowData[col.field] === 'YellowCircle'">
+                          <i class="fa fa-fw fa-circle" style="color: #FFBF00;font-size: 18px;" aria-hidden="true"></i>
+                        </span>
+                        <span *ngIf="rowData[col.field] !== null && rowData[col.field] === 'GreenTriangle'">
+                          <i
+                            class="fa fa-fw fa-caret-up"
+                            style="color: lightgreen;font-size: 30px;margin-left: -7px;"
+                            aria-hidden="true"
+                          ></i>
+                        </span>
+                        <span *ngIf="rowData[col.field] !== null && rowData[col.field] === 'GreenSquare'">
+                          <i
+                            class="fa fa-fw fa-square"
+                            style="color: lightgreen;font-size: 18px;"
+                            aria-hidden="true"
+                          ></i>
+                        </span>
+                        <span *ngIf="rowData[col.field] !== null && rowData[col.field] === 'GreenCircle'">
+                          <i
+                            class="fa fa-fw fa-circle"
+                            style="color: lightgreen;font-size: 18px;"
+                            aria-hidden="true"
+                          ></i>
+                        </span>
+                        <span *ngIf="rowData[col.field] !== null && rowData[col.field] === 'GreyTriangle'">
+                          <i
+                            class="fa fa-fw fa-caret-up"
+                            style="color: grey;font-size: 30px;margin-left: -7px;"
+                            aria-hidden="true"
+                          ></i>
+                        </span>
+                        <span *ngIf="rowData[col.field] !== null && rowData[col.field] === 'GreySquare'">
+                          <i class="fa fa-fw fa-square" style="color: grey;font-size: 18px;" aria-hidden="true"></i>
+                        </span>
+                        <span *ngIf="rowData[col.field] !== null && rowData[col.field] === 'GreyCircle'">
+                          <i class="fa fa-fw fa-circle" style="color: grey;font-size: 18px;" aria-hidden="true"></i>
+                        </span>
+                        <span *ngIf="rowData[col.field] !== null && rowData[col.field] === 'BlueTriangle'">
+                          <i
+                            class="fa fa-fw fa-caret-up"
+                            style="color: blue;font-size: 30px;margin-left: -7px;"
+                            aria-hidden="true"
+                          ></i>
+                        </span>
+                        <span *ngIf="rowData[col.field] !== null && rowData[col.field] === 'BlueSquare'">
+                          <i class="fa fa-fw fa-square" style="color: blue;font-size: 18px;" aria-hidden="true"></i>
+                        </span>
+                        <span *ngIf="rowData[col.field] !== null && rowData[col.field] === 'BlueCircle'">
+                          <i class="fa fa-fw fa-circle" style="color: blue;font-size: 18px;" aria-hidden="true"></i>
+                        </span>
+                      </span>
+
+                      <span *ngSwitchDefault> {{ rowData[col.field] }} </span>
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

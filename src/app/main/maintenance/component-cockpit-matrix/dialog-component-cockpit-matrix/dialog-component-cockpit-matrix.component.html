@@ -1,0 +1,65 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".title" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="form-group">
+      <label class="form-label">{{ getComponentName() + ".item" | translate }}</label>
+
+      <div class="form-control form-control-with-modal">
+        <div class="form-control-data" (click)="openItemTableDialog()">
+          {{ cockpitMatrix.item }}
+        </div>
+
+        <div *ngIf="!!cockpitMatrix.item" class="btn-clear-wrapper">
+          <i
+            class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+            aria-hidden="true"
+            (click)="
+              cockpitMatrix.family = undefined;
+              cockpitMatrix.variant = undefined;
+              cockpitMatrix.item = undefined;
+              cockpitMatrix.pn = undefined
+            "
+          ></i>
+        </div>
+        <div class="btn-search-wrapper">
+          <i class="fa fa-fw fa-search aw-icon btn-search" aria-hidden="true" (click)="openItemTableDialog()"></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">{{ getComponentName() + ".pn" | translate }}</label>
+
+      <div class="form-control">
+        <p-dropdown
+          class="aw-dropdown fixed-width"
+          appendTo="body"
+          [options]="pnList"
+          [(ngModel)]="cockpitMatrix.pn"
+          [showClear]="true"
+          placeholder="&nbsp;"
+          [style]="{ width: '100%' }"
+        ></p-dropdown>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button type="button" mat-raised-button (click)="cancel()">
+      <span>{{ "global.cancel" | translate }}</span>
+    </button>
+    <button type="button" color="primary" mat-raised-button (click)="validate()" [disabled]="!cockpitMatrix.item">
+      <span>{{ "global.validate" | translate }}</span>
+    </button>
+  </a-footer>
+</a-modal>
+
+<aw-dialog-search-item
+  *ngIf="showItemTableDialog"
+  [(display)]="showItemTableDialog"
+  [searchObject]="bireItemDTO"
+  (onValidated)="onSelectedItem($event)"
+></aw-dialog-search-item>

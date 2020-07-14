@@ -1,0 +1,553 @@
+<div class="page-header-container">
+  <div class="page-context">
+    <div class="page-title-container">
+      <div class="page-title">
+        {{ "transaction." + componentData.componentId | translate }}
+      </div>
+
+      <div class="page-secondary-actions">
+        <i
+          class="fa fa-fw aw-icon aw-icon-with-border"
+          [ngClass]="{ 'fa-star': isFavoriteEntry, 'fa-star-o': !isFavoriteEntry }"
+          aria-hidden="true"
+          (click)="updateFavoriteState()"
+          pTooltip="{{ 'page.' + (isFavoriteEntry ? 'removeFromFavorites' : 'addToFavorites') | translate }}"
+          tooltipPosition="bottom"
+        ></i>
+      </div>
+    </div>
+
+    <div class="page-subtitle-container">
+      <div class="page-subtitle">
+        {{ "page.searchPage" | translate }}
+      </div>
+    </div>
+  </div>
+
+  <div class="page-primary-actions">
+    <button type="button" mat-raised-button (click)="newCalculation()">
+      {{ componentData.componentId + ".newCalculation" | translate }}
+    </button>
+  </div>
+</div>
+
+<div class="page-wrapper">
+  <div class="page-container search-page-container">
+    <div class="page-content">
+      <div class="grid-row">
+        <div class="grid-cell--12">
+          <div class="grid-cell grid-cell--container">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">{{ "page.mainData" | translate }}</h3>
+              </div>
+            </div>
+
+            <div class="grid-cell-content">
+              <div class="row">
+                <div class="form-group">
+                  <label class="form-label">{{ componentData.componentId + ".materialCode" | translate }} </label>
+
+                  <div
+                    *ngIf="
+                      !!stock && !!stock.searchInputStockValuation && !!stock.searchInputStockValuation.materialCode
+                    "
+                    class="form-control"
+                  >
+                    <input
+                      type="text"
+                      class="aw-input"
+                      [(ngModel)]="stock.searchInputStockValuation.materialCode"
+                      [disabled]="true"
+                    />
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label"> {{ componentData.componentId + ".warehouseId" | translate }} </label>
+
+                  <div
+                    *ngIf="
+                      !!stock && !!stock.searchInputStockValuation && !!stock.searchInputStockValuation.warehouseId
+                    "
+                    class="form-control"
+                  >
+                    <input type="text" class="aw-input" [(ngModel)]="warehouse" [disabled]="true" />
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">{{ "global.date" | translate }}</label>
+
+                  <div
+                    *ngIf="!!stock && !!stock.searchInputStockValuation && !!stock.searchInputStockValuation.date"
+                    class="form-control"
+                  >
+                    <p-calendar
+                      showButtonBar="true"
+                      [monthNavigator]="true"
+                      [yearNavigator]="true"
+                      [yearRange]="sessionService.calendarYearRange"
+                      class="aw-calendar"
+                      [dateFormat]="sessionService.dateFormatPrimeNG"
+                      [locale]="sessionService.calendarFormat"
+                      [(ngModel)]="stock.searchInputStockValuation.date"
+                      disabled
+                    ></p-calendar>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label"
+                    >{{ componentData.componentId + ".avgValue" | translate }} - {{ currency }}
+                  </label>
+
+                  <div
+                    *ngIf="!!stock && stock.resultCumpStockValue !== null && stock.resultCumpStockValue !== undefined"
+                    class="form-control"
+                  >
+                    <input type="text" class="aw-input" [disabled]="true" [(ngModel)]="averageValue" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-row">
+        <div class="grid-cell--6">
+          <div class="grid-cell grid-cell--container grid-cell-chart">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container loading-indicator">
+                <div class="grid-cell-title">
+                  {{ getComponentName() + ".quantityChart" | translate }}
+                  <div *ngIf="!chartContentReady" class="lds-hourglass"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid-cell-content">
+              <div class="row flex-row--justify-center">
+                <div *ngIf="chartContentReady" class="chart-container">
+                  <div class="chart-wrapper">
+                    <p-chart
+                      [type]="chartType"
+                      [data]="stockQuantityVariationData"
+                      [options]="quantityChartOptions"
+                      width="100%"
+                      height="100%"
+                    ></p-chart>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid-cell-content">
+              <div class="row flex-row--justify-center">
+                <div *ngIf="chartContentReady" class="chart-container">
+                  <div class="chart-legend">
+                    <div class="chart-legend-label">
+                      <div class="chart-legend-label-color quantity"></div>
+                      <span class="chart-value">{{ getComponentName() + ".quantity" | translate }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-cell--6">
+          <div class="grid-cell grid-cell--container grid-cell-chart">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container loading-indicator">
+                <div class="grid-cell-title">
+                  {{ getComponentName() + ".amountChart" | translate }}
+                  <div *ngIf="!chartContentReady" class="lds-hourglass"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid-cell-content">
+              <div class="row flex-row--justify-center">
+                <div *ngIf="chartContentReady" class="chart-container">
+                  <div class="chart-wrapper">
+                    <p-chart
+                      [type]="chartType"
+                      [data]="stockAmountVariationData"
+                      [options]="amountChartOptions"
+                      width="100%"
+                      height="100%"
+                    ></p-chart>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid-cell-content">
+              <div class="row flex-row--justify-center">
+                <div *ngIf="chartContentReady" class="chart-container">
+                  <div class="chart-legend">
+                    <div class="chart-legend-label">
+                      <div class="chart-legend-label-color amount"></div>
+                      <span class="chart-value">{{ getComponentName() + ".amount" | translate }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-row">
+        <div class="grid-cell--12">
+          <div class="grid-cell grid-cell--container">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">
+                  {{ getComponentName() + ".stockSheet" | translate }} ({{
+                    stockSheetTableForDisplay ? stockSheetTableForDisplay.length : 0
+                  }})
+                </h3>
+              </div>
+            </div>
+
+            <div class="grid-cell-content grid-cell-content-with-section">
+              <div class="section">
+                <div class="section-content">
+                  <div class="row">
+                    <div class="form-group">
+                      <label class="form-label">{{ getComponentName() + ".receiptQty" | translate }}</label>
+
+                      <div
+                        *ngIf="
+                          !!stock &&
+                          stock.resultCumpReceiptQuantity !== null &&
+                          stock.resultCumpReceiptQuantity !== undefined
+                        "
+                        class="form-control"
+                      >
+                        <input
+                          type="text"
+                          class="aw-input"
+                          [disabled]="true"
+                          [(ngModel)]="stock.resultCumpReceiptQuantity"
+                        />
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-label">{{ getComponentName() + ".issueQty" | translate }}</label>
+
+                      <div
+                        *ngIf="
+                          !!stock &&
+                          stock.resultCumpIssueQuantity !== null &&
+                          stock.resultCumpIssueQuantity !== undefined
+                        "
+                        class="form-control"
+                      >
+                        <input
+                          type="text"
+                          class="aw-input"
+                          [disabled]="true"
+                          [(ngModel)]="stock.resultCumpIssueQuantity"
+                        />
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-label">{{ getComponentName() + ".stockQty" | translate }}</label>
+
+                      <div
+                        *ngIf="
+                          !!stock &&
+                          stock.resultCumpStockQuantity !== null &&
+                          stock.resultCumpStockQuantity !== undefined
+                        "
+                        class="form-control"
+                      >
+                        <input
+                          type="text"
+                          class="aw-input"
+                          [disabled]="true"
+                          [(ngModel)]="stock.resultCumpStockQuantity"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="form-group">
+                      <label class="form-label"
+                        >{{ getComponentName() + ".receiptAmt" | translate }} - {{ currency }}</label
+                      >
+
+                      <div
+                        *ngIf="
+                          !!stock &&
+                          stock.resultCumpReceiptAmount !== null &&
+                          stock.resultCumpReceiptAmount !== undefined
+                        "
+                        class="form-control"
+                      >
+                        <input type="text" class="aw-input" [disabled]="true" [(ngModel)]="receiptAmount" />
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-label"
+                        >{{ getComponentName() + ".issueAmt" | translate }} - {{ currency }}</label
+                      >
+
+                      <div
+                        *ngIf="
+                          !!stock && stock.resultCumpIssueAmount !== null && stock.resultCumpIssueAmount !== undefined
+                        "
+                        class="form-control"
+                      >
+                        <input type="text" class="aw-input" [disabled]="true" [(ngModel)]="issueAmount" />
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-label"
+                        >{{ getComponentName() + ".stockAmt" | translate }} - {{ currency }}</label
+                      >
+
+                      <div
+                        *ngIf="
+                          !!stock && stock.resultCumpStockAmount !== null && stock.resultCumpStockAmount !== undefined
+                        "
+                        class="form-control"
+                      >
+                        <input type="text" class="aw-input" [disabled]="true" [(ngModel)]="stockAmount" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="table-wrapper">
+                <p-table
+                  [resizableColumns]="true"
+                  #ptableTask
+                  class="aw-table2 max-height"
+                  [columns]="stockSheetTableCols"
+                  [value]="stockSheetTableForDisplay"
+                  [scrollable]="true"
+                >
+                  <ng-template pTemplate="emptyMessage">
+                    <span *ngIf="!chartContentReady"> &nbsp;</span>
+
+                    <div *ngIf="chartContentReady" class="aw-table-loading-indicator">
+                      <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                      <div class="lds-hourglass"></div>
+                    </div>
+                  </ng-template>
+
+                  <ng-template pTemplate="caption">
+                    <div class="aw-table-header">
+                      <div class="aw-table-global-filter">
+                        <label class="aw-table-global-filter-label">
+                          <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                        </label>
+
+                        <input
+                          #ptableTaskGlobalFilter
+                          class="aw-table-global-filter-input"
+                          type="text"
+                          placeholder="{{ 'table.globalFilterText' | translate }}"
+                          (input)="ptableTask.filterGlobal($event.target.value, 'contains')"
+                        />
+                      </div>
+
+                      <div class="aw-table-icon-actions">
+                        <i
+                          class="fa fa-fw fa-arrows-alt aw-icon aw-icon-with-border"
+                          aria-hidden="true"
+                          pTooltip="{{ 'global.showTableFullScreen' | translate }}"
+                          tooltipPosition="top"
+                          (click)="displayFullScreen = true"
+                        ></i>
+                        &nbsp;
+                      </div>
+                    </div>
+                  </ng-template>
+
+                  <ng-template pTemplate="colgroup" let-columns>
+                    <colgroup>
+                      <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                      <col class="row-expand-wrapper" />
+                    </colgroup>
+                  </ng-template>
+
+                  <ng-template pTemplate="header" let-columns>
+                    <tr>
+                      <th colspan="3"></th>
+                      <th colspan="3" class="table-border-left" style="text-align: center">
+                        {{ getComponentName() + ".stock" | translate }}
+                      </th>
+                    </tr>
+
+                    <tr>
+                      <th
+                        pResizableColumn
+                        *ngFor="let col of columns"
+                        [ngSwitch]="col.field"
+                        [ngStyle]="{ 'text-align': col.alignment }"
+                        [ngClass]="{ 'table-border-left': col.field === 'stockQuantity' }"
+                      >
+                        <span *ngSwitchCase="'stockValue'"
+                          >{{ componentData.componentId + "." + col.field | translate }} {{ curr }}</span
+                        >
+                        <span *ngSwitchCase="'stockAmount'"
+                          >{{ componentData.componentId + "." + col.field | translate }} {{ curr }}</span
+                        >
+                        <span *ngSwitchDefault>{{ componentData.componentId + "." + col.field | translate }}</span>
+                      </th>
+                    </tr>
+                  </ng-template>
+
+                  <ng-template pTemplate="body" let-rowData let-columns="columns">
+                    <tr>
+                      <td
+                        *ngFor="let col of columns"
+                        [ngStyle]="{ 'text-align': col.alignment }"
+                        [ngClass]="{ 'table-border-left': col.field === 'stockQuantity' }"
+                      >
+                        {{ rowData[col.field] }}
+                      </td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ********************************************************************** -->
+<!-- Dialog: full screen -->
+<!-- ********************************************************************** -->
+
+<a-modal class="aw-table-fullscreen" [(visible)]="displayFullScreen" [fullScreen]="true">
+  <a-header>
+    <div class="modal__title-container">
+      <div class="modal__title">{{ getComponentName() + ".stockSheet" | translate }}</div>
+    </div>
+
+    <div class="close"><i class="material-icons" (click)="closeDialog()">close</i></div>
+  </a-header>
+
+  <a-content>
+    <p-table
+      [resizableColumns]="true"
+      #ptableTasks
+      class="aw-table2"
+      [columns]="stockSheetTableCols2"
+      [value]="stockSheetTableForDisplay"
+      [scrollable]="true"
+    >
+      <ng-template pTemplate="emptyMessage">
+        <span *ngIf="!chartContentReady"> &nbsp;</span>
+
+        <div *ngIf="chartContentReady" class="aw-table-loading-indicator">
+          <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+          <div class="lds-hourglass"></div>
+        </div>
+      </ng-template>
+
+      <ng-template pTemplate="caption">
+        <div class="aw-table-header">
+          <div class="aw-table-global-filter">
+            <label class="aw-table-global-filter-label"> <i class="fa fa-fw fa-search" aria-hidden="true"></i> </label>
+
+            <input
+              #ptableTasksGlobalFilter
+              class="aw-table-global-filter-input"
+              type="text"
+              placeholder="{{ 'table.globalFilterText' | translate }}"
+              (input)="ptableTasks.filterGlobal($event.target.value, 'contains')"
+            />
+          </div>
+        </div>
+      </ng-template>
+
+      <ng-template pTemplate="colgroup" let-columns>
+        <colgroup>
+          <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+          <col class="row-expand-wrapper" />
+        </colgroup>
+      </ng-template>
+
+      <ng-template pTemplate="header" let-columns>
+        <tr>
+          <th colspan="3"></th>
+          <th colspan="3" class="table-border-left" style="text-align: center">
+            {{ getComponentName() + ".receipt" | translate }}
+          </th>
+          <th colspan="3" class="table-border-left" style="text-align: center">
+            {{ getComponentName() + ".issue" | translate }}
+          </th>
+          <th colspan="3" class="table-border-left" style="text-align: center">
+            {{ getComponentName() + ".stock" | translate }}
+          </th>
+        </tr>
+
+        <tr>
+          <th
+            pResizableColumn
+            *ngFor="let col of columns"
+            [ngSwitch]="col.field"
+            [ngStyle]="{ 'text-align': col.alignment }"
+            [ngClass]="{
+              'table-border-left':
+                col.field === 'stockQuantity' || col.field === 'receiptQuantity' || col.field === 'issueQuantity'
+            }"
+          >
+            <span *ngSwitchCase="'stockValue'"
+              >{{ componentData.componentId + "." + col.field | translate }} {{ curr }}</span
+            >
+            <span *ngSwitchCase="'stockAmount'"
+              >{{ componentData.componentId + "." + col.field | translate }} {{ curr }}</span
+            >
+            <span *ngSwitchCase="'issueValue'"
+              >{{ componentData.componentId + "." + col.field | translate }} {{ curr }}</span
+            >
+            <span *ngSwitchCase="'issueAmount'"
+              >{{ componentData.componentId + "." + col.field | translate }} {{ curr }}</span
+            >
+            <span *ngSwitchCase="'receiptValue'"
+              >{{ componentData.componentId + "." + col.field | translate }} {{ curr }}</span
+            >
+            <span *ngSwitchCase="'receiptAmount'"
+              >{{ componentData.componentId + "." + col.field | translate }} {{ curr }}</span
+            >
+            <span *ngSwitchDefault>{{ componentData.componentId + "." + col.field | translate }}</span>
+          </th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-rowData let-columns="columns">
+        <tr>
+          <td
+            *ngFor="let col of columns"
+            [ngStyle]="{ 'text-align': col.alignment }"
+            [ngClass]="{
+              'table-border-left':
+                col.field === 'stockQuantity' || col.field === 'receiptQuantity' || col.field === 'issueQuantity'
+            }"
+          >
+            {{ rowData[col.field] }}
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </a-content>
+</a-modal>

@@ -1,0 +1,87 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".title" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="row">
+      <div class="form-group">
+        <label class="form-label"> {{ getComponentName() + ".number" | translate }} </label>
+        <div class="form-control">
+          <input type="text" class="aw-input" [(ngModel)]="workOrder.woCode" disabled />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label"> {{ getComponentName() + ".type" | translate }} </label>
+        <div class="form-control">
+          <input type="text" class="aw-input" [(ngModel)]="type" disabled />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label"> {{ getComponentName() + ".currentStatus" | translate }} </label>
+        <div class="form-control">
+          <input type="text" class="aw-input" [(ngModel)]="status" disabled />
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="form-group">
+        <label class="form-label"> {{ getComponentName() + ".lastUpdate" | translate }} </label>
+        <div class="form-control">
+          <p-calendar
+            showButtonBar="true"
+            [monthNavigator]="true"
+            [yearNavigator]="true"
+            [yearRange]="sessionService.calendarYearRange"
+            class="aw-calendar"
+            [dateFormat]="sessionService.dateFormatPrimeNG"
+            [locale]="sessionService.calendarFormat"
+            [(ngModel)]="workOrder.statusDate"
+            [disabled]="true"
+            appendTo="body"
+            placeholder="&nbsp;"
+          ></p-calendar>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label"> {{ getComponentName() + ".lastUpdateBy" | translate }} </label>
+        <div class="form-control">
+          <input type="text" class="aw-input" [(ngModel)]="workOrder.statusUser" disabled />
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="form-group">
+        <label class="form-label"> {{ getComponentName() + ".description" | translate }} </label>
+        <div class="form-control">
+          <input type="text" class="aw-input" [(ngModel)]="workOrder.woDescription" disabled />
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="form-group">
+        <label class="form-label"> {{ getComponentName() + ".sourceSystemId" | translate }} </label>
+        <div class="form-control">
+          <input type="text" class="aw-input" [(ngModel)]="systemSourceIdValue" disabled />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label"> {{ getComponentName() + ".sourceSystemReference" | translate }} </label>
+        <div class="form-control">
+          <input type="text" class="aw-input" [(ngModel)]="systemSourceReferenceValue" disabled />
+        </div>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button type="button" mat-raised-button (click)="closeDialog()">{{ "global.close" | translate }}</button>
+  </a-footer>
+</a-modal>

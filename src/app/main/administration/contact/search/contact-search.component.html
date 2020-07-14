@@ -1,0 +1,165 @@
+<div class="page-header">
+  <div class="page-info">
+    <div>
+      <div class="page-title">
+        {{ "transaction." + componentData.componentId | translate }}
+      </div>
+
+      <div class="page-subtitle">
+        <div class="page-subtitle">- {{ "page.searchPage" | translate }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-actions">
+    <button type="button" mat-raised-button (click)="openNewContact()" *ngIf="hasUpdateAccessRight">
+      {{ "global.create" | translate }}
+    </button>
+    <button
+      id="actions"
+      mat-icon-button
+      class="mat-elevation-z1"
+      matTooltip="{{ 'global.showAllActionTooltip' | translate }}"
+      matTooltipPosition="above"
+      aria-label="Show all actions"
+      [matMenuTriggerFor]="actions"
+    >
+      <mat-icon>more_horiz</mat-icon>
+    </button>
+
+    <mat-menu #actions="matMenu">
+      <button id="favorites" mat-menu-item (click)="updateFavoriteState()">
+        {{ (isFavoriteEntry ? "page.removeFromFavorites" : "page.addToFavorites") | translate }}
+      </button>
+    </mat-menu>
+  </div>
+</div>
+
+<div class="page-wrapper">
+  <div class="page-container search-page-container">
+    <div class="page-content">
+      <div class="grid-row">
+        <div class="grid-cell--12">
+          <div class="grid-cell grid-cell--container">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">{{ "global.search" | translate }}</h3>
+              </div>
+            </div>
+
+            <div class="grid-cell-content">
+              <div class="column">
+                <div class="row search-criteria-header">
+                  <aw-manage-search-criteria
+                    [componentId]="CONTACT_SEARCH_CRITERIA_ID"
+                    (onSelected)="loadSearchCriteria($event)"
+                    (onSavedAsked)="saveSearchCriteriaAsked()"
+                    [objectFromPage]="criteriaToSave"
+                  ></aw-manage-search-criteria>
+                </div>
+
+                <div class="row">
+                  <div class="form-group">
+                    <label class="form-label"> {{ componentData.componentId + ".businessPartner" | translate }} </label>
+                    <div class="form-control form-control-with-modal" [ngClass]="{ disabled: isReadOpenMode }">
+                      <div class="form-control-data" (click)="openCustomerDialog()">
+                        {{ bidoCustomerDTO.customerCode }}
+                        <span *ngIf="bidoCustomerDTO.customerName">({{ bidoCustomerDTO.customerName }})</span>
+                      </div>
+
+                      <div *ngIf="bidoCustomerDTO.customerCode" class="btn-clear-wrapper">
+                        <i
+                          class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+                          aria-hidden="true"
+                          (click)="resetCustomer()"
+                        ></i>
+                      </div>
+                      <div class="btn-search-wrapper">
+                        <i
+                          class="fa fa-fw fa-search aw-icon btn-search"
+                          aria-hidden="true"
+                          (click)="openCustomerDialog()"
+                        ></i>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group" style="width: 20%">
+                    <label class="form-label"> {{ componentData.componentId + ".contactName" | translate }} </label>
+
+                    <div class="form-control"><input type="text" class="aw-input" [(ngModel)]="contactName" /></div>
+                  </div>
+                </div>
+                <div class="row search-criteria-footer">
+                  <div class="search-actions">
+                    <button
+                      type="button"
+                      mat-raised-button
+                      class="btn-with-spinner"
+                      color="primary"
+                      (click)="search()"
+                      appKeyPress
+                      [keyCode]="'Enter'"
+                      (keyPress)="search()"
+                    >
+                      <span *ngIf="isLoading" class="lds-hourglass"></span>
+                      {{ "global.toSearch" | translate }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-row">
+        <div class="grid-cell--12">
+          <div #resultsContainerAnchor class="grid-cell grid-cell--container">
+            <!-- Contacts table -->
+
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">
+                  {{ "global.results" | translate }}
+                  ({{ contactTableDataSource ? contactTableDataSource.dataCount : 0 }})
+                </h3>
+              </div>
+            </div>
+
+            <div class="grid-cell-content">
+              <a-table [dataSource]="contactTableDataSource">
+                <ng-template tableActionsDef>
+                  <button
+                    *ngIf="hasManageAccessRight && contactTableDataSource.hasDataSelection"
+                    type="button"
+                    mat-raised-button
+                    color="warn"
+                    (click)="deleteContacts()"
+                  >
+                    {{ "global.delete" | translate }}
+                  </button>
+
+                  <button
+                    *ngIf="contactTableDataSource.hasDataSelection"
+                    type="button"
+                    mat-raised-button
+                    (click)="openSelectedContacts()"
+                  >
+                    {{ "global.open" | translate }}
+                  </button>
+                </ng-template>
+              </a-table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<aw-dialog-search-customer
+  *ngIf="showCustomerDialog"
+  [(display)]="showCustomerDialog"
+  [customer-code]="bidoCustomerDTO.customerCode"
+  (onSelected)="onSelectedCustomer($event)"
+></aw-dialog-search-customer>

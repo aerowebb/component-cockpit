@@ -1,0 +1,65 @@
+<div class="page-header-container">
+  <div class="page-context">
+    <div class="page-title-container">
+      <div class="page-title">
+        {{ "transaction." + componentData.componentId | translate }}
+      </div>
+
+      <div class="page-secondary-actions">
+        <i
+          class="fa fa-fw aw-icon aw-icon-with-border"
+          [ngClass]="{ 'fa-star': isFavoriteEntry, 'fa-star-o': !isFavoriteEntry }"
+          aria-hidden="true"
+          (click)="updateFavoriteState()"
+          pTooltip="{{ 'page.' + (isFavoriteEntry ? 'removeFromFavorites' : 'addToFavorites') | translate }}"
+          tooltipPosition="bottom"
+        ></i>
+      </div>
+    </div>
+
+    <div class="page-subtitle-container">
+      <div class="page-subtitle">{{ componentData.componentId + ".wbmRevNum" | translate }} : {{ planCode }}</div>
+    </div>
+  </div>
+</div>
+
+<div class="page-wrapper">
+  <div class="page-container search-page-container">
+    <div class="page-content">
+      <div class="grid-row">
+        <div class="grid-cell--12">
+          <div #resultsContainerAnchor class="grid-cell grid-cell--container">
+            <a-table [dataSource]="changeRecordTableDataSource">
+              <ng-template columnDef="taskReference" let-rowData="rowData">
+                <a (click)="openTaskForm(rowData)">{{ rowData.taskReference }}</a>
+              </ng-template>
+              <ng-template columnDef="updatedTask" let-rowData="rowData">
+                <p-checkbox
+                  class="aw-checkbox custom-checkbox"
+                  binary="true"
+                  [(ngModel)]="rowData.updatedTask"
+                  disabled
+                ></p-checkbox>
+              </ng-template>
+
+              <ng-template columnDef="nilTask" let-rowData="rowData">
+                <p-checkbox
+                  class="aw-checkbox custom-checkbox"
+                  binary="true"
+                  [(ngModel)]="rowData.nilTask"
+                  disabled
+                ></p-checkbox>
+              </ng-template>
+            </a-table>
+            <span *ngIf="!isLoading"> &nbsp;</span>
+
+            <div *ngIf="isLoading" class="aw-table-loading-indicator">
+              <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+              <div class="lds-hourglass"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

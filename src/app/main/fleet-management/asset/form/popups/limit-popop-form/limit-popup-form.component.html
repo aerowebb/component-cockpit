@@ -1,0 +1,159 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div class="modal-title">{{ componentData.componentId + ".limit" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="row">
+      <div class="form-group">
+        <label class="form-label"> {{ componentData.componentId + ".counterCode" | translate }} </label>
+
+        <div class="form-control">
+          <input
+            type="text"
+            class="aw-input"
+            [disabled]="true"
+            [(ngModel)]="selectedBireMeasureReferenceDTO.counterCode"
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label"> {{ componentData.componentId + ".unitCode" | translate }} </label>
+
+        <div class="form-control">
+          <input
+            type="text"
+            class="aw-input"
+            [disabled]="true"
+            [(ngModel)]="selectedBireMeasureReferenceDTO.unitCode"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="isRatingVisible" class="row">
+      <div class="form-group">
+        <label class="form-label"> {{ componentData.componentId + ".ratingCode" | translate }} </label>
+        <div class="form-control">
+          <input type="text" class="aw-input" [disabled]="true" [(ngModel)]="measure.ratingText" />
+        </div>
+      </div>
+    </div>
+
+    <div class="section-content">
+      <div class="column">
+        <div class="form-group">
+          <label class="form-label">{{ getComponentName() + ".limitValue" | translate }}</label>
+
+          <div class="form-control form-control-with-radiobutton">
+            <p-radioButton
+              class="aw-radiobutton"
+              [disabled]="isReadOnlyForm"
+              value="limitValue"
+              inputId="limitValue"
+              [(ngModel)]="optionLimit"
+              (onClick)="changeLimit()"
+            ></p-radioButton>
+
+            <input
+              #limitValue="ngModel"
+              type="text"
+              class="aw-input"
+              [disabled]="optionLimit !== 'limitValue' || isReadOnlyForm"
+              [(ngModel)]="measure.referenceValue"
+              [pKeyFilter]="inputValidationService.validatorOfNumber()"
+              [pValidateOnly]="true"
+            />
+          </div>
+          <p-message
+            *ngIf="limitValue.invalid && (limitValue.dirty || limitValue.touched)"
+            severity="error"
+            [text]="inputValidationService.formatOfNumber()"
+            [ngStyle]="{ 'padding-left': '50px' }"
+          ></p-message>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">{{ getComponentName() + ".limitDate" | translate }}</label>
+
+          <div class="form-control form-control-with-radiobutton">
+            <p-radioButton
+              class="aw-radiobutton"
+              [disabled]="isReadOnlyForm"
+              value="limitDate"
+              inputId="limitDate"
+              [(ngModel)]="optionLimit"
+              (onClick)="changeLimit()"
+            ></p-radioButton>
+
+            <p-calendar
+              showButtonBar="true"
+              [monthNavigator]="true"
+              [yearNavigator]="true"
+              [yearRange]="sessionService.calendarYearRange"
+              class="aw-calendar"
+              [dateFormat]="sessionService.dateFormatPrimeNG"
+              [locale]="sessionService.calendarFormat"
+              [disabled]="optionLimit === 'limitValue' || isReadOnlyForm"
+              appendTo="body"
+              [(ngModel)]="measure.dateLimit"
+              [ngStyle]="{ width: '100%' }"
+            ></p-calendar>
+          </div>
+        </div>
+      </div>
+      <div class="column">
+        <div class="form-group">
+          <label class="form-label"> {{ componentData.componentId + ".alertThreshold" | translate }} </label>
+
+          <div class="form-control">
+            <div class="aw-input-group">
+              <input
+                type="text"
+                class="aw-input"
+                [disabled]="true"
+                [(ngModel)]="selectedBireMeasureReferenceDTO.minRemainPercent"
+                style="width: 75%"
+              />
+              <label class="form-label"> {{ componentData.componentId + ".percent" | translate }} </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">
+            {{ componentData.componentId + ".currentRemainingPotential" | translate }}
+          </label>
+
+          <div class="form-control">
+            <div class="aw-input-group">
+              <input
+                type="text"
+                class="aw-input"
+                [disabled]="true"
+                [(ngModel)]="measure.remainingValue"
+                style="width: 75%"
+              />
+              <label class="form-label"> {{ selectedBireMeasureReferenceDTO.unitCode }} </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button *ngIf="isReadOpenMode" type="button" mat-raised-button (click)="onHide()">
+      <span>{{ "global.close" | translate }}</span>
+    </button>
+
+    <button *ngIf="!isReadOpenMode" type="button" mat-raised-button (click)="onHide()">
+      <span>{{ "global.cancel" | translate }}</span>
+    </button>
+
+    <button *ngIf="!isReadOpenMode" color="primary" type="button" mat-raised-button (click)="onValidate()">
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>

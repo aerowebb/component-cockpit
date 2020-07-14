@@ -1,0 +1,34 @@
+{
+  "StaffAlertSearchComponent": {
+    "date": "Date",
+    "alertThreshold": "Seuil d'alerte (en jours)",
+    "superiorLastName": "Nom du Supérieur",
+    "superiorFirstName": "Prénom du Supérieur",
+    "superiorId": "ID Supérieur ",
+    "toCalculate": "Calculer",
+    "enterSearchCriteria": "Entrez des critères de recherche pour continuer!"
+  },
+  "StaffAlertFormComponent": {
+    "date": "Date",
+    "alertThreshold": "Seuil d'alerte (en jours)",
+    "superiorLastName": "Nom du Supérieur",
+    "superiorFirstName": "Prénom du Supérieur",
+    "superiorId": " ID Supérieur",
+    "newCalculation": "Nouveau Calcul",
+    "employeeNumber": "ID Employé",
+    "employeeLastName": "Nom",
+    "employeeFirstName": "Prénom",
+    "superior": "Supérieur",
+    "type": "Type",
+    "title": "Titre",
+    "expiryDate": "Expiration",
+    "MSG_TXT_MEDICAL": "Médicale",
+    "MSG_TXT_QUALIFICATION": "Qualification",
+    "MSG_TXT_LICENSE": "Licence",
+    "alertList": "Liste des Alertes",
+    "medicalAlerts": "Médicale",
+    "qualificationAlerts": "Qualification",
+    "licenseAlerts": "Licence",
+    "reset": "Montrer Tout"
+  }
+}

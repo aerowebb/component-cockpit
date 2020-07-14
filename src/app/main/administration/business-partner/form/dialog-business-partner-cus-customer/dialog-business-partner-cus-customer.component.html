@@ -1,0 +1,72 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".title" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+      <label class="form-label">{{ getComponentName() + ".customerCode" | translate }}</label>
+
+      <div class="form-control form-control-with-modal" [ngClass]="{ disabled: isReadOpenMode }">
+        <div class="form-control-data" (click)="openCustomerDialog()">
+          {{ cusCustomer.customerCode }} <span *ngIf="cusCustomer.customerName">({{ cusCustomer.customerName }})</span>
+        </div>
+
+        <div *ngIf="cusCustomer.customerCode" class="btn-clear-wrapper">
+          <i
+            class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+            aria-hidden="true"
+            (click)="resetCusCustomer()"
+          ></i>
+        </div>
+        <div class="btn-search-wrapper">
+          <i class="fa fa-fw fa-search aw-icon btn-search" aria-hidden="true" (click)="openCustomerDialog()"></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">{{ getComponentName() + ".customerLink" | translate }}</label>
+
+      <div class="form-control">
+        <p-dropdown
+          class="aw-dropdown fixed-width"
+          [options]="customerLinks"
+          [(ngModel)]="cusCustomer.customerLink"
+          [disabled]="isReadOpenMode"
+          [showClear]="true"
+          placeholder="&nbsp;"
+          appendTo="body"
+        ></p-dropdown>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button *ngIf="isReadOpenMode" type="button" mat-raised-button (click)="closeDialog()">
+      <span>{{ "global.close" | translate }}</span>
+    </button>
+
+    <button *ngIf="!isReadOpenMode" type="button" mat-raised-button (click)="closeDialog()">
+      <span>{{ "global.cancel" | translate }}</span>
+    </button>
+
+    <button
+      *ngIf="!isReadOpenMode"
+      type="button"
+      mat-raised-button
+      color="primary"
+      (click)="validate()"
+      [disabled]="!cusCustomer.customerCode || cusCustomer.customerCode.length === 0"
+    >
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>
+
+<aw-dialog-table
+  *ngIf="showCustomerDialog"
+  [data]="customerTableData"
+  [(display)]="showCustomerDialog"
+  (onSelected)="onSelectedCustomer($event)"
+></aw-dialog-table>

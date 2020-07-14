@@ -1,0 +1,184 @@
+<div class="page-content">
+  <div class="grid-row">
+    <div class="grid-cell grid-cell--container">
+      <div class="grid-cell-content">
+        <div class="column">
+          <div class="row">
+            <div class="form-group flex--auto">
+              <label class="form-label">{{ getComponentName() + ".statusList" | translate }}</label>
+
+              <div class="form-control aw-selectbutton-wrapper">
+                <p-selectButton
+                  [(ngModel)]="searchCriteria.statusList"
+                  [options]="searchStatusList"
+                  multiple="multiple"
+                ></p-selectButton>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="form-group flex--auto">
+              <label class="form-label">{{ getComponentName() + ".typeList" | translate }}</label>
+
+              <div class="form-control aw-selectbutton-wrapper">
+                <p-selectButton
+                  [(ngModel)]="searchCriteria.typeList"
+                  [options]="searchTypeList"
+                  multiple="multiple"
+                ></p-selectButton>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="form-group">
+              <label class="form-label">{{ getComponentName() + ".workOrder" | translate }}</label>
+
+              <div class="form-control">
+                <p-dropdown
+                  class="aw-dropdown fixed-width"
+                  [options]="searchWOCodeList"
+                  [(ngModel)]="searchCriteria.woCode"
+                  [showClear]="true"
+                  [filter]="true"
+                  placeholder="&nbsp;"
+                >
+                </p-dropdown>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">{{ getComponentName() + ".userList" | translate }}</label>
+
+              <div class="form-control">
+                <p-dropdown
+                  class="aw-dropdown fixed-width"
+                  [options]="searchUserList"
+                  [(ngModel)]="searchCriteria.assignedTo"
+                  [showClear]="true"
+                  [filter]="true"
+                  placeholder="&nbsp;"
+                >
+                </p-dropdown>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">{{ getComponentName() + ".wpAssetList" | translate }}</label>
+              <div class="form-control">
+                <p-dropdown
+                  class="aw-dropdown fixed-width"
+                  [options]="searchWPAssetList"
+                  [(ngModel)]="searchCriteria.wpAsset"
+                  [showClear]="true"
+                  [filter]="true"
+                  placeholder="&nbsp;"
+                >
+                </p-dropdown>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">{{ getComponentName() + ".woAssetList" | translate }}</label>
+
+              <div class="form-control">
+                <p-dropdown
+                  class="aw-dropdown fixed-width"
+                  [options]="searchWOAssetList"
+                  [(ngModel)]="searchCriteria.woAsset"
+                  [showClear]="true"
+                  [filter]="true"
+                  placeholder="&nbsp;"
+                >
+                </p-dropdown>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="form-group">
+              <label class="form-label"> {{ getComponentName() + ".scheduledStartDate" | translate }} </label>
+
+              <div class="form-control">
+                <p-calendar
+                  showButtonBar="true"
+                  [monthNavigator]="true"
+                  [yearNavigator]="true"
+                  [yearRange]="sessionService.calendarYearRange"
+                  class="aw-calendar"
+                  [dateFormat]="sessionService.dateFormatPrimeNG"
+                  [locale]="sessionService.calendarFormat"
+                  [(ngModel)]="searchCriteria.scheduledStartDate"
+                ></p-calendar>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label"> {{ getComponentName() + ".scheduledEndDate" | translate }} </label>
+
+              <div class="form-control">
+                <p-calendar
+                  showButtonBar="true"
+                  [monthNavigator]="true"
+                  [yearNavigator]="true"
+                  [yearRange]="sessionService.calendarYearRange"
+                  class="aw-calendar"
+                  [dateFormat]="sessionService.dateFormatPrimeNG"
+                  [locale]="sessionService.calendarFormat"
+                  [(ngModel)]="searchCriteria.scheduledEndDate"
+                ></p-calendar>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label"> {{ getComponentName() + ".executionStartDate" | translate }} </label>
+
+              <div class="form-control">
+                <p-calendar
+                  showButtonBar="true"
+                  [monthNavigator]="true"
+                  [yearNavigator]="true"
+                  [yearRange]="sessionService.calendarYearRange"
+                  class="aw-calendar"
+                  [dateFormat]="sessionService.dateFormatPrimeNG"
+                  [locale]="sessionService.calendarFormat"
+                  [(ngModel)]="searchCriteria.executionStartDate"
+                ></p-calendar>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label"> {{ getComponentName() + ".executionEndDate" | translate }} </label>
+
+              <div class="form-control">
+                <p-calendar
+                  showButtonBar="true"
+                  [monthNavigator]="true"
+                  [yearNavigator]="true"
+                  [yearRange]="sessionService.calendarYearRange"
+                  class="aw-calendar"
+                  [dateFormat]="sessionService.dateFormatPrimeNG"
+                  [locale]="sessionService.calendarFormat"
+                  [(ngModel)]="searchCriteria.executionEndDate"
+                ></p-calendar>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="form-group">
+              <label class="form-label"> {{ getComponentName() + ".next" | translate }} </label>
+              <div class="form-control">
+                <p-selectButton
+                  [(ngModel)]="searchCriteria.nextDays"
+                  [options]="nextDaysList"
+                  (onChange)="onNextDayChange()"
+                ></p-selectButton>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row action-list" style="margin-top: 15px;">
+  <button type="button" mat-raised-button (click)="reset()">
+    {{ getComponentName() + ".reset" | translate }}
+  </button>
+
+  <button type="button" mat-raised-button (click)="filter()">
+    {{ getComponentName() + ".filter" | translate }}
+  </button>
+</div>

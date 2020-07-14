@@ -1,0 +1,144 @@
+<div class="layout-page">
+  <div class="tab-container-wrapper">
+    <!-- ********************************************************************** -->
+    <!-- Top bar -->
+    <!-- ********************************************************************** -->
+    <div class="topbar">
+      <button class="logo-wrapper" (click)="showHomeTab()">
+        <img src="assets/img/logo.svg" />
+      </button>
+
+      <ul class="list--unstyled nav-container">
+        <li
+          #menuEntryList
+          *ngFor="let menuEntry of menuService.menuEntries"
+          class="nav-dropdown-toggle"
+          [ngClass]="{
+            selected: selectedMenuEntryKey && menuEntry.key === selectedMenuEntryKey
+          }"
+        >
+          <button
+            [ngClass]="{
+              active: currentMenuEntry && menuEntry.key === currentMenuEntry.key
+            }"
+            class="with-dropdown"
+            (click)="onClickMenuEntry($event, menuEntry)"
+            (mouseenter)="onHoverMenuEntry($event, menuEntry)"
+          >
+            {{ "menu." + menuEntry.key | translate }}
+            <i class="material-icons">keyboard_arrow_down</i>
+          </button>
+        </li>
+      </ul>
+
+      <div #originGlobalSearch class="search-input-container">
+        <div class="search-input-inner" [ngClass]="{ active: overlayGlobalSearchActive$ | async }">
+          <input
+            class="app-input"
+            placeholder="{{ 'searchInMenuEntries' | translate }}"
+            type="text"
+            [(ngModel)]="searchvalue"
+            (focus)="showGlobalSearchOverlay(originGlobalSearch); search()"
+            (keyup)="search()"
+          />
+        </div>
+      </div>
+
+      <div #todoList class="todo-list">
+        <button
+          aria-hidden="false"
+          aria-label="Todo list"
+          matTooltip="{{ 'leftsidebar.todoList' | translate }}"
+          matTooltipPosition="below"
+          (click)="openTodoList()"
+        >
+          <mat-icon *ngIf="todoListLength > 0" matBadge="{{ todoListLength }}" matBadgeColor="warn">
+            mail
+          </mat-icon>
+          <mat-icon *ngIf="todoListLength == 0">mail</mat-icon>
+        </button>
+      </div>
+
+      <div #originDashboards class="header-user-container" *ngIf="menuService.dashboardEntries.length > 0">
+        <button
+          [ngClass]="{
+            active: overlayDashboardsActive$ | async,
+            'with-dropdown': menuService.dashboardEntries.length > 1
+          }"
+          (click)="showDashboards(originDashboards)"
+        >
+          <mat-icon aria-hidden="false" aria-label="Main menu">dashboard</mat-icon>
+          <i class="material-icons" *ngIf="menuService.dashboardEntries.length > 1">keyboard_arrow_down</i>
+        </button>
+      </div>
+
+      <div #originHeaderUser class="header-user-container">
+        <button
+          class="with-dropdown"
+          [ngClass]="{ active: overlayHeaderUserActive$ | async }"
+          (click)="showHeaderUserOverlay(originHeaderUser)"
+        >
+          <mat-icon aria-hidden="false" aria-label="Main menu">account_circle</mat-icon>
+          <i class="material-icons">keyboard_arrow_down</i>
+        </button>
+      </div>
+    </div>
+
+    <button
+      mat-icon-button
+      class="back"
+      aria-label="Back to previous page"
+      (click)="openPreviousTab()"
+      *ngIf="tabService.currentTabLoaded && tabService.breadcrumbs.length > 1"
+    >
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <aw-breadcrumb
+      *ngIf="currentTab && (!homeTab || currentTab.id !== homeTab.id)"
+      [ngClass]="{ 'visibility--hidden': !tabService.currentTabLoaded }"
+    ></aw-breadcrumb>
+
+    <aw-tab-container
+      *ngFor="let tab of tabs"
+      [tab]="tab"
+      [ngClass]="{ 'display--none': !currentTab || tab.id !== currentTab.id }"
+    >
+    </aw-tab-container>
+  </div>
+
+  <!-- ********************************************************************** -->
+  <!-- Overlays -->
+  <!-- ********************************************************************** -->
+
+  <div
+    #menuContainer
+    *ngIf="showMenuEntry"
+    class="mega-menu-overlay"
+    [style.max-width]="megaMenuWidth"
+    [style.min-width]="megaMenuWidth"
+    [style.left]="megaMenuOffsetLeft"
+  >
+    <div *ngFor="let submenuEntry of currentMenuEntry.submenus" class="menu-entry-wrapper">
+      <div class="menu-entry">{{ "menu." + submenuEntry.key | translate }}</div>
+
+      <div *ngFor="let subsubmenuEntry of submenuEntry.submenus" class="submenu-entry-wrapper">
+        <span class="submenu-entry" (click)="menuService.openMenuEntry(subsubmenuEntry.key)">
+          {{ "transaction." + subsubmenuEntry.key | translate }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- <div class="scroll-to-top-wrapper" [ngClass]="{ 'display--none': !scrollToTopButtonVisible }" (click)="scrollToTop()">
+    <i class="fa fa-fw fa-chevron-up" aria-hidden="true"></i>
+  </div> -->
+
+  <aw-dialog-menu-search
+    *ngIf="searchMenuDialogVisible"
+    [(display)]="searchMenuDialogVisible"
+    [currentTab]="currentTab"
+    [menuEntries]="menuService.menuEntries"
+  ></aw-dialog-menu-search>
+</div>
+
+<aw-confirm-dialog></aw-confirm-dialog>

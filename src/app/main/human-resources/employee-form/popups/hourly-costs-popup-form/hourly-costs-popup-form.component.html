@@ -1,0 +1,80 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div class="modal-title">{{ componentData.componentId + ".title" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="column">
+      <div class="row">
+        <div class="form-group" [ngClass]="{ required: !isReadOnlyForm }">
+          <label class="form-label">{{ componentData.componentId + ".type" | translate }}</label>
+
+          <div class="form-control">
+            <p-dropdown
+              class="aw-dropdown fixed-width"
+              [options]="hourlyCostTypes"
+              [disabled]="isReadOnlyForm"
+              [showClear]="true"
+              placeholder="&nbsp;"
+              [(ngModel)]="hourlyCostsDTO.hcDayType"
+              appendTo="body"
+            ></p-dropdown>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group" [ngClass]="{ required: !isReadOnlyForm }">
+          <label class="form-label">
+            {{ componentData.componentId + ".cost" | translate }} <span *ngIf="currencyLebel">{{ currencyLebel }}</span>
+          </label>
+
+          <div class="form-control">
+            <input
+              #hcCost="ngModel"
+              type="text"
+              class="aw-input"
+              [(ngModel)]="hourlyCostsDTO.hcCost"
+              [disabled]="isReadOnlyForm"
+              [pKeyFilter]="inputValidationService.validatorOfPositiveNumber()"
+              [pValidateOnly]="true"
+            />
+            <p-message
+              *ngIf="hcCost.invalid && (hcCost.dirty || hcCost.touched)"
+              severity="error"
+              [text]="inputValidationService.formatOfPositiveNumber()"
+            ></p-message>
+          </div>
+        </div>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button *ngIf="isReadOnlyForm" type="button" mat-raised-button (click)="cancel()">
+      <span>{{ "global.close" | translate }}</span>
+    </button>
+
+    <button *ngIf="!isReadOnlyForm" type="button" mat-raised-button (click)="cancel()">
+      <span>{{ "global.cancel" | translate }}</span>
+    </button>
+
+    <button
+      *ngIf="!isReadOnlyForm"
+      type="button"
+      mat-raised-button
+      color="primary"
+      (click)="validate()"
+      [disabled]="
+        hourlyCostsDTO.hcDayType === undefined ||
+        hourlyCostsDTO.hcDayType === null ||
+        hourlyCostsDTO.hcCost === undefined ||
+        hourlyCostsDTO.hcCost === null ||
+        hourlyCostsDTO.hcCost === '' ||
+        (hcCost.invalid && (hcCost.dirty || hcCost.touched))
+      "
+    >
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>

@@ -1,0 +1,1296 @@
+<div #page *ngIf="loadedWorkflow">
+  <div class="page-header">
+    <div class="page-info">
+      <div>
+        <h2 class="page-title">
+          {{ "transaction." + componentData.componentId | translate }}
+        </h2>
+
+        <div class="page-subtitle">
+          <div *ngIf="!isCreateOpenMode && componentData && componentData.objectId" class="page-subtitle">
+            - {{ workPackage.projectNumber }}
+            {{ workPackage.projectName ? " | ".concat(workPackage.projectName) : "" }}
+          </div>
+        </div>
+      </div>
+
+      <div class="object-status" *ngIf="workPackage.statusState" (click)="showStatus()">
+        {{ workPackage.statusState | formatSelectOption: statusList }}
+      </div>
+    </div>
+
+    <div class="page-actions">
+      <button id="report" mat-raised-button (click)="wpReportToShow.toggle($event)" *ngIf="!isCreateOpenMode">
+        {{ getComponentName() + ".report" | translate }}
+      </button>
+
+      <button id="edit" mat-raised-button (click)="editWorkPackage()" *ngIf="isReadOpenMode && hasUpdateAccessRight">
+        {{ "global.edit" | translate }}
+      </button>
+
+      <button
+        id="save"
+        mat-raised-button
+        class="btn-with-spinner"
+        color="primary"
+        (click)="saveWorkPackage()"
+        *ngIf="!isReadOpenMode"
+      >
+        <span class="lds-hourglass" *ngIf="showSaveSpinner"></span>
+        {{ "global.save" | translate }}
+      </button>
+
+      <button
+        id="actions"
+        mat-icon-button
+        class="mat-elevation-z1"
+        matTooltip="{{ 'global.showAllActionTooltip' | translate }}"
+        matTooltipPosition="above"
+        aria-label="Show all actions"
+        [matMenuTriggerFor]="actions"
+      >
+        <mat-icon>more_horiz</mat-icon>
+      </button>
+      <mat-menu #actions="matMenu">
+        <button
+          id="goTo"
+          mat-menu-item
+          [matMenuTriggerFor]="navigations"
+          *ngIf="
+            workPackage.statusState !== awPropertiesConstants.AIRM_PROJECT_STATUS_SIMULATED &&
+            workPackage.statusState !== awPropertiesConstants.AIRM_PROJECT_STATUS_SCHEDULED
+          "
+        >
+          {{ "goTo" | translate }}
+        </button>
+        <button id="importTask" mat-menu-item (click)="importTask()">
+          {{ getComponentName() + ".importTask" | translate }}
+        </button>
+        <button id="lastUpdate" mat-menu-item (click)="lastUpdateDetails()">
+          {{ getComponentName() + ".lastUpdate" | translate }}
+        </button>
+        <button id="refresh" mat-menu-item (click)="refresh()">{{ "global.refresh" | translate }}</button>
+        <button id="favorites" mat-menu-item (click)="updateFavoriteState()">
+          {{ (isFavoriteEntry ? "page.removeFromFavorites" : "page.addToFavorites") | translate }}
+        </button>
+      </mat-menu>
+      <mat-menu #navigations="matMenu">
+        <button
+          id="goodsMovement"
+          mat-menu-item
+          (click)="callGoodsMovement()"
+          *ngIf="
+            workPackage.statusState !== awPropertiesConstants.AIRM_PROJECT_STATUS_SIMULATED &&
+            workPackage.statusState !== awPropertiesConstants.AIRM_PROJECT_STATUS_SCHEDULED
+          "
+        >
+          {{ getComponentName() + ".goodsMovement" | translate }}
+        </button>
+
+        <button id="assetReview" mat-menu-item (click)="callAssetReview()" *ngIf="!isCreateOpenMode">
+          {{ getComponentName() + ".assetReview" | translate }}
+        </button>
+      </mat-menu>
+    </div>
+  </div>
+
+  <div class="page-wrapper">
+    <div class="page-container">
+      <mat-tab-group animationDuration="0ms" dynamicHeight>
+        <mat-tab id="homeTab">
+          <ng-template mat-tab-label>
+            {{ "home" | translate }}
+          </ng-template>
+
+          <div class="grid-row">
+            <div id="mainInformationPanel" [ngClass]="isCreateOpenMode ? 'grid-cell--12' : 'grid-cell--7'">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ getComponentName() + ".mainInformation" | translate }}
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <ng-template [ngIf]="!isCreateOpenMode" [ngIfElse]="createWorkPackageMainInformationTemplate">
+                    <div class="row">
+                      <div class="column grid-cell--6">
+                        <ng-container *ngTemplateOutlet="asset"></ng-container>
+                      </div>
+                      <div class="column grid-cell--3">
+                        <ng-container *ngTemplateOutlet="name"></ng-container>
+                      </div>
+                      <div class="column grid-cell--3">
+                        <ng-container *ngTemplateOutlet="type"></ng-container>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="column grid-cell--3">
+                        <ng-container *ngTemplateOutlet="mroCenter"></ng-container>
+                      </div>
+                      <div class="column grid-cell--3">
+                        <ng-container *ngTemplateOutlet="workShop"></ng-container>
+                      </div>
+                      <div class="column grid-cell--3">
+                        <ng-container *ngTemplateOutlet="assignTo"></ng-container>
+                      </div>
+                      <div *ngIf="!isCreateOpenMode" class="column grid-cell--3">
+                        <div id="dueDateDelta" class="form-group">
+                          <label class="form-label">
+                            {{ getComponentName() + ".delta" | translate }}
+                          </label>
+
+                          <div class="form-control colored-field">
+                            <input
+                              type="text"
+                              class="aw-input"
+                              [ngClass]="dueDateDeltaColor"
+                              [(ngModel)]="dueDateDelta"
+                              [disabled]="true"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="column grid-cell--3">
+                        <ng-container *ngTemplateOutlet="startDate"></ng-container>
+                      </div>
+                      <div class="column grid-cell--3">
+                        <ng-container *ngTemplateOutlet="dueDate"></ng-container>
+                      </div>
+                      <div class="column grid-cell--3">
+                        <ng-container *ngTemplateOutlet="targetTAT"></ng-container>
+                      </div>
+                      <div *ngIf="!isCreateOpenMode" class="column grid-cell--3">
+                        <div id="null" class="form-group">
+                          <label class="form-label">
+                            {{ getComponentName() + ".projectTAT" | translate }}
+                          </label>
+
+                          <div class="form-control"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </ng-template>
+                </div>
+              </div>
+            </div>
+            <div id="workInProgressPanel" class="grid-cell--5" *ngIf="!isCreateOpenMode">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container loading-indicator">
+                    <div class="grid-cell-title">
+                      {{ getComponentName() + ".workInProgress" | translate }}
+                      <div *ngIf="isLoadingWorkOrderTable" class="lds-hourglass"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <div class="row">
+                    <div *ngIf="chartVisible" class="chart-container" style="width: 80%;">
+                      <div class="grid-cell--12">
+                        <div id="chart" class="chart-wrapper" style="min-height: 20rem; height: 20rem">
+                          <p-chart
+                            [type]="chartType"
+                            [data]="chartData"
+                            [options]="chartOptions"
+                            width="100%"
+                            height="100%"
+                          ></p-chart>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="column">
+                      <div *ngFor="let cl of chartLegend" class="chart-legend-label flex--2">
+                        <div class="flex--3">
+                          {{ cl.label }}
+                        </div>
+                        <div [ngStyle]="cl.value > 0 && { 'background-color': cl.color }" class="chart-value flex--1">
+                          {{ cl.value }}
+                        </div>
+                        <div class="flex--1"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="grid-row">
+            <div
+              [ngClass]="
+                isCostSettingEnabled ? 'grid-cell--3 grid-cell--no-padding' : 'grid-cell--12 grid-cell--no-padding'
+              "
+              *ngIf="!isCreateOpenMode"
+            >
+              <div
+                id="materialAvailabilityPanel"
+                [ngClass]="isCostSettingEnabled ? 'grid-cell--equally' : 'grid-cell--6 full-height'"
+              >
+                <aw-material-availability-indicators [procurementRequests]="procurementRequests">
+                </aw-material-availability-indicators>
+              </div>
+
+              <div id="outgoingConfigurationPanel" [ngClass]="isCostSettingEnabled ? 'grid-cell--12' : 'grid-cell--6'">
+                <div class="grid-cell grid-cell--container" style="display: flex; flex-direction: column;">
+                  <div class="grid-cell-header">
+                    <div class="grid-cell-title-container">
+                      <h3 class="grid-cell-title">
+                        {{ getComponentName() + ".outgoingConfiguration" | translate }}
+                      </h3>
+                    </div>
+                  </div>
+
+                  <div class="grid-cell-content" style="flex-grow: 1;">
+                    <div class="column">
+                      <div class="row outgoingConf">
+                        <div id="ok2" class="form-group">
+                          <label class="form-label">
+                            {{ getComponentName() + ".ok" | translate }}
+                          </label>
+                          <div class="form-control readyOnlyField">
+                            <div *ngIf="isLoadingOutgoingConf" class="outgoing-conf-lds-hourglass lds-hourglass"></div>
+                            <input
+                              *ngIf="!isLoadingOutgoingConf"
+                              type="text"
+                              class="aw-input"
+                              [ngClass]="{ ok: isConfOk() }"
+                              [(ngModel)]="outgoinConfiguration.ok"
+                              [disabled]="true"
+                            />
+                          </div>
+                        </div>
+                        <div id="warning2" class="form-group">
+                          <label class="form-label">
+                            {{ getComponentName() + ".warning" | translate }}
+                          </label>
+                          <div class="form-control readyOnlyField">
+                            <div *ngIf="isLoadingOutgoingConf" class="outgoing-conf-lds-hourglass lds-hourglass"></div>
+                            <input
+                              *ngIf="!isLoadingOutgoingConf"
+                              type="text"
+                              class="aw-input"
+                              [ngClass]="{ 'outgoing-conf-warning': isConfWarning() }"
+                              [(ngModel)]="outgoinConfiguration.warning"
+                              [disabled]="true"
+                            />
+                          </div>
+                        </div>
+                        <div id="nok2" class="form-group">
+                          <label class="form-label">
+                            {{ getComponentName() + ".nok" | translate }}
+                          </label>
+                          <div class="form-control readyOnlyField">
+                            <div *ngIf="isLoadingOutgoingConf" class="outgoing-conf-lds-hourglass lds-hourglass"></div>
+                            <input
+                              *ngIf="!isLoadingOutgoingConf"
+                              type="text"
+                              class="aw-input"
+                              [ngClass]="{ 'outgoing-conf-nok': isConfNok() }"
+                              [(ngModel)]="outgoinConfiguration.nok"
+                              [disabled]="true"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="row">
+                        <div class="aw-table-actions action-list">
+                          <button
+                            id="openBtnOutgoingConfigurationPanel"
+                            mat-raised-button
+                            (click)="openAppliedConfigurationManagement()"
+                          >
+                            {{ getComponentName() + ".openBtn" | translate }}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="isCostSettingEnabled" id="timelineAndCostsPanel" class="grid-cell--equally">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ getComponentName() + ".timelineAndCosts" | translate }}
+                    </h3>
+                  </div>
+                </div>
+                <!-- WORKLOAD CHART -->
+                <div class="grid-cell-content grid-cell--4 grid-cell-workload-chart">
+                  <div id="chart2" class="chart-wrapper">
+                    <p-chart
+                      #workloadChartElement
+                      [type]="workloadChart.chartType"
+                      [data]="workloadChart.chartData"
+                      [options]="workloadChart.chartOptions"
+                      width="100%"
+                      height="100%"
+                    ></p-chart>
+                  </div>
+                </div>
+                <!-- DURATION CHART -->
+                <div class="grid-cell-content grid-cell--4 grid-cell-duration-chart">
+                  <div id="chart3" class="chart-wrapper">
+                    <p-chart
+                      #durationChartElement
+                      [type]="durationChart.chartType"
+                      [data]="durationChart.chartData"
+                      [options]="durationChart.chartOptions"
+                      width="100%"
+                      height="100%"
+                    ></p-chart>
+                  </div>
+                </div>
+                <!-- COSTS CHART -->
+                <div class="grid-cell-content grid-cell--4 grid-cell-costs-chart">
+                  <div id="chart4" class="chart-wrapper">
+                    <p-chart
+                      #costsChartElement
+                      [type]="costsChart.chartType"
+                      [data]="costsChart.chartData"
+                      [options]="costsChart.chartOptions"
+                      width="100%"
+                      height="100%"
+                    ></p-chart>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+
+        <mat-tab id="additionalDataTab">
+          <ng-template mat-tab-label>
+            {{ "additionalData" | translate }}
+          </ng-template>
+
+          <div class="grid-row">
+            <div id="generalPanel" #generalAnchor class="grid-cell--12">
+              <div class="grid-cell grid-cell--container grid-cell-general">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ getComponentName() + ".general" | translate }}
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content grid-cell-content-with-section">
+                  <div class="section">
+                    <div class="section-content">
+                      <div class="row">
+                        <div class="col flex--2">
+                          <div id="projectDescription" class="form-group">
+                            <label class="form-label">
+                              {{ getComponentName() + ".description" | translate }}
+                            </label>
+
+                            <div class="form-control">
+                              <textarea
+                                class="aw-textarea"
+                                pInputTextarea
+                                [rows]="4"
+                                [(ngModel)]="workPackage.projectDescription"
+                                [disabled]="
+                                  isReadOpenMode ||
+                                  workPackage.statusState === awPropertiesConstants.AIRM_PROJECT_STATUS_CLOSE
+                                "
+                              ></textarea>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col flex--2">
+                          <div id="receivingRemarks" class="form-group">
+                            <label class="form-label">
+                              {{ getComponentName() + ".remarks" | translate }}
+                            </label>
+
+                            <div class="form-control">
+                              <textarea
+                                class="aw-textarea"
+                                pInputTextarea
+                                [rows]="4"
+                                [(ngModel)]="workPackage.receivingRemarks"
+                                [disabled]="
+                                  isReadOpenMode ||
+                                  workPackage.statusState === awPropertiesConstants.AIRM_PROJECT_STATUS_CLOSE
+                                "
+                              ></textarea>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col flex--2">
+                          <div id="bidoOperationCode" class="form-group">
+                            <label class="form-label">
+                              {{ getComponentName() + ".operation" | translate }}
+                            </label>
+
+                            <div class="form-control">
+                              <p-dropdown
+                                class="aw-dropdown fixed-width"
+                                [options]="operationList"
+                                [(ngModel)]="workPackage.bidoOperationCode"
+                                [showClear]="true"
+                                placeholder="&nbsp;"
+                                [disabled]="isReadOpenMode"
+                                appendTo="body"
+                              ></p-dropdown>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="section">
+                    <h4 class="section-title">
+                      {{ getComponentName() + ".businessPartner" | translate }}
+                    </h4>
+                    <div class="section-content">
+                      <div class="row">
+                        <div id="salesRequestCode" class="form-group">
+                          <label class="form-label">
+                            {{ getComponentName() + ".salesRequest" | translate }}
+                          </label>
+
+                          <div class="form-control form-control-with-modal" [ngClass]="{ disabled: isReadOpenMode }">
+                            <div class="form-control-data" (click)="openSaleRequestDialog($event)">
+                              {{ workPackage.salesRequestCode }}
+                            </div>
+
+                            <div *ngIf="workPackage.salesRequestCode" class="btn-clear-wrapper">
+                              <i
+                                class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+                                aria-hidden="true"
+                                (click)="workPackage.salesRequestCode = ''"
+                              ></i>
+                            </div>
+                            <div *ngIf="!isReadOpenMode" class="btn-search-wrapper">
+                              <i
+                                class="fa fa-fw fa-search aw-icon btn-search"
+                                aria-hidden="true"
+                                (click)="openSaleRequestDialog($event)"
+                              ></i>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div id="purchaseRequestCode" class="form-group">
+                          <label class="form-label">
+                            {{ getComponentName() + ".purchaseRequest" | translate }}
+                          </label>
+
+                          <div class="form-control form-control-with-modal" [ngClass]="{ disabled: isReadOpenMode }">
+                            <div class="form-control-data" (click)="openPurchaseRequestDialog($event)">
+                              {{ workPackage.purchaseRequestCode }}
+                            </div>
+
+                            <div *ngIf="workPackage.purchaseRequestCode" class="btn-clear-wrapper">
+                              <i
+                                class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+                                aria-hidden="true"
+                                (click)="workPackage.purchaseRequestCode = ''"
+                              ></i>
+                            </div>
+                            <div *ngIf="!isReadOpenMode" class="btn-search-wrapper">
+                              <i
+                                class="fa fa-fw fa-search aw-icon btn-search"
+                                aria-hidden="true"
+                                (click)="openPurchaseRequestDialog($event)"
+                              ></i>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div id="bidoCustomerCode" class="form-group">
+                          <label class="form-label">
+                            {{ getComponentName() + ".customer" | translate }}
+                          </label>
+
+                          <div class="form-control form-control-with-modal" [ngClass]="{ disabled: isReadOpenMode }">
+                            <div class="form-control-data" (click)="openCustomerDialog($event)">
+                              {{ workPackage.bidoCustomerCode }}
+                            </div>
+
+                            <div *ngIf="workPackage.bidoCustomerCode" class="btn-clear-wrapper">
+                              <i
+                                class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+                                aria-hidden="true"
+                                (click)="workPackage.bidoCustomerCode = ''"
+                              ></i>
+                            </div>
+                            <div *ngIf="!isReadOpenMode" class="btn-search-wrapper">
+                              <i
+                                class="fa fa-fw fa-search aw-icon btn-search"
+                                aria-hidden="true"
+                                (click)="openCustomerDialog($event)"
+                              ></i>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div id="projectContactName" class="form-group">
+                          <label class="form-label">
+                            {{ getComponentName() + ".contactName" | translate }}
+                          </label>
+
+                          <div class="form-control">
+                            <input
+                              type="text"
+                              class="aw-input"
+                              [(ngModel)]="workPackage.projectContactName"
+                              [disabled]="isReadOpenMode"
+                            />
+                          </div>
+                        </div>
+
+                        <div id="projectContactPhone" class="form-group">
+                          <label class="form-label">
+                            {{ getComponentName() + ".contactPhone" | translate }}
+                          </label>
+
+                          <div class="form-control">
+                            <input
+                              type="text"
+                              class="aw-input"
+                              [(ngModel)]="workPackage.projectContactPhone"
+                              [disabled]="isReadOpenMode"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="section">
+                    <h4 class="section-title">
+                      {{ getComponentName() + ".receiving" | translate }}
+                    </h4>
+                    <div class="section-content">
+                      <div class="row">
+                        <div id="receivingNumber" class="form-group">
+                          <label class="form-label">
+                            {{ getComponentName() + ".receivingNumber" | translate }}
+                          </label>
+
+                          <div class="form-control">
+                            <input
+                              type="text"
+                              class="aw-input"
+                              [(ngModel)]="workPackage.receivingNumber"
+                              [disabled]="isReadOpenMode"
+                            />
+                          </div>
+                        </div>
+
+                        <div id="receivingDate" class="form-group">
+                          <label class="form-label">
+                            {{ getComponentName() + ".dateOfReceipt" | translate }}
+                          </label>
+
+                          <div class="form-control">
+                            <p-calendar
+                              showButtonBar="true"
+                              [monthNavigator]="true"
+                              [yearNavigator]="true"
+                              [yearRange]="sessionService.calendarYearRange"
+                              class="aw-calendar"
+                              [dateFormat]="sessionService.dateFormatPrimeNG"
+                              [locale]="sessionService.calendarFormat"
+                              [(ngModel)]="workPackage.receivingDate"
+                              [disabled]="isReadOpenMode"
+                              appendTo="body"
+                            ></p-calendar>
+                          </div>
+                        </div>
+
+                        <div id="receivingDeliveyRef" class="form-group">
+                          <label class="form-label">
+                            {{ getComponentName() + ".deliveryReference" | translate }}
+                          </label>
+
+                          <div class="form-control">
+                            <input
+                              type="text"
+                              class="aw-input"
+                              [(ngModel)]="workPackage.receivingDeliveyRef"
+                              [disabled]="isReadOpenMode"
+                            />
+                          </div>
+                        </div>
+
+                        <div id="receivingPackagesRef" class="form-group">
+                          <label class="form-label">
+                            {{ getComponentName() + ".packageReference" | translate }}
+                          </label>
+
+                          <div class="form-control">
+                            <input
+                              type="text"
+                              class="aw-input"
+                              [(ngModel)]="workPackage.receivingPackagesRef"
+                              [disabled]="isReadOpenMode"
+                            />
+                          </div>
+                        </div>
+
+                        <div id="receivingNumberPackages" class="form-group">
+                          <label class="form-label">
+                            {{ getComponentName() + ".numberOfPackages" | translate }}
+                          </label>
+
+                          <div class="form-control">
+                            <input
+                              type="text"
+                              class="aw-input"
+                              [(ngModel)]="workPackage.receivingNumberPackages"
+                              [disabled]="isReadOpenMode"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="section">
+                    <div class="section-content">
+                      <div class="row">
+                        <div id="receivingIsDamaged" class="form-group">
+                          <label class="form-label">
+                            {{ getComponentName() + ".damaged" | translate }}
+                          </label>
+
+                          <div class="form-control">
+                            <p-checkbox
+                              binary="true"
+                              class="aw-checkbox"
+                              [(ngModel)]="workPackage.receivingIsDamaged"
+                              [disabled]="isReadOpenMode"
+                            ></p-checkbox>
+                          </div>
+                        </div>
+
+                        <div id="receivingInventory" class="form-group">
+                          <label class="form-label">
+                            {{ getComponentName() + ".receivingInventory" | translate }}
+                          </label>
+
+                          <div class="form-control">
+                            <p-dropdown
+                              class="aw-dropdown fixed-width"
+                              [options]="receptionInventoryList"
+                              [(ngModel)]="workPackage.receivingInventory"
+                              [showClear]="true"
+                              placeholder="&nbsp;"
+                              [disabled]="isReadOpenMode"
+                              appendTo="body"
+                            ></p-dropdown>
+                          </div>
+                        </div>
+
+                        <div id="bireReturnReasonCode" class="form-group">
+                          <label class="form-label">
+                            {{ getComponentName() + ".returnReason" | translate }}
+                          </label>
+
+                          <div class="form-control">
+                            <p-dropdown
+                              class="aw-dropdown fixed-width"
+                              [options]="returnReasonList"
+                              [(ngModel)]="workPackage.bireReturnReasonCode"
+                              [showClear]="true"
+                              placeholder="&nbsp;"
+                              [disabled]="isReadOpenMode"
+                              appendTo="body"
+                            ></p-dropdown>
+                          </div>
+                        </div>
+
+                        <div id="receivingPriority" class="form-group">
+                          <label class="form-label">
+                            {{ getComponentName() + ".priority" | translate }}
+                          </label>
+
+                          <div class="form-control">
+                            <p-dropdown
+                              class="aw-dropdown fixed-width"
+                              [options]="receptionPriorityList"
+                              [(ngModel)]="workPackage.receivingPriority"
+                              [showClear]="true"
+                              placeholder="&nbsp;"
+                              [disabled]="isReadOpenMode"
+                              appendTo="body"
+                            ></p-dropdown>
+                          </div>
+                        </div>
+
+                        <div id="receivingDescription" class="form-group">
+                          <label class="form-label">
+                            {{ getComponentName() + ".description" | translate }}
+                          </label>
+
+                          <div class="form-control">
+                            <input
+                              type="text"
+                              class="aw-input"
+                              [(ngModel)]="workPackage.receivingDescription"
+                              [disabled]="isReadOpenMode"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+
+        <mat-tab id="workOrdersTab">
+          <ng-template mat-tab-label>
+            {{ "workOrders" | translate }}
+          </ng-template>
+
+          <div class="grid-row">
+            <div id="workOrdersPanel" class="grid-cell--12">
+              <div class="grid-cell grid-cell--container" *ngIf="!isCreateOpenMode && workPackageObject">
+                <aw-work-order-list
+                  [userWorkflow]="userWorkflow"
+                  [workPackage]="workPackageObject"
+                  [mainPageOpenMode]="componentOpenMode"
+                  (editWorkOrder)="onEditWorkOrder($event)"
+                  (addWorkOrder)="onEditWorkOrder($event)"
+                  (updateSchadulingEdition)="onUpdateSchedulingEdit($event)"
+                  (transferOfWO)="onTransferOfWO($event)"
+                ></aw-work-order-list>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+
+        <mat-tab id="componentCockpitTab" *ngIf="isComponentCockpitModuleInstalled">
+          <ng-template mat-tab-label>
+            {{ "componentCockpit" | translate }}
+          </ng-template>
+
+          <div class="grid-row">
+            <div id="componentCockpitPanel" class="grid-cell--12">
+              <div class="grid-cell grid-cell--container" *ngIf="!isCreateOpenMode">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ "componentCockpit" | translate }}
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content" *ngIf="showCockpitTab">
+                  <aw-component-cockpit-operation-form
+                    *ngIf="isBsdeProjectExist"
+                    [cockpitComponentData]="cockpitComponentData"
+                  ></aw-component-cockpit-operation-form>
+
+                  <span *ngIf="!isBsdeProjectExist">
+                    <div class="form-group">
+                      <label class="form-label">
+                        {{ getComponentName() + ".noProjectExist" | translate }}
+                      </label>
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">
+                        &nbsp;
+                      </label>
+                      <div class="form-control">
+                        <button
+                          id="componentCockpitPanel"
+                          type="button"
+                          class="btn-with-spinner"
+                          mat-raised-button
+                          (click)="createComponentCockpit()"
+                        >
+                          <span class="lds-hourglass" *ngIf="bsdeProjectLoading"></span>
+                          {{ getComponentName() + ".inititateProject" | translate }}
+                        </button>
+                      </div>
+                    </div>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+
+        <mat-tab id="procurementRequestsTab">
+          <ng-template mat-tab-label>
+            {{ getComponentName() + ".procurementRequests" | translate }}
+          </ng-template>
+          <div class="grid-row">
+            <!-- Position: relative; make overlayPannel not matching with element where prFilters.toggle is call -->
+            <div class="grid-cell--12" style="position: static !important;">
+              <aw-procurement-requests-table
+                [procurementRequests]="procurementRequests"
+                (askParentRefresh)="refresh()"
+              ></aw-procurement-requests-table>
+            </div>
+          </div>
+        </mat-tab>
+
+        <mat-tab id="defectsTab">
+          <ng-template mat-tab-label>
+            {{ "defects" | translate }}
+          </ng-template>
+
+          <div class="grid-row">
+            <div id="defectsPanel" #defectsAnchor class="grid-cell--12">
+              <div class="grid-cell grid-cell--container" *ngIf="!isCreateOpenMode">
+                <aw-defect-list
+                  [userWorkflow]="userWorkflow"
+                  [isAddAvailable]="true"
+                  [equipmentName]="workPackage.assetName"
+                  [acrsEventCodeList]="acrsEventCodeList"
+                  [workDataDefect]="workDataDefect"
+                  [statusState]="disableDefectsTableButtonsInClosedStatus()"
+                ></aw-defect-list>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+
+        <mat-tab id="documentsTab">
+          <ng-template mat-tab-label>
+            {{ "documents" | translate }}
+          </ng-template>
+
+          <div class="grid-row">
+            <div id="documentsPanel" #documentAnchor class="grid-cell--12">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ "global.documents" | translate }} ({{
+                        documentTableDataSource ? documentTableDataSource.dataCount : 0
+                      }})
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <a-table id="documentTableDataSource" [dataSource]="documentTableDataSource">
+                    <ng-template tableActionsDef>
+                      <button
+                        id="downloadDocument"
+                        *ngIf="documentTableDataSource.hasDataSelection"
+                        type="button"
+                        mat-raised-button
+                        (click)="downloadFiles()"
+                      >
+                        {{ "global.download" | translate }}
+                      </button>
+
+                      <button
+                        id="deleteDocument"
+                        *ngIf="
+                          workPackage.statusState !== awPropertiesConstants.AIRM_PROJECT_STATUS_CLOSE &&
+                          !isReadOpenMode &&
+                          documentTableDataSource.hasDataSelection
+                        "
+                        type="button"
+                        mat-raised-button
+                        color="warn"
+                        (click)="deleteDocuments()"
+                      >
+                        {{ "global.delete" | translate }}
+                      </button>
+
+                      <button
+                        id="openDocument"
+                        *ngIf="documentTableDataSource.dataSelectionCount === 1"
+                        type="button"
+                        mat-raised-button
+                        (click)="openDocument()"
+                      >
+                        {{ "global.open" | translate }}
+                      </button>
+
+                      <p-fileUpload
+                        id="uploadDocument"
+                        #fileUploader
+                        *ngIf="
+                          workPackage.statusState !== awPropertiesConstants.AIRM_PROJECT_STATUS_CLOSE &&
+                          !isReadOpenMode &&
+                          !documentTableDataSource.hasDataSelection
+                        "
+                        mode="basic"
+                        name="document[]"
+                        (uploadHandler)="uploadDocument($event, fileUploader)"
+                        chooseLabel="{{ 'global.upload' | translate }}"
+                        customUpload="true"
+                        auto="true"
+                      >
+                      </p-fileUpload>
+                    </ng-template>
+                  </a-table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+
+    <aw-import-task-popup
+      *ngIf="showImportTaskPopup"
+      [bidmProjectDTO]="workPackage"
+      [bidoEquipmentDTO]="bidoEquipment"
+      [(display)]="showImportTaskPopup"
+      (refresh)="refreshOnImport($event)"
+    ></aw-import-task-popup>
+
+    <aw-wp-last-update-popup
+      *ngIf="showLastUpdatePopup"
+      [bidmProjectDTO]="workPackage"
+      [customers]="allCustomers"
+      [(display)]="showLastUpdatePopup"
+    ></aw-wp-last-update-popup>
+
+    <aw-import-task-report-dialog
+      *ngIf="showImportTaskReport"
+      [(display)]="showImportTaskReport"
+      [message]="importTaskReportMessage"
+    ></aw-import-task-report-dialog>
+
+    <aw-dialog-search-equipment
+      *ngIf="showEquipmentDialog"
+      [(display)]="showEquipmentDialog"
+      [equipment-code]="workPackage.assetCode"
+      [selectionMultiple]="false"
+      [searchAllEquipment]="true"
+      (onSelected)="onSelectEquipment($event)"
+    ></aw-dialog-search-equipment>
+
+    <aw-dialog-search-customer
+      *ngIf="showCustomerDialog"
+      [(display)]="showCustomerDialog"
+      [iscustomerOwner]="true"
+      [iscustomerOperator]="true"
+      [customer-code]=""
+      (onSelected)="onSelectCustomer($event)"
+    ></aw-dialog-search-customer>
+
+    <aw-dialog-search-sales-request
+      *ngIf="showSaleRequestDialog"
+      [(display)]="showSaleRequestDialog"
+      [sr-code]="workPackage.salesRequestCode"
+      (onSelected)="onSelectSaleRequest($event)"
+    >
+    </aw-dialog-search-sales-request>
+
+    <aw-dialog-search-purchase-request
+      *ngIf="showPurchaseRequestDialog"
+      [(display)]="showPurchaseRequestDialog"
+      [pr-code]="workPackage.purchaseRequestCode"
+      (onSelected)="setSelectedPurchaseRequest($event)"
+    >
+    </aw-dialog-search-purchase-request>
+
+    <p-overlayPanel
+      #wpReportToShow
+      [appendTo]="'body'"
+      (onShow)="wpReportToShowVisible = true"
+      (onHide)="wpReportToShowVisible = false"
+      [dismissable]="false"
+    >
+      <aw-wp-report-dialog
+        [workPackage]="workPackage"
+        [isAircraft]="false"
+        (onValidate)="docDownloaded(wpReportToShow)"
+      ></aw-wp-report-dialog>
+    </p-overlayPanel>
+
+    <aw-dialog-work-order-edition
+      *ngIf="displayWorkOrderEdit"
+      [(display)]="displayWorkOrderEdit"
+      [workOrderSelected]="workOrderSelected"
+      [workPackage]="workPackageWOEdition"
+      [workOrders]="workOrderListWOEdition"
+      [familyCode]="familyCode"
+      [variantCode]="variantCode"
+      (onValidated)="onAddWorkOrder($event)"
+    >
+    </aw-dialog-work-order-edition>
+
+    <aw-dialog-work-order-scheduling-edition
+      *ngIf="displayWorkOrderSchedulingEdit"
+      [(display)]="displayWorkOrderSchedulingEdit"
+      (onValidated)="onWorkOrderSchedulingEdited($event)"
+    >
+    </aw-dialog-work-order-scheduling-edition>
+
+    <aw-dialog-work-package-document
+      *ngIf="showDocumentDialog"
+      [openMode]="documentDialogOpenMode"
+      [wpDocument]="currentDocument"
+      [(display)]="showDocumentDialog"
+    ></aw-dialog-work-package-document>
+  </div>
+</div>
+
+<ng-template #createWorkPackageMainInformationTemplate>
+  <div class="column">
+    <div class="row">
+      <div class="column grid-cell--3">
+        <ng-container *ngTemplateOutlet="asset"></ng-container>
+      </div>
+      <div class="column grid-cell--3">
+        <ng-container *ngTemplateOutlet="name"></ng-container>
+      </div>
+      <div class="column grid-cell--3">
+        <ng-container *ngTemplateOutlet="mroCenter"></ng-container>
+      </div>
+      <div class="column grid-cell--3">
+        <ng-container *ngTemplateOutlet="workShop"></ng-container>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="column grid-cell--equally">
+        <ng-container *ngTemplateOutlet="type"></ng-container>
+      </div>
+      <div class="column grid-cell--equally">
+        <ng-container *ngTemplateOutlet="assignTo"></ng-container>
+      </div>
+      <div class="column grid-cell--equally">
+        <ng-container *ngTemplateOutlet="startDate"></ng-container>
+      </div>
+      <div class="column grid-cell--equally">
+        <ng-container *ngTemplateOutlet="dueDate"></ng-container>
+      </div>
+      <div class="column grid-cell--equally">
+        <ng-container *ngTemplateOutlet="targetTAT"></ng-container>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #asset>
+  <div id="assetName" class="form-group" [class.required]="!isReadOpenMode && !isWorkPackageHasAssetName">
+    <label class="form-label">
+      {{ getComponentName() + ".asset" | translate }}
+    </label>
+
+    <div
+      class="form-control form-control-with-modal"
+      [ngClass]="{ 'disabled form-control-with-actions': isWorkPackageHasAssetName }"
+    >
+      <div class="form-control-data" (click)="openEquipmentDialog($event)">
+        {{ workPackage.assetName }}
+      </div>
+
+      <div *ngIf="!isWorkPackageHasAssetName" class="btn-clear-wrapper">
+        <i
+          class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+          aria-hidden="true"
+          (click)="workPackage.assetName = ''; workPackage.assetCode = ''"
+        ></i>
+      </div>
+      <div *ngIf="!isWorkPackageHasAssetName" class="btn-search-wrapper">
+        <i class="fa fa-fw fa-search aw-icon btn-search" aria-hidden="true" (click)="openEquipmentDialog()"></i>
+      </div>
+      <div class="form-control-actions" [ngClass]="{ 'hide-asset-nav': !isWorkPackageHasAssetName }">
+        <i
+          class="fa fa-fw fa-external-link aw-icon"
+          aria-hidden="true"
+          pTooltip="{{ 'global.open' | translate }}"
+          tooltipPosition="top"
+          [ngClass]="{ 'display-asset-nav': isWorkPackageHasAssetName }"
+          (click)="openAsset()"
+        ></i>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #name>
+  <div id="projectName" class="form-group">
+    <label class="form-label">
+      {{ getComponentName() + ".name" | translate }}
+    </label>
+
+    <div class="form-control">
+      <input
+        type="text"
+        class="aw-input"
+        [(ngModel)]="workPackage.projectName"
+        [disabled]="isReadOpenMode || workPackage.statusState === awPropertiesConstants.AIRM_PROJECT_STATUS_CLOSE"
+      />
+    </div>
+  </div>
+</ng-template>
+<ng-template #type>
+  <div id="projectType" class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+    <label class="form-label">
+      {{ getComponentName() + ".type" | translate }}
+    </label>
+
+    <div class="form-control">
+      <p-dropdown
+        class="aw-dropdown fixed-width"
+        [options]="typeList"
+        appendTo="body"
+        [(ngModel)]="workPackage.projectType"
+        [showClear]="true"
+        placeholder="&nbsp;"
+        [disabled]="isReadOpenMode || workPackage.statusState === awPropertiesConstants.AIRM_PROJECT_STATUS_CLOSE"
+      ></p-dropdown>
+    </div>
+  </div>
+</ng-template>
+<ng-template #mroCenter>
+  <div id="bireRepairCenterCode" class="form-group">
+    <label class="form-label">
+      {{ getComponentName() + ".mroCenter" | translate }}
+    </label>
+
+    <div class="form-control">
+      <p-dropdown
+        class="aw-dropdown fixed-width"
+        [options]="mroCenterList"
+        [(ngModel)]="workPackage.bireRepairCenterCode"
+        [showClear]="true"
+        placeholder="&nbsp;"
+        [disabled]="
+          isReadOpenMode ||
+          workPackage.statusState === awPropertiesConstants.AIRM_PROJECT_STATUS_RELEASED ||
+          workPackage.statusState === awPropertiesConstants.AIRM_PROJECT_STATUS_ONGOING ||
+          workPackage.statusState === awPropertiesConstants.AIRM_PROJECT_STATUS_PERFORMED ||
+          workPackage.statusState === awPropertiesConstants.AIRM_PROJECT_STATUS_CLOSE
+        "
+        (onChange)="getWorkShops()"
+        appendTo="body"
+      ></p-dropdown>
+    </div>
+  </div>
+</ng-template>
+<ng-template #workShop>
+  <div id="bireRepairCenterCode" class="form-group">
+    <label class="form-label">
+      {{ getComponentName() + ".workshop" | translate }}
+    </label>
+
+    <div class="form-control" *ngIf="workShopList.length > 0">
+      <p-dropdown
+        class="aw-dropdown fixed-width"
+        [options]="workShopList"
+        [(ngModel)]="workPackage.bidtWarehouseId"
+        [showClear]="true"
+        [disabled]="isReadOpenMode || workPackage.statusState === awPropertiesConstants.AIRM_PROJECT_STATUS_CLOSE"
+        placeholder="&nbsp;"
+        appendTo="body"
+      ></p-dropdown>
+    </div>
+    <div class="form-control" *ngIf="workShopList.length === 0">
+      <p-dropdown
+        class="aw-dropdown fixed-width"
+        [options]="workShopList"
+        [(ngModel)]="workPackage.bidtWarehouseId"
+        [showClear]="true"
+        [disabled]="true"
+        placeholder="&nbsp;"
+        appendTo="body"
+      ></p-dropdown>
+    </div>
+  </div>
+</ng-template>
+<ng-template #assignTo>
+  <div id="receivingAssignedTo" class="form-group">
+    <label class="form-label">
+      {{ getComponentName() + ".assignedTo" | translate }}
+    </label>
+
+    <div class="form-control">
+      <p-dropdown
+        class="aw-dropdown fixed-width"
+        [options]="userList"
+        appendTo="body"
+        [(ngModel)]="workPackage.receivingAssignedTo"
+        [showClear]="true"
+        placeholder="&nbsp;"
+        [disabled]="isReadOpenMode || workPackage.statusState === awPropertiesConstants.AIRM_PROJECT_STATUS_CLOSE"
+      ></p-dropdown>
+    </div>
+  </div>
+</ng-template>
+<ng-template #startDate>
+  <div id="projectStartDate" class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+    <label class="form-label">
+      {{ getComponentName() + ".startDate" | translate }}
+    </label>
+
+    <div class="form-control">
+      <p-calendar
+        showButtonBar="true"
+        [monthNavigator]="true"
+        [yearNavigator]="true"
+        [yearRange]="sessionService.calendarYearRange"
+        appendTo="body"
+        class="aw-calendar"
+        [dateFormat]="sessionService.dateFormatPrimeNG"
+        [locale]="sessionService.calendarFormat"
+        [(ngModel)]="workPackage.projectStartDate"
+        [maxDate]="workPackage.projectDueDate"
+        [disabled]="isReadOpenMode || workPackage.statusState === awPropertiesConstants.AIRM_PROJECT_STATUS_CLOSE"
+      ></p-calendar>
+    </div>
+  </div>
+</ng-template>
+<ng-template #dueDate>
+  <div id="projectDueDate" class="form-group">
+    <label class="form-label">
+      {{ getComponentName() + ".dueDate" | translate }}
+    </label>
+
+    <div class="form-control">
+      <p-calendar
+        showButtonBar="true"
+        [monthNavigator]="true"
+        [yearNavigator]="true"
+        [yearRange]="sessionService.calendarYearRange"
+        appendTo="body"
+        class="aw-calendar"
+        [dateFormat]="sessionService.dateFormatPrimeNG"
+        [locale]="sessionService.calendarFormat"
+        [(ngModel)]="workPackage.projectDueDate"
+        [minDate]="workPackage.projectStartDate"
+        [disabled]="isReadOpenMode || workPackage.statusState === awPropertiesConstants.AIRM_PROJECT_STATUS_CLOSE"
+      ></p-calendar>
+    </div>
+  </div>
+</ng-template>
+<ng-template #targetTAT>
+  <div id="projectTargetedTat" class="form-group">
+    <label class="form-label">
+      {{ getComponentName() + ".targetTAT" | translate }}
+    </label>
+
+    <div class="form-control">
+      <input
+        type="text"
+        class="aw-input"
+        [(ngModel)]="workPackage.projectTargetedTat"
+        [disabled]="isReadOpenMode || workPackage.statusState === awPropertiesConstants.AIRM_PROJECT_STATUS_CLOSE"
+      />
+    </div>
+  </div>
+</ng-template>

@@ -1,0 +1,52 @@
+{
+  "ComponentCockpitMatrixComponent": {
+    "title": "Component Cockpit Matrix",
+    "referentialData": "Select Referential Data",
+    "sentence": "Sentence",
+    "type": "Type",
+    "mroCenter": "MRO Center",
+    "lineNumber": "#",
+    "pn": "P/N",
+    "customer": "Customer",
+    "attributeValue": "Attribute Value",
+    "family": "Family",
+    "variant": "Variant",
+    "item": "Item",
+    "matching": "Matching",
+    "decision": "Decision",
+    "favoriteCombination": "Favorite Combination",
+    "favouriteDecision": "Favorite Decision",
+    "status": "Status",
+    "load": "Load",
+    "cockpitMatrixResult": "Cockpit Matrix",
+    "successOnSaveComponentCockpitMatrix": "Component cockpit matrix have been successfully updated",
+    "showValidationMsg": "Line is not correctly defined, Sentence and Decision columns are mandatory !",
+    "rule": "Rule #",
+    "targetReferentialData": "Target Referential Data",
+    "conditions": "Conditions",
+    "action": "Action",
+    "newRule": "New Rule"
+  },
+  "ComponentCockpitMatrixFiltersComponent": {
+    "sentence": "Sentence",
+    "type": "Type",
+    "mroCenter": "MRO Center",
+    "pn": "P/N",
+    "customer": "Customer",
+    "familyVariant": "Family Variant",
+    "item": "Item",
+    "matching": "Matching",
+    "decision": "Decision",
+    "status": "Status",
+    "reset": "Reset",
+    "filter": "Filter"
+  },
+  "DialogComponentCockpitMatrixComponent": {
+    "title": "Component Cockpit Matrix",
+    "subTitle": "Choose referential data for the line",
+    "family": "Family",
+    "variant": "Variant",
+    "item": "Item",
+    "pn": "P/N"
+  }
+}

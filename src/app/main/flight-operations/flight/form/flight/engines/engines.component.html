@@ -1,0 +1,118 @@
+<div class="grid-cell-header">
+  <div class="grid-cell-title-container">
+    <div class="grid-cell-title">
+      <span>{{ getComponentName() + ".engines" | translate }}</span>
+    </div>
+  </div>
+</div>
+
+<div class="grid-cell-content">
+  <p-table
+    id="engineTable"
+    [resizableColumns]="true"
+    #ptableEngines
+    class="aw-table2"
+    [columns]="engineTableColList"
+    [value]="engineTable"
+    [(selection)]="engineTableSelection"
+    [scrollable]="true"
+    selectionMode="single"
+    (onRowSelect)="onSelectEngineTableRow($event.index)"
+    (onRowUnselect)="onUnselectEngineTableRow()"
+  >
+    <ng-template pTemplate="emptymessage">
+      <span *ngIf="!engineTableLoading"> &nbsp;</span>
+
+      <div *ngIf="engineTableLoading" class="aw-table-loading-indicator">
+        <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+        <div class="lds-hourglass"></div>
+      </div>
+    </ng-template>
+
+    <ng-template pTemplate="caption">
+      <div
+        class="aw-table-header"
+        [ngClass]="{
+          'rows-selected': !isReadOpenMode && engineTableSelection !== undefined && engineTableSelection !== null
+        }"
+      >
+        <div class="aw-table-global-filter">
+          <label class="aw-table-global-filter-label">
+            <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+          </label>
+
+          <input
+            class="aw-table-global-filter-input"
+            type="text"
+            placeholder="{{ 'table.globalFilterText' | translate }}"
+            (input)="ptableEngines.filterGlobal($event.target.value, 'contains')"
+          />
+        </div>
+
+        <div class="aw-table-actions">
+          <button
+            id="editEngineTable"
+            *ngIf="!isReadOpenMode && engineTableSelection !== undefined && engineTableSelection !== null"
+            type="button"
+            mat-raised-button
+            (click)="editEngine()"
+          >
+            {{ getComponentName() + ".edit" | translate }}
+          </button>
+
+          <button
+            id="editDatesEngineTable"
+            *ngIf="
+              !isReadOpenMode &&
+              engineTable.length > 0 &&
+              (engineTableSelection === undefined || engineTableSelection === null)
+            "
+            type="button"
+            mat-raised-button
+            (click)="editDatesForAllEngineList()"
+          >
+            {{ getComponentName() + ".editDates" | translate }}
+          </button>
+        </div>
+      </div>
+    </ng-template>
+
+    <ng-template pTemplate="colgroup" let-columns>
+      <colgroup>
+        <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+      </colgroup>
+    </ng-template>
+
+    <ng-template pTemplate="header" let-columns>
+      <tr>
+        <th pResizableColumn *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+          {{ getComponentName() + "." + col.field | translate }}
+        </th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+      <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex" [ngClass]="{ 'read-only': isReadOpenMode }">
+        <td *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+          {{ rowData[col.field] }}
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
+
+<aw-dialog-flight-engine
+  *ngIf="dialogEngineVisible"
+  [(display)]="dialogEngineVisible"
+  [engine]="engineTableSelection"
+  [missionEquipment]="missionEquipment"
+  (onValidate)="onEditedEngine($event)"
+></aw-dialog-flight-engine>
+
+<aw-dialog-flight-engine-dates
+  *ngIf="dialogEngineDatesVisible"
+  [(display)]="dialogEngineDatesVisible"
+  [endDate]="engineStopDate"
+  [startDate]="engineStartDate"
+  (onValidate)="onEditedDatesForAllEngineList($event)"
+></aw-dialog-flight-engine-dates>

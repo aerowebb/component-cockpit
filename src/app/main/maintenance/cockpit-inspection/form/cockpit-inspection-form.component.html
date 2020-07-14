@@ -1,0 +1,240 @@
+<div class="page-header">
+  <div class="page-info">
+    <div>
+      <div class="page-title">
+        {{ "transaction." + componentData.componentId | translate }}
+      </div>
+
+      <div class="page-subtitle">
+        <div class="page-subtitle">- {{ bsdeProjectDTO.projectNumber }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-actions">
+    <button
+      id="actions"
+      mat-icon-button
+      class="mat-elevation-z1"
+      matTooltip="{{ 'global.showAllActionTooltip' | translate }}"
+      matTooltipPosition="above"
+      aria-label="Show all actions"
+      [matMenuTriggerFor]="actions"
+    >
+      <mat-icon>more_horiz</mat-icon>
+    </button>
+
+    <mat-menu #actions="matMenu">
+      <button type="button" *ngIf="isReadOpenMode" mat-menu-item (click)="refresh()">
+        {{ "global.refresh" | translate }}
+      </button>
+      <button id="favorites" mat-menu-item (click)="updateFavoriteState()">
+        {{ (isFavoriteEntry ? "page.removeFromFavorites" : "page.addToFavorites") | translate }}
+      </button>
+    </mat-menu>
+  </div>
+</div>
+
+<div class="page-wrapper" *ngIf="!showInfoSubAssembly">
+  <div class="page-container">
+    <div class="page-content">
+      <div class="grid-row">
+        <!-- COMPONENT COCKPIT PANEL -->
+        <div class="grid-cell--8">
+          <div class="grid-cell grid-cell--container grid-cell-scope">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container  loading-indicator">
+                <h3 class="grid-cell-title">
+                  {{ getComponentName() + ".componentCockpit" | translate }}
+                  <div *ngIf="panelLoading" class="lds-hourglass"></div>
+                </h3>
+              </div>
+            </div>
+
+            <div class="grid-cell-content">
+              <div class="column">
+                <div class="row">
+                  <div class="form-group">
+                    <label class="form-label">{{ getComponentName() + ".familyVariant" | translate }}</label>
+                    <div class="form-control">
+                      <p-dropdown
+                        class="aw-dropdown fixed-width"
+                        placeholder="&nbsp;"
+                        [showClear]="true"
+                        [disabled]="true"
+                        [options]="familyVariants"
+                        [(ngModel)]="bidoEquipmentDTO.familyVariantCode"
+                      ></p-dropdown>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">{{ getComponentName() + ".pn" | translate }}</label>
+                    <div class="form-control">
+                      <div class="form-control-generic">
+                        <span class="custom-span cursor-class" (click)="openPartNumberLink()">
+                          {{ bsdeProjectDTO.projectPn }}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">{{ getComponentName() + ".sn" | translate }}</label>
+                    <div class="form-control">
+                      <div class="form-control-generic" (click)="openSNLink()">
+                        <span class="custom-span cursor-class"> {{ bsdeProjectDTO.projectSn }} </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">{{ getComponentName() + ".designation" | translate }}</label>
+                    <div class="form-control">
+                      <div class="form-control-generic">
+                        <span> {{ bidoEquipmentDTO.equipmentDesignation }} </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="form-group">
+                    <label class="form-label">{{ getComponentName() + ".mroCenter" | translate }}</label>
+                    <div class="form-control">
+                      <input type="text" class="aw-input" [disabled]="true" [(ngModel)]="mroCenter" />
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">{{ getComponentName() + ".customer" | translate }}</label>
+                    <div class="form-control">
+                      <input type="text" class="aw-input" [disabled]="true" [(ngModel)]="bsdeProjectDTO.customerCode" />
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">{{ getComponentName() + ".startDate" | translate }}</label>
+                    <div class="form-control">
+                      <p-calendar
+                        showButtonBar="true"
+                        [monthNavigator]="true"
+                        [yearNavigator]="true"
+                        [yearRange]="sessionService.calendarYearRange"
+                        class="aw-calendar"
+                        [dateFormat]="sessionService.dateFormatPrimeNG"
+                        [locale]="sessionService.calendarFormat"
+                        [(ngModel)]="bsdeProjectDTO.projectStartDate"
+                        [disabled]="true"
+                      ></p-calendar>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">{{ getComponentName() + ".endDate" | translate }}</label>
+                    <div class="form-control">
+                      <p-calendar
+                        showButtonBar="true"
+                        [monthNavigator]="true"
+                        [yearNavigator]="true"
+                        [yearRange]="sessionService.calendarYearRange"
+                        class="aw-calendar"
+                        [dateFormat]="sessionService.dateFormatPrimeNG"
+                        [locale]="sessionService.calendarFormat"
+                        [(ngModel)]="bsdeProjectDTO.projectEndDate"
+                        [disabled]="true"
+                      ></p-calendar>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PROGRESS PANEL -->
+        <div class="grid-cell--4">
+          <div class="grid-cell grid-cell--container grid-cell-scope">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container  loading-indicator">
+                <h3 class="grid-cell-title">
+                  {{ getComponentName() + ".progress" | translate }}
+                  <div *ngIf="chartContentReady" class="lds-hourglass"></div>
+                </h3>
+              </div>
+            </div>
+
+            <div class="grid-cell-content">
+              <div class="column">
+                <div class="chart-container" *ngIf="treeContentReady">
+                  <div class="chart-wrapper">
+                    <p-chart
+                      [type]="chartType"
+                      [data]="chartData"
+                      [options]="chartOptions"
+                      width="100%"
+                      height="100%"
+                    ></p-chart>
+                  </div>
+
+                  <div class="chart-legend">
+                    <div class="chart-legend-label">
+                      <div class="chart-legend-label-color completed"></div>
+                      {{ chartData.labels[0] }}
+                      <span class="chart-value">{{ completedNb }} </span>
+                    </div>
+
+                    <div class="chart-legend-label">
+                      <div class="chart-legend-label-color not-completed"></div>
+                      {{ chartData.labels[1] }}
+                      <span class="chart-value">{{ notCompletedNb }} </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TREE TABLE ITEM STRUCTURE-->
+      <div class="grid-row">
+        <div class="grid-cell--12">
+          <div class="grid-cell grid-cell--container grid-cell-scope  grid-cell-item-structure">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container  loading-indicator">
+                <h3 class="grid-cell-title">
+                  {{ getComponentName() + ".subAssemblies" | translate }}
+                </h3>
+              </div>
+            </div>
+
+            <div class="grid-cell-content">
+              <div *ngIf="treeContentReady">
+                <aw-tree-sub-assembly
+                  [bsdeProjectDTO]="bsdeProjectDTO"
+                  (openImageEmitter)="openImage($event)"
+                  (openSubAssemblyEmitter)="openSubAssembly($event)"
+                  (renderProgress)="renderProgress($event)"
+                  (bireItemDTOEmitter)="getBireItem($event)"
+                ></aw-tree-sub-assembly>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- IMAGE DIALOG -->
+  <a-modal class="aw-modal" *ngIf="openImageDialog" [(visible)]="openImageDialog">
+    <a-header>
+      <div class="modal-title">{{ getComponentName() + ".dialogTitle" | translate }}</div>
+    </a-header>
+
+    <a-content>
+      <div>
+        <img class="expanded-img-class" [src]="dialogImgSrc" />
+      </div>
+    </a-content>
+
+    <a-footer>
+      <button type="button" mat-raised-button (click)="closeDialog()">
+        <span>{{ "global.close" | translate }}</span>
+      </button>
+    </a-footer>
+  </a-modal>
+</div>

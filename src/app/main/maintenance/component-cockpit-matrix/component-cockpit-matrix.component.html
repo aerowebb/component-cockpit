@@ -1,0 +1,387 @@
+<div class="page-header">
+  <div class="page-info">
+    <div>
+      <div class="page-title">
+        {{ "transaction." + componentData.componentId | translate }}
+      </div>
+
+      <div class="page-subtitle">
+        <div class="page-subtitle"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-actions">
+    <button type="button" mat-raised-button (click)="openTemplatePopup()">
+      {{ componentData.componentId + ".load" | translate }}
+    </button>
+
+    <button type="button" class="btn-with-spinner" color="primary" mat-raised-button (click)="save()">
+      <span class="lds-hourglass" *ngIf="showSaveSpinner"></span>
+      {{ "global.save" | translate }}
+    </button>
+
+    <button
+      id="actions"
+      mat-icon-button
+      class="mat-elevation-z1"
+      matTooltip="{{ 'global.showAllActionTooltip' | translate }}"
+      matTooltipPosition="above"
+      aria-label="Show all actions"
+      [matMenuTriggerFor]="actions"
+    >
+      <mat-icon>more_horiz</mat-icon>
+    </button>
+
+    <mat-menu #actions="matMenu">
+      <button type="button" mat-menu-item (click)="reloadMatrix()">
+        {{ "global.refresh" | translate }}
+      </button>
+      <button id="favorites" mat-menu-item (click)="updateFavoriteState()">
+        {{ (isFavoriteEntry ? "page.removeFromFavorites" : "page.addToFavorites") | translate }}
+      </button>
+    </mat-menu>
+  </div>
+</div>
+
+<div class="page-wrapper">
+  <div class="page-container" style="max-width: 100%">
+    <div class="page-content">
+      <div class="grid-row">
+        <div class="grid-cell--12">
+          <div #resultsContainerAnchor class="grid-cell grid-cell--container">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">
+                  {{ componentData.componentId + ".cockpitMatrixResult" | translate }} ({{
+                    cockpitMatrixTable ? cockpitMatrixTable.length : 0
+                  }})
+                </h3>
+                <div class="aw-actions" style="position:absolute;right:20px;">
+                  <button
+                    type="button"
+                    *ngIf="selectedCockpitMatrixRows.length === 0"
+                    mat-raised-button
+                    (click)="addCockpitMatrixRecord()"
+                  >
+                    {{ componentData.componentId + "." + "newRule" | translate }}
+                  </button>
+                </div>
+                <div class="aw-actions" style="position:absolute;right:0;">
+                  <i
+                    class="fa fa-fw fa-filter aw-icon aw-icon-with-border aw-icon-with-overlay"
+                    aria-hidden="true"
+                    [ngClass]="{ active: filtersVisible }"
+                    (click)="opFilters.toggle($event)"
+                  ></i>
+                </div>
+              </div>
+            </div>
+            <p-dataView #dv [value]="cockpitMatrixTableDisplayed">
+              <ng-template let-matrix pTemplate="listItem">
+                <div class="grid-cell--12">
+                  <div class="grid-cell grid-cell--container grid-cell-scope">
+                    <div class="grid-cell-header">
+                      <div class="grid-cell-title-container  loading-indicator">
+                        <h3 class="grid-cell-title">
+                          {{ componentData.componentId + "." + "rule" | translate }} {{ matrix.lineNumber }}
+                          <div *ngIf="panelLoading" class="lds-hourglass"></div>
+                        </h3>
+                        <div class="aw-actions" style="position:absolute;right:0;">
+                          <p-checkbox
+                            class="aw-checkbox"
+                            binary="true"
+                            [(ngModel)]="matrix.favoriteCombination"
+                            [disabled]="getTypeState(matrix)"
+                            [ngClass]="{ 'chk-disabled': getTypeState(matrix) }"
+                          ></p-checkbox>
+                          {{ componentData.componentId + "." + "favoriteCombination" | translate }}
+
+                          <p-checkbox
+                            class="aw-checkbox"
+                            binary="true"
+                            [(ngModel)]="matrix.favouriteDecision"
+                            [disabled]="getTypeState(matrix)"
+                            [ngClass]="{ 'chk-disabled': getTypeState(matrix) }"
+                          ></p-checkbox>
+                          {{ componentData.componentId + "." + "favouriteDecision" | translate }}
+
+                          <p-dropdown
+                            class="aw-dropdown fixed-width"
+                            appendTo="body"
+                            [options]="statusList"
+                            [(ngModel)]="matrix.status"
+                            [showClear]="true"
+                            placeholder="&nbsp;"
+                          ></p-dropdown>
+
+                          <button
+                            type="button"
+                            mat-raised-button
+                            color="warn"
+                            (click)="deleteSingleCockpitMatrixRecord(matrix)"
+                          >
+                            {{ "global.delete" | translate }}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="section-content">
+                      <div class="grid-cell--4">
+                        <div class="grid-cell grid-cell--container grid-cell-scope">
+                          <div class="grid-cell-header">
+                            <div class="grid-cell-title-container  loading-indicator">
+                              <h3 class="grid-cell-title">
+                                {{ componentData.componentId + "." + "targetReferentialData" | translate }}
+                                <div *ngIf="panelLoading" class="lds-hourglass"></div>
+                              </h3>
+                              <div class="btn-custom" style="position:absolute;right:0;">
+                                <button
+                                  type="button"
+                                  class="btn-upgrade"
+                                  mat-raised-button
+                                  (click)="openReferentialDialog(matrix)"
+                                >
+                                  {{ "global.edit" | translate }}
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="grid-cell-content">
+                            <div class="column">
+                              <div class="row">
+                                <div class="form-group flex--1">
+                                  <label class="form-label">
+                                    {{ getComponentName() + "." + "family" | translate }}
+                                    {{ getComponentName() + "." + "variant" | translate }}
+                                  </label>
+                                  <label class="form-label" *ngIf="matrix.family">
+                                    {{ matrix.family }} {{ matrix.variant }}
+                                  </label>
+                                  <label class="form-label" *ngIf="!matrix.family">
+                                    {{ "global.all" | translate }}
+                                  </label>
+                                </div>
+                              </div>
+                              <div class="row">
+                                <div class="form-group flex--1">
+                                  <label class="form-label">
+                                    {{ getComponentName() + "." + "item" | translate }}
+                                  </label>
+                                  <label class="form-label" *ngIf="!matrix.updateSentDecState">
+                                    {{ matrix.item ? matrix.item : ("global.all" | translate) }}
+                                  </label>
+                                </div>
+                              </div>
+                              <div class="row">
+                                <div class="form-group flex--1">
+                                  <label class="form-label">
+                                    {{ getComponentName() + "." + "pn" | translate }}
+                                  </label>
+                                  <label class="form-label" *ngIf="!matrix.updateSentDecState">
+                                    {{ matrix.pn ? matrix.pn : ("global.all" | translate) }}
+                                  </label>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="grid-cell--4">
+                        <div class="grid-cell grid-cell--container grid-cell-scope">
+                          <div class="grid-cell-header">
+                            <div class="grid-cell-title-container  loading-indicator">
+                              <h3 class="grid-cell-title">
+                                {{ componentData.componentId + "." + "conditions" | translate }}
+                                <div *ngIf="panelLoading" class="lds-hourglass"></div>
+                              </h3>
+                            </div>
+                          </div>
+
+                          <div class="grid-cell-content">
+                            <div class="column">
+                              <div class="row">
+                                <div class="form-group flex--1">
+                                  <label class="form-label">
+                                    {{ componentData.componentId + "." + "customer" | translate }}
+                                  </label>
+
+                                  <div class="form-control">
+                                    <p-dropdown
+                                      class="aw-dropdown fixed-width"
+                                      appendTo="body"
+                                      [options]="customerList"
+                                      [(ngModel)]="matrix.customer"
+                                      [showClear]="true"
+                                      placeholder="&nbsp;"
+                                      [style]="{ width: '100%' }"
+                                    ></p-dropdown>
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="row">
+                                <div class="form-group flex--1">
+                                  <label class="form-label">
+                                    {{ componentData.componentId + "." + "mroCenter" | translate }}
+                                  </label>
+
+                                  <div class="form-control">
+                                    <p-dropdown
+                                      class="aw-dropdown fixed-width"
+                                      appendTo="body"
+                                      [options]="mroList"
+                                      [(ngModel)]="matrix.mroCenter"
+                                      [showClear]="true"
+                                      placeholder="&nbsp;"
+                                      [style]="{ width: '100%' }"
+                                    ></p-dropdown>
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="row">
+                                <div class="form-group flex--1">
+                                  <label class="form-label">
+                                    {{ componentData.componentId + "." + "matching" | translate }}
+                                  </label>
+
+                                  <div class="form-control">
+                                    <p-dropdown
+                                      class="aw-dropdown fixed-width"
+                                      appendTo="body"
+                                      [options]="matchingList"
+                                      [(ngModel)]="matrix.matching"
+                                      [showClear]="true"
+                                      placeholder="&nbsp;"
+                                      [style]="{ width: '100%' }"
+                                    ></p-dropdown>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="grid-cell--4">
+                        <div class="grid-cell grid-cell--container grid-cell-scope">
+                          <div class="grid-cell-header">
+                            <div class="grid-cell-title-container  loading-indicator">
+                              <h3 class="grid-cell-title">
+                                {{ componentData.componentId + "." + "action" | translate }}
+                                <div *ngIf="panelLoading" class="lds-hourglass"></div>
+                              </h3>
+                            </div>
+                          </div>
+                          <div class="grid-cell-content">
+                            <div class="column">
+                              <div class="row">
+                                <div class="form-group flex--1">
+                                  <label class="form-label">
+                                    {{ componentData.componentId + "." + "sentence" | translate }}
+                                  </label>
+
+                                  <div class="form-control">
+                                    <p-dropdown
+                                      class="aw-dropdown fixed-width"
+                                      appendTo="body"
+                                      [options]="sentenceList"
+                                      [(ngModel)]="matrix.sentence"
+                                      [showClear]="true"
+                                      placeholder="&nbsp;"
+                                      [style]="{ width: '100%' }"
+                                    ></p-dropdown>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div class="row">
+                                <div class="form-group flex--1">
+                                  <label class="form-label">
+                                    {{ componentData.componentId + "." + "decision" | translate }}
+                                  </label>
+
+                                  <div class="form-control">
+                                    <p-dropdown
+                                      class="aw-dropdown fixed-width"
+                                      appendTo="body"
+                                      [options]="decisionList"
+                                      [(ngModel)]="matrix.decision"
+                                      [showClear]="true"
+                                      placeholder="&nbsp;"
+                                      [style]="{ width: '100%' }"
+                                    ></p-dropdown>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div class="row">
+                                <div class="form-group flex--1">
+                                  <label class="form-label">
+                                    {{ componentData.componentId + "." + "type" | translate }}
+                                  </label>
+                                  <div class="form-control">
+                                    <p-dropdown
+                                      class="aw-dropdown fixed-width"
+                                      appendTo="body"
+                                      [options]="typeList"
+                                      [(ngModel)]="matrix.type"
+                                      [showClear]="true"
+                                      placeholder="&nbsp;"
+                                      [style]="{ width: '100%' }"
+                                    ></p-dropdown>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </ng-template>
+            </p-dataView>
+            <p-overlayPanel
+              #opFilters
+              [appendTo]="'body'"
+              class="aw-overlay"
+              (onShow)="filtersVisible = true"
+              (onHide)="filtersVisible = false"
+            >
+              <aw-component-cockpit-matrix-filters
+                [familyVariantList]="familyVariantListToFilter"
+                [itemList]="itemListToFilter"
+                [pnList]="pnListToFilter"
+                [mroCenterList]="mroList"
+                [customerList]="customerList"
+                [matchingList]="matchingList"
+                [sentenceList]="sentenceList"
+                [decisionList]="decisionList"
+                [typeList]="typeList"
+                [statusList]="statusList"
+                [(searchCriteria)]="searchCriteria"
+                (onFilter)="opFilters.hide(); filtersVisible = false; filterWithCriteria()"
+                (onReset)="resetTableFilters()"
+              ></aw-component-cockpit-matrix-filters>
+            </p-overlayPanel>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<aw-import-excel-popup
+  *ngIf="showImportPopup"
+  [(display)]="showImportPopup"
+  (onUpload)="uploadExcel($event)"
+></aw-import-excel-popup>
+
+<aw-dialog-component-cockpit-matrix
+  *ngIf="showDialogComponentCockpitMatrix"
+  [cockpitMatrix]="currentCockpitMatrix"
+  [(display)]="showDialogComponentCockpitMatrix"
+  (onUpdate)="updateCockpitMatrix($event)"
+></aw-dialog-component-cockpit-matrix>

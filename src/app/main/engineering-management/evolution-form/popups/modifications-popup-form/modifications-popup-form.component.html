@@ -1,0 +1,136 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".titlePopup" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="column">
+      <div class="row">
+        <div class="form-group" [ngClass]="{ required: !isReadOnlyForm }">
+          <label class="form-label">{{ getComponentName() + ".familyCode" | translate }}</label>
+
+          <div class="form-control form-control-with-modal" [ngClass]="{ disabled: isReadOnlyForm }">
+            <div class="form-control-data" (click)="showFamilyCode()">{{ newEvol.familyCode }}</div>
+
+            <div *ngIf="newEvol.familyCode" class="btn-clear-wrapper">
+              <i
+                class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+                aria-hidden="true"
+                (click)="
+                  newEvol.familyCode = undefined;
+                  newEvol.structureType = undefined;
+                  newEvol.modificationType = undefined;
+                  newEvol.modificationNumber = undefined;
+                  newEvol.modificationRevisionNumber = undefined
+                "
+              ></i>
+            </div>
+            <div class="btn-search-wrapper">
+              <i class="fa fa-fw fa-search aw-icon btn-search" aria-hidden="true" (click)="showFamilyCode()"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="newEvol.structureType" class="row">
+        <div class="form-group">
+          <label class="form-label">{{ getComponentName() + ".structureType" | translate }}</label>
+
+          <div class="form-control">
+            <input type="text" class="aw-input" [(ngModel)]="newEvol.structureType" [disabled]="true" />
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group" [ngClass]="{ required: !isReadOnlyForm }">
+          <label class="form-label">{{ getComponentName() + ".modificationType" | translate }}</label>
+
+          <div class="form-control form-control-with-modal" [ngClass]="{ disabled: isReadOnlyForm }">
+            <div class="form-control-data" (click)="showType()">{{ newEvol.modificationType }}</div>
+
+            <div *ngIf="newEvol.modificationType" class="btn-clear-wrapper">
+              <i
+                class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+                aria-hidden="true"
+                (click)="
+                  newEvol.modificationType = undefined;
+                  newEvol.familyCode = undefined;
+                  newEvol.structureType = undefined;
+                  newEvol.modificationNumber = undefined;
+                  newEvol.modificationRevisionNumber = undefined
+                "
+              ></i>
+            </div>
+            <div class="btn-search-wrapper">
+              <i class="fa fa-fw fa-search aw-icon btn-search" aria-hidden="true" (click)="showType()"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group" [ngClass]="{ required: !isReadOnlyForm }">
+          <label class="form-label">{{ getComponentName() + ".modificationNumber" | translate }} </label>
+
+          <div class="form-control">
+            <input type="text" class="aw-input" [disabled]="isReadOnlyForm" [(ngModel)]="newEvol.modificationNumber" />
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="newEvol.modificationRevisionNumber" class="row">
+        <div class="form-group">
+          <label class="form-label">{{ getComponentName() + ".modificationRevisionNumber" | translate }}</label>
+
+          <div class="form-control">
+            <input type="text" class="aw-input" [(ngModel)]="newEvol.modificationRevisionNumber" [disabled]="true" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button *ngIf="isReadOnlyForm" type="button" mat-raised-button (click)="onHide()">
+      <span>{{ "global.close" | translate }}</span>
+    </button>
+
+    <button *ngIf="!isReadOnlyForm" type="button" mat-raised-button (click)="onHide()">
+      <span>{{ "global.cancel" | translate }}</span>
+    </button>
+
+    <button
+      *ngIf="!isReadOnlyForm"
+      type="button"
+      color="primary"
+      mat-raised-button
+      (click)="onValidate()"
+      [disabled]="
+        newEvol.familyCode === undefined ||
+        newEvol.familyCode === null ||
+        newEvol.modificationType === undefined ||
+        newEvol.modificationType === null ||
+        newEvol.modificationNumber === undefined ||
+        newEvol.modificationNumber === null
+      "
+    >
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>
+
+<aw-dialog-table
+  *ngIf="showFamilyCodeDialog"
+  [keyMap]="keyMap"
+  [(display)]="showFamilyCodeDialog"
+  [data]="dialogTableDataFamilyCode"
+  (onSelected)="setSelectedObject($event)"
+></aw-dialog-table>
+<aw-dialog-table
+  *ngIf="showModificationTypeDialog"
+  [keyMap]="keyMap"
+  [(display)]="showModificationTypeDialog"
+  [data]="dialogTableDataModificationType"
+  (onSelected)="setSelectedObjectType($event)"
+></aw-dialog-table>

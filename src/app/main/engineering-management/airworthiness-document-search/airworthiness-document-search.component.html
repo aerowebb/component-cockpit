@@ -1,0 +1,381 @@
+<div class="page-header">
+  <div class="page-info">
+    <div>
+      <div class="page-title">
+        {{ "transaction." + componentData.componentId | translate }}
+      </div>
+
+      <div class="page-subtitle">
+        <div class="page-subtitle">- {{ "page.searchPage" | translate }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-actions">
+    <button type="button" mat-raised-button (click)="openNewSbad()" *ngIf="hasUpdateAccessRight">
+      {{ "global.create" | translate }}
+    </button>
+    <button
+      id="actions"
+      mat-icon-button
+      class="mat-elevation-z1"
+      matTooltip="{{ 'global.showAllActionTooltip' | translate }}"
+      matTooltipPosition="above"
+      aria-label="Show all actions"
+      [matMenuTriggerFor]="actions"
+    >
+      <mat-icon>more_horiz</mat-icon>
+    </button>
+
+    <mat-menu #actions="matMenu">
+      <button id="favorites" mat-menu-item (click)="updateFavoriteState()">
+        {{ (isFavoriteEntry ? "page.removeFromFavorites" : "page.addToFavorites") | translate }}
+      </button>
+    </mat-menu>
+  </div>
+</div>
+
+<div class="page-wrapper">
+  <div class="page-container search-page-container">
+    <div class="page-content">
+      <div class="grid-row">
+        <div class="grid-cell--12">
+          <div class="grid-cell grid-cell--container">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">{{ "global.search" | translate }}</h3>
+              </div>
+            </div>
+
+            <div class="grid-cell-content">
+              <div class="column">
+                <div class="row search-criteria-header">
+                  <aw-manage-search-criteria
+                    [componentId]="SEARCH_CRITERIA_ID"
+                    (onSelected)="loadSearchCriteria($event)"
+                    (onSavedAsked)="saveSearchCriteriaAsked()"
+                    [objectFromPage]="criteriaToSave"
+                    [canChange]="!hasBeenCalculated"
+                  ></aw-manage-search-criteria>
+                </div>
+
+                <div class="row">
+                  <div class="form-group">
+                    <label class="form-label"> {{ componentData.componentId + ".familyVariant" | translate }} </label>
+
+                    <div class="form-control">
+                      <p-dropdown
+                        class="aw-dropdown fixed-width"
+                        [options]="propertyVariant"
+                        [(ngModel)]="familyVariant"
+                        [showClear]="true"
+                        (keyup.enter)="search()"
+                        placeholder="&nbsp;"
+                      ></p-dropdown>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label"> {{ componentData.componentId + ".sbNumber" | translate }} </label>
+
+                    <div class="form-control">
+                      <input type="text" class="aw-input" [(ngModel)]="searchObject.sbNumber" />
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label"> {{ componentData.componentId + ".statusState" | translate }} </label>
+
+                    <div class="form-control">
+                      <p-dropdown
+                        class="aw-dropdown fixed-width"
+                        [options]="propertyStatus"
+                        [(ngModel)]="searchObject.statusState"
+                        [showClear]="true"
+                        (keyup.enter)="search()"
+                        placeholder="&nbsp;"
+                      ></p-dropdown>
+                    </div>
+                  </div>
+
+                  <div *ngIf="!isAD() && !showSubType()" class="form-group">
+                    <label class="form-label"> {{ componentData.componentId + ".sbType" | translate }} </label>
+
+                    <div class="form-control">
+                      <p-dropdown
+                        class="aw-dropdown fixed-width"
+                        [options]="propertyType"
+                        [(ngModel)]="searchObject.sbType"
+                        [showClear]="true"
+                        (keyup.enter)="search()"
+                        placeholder="&nbsp;"
+                      ></p-dropdown>
+                    </div>
+                  </div>
+
+                  <div id="sbSubType" *ngIf="showSubType()" class="form-group flex--1">
+                    <label class="form-label">{{ componentData.componentId + ".sbSubType" | translate }}</label>
+
+                    <div class="form-control">
+                      <p-dropdown
+                        class="aw-dropdown fixed-width"
+                        [options]="propertySubType"
+                        [(ngModel)]="searchObject.sbSubType"
+                        [showClear]="true"
+                        (keyup.enter)="search()"
+                        placeholder="&nbsp;"
+                      ></p-dropdown>
+                    </div>
+                  </div>
+
+                  <div *ngIf="isAD()" class="form-group"></div>
+                </div>
+
+                <div class="advanced-criteria" [ngClass]="{ 'display--none': !showAdvancedCriteria }">
+                  <div class="row">
+                    <div class="form-group">
+                      <label class="form-label">
+                        {{ componentData.componentId + ".sbRevisionNumber" | translate }}
+                      </label>
+
+                      <div class="form-control">
+                        <input type="text" class="aw-input" [(ngModel)]="searchObject.sbRevisionNumber" />
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-label"> {{ componentData.componentId + ".sbTitle" | translate }} </label>
+
+                      <div class="form-control">
+                        <input type="text" class="aw-input" [(ngModel)]="searchObject.sbTitle" />
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-label"> {{ componentData.componentId + ".sbCompliance" | translate }} </label>
+
+                      <div class="form-control">
+                        <p-dropdown
+                          class="aw-dropdown fixed-width"
+                          [options]="propertyCompliance"
+                          [(ngModel)]="searchObject.sbCompliance"
+                          [showClear]="true"
+                          (keyup.enter)="search()"
+                          placeholder="&nbsp;"
+                        ></p-dropdown>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-label"> {{ componentData.componentId + ".sbClass" | translate }} </label>
+
+                      <div class="form-control">
+                        <p-dropdown
+                          class="aw-dropdown fixed-width"
+                          [options]="propertyClass"
+                          [(ngModel)]="searchObject.sbClass"
+                          [showClear]="true"
+                          (keyup.enter)="search()"
+                          placeholder="&nbsp;"
+                        ></p-dropdown>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="form-group">
+                      <label class="form-label">{{
+                        componentData.componentId + ".sbPublicationDateFrom" | translate
+                      }}</label>
+
+                      <div class="form-control">
+                        <p-calendar
+                          showButtonBar="true"
+                          [monthNavigator]="true"
+                          [yearNavigator]="true"
+                          [yearRange]="sessionService.calendarYearRange"
+                          class="aw-calendar"
+                          [dateFormat]="sessionService.dateFormatPrimeNG"
+                          [locale]="sessionService.calendarFormat"
+                          [(ngModel)]="sbPublicationDateFrom"
+                        ></p-calendar>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-label">{{
+                        componentData.componentId + ".sbPublicationDateTo" | translate
+                      }}</label>
+
+                      <div class="form-control">
+                        <p-calendar
+                          showButtonBar="true"
+                          [monthNavigator]="true"
+                          [yearNavigator]="true"
+                          [yearRange]="sessionService.calendarYearRange"
+                          class="aw-calendar"
+                          [dateFormat]="sessionService.dateFormatPrimeNG"
+                          [locale]="sessionService.calendarFormat"
+                          [(ngModel)]="sbPublicationDateTo"
+                        ></p-calendar>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-label">{{
+                        componentData.componentId + ".sbEffectiveDateFrom" | translate
+                      }}</label>
+
+                      <div class="form-control">
+                        <p-calendar
+                          showButtonBar="true"
+                          [monthNavigator]="true"
+                          [yearNavigator]="true"
+                          [yearRange]="sessionService.calendarYearRange"
+                          class="aw-calendar"
+                          [dateFormat]="sessionService.dateFormatPrimeNG"
+                          [locale]="sessionService.calendarFormat"
+                          [(ngModel)]="sbEffectiveDateFrom"
+                        ></p-calendar>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-label">{{
+                        componentData.componentId + ".sbEffectiveDateTo" | translate
+                      }}</label>
+
+                      <div class="form-control">
+                        <p-calendar
+                          showButtonBar="true"
+                          [monthNavigator]="true"
+                          [yearNavigator]="true"
+                          [yearRange]="sessionService.calendarYearRange"
+                          class="aw-calendar"
+                          [dateFormat]="sessionService.dateFormatPrimeNG"
+                          [locale]="sessionService.calendarFormat"
+                          [(ngModel)]="sbEffectiveDateTo"
+                        ></p-calendar>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row search-criteria-footer">
+                  <button mat-button (click)="showAdvancedCriteria = !showAdvancedCriteria">
+                    <ng-container *ngIf="showAdvancedCriteria">
+                      <mat-icon>remove</mat-icon>
+                      {{ "global.collapseCriteria" | translate }}
+                    </ng-container>
+                    <ng-container *ngIf="!showAdvancedCriteria">
+                      <mat-icon>add</mat-icon>
+                      {{ "global.expandCriteria" | translate }}
+                    </ng-container>
+                  </button>
+
+                  <div class="search-actions">
+                    <button
+                      type="button"
+                      mat-raised-button
+                      class="btn-with-spinner"
+                      (click)="search()"
+                      color="primary"
+                      appKeyPress
+                      [keyCode]="'Enter'"
+                      (keyPress)="search()"
+                    >
+                      <span *ngIf="isLoading" class="lds-hourglass"></span>
+                      {{ "global.toSearch" | translate }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-row">
+        <div class="grid-cell--12">
+          <div #resultsContainerAnchor class="grid-cell grid-cell--container">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">
+                  {{ "global.results" | translate }} ({{ adTableDataSource ? adTableDataSource.dataCount : 0 }})
+                </h3>
+              </div>
+            </div>
+
+            <div class="grid-cell-content">
+              <a-table [dataSource]="adTableDataSource">
+                <ng-template columnDef="sbSubType" let-rowData="rowData" *ngIf="showSubType()">
+                  {{ rowData["sbSubType"] | formatSelectOption: propertySubType }}
+                </ng-template>
+                <ng-template tableActionsDef>
+                  <button
+                    *ngIf="adTableDataSource && adTableDataSource.hasData && !adTableDataSource.hasDataSelection"
+                    type="button"
+                    mat-raised-button
+                    (click)="exportTable()"
+                  >
+                    {{ "global.export" | translate }}
+                  </button>
+
+                  <button
+                    *ngIf="
+                      hasManageAccessRight &&
+                      adTableDataSource &&
+                      adTableDataSource.hasData &&
+                      adTableDataSource.hasDataSelection
+                    "
+                    type="button"
+                    mat-raised-button
+                    color="warn"
+                    (click)="deleteSelectedSbad()"
+                  >
+                    {{ "global.delete" | translate }}
+                  </button>
+
+                  <button
+                    *ngIf="adTableDataSource && adTableDataSource.hasData && adTableDataSource.hasDataSelection"
+                    type="button"
+                    mat-raised-button
+                    (click)="openSelectedSbad()"
+                  >
+                    {{ "global.open" | translate }}
+                  </button>
+                </ng-template>
+                <ng-template columnDef="sbNumber" let-rowData="rowData">
+                  <a (click)="openSbadNumber(rowData)"> {{ rowData.sbNumber }}</a>
+                </ng-template>
+
+                <ng-template rowExpansionDef let-rowData="rowData">
+                  <div class="column forced-backgroung">
+                    <div class="row">
+                      <div class="form-group">
+                        <label class="form-label">
+                          {{ getComponentName() + "." + "sbDocumentUrl" | translate }}
+                        </label>
+                        <div class="form-control">
+                          <input type="text" class="aw-input" [(ngModel)]="rowData.sbDocumentUrl" [disabled]="true" />
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label">
+                          {{ getComponentName() + "." + "sbClass" | translate }}
+                        </label>
+                        <div class="form-control">
+                          <input type="text" class="aw-input" [(ngModel)]="rowData.sbClass" [disabled]="true" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </ng-template>
+              </a-table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,111 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".title" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="form-group required">
+      <label class="form-label">{{ getComponentName() + ".qualificationCode" | translate }}</label>
+      <div class="form-control">
+        <input
+          type="text"
+          class="aw-input"
+          [(ngModel)]="qualification.bidtQualificationDTO.qualificationCode"
+          [disabled]="viewMode || editModeIsStandard"
+          maxlength="50"
+        />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">{{ getComponentName() + ".qualificationDegre" | translate }}</label>
+      <div class="form-control">
+        <input
+          type="text"
+          class="aw-input"
+          [(ngModel)]="qualification.bidtQualificationDTO.qualificationDegre"
+          [disabled]="viewMode || editModeIsStandard"
+          maxlength="50"
+        />
+      </div>
+    </div>
+
+    <div class="form-group required">
+      <label class="form-label">{{ getComponentName() + ".qualificationTitle" | translate }}</label>
+      <div class="form-control">
+        <input
+          type="text"
+          class="aw-input"
+          [(ngModel)]="qualification.bidtQualificationDTO.qualificationTitle"
+          [disabled]="viewMode || editModeIsStandard"
+          maxlength="100"
+        />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">{{ getComponentName() + ".qualificationType" | translate }}</label>
+      <div class="form-control">
+        <p-dropdown
+          class="aw-dropdown fixed-width"
+          [options]="qualificationTypes"
+          [(ngModel)]="qualification.bidtQualificationDTO.qualificationType"
+          [showClear]="true"
+          placeholder="&nbsp;"
+          [disabled]="viewMode || editModeIsStandard"
+        ></p-dropdown>
+      </div>
+    </div>
+
+    <div class="form-group" style="width: min-content">
+      <label class="form-label">{{ getComponentName() + ".averageHourRate" | translate }}</label>
+      <div [ngClass]="{ disabled: viewMode }" class="form-control form-control-with-btn">
+        <input
+          #averageHourRate="ngModel"
+          style="width: 17rem"
+          type="text"
+          [pKeyFilter]="inputValidationService.validatorOfMoney()"
+          [pValidateOnly]="true"
+          maxlength="16"
+          class="aw-input"
+          [(ngModel)]="qualification.bidtQualificationDTO.averageHourRate"
+          [disabled]="viewMode"
+        />
+        &nbsp;&nbsp; <input style="width: 5rem" type="text" class="aw-input" [(ngModel)]="currentCurrency" disabled />
+        <p-message
+          *ngIf="averageHourRate.invalid && (averageHourRate.dirty || averageHourRate.touched)"
+          severity="error"
+          [text]="inputValidationService.formatOfMoney()"
+        ></p-message>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">{{ getComponentName() + ".qualificationDescription" | translate }}</label>
+      <div class="form-control">
+        <textarea
+          pInputTextarea
+          [rows]="3"
+          class="aw-textarea"
+          [(ngModel)]="qualification.bidtQualificationDTO.qualificationDescription"
+          [disabled]="viewMode"
+          maxlength="300"
+        ></textarea>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button type="button" mat-raised-button (click)="cancel()">{{ "global.cancel" | translate }}</button>
+    <button
+      *ngIf="!viewMode || viewMode === undefined"
+      type="button"
+      mat-raised-button
+      color="primary"
+      (click)="associate()"
+      [disabled]="!enableAssociateButton()"
+    >
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>

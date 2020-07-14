@@ -1,0 +1,35 @@
+<a-modal class="aw-modal" [(visible)]="display" [width]="70">
+  <a-header>
+    <div class="modal-title">{{ componentData.componentId + ".title" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <!-- assets table -->
+
+    <div class="section">
+      <h4 class="section-title">
+        {{ "global.results" | translate }} ({{ assetsTableDataSource ? assetsTableDataSource.dataCount : 0 }})
+      </h4>
+
+      <div class="section-content">
+        <a-table [dataSource]="assetsTableDataSource"> </a-table>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button type="button" mat-raised-button (click)="cancel()">{{ "global.cancel" | translate }}</button>
+
+    <button type="button" color="primary" class="btn-with-spinner" mat-raised-button (click)="associate()">
+      <span *ngIf="isValidating" class="lds-hourglass"></span>
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>
+
+<aw-report-popup-form
+  *ngIf="showReportPopup"
+  [reportContent]="reportText"
+  [(display)]="showReportPopup"
+  (onClose)="cancel()"
+></aw-report-popup-form>

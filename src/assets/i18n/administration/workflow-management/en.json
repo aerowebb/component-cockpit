@@ -1,0 +1,3625 @@
+{
+  "FuncObject": {
+    "ADDITIONAL_MAINTENANCE_GUIDELINE": "Additional Maintenance Guideline",
+    "APPLICABLE_CONFIGURATION": "Applicable Configuration",
+    "AIRWORTHINESS_DIRECTIVE": "Airworthiness Directive",
+    "BUSINESS_PARTNER": "Business Partner",
+    "DEFECT": "Defect",
+    "EVENT": "Event",
+    "FLIGHT": "Flight",
+    "MAINTENANCE_OPERATION": "Maintenance Operation",
+    "MAINTENANCE_PROGRAM": "Maintenance Program",
+    "PART_NUMBER": "Material",
+    "PART_UPDATE_GUIDELINE": "Part Change Guideline",
+    "PURCHASE": "Ordering and Sales",
+    "SERVICE_BULLETIN": "Service Bulletin",
+    "WORK_ORDER": "Work Order",
+    "WORK_PACKAGE": "Work Package"
+  },
+  "WorkflowManagementFormComponent": {
+    "AdditionalMaintenanceGuidelineFormComponent": {
+      "actions": {
+        "description": "Additional Maintenance Guideline - Header - Actions Button",
+        "name": "AMG-0-Actions"
+      },
+      "addBireConcernedAssetDisplayed": {
+        "description": "Additional Maintenance Guideline - Concerned Assets Panel - Add Button",
+        "name": "AMG-4-Add"
+      },
+      "addBireDocumentDisplayed": {
+        "description": "Additional Maintenance Guideline - Documents Panel - Add Button",
+        "name": "AMG-7-Add"
+      },
+      "addBireSbVariantsDisplayed": {
+        "description": "Additional Maintenance Guideline - Concerned Families Panel - Add Button",
+        "name": "AMG-3-Add"
+      },
+      "addLimitsAndApplicabilitiesDisplayed": {
+        "description": "Additional Maintenance Guideline - Limits and Periodicities Panel - Add Button",
+        "name": "AMG-5-Add"
+      },
+      "applicabilitiesTab": {
+        "description": "Additional Maintenance Guideline - - Applicabilities Tab",
+        "name": "AMG-0-Applicabilities"
+      },
+      "attributesPanel": {
+        "description": "Additional Maintenance Guideline - Attributes Panel",
+        "name": "AMG-6-Attributes Panel"
+      },
+      "bireConcernedAssetDisplayed": {
+        "description": "Additional Maintenance Guideline - Concerned Assets Panel - Concerned Assets Table",
+        "name": "AMG-4-Concerned Assets"
+      },
+      "bireDocumentDisplayed": {
+        "description": "Additional Maintenance Guideline - Documents Panel - Documents Table",
+        "name": "AMG-7-Documents"
+      },
+      "bireEvolutionSbsDisplayed": {
+        "description": "Additional Maintenance Guideline - Evolutions Panel - Evolutions Table",
+        "name": "AMG-2-Evolutions"
+      },
+      "bireSbVariantsDisplayed": {
+        "description": "Additional Maintenance Guideline - Concerned Families Panel - Concerned Families Table",
+        "name": "AMG-3-Concerned Families"
+      },
+      "cancel": {
+        "description": "Additional Maintenance Guideline - Header - Cancel Button",
+        "name": "AMG-0-Cancel"
+      },
+      "concernedAssetsPanel": {
+        "description": "Additional Maintenance Guideline - Concerned Assets Panel",
+        "name": "AMG-4-Concerned Assets Panel"
+      },
+      "concernedFamiliesPanel": {
+        "description": "Additional Maintenance Guideline - Concerned Families Panel",
+        "name": "AMG-3-Concerned Families Panel"
+      },
+      "contextPanel": {
+        "description": "Additional Maintenance Guideline - Context Panel",
+        "name": "AMG-8-Context Panel"
+      },
+      "contextTab": {
+        "description": "Additional Maintenance Guideline - - Context Tab",
+        "name": "AMG-0-Context"
+      },
+      "deleteBireConcernedAssetDisplayed": {
+        "description": "Additional Maintenance Guideline - Concerned Assets Panel - Delete Button",
+        "name": "AMG-4-Delete"
+      },
+      "deleteBireDocumentDisplayed": {
+        "description": "Additional Maintenance Guideline - Documents Panel - Delete Button",
+        "name": "AMG-7-Delete"
+      },
+      "deleteBireSbVariantsDisplayed": {
+        "description": "Additional Maintenance Guideline - Concerned Families Panel - Delete Button",
+        "name": "AMG-3-Delete"
+      },
+      "deleteLimitsAndApplicabilitiesDisplayed": {
+        "description": "Additional Maintenance Guideline - Limits and Periodicities Panel - Delete Button",
+        "name": "AMG-5-Delete"
+      },
+      "displayStatusBireEvolutionSbsDisplayed": {
+        "description": "Additional Maintenance Guideline - Evolutions Panel - Display Status Button",
+        "name": "AMG-2-Display Status"
+      },
+      "documentsPanel": {
+        "description": "Additional Maintenance Guideline - Documents Panel",
+        "name": "AMG-7-Documents Panel"
+      },
+      "documentsTab": {
+        "description": "Additional Maintenance Guideline - - Documents Tab",
+        "name": "AMG-0-Documents"
+      },
+      "downloadBireDocumentDisplayed": {
+        "description": "Additional Maintenance Guideline - Documents Panel - Download Button",
+        "name": "AMG-7-Download"
+      },
+      "dynamicAttributes": {
+        "description": "Additional Maintenance Guideline - Attributes Panel - Attributes Attributes",
+        "name": "AMG-6-Attributes"
+      },
+      "edit": {
+        "description": "Additional Maintenance Guideline - Header - Edit Button",
+        "name": "AMG-0-Edit"
+      },
+      "editBireConcernedAssetDisplayed": {
+        "description": "Additional Maintenance Guideline - Concerned Assets Panel - Edit Button",
+        "name": "AMG-4-Edit"
+      },
+      "editBireDocumentDisplayed": {
+        "description": "Additional Maintenance Guideline - Documents Panel - Edit Button",
+        "name": "AMG-7-Edit"
+      },
+      "editBireSbVariantsDisplayed": {
+        "description": "Additional Maintenance Guideline - Concerned Families Panel - Edit Button",
+        "name": "AMG-3-Edit"
+      },
+      "editLimitsAndApplicabilitiesDisplayed": {
+        "description": "Additional Maintenance Guideline - Limits and Periodicities Panel - Edit Button",
+        "name": "AMG-5-Edit"
+      },
+      "evolutionsPanel": {
+        "description": "Additional Maintenance Guideline - Evolutions Panel",
+        "name": "AMG-2-Evolutions Panel"
+      },
+      "favorites": {
+        "description": "Additional Maintenance Guideline - Header - Favorites Button",
+        "name": "AMG-0-Favorites"
+      },
+      "generateCommentLimitsAndApplicabilitiesDisplayed": {
+        "description": "Additional Maintenance Guideline - Limits and Periodicities Panel - Generate Comment Button",
+        "name": "AMG-5-Generate Comment"
+      },
+      "guidelinePanel": {
+        "description": "Additional Maintenance Guideline - Guideline Panel",
+        "name": "AMG-9-Guideline Panel"
+      },
+      "guidelineTab": {
+        "description": "Additional Maintenance Guideline - - Guideline Tab",
+        "name": "AMG-0-Guideline"
+      },
+      "homeTab": {
+        "description": "Additional Maintenance Guideline - - Home Tab",
+        "name": "AMG-0-Home"
+      },
+      "limitsAndApplicabilitiesDisplayed": {
+        "description": "Additional Maintenance Guideline - Limits and Periodicities Panel - Limits and Periodicities Table",
+        "name": "AMG-5-Limits and Periodicities"
+      },
+      "limitsAndPeriodicitiesPanel": {
+        "description": "Additional Maintenance Guideline - Limits and Periodicities Panel",
+        "name": "AMG-5-Limits and Periodicities Panel"
+      },
+      "mainDataPanel": {
+        "description": "Additional Maintenance Guideline - Main Information Panel",
+        "name": "AMG-1-Main Information Panel"
+      },
+      "openBireConcernedAssetDisplayed": {
+        "description": "Additional Maintenance Guideline - Concerned Assets Panel - Open Button",
+        "name": "AMG-4-Open"
+      },
+      "openBireDocumentDisplayed": {
+        "description": "Additional Maintenance Guideline - Documents Panel - Open Button",
+        "name": "AMG-7-Open"
+      },
+      "openBireSbVariantsDisplayed": {
+        "description": "Additional Maintenance Guideline - Concerned Families Panel - Open Button",
+        "name": "AMG-3-Open"
+      },
+      "openLimitsAndApplicabilitiesDisplayed": {
+        "description": "Additional Maintenance Guideline - Limits and Periodicities Panel - Open Button",
+        "name": "AMG-5-Open"
+      },
+      "planCode": {
+        "description": "Additional Maintenance Guideline - Main Information Panel - Material Maintenance Program Field",
+        "name": "AMG-1-Material Maintenance Program"
+      },
+      "refresh": {
+        "description": "Additional Maintenance Guideline - Header - Refresh Button",
+        "name": "AMG-0-Refresh"
+      },
+      "save": {
+        "description": "Additional Maintenance Guideline - Header - Save Button",
+        "name": "AMG-0-Save"
+      },
+      "sbAssets": {
+        "description": "Additional Maintenance Guideline - Concerned Assets Panel - At least P/N or S/N needs to be entered for each line. Field",
+        "name": "AMG-4-At least P/N or S/N needs to be entered for each line."
+      },
+      "sbClass": {
+        "description": "Additional Maintenance Guideline - Main Information Panel - Classification Dropdown",
+        "name": "AMG-1-Classification"
+      },
+      "sbComments": {
+        "description": "Additional Maintenance Guideline - Guideline Panel - Guideline Field",
+        "name": "AMG-9-Guideline"
+      },
+      "sbCompliance": {
+        "description": "Additional Maintenance Guideline - Main Information Panel - Compliance Dropdown",
+        "name": "AMG-1-Compliance"
+      },
+      "sbComplianceInformation": {
+        "description": "Additional Maintenance Guideline - Main Information Panel - Compliance Information Field",
+        "name": "AMG-1-Compliance Information"
+      },
+      "sbContext": {
+        "description": "Additional Maintenance Guideline - Context Panel - Context Field",
+        "name": "AMG-8-Context"
+      },
+      "sbDocumentUrl": {
+        "description": "Additional Maintenance Guideline - Main Information Panel - Document URL Field",
+        "name": "AMG-1-Document URL"
+      },
+      "sbEffectiveDate": {
+        "description": "Additional Maintenance Guideline - Main Information Panel - Effective Date Field",
+        "name": "AMG-1-Effective Date"
+      },
+      "sbNumber": {
+        "description": "Additional Maintenance Guideline - Main Information Panel - Number Field",
+        "name": "AMG-1-Number"
+      },
+      "sbPublicationDate": {
+        "description": "Additional Maintenance Guideline - Main Information Panel - Publication Date Field",
+        "name": "AMG-1-Publication Date"
+      },
+      "sbRevisionNumber": {
+        "description": "Additional Maintenance Guideline - Main Information Panel - Revision Number Field",
+        "name": "AMG-1-Revision Number"
+      },
+      "sbSubType": {
+        "description": "Additional Maintenance Guideline - Main Information Panel - Type Dropdown",
+        "name": "AMG-1-Type"
+      },
+      "sbTitle": {
+        "description": "Additional Maintenance Guideline - Main Information Panel - Designation Field",
+        "name": "AMG-1-Designation"
+      },
+      "updates": {
+        "description": "Additional Maintenance Guideline - Header - Updates Button",
+        "name": "AMG-0-Updates"
+      },
+      "upgrade": {
+        "description": "Additional Maintenance Guideline - Header - Upgrade Button",
+        "name": "AMG-0-Upgrade"
+      }
+    },
+    "AirworthinessDirectiveFormComponent": {
+      "actions": {
+        "description": "Airworthiness Directive - Header - Actions Button",
+        "name": "AD-0-Actions"
+      },
+      "addBireConcernedAssetDisplayed": {
+        "description": "Airworthiness Directive - Concerned Assets Panel - Add Button",
+        "name": "AD-4-Add"
+      },
+      "addBireDocumentDisplayed": {
+        "description": "Airworthiness Directive - Documents Panel - Add Button",
+        "name": "AD-7-Add"
+      },
+      "addBireSbVariantsDisplayed": {
+        "description": "Airworthiness Directive - Concerned Families Panel - Add Button",
+        "name": "AD-3-Add"
+      },
+      "addLimitsAndApplicabilitiesDisplayed": {
+        "description": "Airworthiness Directive - Limits and Periodicities Panel - Add Button",
+        "name": "AD-5-Add"
+      },
+      "applicabilitiesTab": {
+        "description": "Airworthiness Directive - - Applicabilities Tab",
+        "name": "AD-0-Applicabilities"
+      },
+      "attributesPanel": {
+        "description": "Airworthiness Directive - Attributes Panel",
+        "name": "AD-6-Attributes Panel"
+      },
+      "bireConcernedAssetDisplayed": {
+        "description": "Airworthiness Directive - Concerned Assets Panel - Concerned Assets Table",
+        "name": "AD-4-Concerned Assets"
+      },
+      "bireDocumentDisplayed": {
+        "description": "Airworthiness Directive - Documents Panel - Documents Table",
+        "name": "AD-7-Documents"
+      },
+      "bireEvolutionSbsDisplayed": {
+        "description": "Airworthiness Directive - Evolutions Panel - Evolutions Table",
+        "name": "AD-2-Evolutions"
+      },
+      "bireSbVariantsDisplayed": {
+        "description": "Airworthiness Directive - Concerned Families Panel - Concerned Families Table",
+        "name": "AD-3-Concerned Families"
+      },
+      "cancel": {
+        "description": "Airworthiness Directive - Header - Cancel Button",
+        "name": "AD-0-Cancel"
+      },
+      "concernedAssetsPanel": {
+        "description": "Airworthiness Directive - Concerned Assets Panel",
+        "name": "AD-4-Concerned Assets Panel"
+      },
+      "concernedFamiliesPanel": {
+        "description": "Airworthiness Directive - Concerned Families Panel",
+        "name": "AD-3-Concerned Families Panel"
+      },
+      "deleteBireConcernedAssetDisplayed": {
+        "description": "Airworthiness Directive - Concerned Assets Panel - Delete Button",
+        "name": "AD-4-Delete"
+      },
+      "deleteBireDocumentDisplayed": {
+        "description": "Airworthiness Directive - Documents Panel - Delete Button",
+        "name": "AD-7-Delete"
+      },
+      "deleteBireSbVariantsDisplayed": {
+        "description": "Airworthiness Directive - Concerned Families Panel - Delete Button",
+        "name": "AD-3-Delete"
+      },
+      "deleteLimitsAndApplicabilitiesDisplayed": {
+        "description": "Airworthiness Directive - Limits and Periodicities Panel - Delete Button",
+        "name": "AD-5-Delete"
+      },
+      "displayStatusBireEvolutionSbsDisplayed": {
+        "description": "Airworthiness Directive - Evolutions Panel - Display Status Button",
+        "name": "AD-2-Display Status"
+      },
+      "documentsPanel": {
+        "description": "Airworthiness Directive - Documents Panel",
+        "name": "AD-7-Documents Panel"
+      },
+      "documentsTab": {
+        "description": "Airworthiness Directive - - Documents Tab",
+        "name": "AD-0-Documents"
+      },
+      "downloadBireDocumentDisplayed": {
+        "description": "Airworthiness Directive - Documents Panel - Download Button",
+        "name": "AD-7-Download"
+      },
+      "dynamicAttributes": {
+        "description": "Airworthiness Directive - Attributes Panel - Attributes Attributes",
+        "name": "AD-6-Attributes"
+      },
+      "edit": {
+        "description": "Airworthiness Directive - Header - Edit Button",
+        "name": "AD-0-Edit"
+      },
+      "editBireConcernedAssetDisplayed": {
+        "description": "Airworthiness Directive - Concerned Assets Panel - Edit Button",
+        "name": "AD-4-Edit"
+      },
+      "editBireDocumentDisplayed": {
+        "description": "Airworthiness Directive - Documents Panel - Edit Button",
+        "name": "AD-7-Edit"
+      },
+      "editBireSbVariantsDisplayed": {
+        "description": "Airworthiness Directive - Concerned Families Panel - Edit Button",
+        "name": "AD-3-Edit"
+      },
+      "editLimitsAndApplicabilitiesDisplayed": {
+        "description": "Airworthiness Directive - Limits and Periodicities Panel - Edit Button",
+        "name": "AD-5-Edit"
+      },
+      "evolutionsPanel": {
+        "description": "Airworthiness Directive - Evolutions Panel",
+        "name": "AD-2-Evolutions Panel"
+      },
+      "favorites": {
+        "description": "Airworthiness Directive - Header - Favorites Button",
+        "name": "AD-0-Favorites"
+      },
+      "generateCommentLimitsAndApplicabilitiesDisplayed": {
+        "description": "Airworthiness Directive - Limits and Periodicities Panel - Generate Comment Button",
+        "name": "AD-5-Generate Comment"
+      },
+      "homeTab": {
+        "description": "Airworthiness Directive - - Home Tab",
+        "name": "AD-0-Home"
+      },
+      "limitsAndApplicabilitiesDisplayed": {
+        "description": "Airworthiness Directive - Limits and Periodicities Panel - Limits and Periodicities Table",
+        "name": "AD-5-Limits and Periodicities"
+      },
+      "limitsAndPeriodicitiesPanel": {
+        "description": "Airworthiness Directive - Limits and Periodicities Panel",
+        "name": "AD-5-Limits and Periodicities Panel"
+      },
+      "mainDataPanel": {
+        "description": "Airworthiness Directive - Main Information Panel",
+        "name": "AD-1-Main Information Panel"
+      },
+      "openBireConcernedAssetDisplayed": {
+        "description": "Airworthiness Directive - Concerned Assets Panel - Open Button",
+        "name": "AD-4-Open"
+      },
+      "openBireDocumentDisplayed": {
+        "description": "Airworthiness Directive - Documents Panel - Open Button",
+        "name": "AD-7-Open"
+      },
+      "openBireSbVariantsDisplayed": {
+        "description": "Airworthiness Directive - Concerned Families Panel - Open Button",
+        "name": "AD-3-Open"
+      },
+      "openLimitsAndApplicabilitiesDisplayed": {
+        "description": "Airworthiness Directive - Limits and Periodicities Panel - Open Button",
+        "name": "AD-5-Open"
+      },
+      "planCode": {
+        "description": "Airworthiness Directive - Main Information Panel - Material Maintenance Program Field",
+        "name": "AD-1-Material Maintenance Program"
+      },
+      "refresh": {
+        "description": "Airworthiness Directive - Header - Refresh Button",
+        "name": "AD-0-Refresh"
+      },
+      "save": {
+        "description": "Airworthiness Directive - Header - Save Button",
+        "name": "AD-0-Save"
+      },
+      "sbAssets": {
+        "description": "Airworthiness Directive - Concerned Assets Panel - At least P/N or S/N needs to be entered for each line. Field",
+        "name": "AD-4-At least P/N or S/N needs to be entered for each line."
+      },
+      "sbClass": {
+        "description": "Airworthiness Directive - Main Information Panel - Classification Dropdown",
+        "name": "AD-1-Classification"
+      },
+      "sbCompliance": {
+        "description": "Airworthiness Directive - Main Information Panel - Compliance Dropdown",
+        "name": "AD-1-Compliance"
+      },
+      "sbComplianceInformation": {
+        "description": "Airworthiness Directive - Main Information Panel - Compliance Information Field",
+        "name": "AD-1-Compliance Information"
+      },
+      "sbDocumentUrl": {
+        "description": "Airworthiness Directive - Main Information Panel - Document URL Field",
+        "name": "AD-1-Document URL"
+      },
+      "sbEffectiveDate": {
+        "description": "Airworthiness Directive - Main Information Panel - Effective Date Field",
+        "name": "AD-1-Effective Date"
+      },
+      "sbNumber": {
+        "description": "Airworthiness Directive - Main Information Panel - Number Field",
+        "name": "AD-1-Number"
+      },
+      "sbPublicationDate": {
+        "description": "Airworthiness Directive - Main Information Panel - Publication Date Field",
+        "name": "AD-1-Publication Date"
+      },
+      "sbRevisionNumber": {
+        "description": "Airworthiness Directive - Main Information Panel - Revision Number Field",
+        "name": "AD-1-Revision Number"
+      },
+      "sbSubType": {
+        "description": "Airworthiness Directive - Main Information Panel - Type Dropdown",
+        "name": "AD-1-Type"
+      },
+      "sbTitle": {
+        "description": "Airworthiness Directive - Main Information Panel - Designation Field",
+        "name": "AD-1-Designation"
+      },
+      "updates": {
+        "description": "Airworthiness Directive - Header - Updates Button",
+        "name": "AD-0-Updates"
+      },
+      "upgrade": {
+        "description": "Airworthiness Directive - Header - Upgrade Button",
+        "name": "AD-0-Upgrade"
+      }
+    },
+    "BusinessPartnerFormComponent": {
+      "address": {
+        "description": "Business Partner - Additional Information Panel - Address Field",
+        "name": "BP-2-Address"
+      },
+      "airportIcaoCode": {
+        "description": "Business Partner - Additional Information Panel - Airport/Base ICAO Code Field",
+        "name": "BP-2-Airport/Base ICAO Code"
+      },
+      "airportName": {
+        "description": "Business Partner - Additional Information Panel - Airport/Base Name Field",
+        "name": "BP-2-Airport/Base Name"
+      },
+      "code": {
+        "description": "Business Partner - Main Information Panel - Code Field",
+        "name": "BP-1-Code"
+      },
+      "comments": {
+        "description": "Business Partner - Additional Information Panel - Designation Field",
+        "name": "BP-2-Designation"
+      },
+      "country": {
+        "description": "Business Partner - Additional Information Panel - Country Field",
+        "name": "BP-2-Country"
+      },
+      "dynamicAttributes": {
+        "description": "Business Partner - Additional Information Panel - Attributes Section",
+        "name": "BP-2-Attributes"
+      },
+      "email": {
+        "description": "Business Partner - Additional Information Panel - E-mail Field",
+        "name": "BP-2-E-mail"
+      },
+      "fax": {
+        "description": "Business Partner - Additional Information Panel - Fax Field",
+        "name": "BP-2-Fax"
+      },
+      "icaoCode": {
+        "description": "Business Partner - Additional Information Panel - ICAO Code Field",
+        "name": "BP-2-ICAO Code"
+      },
+      "isOperator": {
+        "description": "Business Partner - Main Information Panel - Is Operator Checkbox",
+        "name": "BP-1-Is Operator"
+      },
+      "isOwner": {
+        "description": "Business Partner - Main Information Panel - Is Owner Checkbox",
+        "name": "BP-1-Is Owner"
+      },
+      "name": {
+        "description": "Business Partner - Main Information Panel - Name Field",
+        "name": "BP-1-Name"
+      },
+      "otherType": {
+        "description": "Business Partner - Main Information Panel - Other type Field",
+        "name": "BP-1-Other type"
+      },
+      "phone1": {
+        "description": "Business Partner - Additional Information Panel - Phone 1 Field",
+        "name": "BP-2-Phone 1"
+      },
+      "phone2": {
+        "description": "Business Partner - Additional Information Panel - Phone 2 Field",
+        "name": "BP-2-Phone 2"
+      },
+      "town": {
+        "description": "Business Partner - Additional Information Panel - Town Field",
+        "name": "BP-2-Town"
+      },
+      "website": {
+        "description": "Business Partner - Additional Information Panel - Web site Field",
+        "name": "BP-2-Web site"
+      },
+      "zone": {
+        "description": "Business Partner - Additional Information Panel - Zone Field",
+        "name": "BP-2-Zone"
+      }
+    },
+    "DefectFormComponent": {
+      "acceptDeferralDeferralPanel": {
+        "description": "Defect - Deferral Panel - Accept Deferral Button",
+        "name": "DEF-8-Accept Deferral"
+      },
+      "actions": {
+        "description": "Defect - Header - Actions Button",
+        "name": "DEF-0-Actions"
+      },
+      "addCorrectiveActionComponentTable": {
+        "description": "Defect - Corrective Action Panel - Add Button",
+        "name": "DEF-4-Add"
+      },
+      "addSymptomRowData": {
+        "description": "Defect - Symptom Management Panel - Add Button",
+        "name": "DEF-6-Add"
+      },
+      "arisingEventTableData": {
+        "description": "Defect - Arising Events Panel - Arising Events Table",
+        "name": "DEF-9-Arising Events"
+      },
+      "arisingEventsPanel": {
+        "description": "Defect - Arising Events Panel",
+        "name": "DEF-9-Arising Events Panel"
+      },
+      "arisingEventsTab": {
+        "description": "Defect - - Arising Events Tab",
+        "name": "DEF-0-Arising Events"
+      },
+      "askForDeferralDefectDetailPanel": {
+        "description": "Defect - Defect Detail Panel - Ask For Deferral Button",
+        "name": "DEF-3-Ask For Deferral"
+      },
+      "assetAtDateTab": {
+        "description": "Defect - - Asset at Date Tab",
+        "name": "DEF-0-Asset at Date"
+      },
+      "assetPanel": {
+        "description": "Defect - Asset Panel",
+        "name": "DEF-10-Asset Panel"
+      },
+      "attributesPanel": {
+        "description": "Defect - Attributes Panel",
+        "name": "DEF-7-Attributes Panel"
+      },
+      "attributesTab": {
+        "description": "Defect - - Attributes Tab",
+        "name": "DEF-0-Attributes"
+      },
+      "bidoMeasuresDisplayed": {
+        "description": "Defect - Counters Panel - Counters Table",
+        "name": "DEF-11-Counters"
+      },
+      "cancel": {
+        "description": "Defect - Header - Cancel Button",
+        "name": "DEF-0-Cancel"
+      },
+      "circumstancesTab": {
+        "description": "Defect - - Circumstances Tab",
+        "name": "DEF-0-Circumstances"
+      },
+      "contextPanel": {
+        "description": "Defect - Context Panel",
+        "name": "DEF-5-Context Panel"
+      },
+      "contextTableData": {
+        "description": "Defect - Context Panel - Parameters associated to context Table",
+        "name": "DEF-5-Parameters associated to context"
+      },
+      "correctiveActionComponentTable": {
+        "description": "Defect - Corrective Action Panel - Components Table",
+        "name": "DEF-4-Components"
+      },
+      "correctiveActionDescription": {
+        "description": "Defect - Corrective Action Panel - Description Field",
+        "name": "DEF-4-Description"
+      },
+      "correctiveActionPanel": {
+        "description": "Defect - Corrective Action Panel",
+        "name": "DEF-4-Corrective Action Panel"
+      },
+      "countersPanel": {
+        "description": "Defect - Counters Panel",
+        "name": "DEF-11-Counters Panel"
+      },
+      "createWPCorrectiveActionPanel": {
+        "description": "Defect - Corrective Action Panel - Create WP Button",
+        "name": "DEF-4-Create WP"
+      },
+      "defectAtaCode": {
+        "description": "Defect - Root Cause Panel - Item Code Field",
+        "name": "DEF-2-Item Code"
+      },
+      "defectAuthor": {
+        "description": "Defect - Main Information Panel - Author Field",
+        "name": "DEF-1-Author"
+      },
+      "defectCAWODescription": {
+        "description": "Defect - Corrective Action Panel - WO Field",
+        "name": "DEF-4-WO"
+      },
+      "defectCAWPDescription": {
+        "description": "Defect - Corrective Action Panel - WP Field",
+        "name": "DEF-4-WP"
+      },
+      "defectDetailPanel": {
+        "description": "Defect - Defect Detail Panel",
+        "name": "DEF-3-Defect Detail Panel"
+      },
+      "defectDetectionContext": {
+        "description": "Defect - Defect Detail Panel - Context Field",
+        "name": "DEF-3-Context"
+      },
+      "defectEquipmentAssetCode": {
+        "description": "Defect - Root Cause Panel - Asset Code Field",
+        "name": "DEF-2-Asset Code"
+      },
+      "defectEquipmentName": {
+        "description": "Defect - Root Cause Panel - Name Field",
+        "name": "DEF-2-Name"
+      },
+      "defectEquipmentPn": {
+        "description": "Defect - Root Cause Panel - P/N Field",
+        "name": "DEF-2-P/N"
+      },
+      "defectEquipmentSn": {
+        "description": "Defect - Root Cause Panel - S/N Field",
+        "name": "DEF-2-S/N"
+      },
+      "defectExtensionNumber": {
+        "description": "Defect - Deferral Panel - Extension N° Field",
+        "name": "DEF-8-Extension N°"
+      },
+      "defectIsCritical": {
+        "description": "Defect - Main Information Panel - Is Critical Checkbox",
+        "name": "DEF-1-Is Critical"
+      },
+      "defectLastAuthor": {
+        "description": "Defect - Main Information Panel - Last author Field",
+        "name": "DEF-1-Last author"
+      },
+      "defectLogNumber": {
+        "description": "Defect - Defect Detail Panel - Log Number Field",
+        "name": "DEF-3-Log Number"
+      },
+      "defectProposedTask": {
+        "description": "Defect - Corrective Action Panel - Task Field",
+        "name": "DEF-4-Task"
+      },
+      "defectSrmReference": {
+        "description": "Defect - Defect Detail Panel - SRM Reference Field",
+        "name": "DEF-3-SRM Reference"
+      },
+      "deferralAuthor": {
+        "description": "Defect - Deferral Panel - Author Field",
+        "name": "DEF-8-Author"
+      },
+      "deferralDelayAuthorizationNumber": {
+        "description": "Defect - Deferral Panel - Authorization N° Field",
+        "name": "DEF-8-Authorization N°"
+      },
+      "deferralDelayAuthorizedUnit": {
+        "description": "Defect - Deferral Panel - Authorized Delay Unit Dropdown",
+        "name": "DEF-8-Authorized Delay Unit"
+      },
+      "deferralDelayAuthorizedValue": {
+        "description": "Defect - Deferral Panel - Authorized Delay Field",
+        "name": "DEF-8-Authorized Delay"
+      },
+      "deferralDelayCategory": {
+        "description": "Defect - Deferral Panel - Delay Category Dropdown",
+        "name": "DEF-8-Delay Category"
+      },
+      "deferralFlightRestriction": {
+        "description": "Defect - Deferral Panel - Flight Restriction Field",
+        "name": "DEF-8-Flight Restriction"
+      },
+      "deferralLastAuthor": {
+        "description": "Defect - Deferral Panel - Last author Field",
+        "name": "DEF-8-Last author"
+      },
+      "deferralPanel": {
+        "description": "Defect - Deferral Panel",
+        "name": "DEF-8-Deferral Panel"
+      },
+      "deferralTab": {
+        "description": "Defect - - Deferral Tab",
+        "name": "DEF-0-Deferral"
+      },
+      "deleteArisingEventTableData": {
+        "description": "Defect - Arising Events Panel - Delete Button",
+        "name": "DEF-9-Delete"
+      },
+      "deleteCorrectiveActionComponentTable": {
+        "description": "Defect - Corrective Action Panel - Delete Button",
+        "name": "DEF-4-Delete"
+      },
+      "deleteDocumentTable": {
+        "description": "Defect - Documents Panel - Delete Button",
+        "name": "DEF-12-Delete"
+      },
+      "deleteSymptomRowData": {
+        "description": "Defect - Symptom Management Panel - Delete Button",
+        "name": "DEF-6-Delete"
+      },
+      "diffusionPanel": {
+        "description": "Defect - Diffusion Panel",
+        "name": "DEF-13-Diffusion Panel"
+      },
+      "diffusionTab": {
+        "description": "Defect - - Diffusion Tab",
+        "name": "DEF-0-Diffusion"
+      },
+      "diffusionTableData": {
+        "description": "Defect - Diffusion Panel - Diffusion Table",
+        "name": "DEF-13-Diffusion"
+      },
+      "documentTable": {
+        "description": "Defect - Documents Panel - Documents Table",
+        "name": "DEF-12-Documents"
+      },
+      "documentsPanel": {
+        "description": "Defect - Documents Panel",
+        "name": "DEF-12-Documents Panel"
+      },
+      "documentsTab": {
+        "description": "Defect - - Documents Tab",
+        "name": "DEF-0-Documents"
+      },
+      "downloadDocumentTable": {
+        "description": "Defect - Documents Panel - Download Button",
+        "name": "DEF-12-Download"
+      },
+      "dynamicAttributes": {
+        "description": "Defect - Attributes Panel - Attributes Attributes",
+        "name": "DEF-7-Attributes"
+      },
+      "edit": {
+        "description": "Defect - Header - Edit Button",
+        "name": "DEF-0-Edit"
+      },
+      "editContextTableData": {
+        "description": "Defect - Context Panel - Edit Button",
+        "name": "DEF-5-Edit"
+      },
+      "editCorrectiveActionComponentTable": {
+        "description": "Defect - Corrective Action Panel - Edit Button",
+        "name": "DEF-4-Edit"
+      },
+      "editDocumentTable": {
+        "description": "Defect - Documents Panel - Edit Button",
+        "name": "DEF-12-Edit"
+      },
+      "editSymptomParameterTableData": {
+        "description": "Defect - Symptom Management Panel - Edit Button",
+        "name": "DEF-6-Edit"
+      },
+      "editSymptomRowData": {
+        "description": "Defect - Symptom Management Panel - Edit Button",
+        "name": "DEF-6-Edit"
+      },
+      "estimateCounterBidoMeasuresDisplayed": {
+        "description": "Defect - Counters Panel - Estimate Counter Button",
+        "name": "DEF-11-Estimate Counter"
+      },
+      "familyVariantCode": {
+        "description": "Defect - Asset Panel - Family Variant Field",
+        "name": "DEF-10-Family Variant"
+      },
+      "favorites": {
+        "description": "Defect - Header - Favorites Button",
+        "name": "DEF-0-Favorites"
+      },
+      "filler": {
+        "description": "Defect - Main Information Panel - Filler Field",
+        "name": "DEF-1-Filler"
+      },
+      "filler10": {
+        "description": "Defect - Defect Detail Panel - Filler Field",
+        "name": "DEF-3-Filler"
+      },
+      "filler11": {
+        "description": "Defect - Corrective Action Panel - Filler Field",
+        "name": "DEF-4-Filler"
+      },
+      "filler12": {
+        "description": "Defect - Corrective Action Panel - Filler Field",
+        "name": "DEF-4-Filler"
+      },
+      "filler13": {
+        "description": "Defect - Corrective Action Panel - Filler Field",
+        "name": "DEF-4-Filler"
+      },
+      "filler14": {
+        "description": "Defect - Corrective Action Panel - Filler Field",
+        "name": "DEF-4-Filler"
+      },
+      "filler15": {
+        "description": "Defect - Corrective Action Panel - Filler Field",
+        "name": "DEF-4-Filler"
+      },
+      "filler16": {
+        "description": "Defect - Corrective Action Panel - Filler Field",
+        "name": "DEF-4-Filler"
+      },
+      "filler17": {
+        "description": "Defect - Deferral Panel - Filler Field",
+        "name": "DEF-8-Filler"
+      },
+      "filler18": {
+        "description": "Defect - Deferral Panel - Filler Field",
+        "name": "DEF-8-Filler"
+      },
+      "filler19": {
+        "description": "Defect - Asset Panel - Filler Field",
+        "name": "DEF-10-Filler"
+      },
+      "filler3": {
+        "description": "Defect - Root Cause Panel - Filler Field",
+        "name": "DEF-2-Filler"
+      },
+      "filler4": {
+        "description": "Defect - Root Cause Panel - Filler Field",
+        "name": "DEF-2-Filler"
+      },
+      "filler5": {
+        "description": "Defect - Root Cause Panel - Filler Field",
+        "name": "DEF-2-Filler"
+      },
+      "filler6": {
+        "description": "Defect - Root Cause Panel - Filler Field",
+        "name": "DEF-2-Filler"
+      },
+      "filler7": {
+        "description": "Defect - Defect Detail Panel - Filler Field",
+        "name": "DEF-3-Filler"
+      },
+      "filler8": {
+        "description": "Defect - Defect Detail Panel - Filler Field",
+        "name": "DEF-3-Filler"
+      },
+      "filler9": {
+        "description": "Defect - Defect Detail Panel - Filler Field",
+        "name": "DEF-3-Filler"
+      },
+      "functionLocationStr": {
+        "description": "Defect - Asset Panel - Function Location Field",
+        "name": "DEF-10-Function Location"
+      },
+      "generateReportTable": {
+        "description": "Defect - Diffusion Panel - Generate Button",
+        "name": "DEF-13-Generate"
+      },
+      "homeTab": {
+        "description": "Defect - - Home Tab",
+        "name": "DEF-0-Home"
+      },
+      "isMELAlertObject": {
+        "description": "Defect - Defect Detail Panel - MEL Alert Field",
+        "name": "DEF-3-MEL Alert"
+      },
+      "mainDataPanel": {
+        "description": "Defect - Main Information Panel",
+        "name": "DEF-1-Main Information Panel"
+      },
+      "missionType": {
+        "description": "Defect - Context Panel - Mission Type Dropdown",
+        "name": "DEF-5-Mission Type"
+      },
+      "notificationAsset": {
+        "description": "Defect - Main Information Panel - Asset Field",
+        "name": "DEF-1-Asset"
+      },
+      "notificationCode": {
+        "description": "Defect - Main Information Panel - Code Field",
+        "name": "DEF-1-Code"
+      },
+      "notificationSubject": {
+        "description": "Defect - Defect Detail Panel - Title Field",
+        "name": "DEF-3-Title"
+      },
+      "openCorrectiveActionComponentTable": {
+        "description": "Defect - Corrective Action Panel - Open Button",
+        "name": "DEF-4-Open"
+      },
+      "openDocumentTable": {
+        "description": "Defect - Documents Panel - Open Button",
+        "name": "DEF-12-Open"
+      },
+      "operationalStatus": {
+        "description": "Defect - Asset Panel - Asset Status Field",
+        "name": "DEF-10-Asset Status"
+      },
+      "operatorCode": {
+        "description": "Defect - Main Information Panel - Operator Field",
+        "name": "DEF-1-Operator"
+      },
+      "operatorCustomerCode": {
+        "description": "Defect - Asset Panel - Operator Field",
+        "name": "DEF-10-Operator"
+      },
+      "ownerCustomerCode": {
+        "description": "Defect - Asset Panel - Owner Field",
+        "name": "DEF-10-Owner"
+      },
+      "pnCode": {
+        "description": "Defect - Asset Panel - P/N Field",
+        "name": "DEF-10-P/N"
+      },
+      "prepareWPCorrectiveActionPanel": {
+        "description": "Defect - Corrective Action Panel - Prepare WP Button",
+        "name": "DEF-4-Prepare WP"
+      },
+      "refresh": {
+        "description": "Defect - Header - Refresh Button",
+        "name": "DEF-0-Refresh"
+      },
+      "refuseDeferralDeferralPanel": {
+        "description": "Defect - Deferral Panel - Refuse Deferral Button",
+        "name": "DEF-8-Refuse Deferral"
+      },
+      "registration": {
+        "description": "Defect - Asset Panel - Registration Field",
+        "name": "DEF-10-Registration"
+      },
+      "report": {
+        "description": "Defect - Header - Report Button",
+        "name": "DEF-0-Report"
+      },
+      "reportTable": {
+        "description": "Defect - Diffusion Panel - Report Table",
+        "name": "DEF-13-Report"
+      },
+      "reportingPeriodEndDate": {
+        "description": "Defect - Main Information Panel - Closure Date Field",
+        "name": "DEF-1-Closure Date"
+      },
+      "reportingPeriodStartDate": {
+        "description": "Defect - Main Information Panel - Event Date Field",
+        "name": "DEF-1-Event Date"
+      },
+      "rootCauseComment": {
+        "description": "Defect - Defect Detail Panel - Description Field",
+        "name": "DEF-3-Description"
+      },
+      "rootCauseDefectLocation": {
+        "description": "Defect - Defect Detail Panel - Location Dropdown",
+        "name": "DEF-3-Location"
+      },
+      "rootCauseDefectName": {
+        "description": "Defect - Defect Detail Panel - Name Dropdown",
+        "name": "DEF-3-Name"
+      },
+      "rootCauseFlCode": {
+        "description": "Defect - Root Cause Panel - FL Code Dropdown",
+        "name": "DEF-2-FL Code"
+      },
+      "rootCausePanel": {
+        "description": "Defect - Root Cause Panel",
+        "name": "DEF-2-Root Cause Panel"
+      },
+      "rootCausePn": {
+        "description": "Defect - Root Cause Panel - Part Field",
+        "name": "DEF-2-Part"
+      },
+      "rootCauseQuantity": {
+        "description": "Defect - Root Cause Panel - Quantity Field",
+        "name": "DEF-2-Quantity"
+      },
+      "save": {
+        "description": "Defect - Header - Save Button",
+        "name": "DEF-0-Save"
+      },
+      "selectedFaultCode": {
+        "description": "Defect - Defect Detail Panel - Fault Code Dropdown",
+        "name": "DEF-3-Fault Code"
+      },
+      "selectedInspectionMean": {
+        "description": "Defect - Defect Detail Panel - Inspection Mean Dropdown",
+        "name": "DEF-3-Inspection Mean"
+      },
+      "selectedRootCause": {
+        "description": "Defect - Root Cause Panel - Root Cause Dropdown",
+        "name": "DEF-2-Root Cause"
+      },
+      "sendDiffusionTableData": {
+        "description": "Defect - Diffusion Panel - Send Button",
+        "name": "DEF-13-Send"
+      },
+      "sn": {
+        "description": "Defect - Asset Panel - S/N Field",
+        "name": "DEF-10-S/N"
+      },
+      "sn2": {
+        "description": "Defect - Asset Panel - MSN Field",
+        "name": "DEF-10-MSN"
+      },
+      "sn3": {
+        "description": "Defect - Asset Panel - ESN Field",
+        "name": "DEF-10-ESN"
+      },
+      "symptomCode": {
+        "description": "Defect - Context Panel - Context Dropdown",
+        "name": "DEF-5-Context"
+      },
+      "symptomComment": {
+        "description": "Defect - Context Panel - Comment Field",
+        "name": "DEF-5-Comment"
+      },
+      "symptomManagementPanel": {
+        "description": "Defect - Symptom Management Panel",
+        "name": "DEF-6-Symptom Management Panel"
+      },
+      "symptomParameterTableData": {
+        "description": "Defect - Symptom Management Panel - Symptom Management Table",
+        "name": "DEF-6-Symptom Management"
+      },
+      "symptomRowData": {
+        "description": "Defect - Symptom Management Panel - Symptoms Table",
+        "name": "DEF-6-Symptoms"
+      },
+      "typeCode": {
+        "description": "Defect - Main Information Panel - Type Dropdown",
+        "name": "DEF-1-Type"
+      },
+      "updateMeasureBidoMeasuresDisplayed": {
+        "description": "Defect - Counters Panel - Update Measure Button",
+        "name": "DEF-11-Update Measure"
+      },
+      "updates": {
+        "description": "Defect - Header - Updates Button",
+        "name": "DEF-0-Updates"
+      },
+      "uploadDocumentTable": {
+        "description": "Defect - Documents Panel - Upload Chart",
+        "name": "DEF-12-Upload"
+      }
+    },
+    "EventCreateComponent": {
+      "acceptPostponementWorkPostponmentPanel": {
+        "description": "Event - Work Postponment Panel - Accept Postponement Button",
+        "name": "EV-18-Accept Postponement"
+      },
+      "actions": {
+        "description": "Event - Header - Actions Button",
+        "name": "EV-0-Actions"
+      },
+      "addBireDocumentDisplayedDataSource": {
+        "description": "Event - Documents Panel - Add Button",
+        "name": "EV-20-Add"
+      },
+      "addSymptomRowDataSource": {
+        "description": "Event - Symptom Management Panel - Add Button",
+        "name": "EV-9-Add"
+      },
+      "arisingEventTableDataSource": {
+        "description": "Event - Arising Events Panel - Arising Events Table",
+        "name": "EV-14-Arising Events"
+      },
+      "arisingEventsPanel": {
+        "description": "Event - Arising Events Panel",
+        "name": "EV-14-Arising Events Panel"
+      },
+      "arisingEventsTab": {
+        "description": "Event - - Arising Events Tab",
+        "name": "EV-0-Arising Events"
+      },
+      "assetAtDateTab": {
+        "description": "Event - - Asset at Date Tab",
+        "name": "EV-0-Asset at Date"
+      },
+      "assetDesignation": {
+        "description": "Event - Configuration Panel - Designation Field",
+        "name": "EV-12-Designation"
+      },
+      "assetName": {
+        "description": "Event - Configuration Panel - Name Field",
+        "name": "EV-12-Name"
+      },
+      "assetPanel": {
+        "description": "Event - Asset Panel",
+        "name": "EV-10-Asset Panel"
+      },
+      "assetPanel2": {
+        "description": "Event - Asset Panel",
+        "name": "EV-16-Asset Panel"
+      },
+      "attributesPanel": {
+        "description": "Event - Attributes Panel",
+        "name": "EV-17-Attributes Panel"
+      },
+      "attributesTab": {
+        "description": "Event - - Attributes Tab",
+        "name": "EV-0-Attributes"
+      },
+      "bidoMeasuresDisplayedDataSource": {
+        "description": "Event - Counters Panel - Counters Table",
+        "name": "EV-11-Counters"
+      },
+      "bireDocumentDisplayedDataSource": {
+        "description": "Event - Documents Panel - Documents Table",
+        "name": "EV-20-Documents"
+      },
+      "cancel": {
+        "description": "Event - Header - Cancel Button",
+        "name": "EV-0-Cancel"
+      },
+      "circumstancesTab": {
+        "description": "Event - - Circumstances Tab",
+        "name": "EV-0-Circumstances"
+      },
+      "configurationPanel": {
+        "description": "Event - Configuration Panel",
+        "name": "EV-12-Configuration Panel"
+      },
+      "contextPanel": {
+        "description": "Event - Context Panel",
+        "name": "EV-7-Context Panel"
+      },
+      "contextTableDataSource": {
+        "description": "Event - Context Panel - Parameters associated to context Table",
+        "name": "EV-7-Parameters associated to context"
+      },
+      "countersPanel": {
+        "description": "Event - Counters Panel",
+        "name": "EV-11-Counters Panel"
+      },
+      "country": {
+        "description": "Event - Geographical Location Panel - Country Dropdown",
+        "name": "EV-4-Country"
+      },
+      "criticalityPanel": {
+        "description": "Event - Criticality Panel",
+        "name": "EV-3-Criticality Panel"
+      },
+      "defectAssetCode": {
+        "description": "Event - Root Cause Panel - Asset Code Field",
+        "name": "EV-6-Asset Code"
+      },
+      "defectEquipmentName": {
+        "description": "Event - Root Cause Panel - Name Field",
+        "name": "EV-6-Name"
+      },
+      "defectEquipmentPn": {
+        "description": "Event - Root Cause Panel - P/N Field",
+        "name": "EV-6-P/N"
+      },
+      "defectEquipmentSn": {
+        "description": "Event - Root Cause Panel - S/N Field",
+        "name": "EV-6-S/N"
+      },
+      "defectPanel": {
+        "description": "Event - Defect Panel",
+        "name": "EV-8-Defect Panel"
+      },
+      "deleteArisingEvent": {
+        "description": "Event - Arising Events Panel - Delete Button",
+        "name": "EV-14-Delete"
+      },
+      "deleteBireDocumentDisplayedDataSource": {
+        "description": "Event - Documents Panel - Delete Button",
+        "name": "EV-20-Delete"
+      },
+      "deleteSymptomRowDataSource": {
+        "description": "Event - Symptom Management Panel - Delete Button",
+        "name": "EV-9-Delete"
+      },
+      "diffusionPanel": {
+        "description": "Event - Diffusion Panel",
+        "name": "EV-21-Diffusion Panel"
+      },
+      "diffusionTab": {
+        "description": "Event - - Diffusion Tab",
+        "name": "EV-0-Diffusion"
+      },
+      "diffusionTableDataSource": {
+        "description": "Event - Diffusion Panel - Diffusion Table",
+        "name": "EV-21-Diffusion"
+      },
+      "documentsPanel": {
+        "description": "Event - Documents Panel",
+        "name": "EV-20-Documents Panel"
+      },
+      "documentsTab": {
+        "description": "Event - - Documents Tab",
+        "name": "EV-0-Documents"
+      },
+      "dynamicAttributes": {
+        "description": "Event - Attributes Panel - Attributes Attributes",
+        "name": "EV-17-Attributes"
+      },
+      "edit": {
+        "description": "Event - Header - Edit Button",
+        "name": "EV-0-Edit"
+      },
+      "editBireDocumentDisplayedDataSource": {
+        "description": "Event - Documents Panel - Edit Button",
+        "name": "EV-20-Edit"
+      },
+      "editContext": {
+        "description": "Event - Context Panel - Edit Button",
+        "name": "EV-7-Edit"
+      },
+      "editSymptomParameter": {
+        "description": "Event - Symptom Management Panel - Edit Parameters Button",
+        "name": "EV-9-Edit Parameters"
+      },
+      "editSymptomRowDataSource": {
+        "description": "Event - Symptom Management Panel - Edit Button",
+        "name": "EV-9-Edit"
+      },
+      "estimateCounterBidoMeasuresDisplayedDataSource": {
+        "description": "Event - Counters Panel - Estimate Counter Button",
+        "name": "EV-11-Estimate Counter"
+      },
+      "eventCause": {
+        "description": "Event - Criticality Panel - Event Cause Dropdown",
+        "name": "EV-3-Event Cause"
+      },
+      "eventReason": {
+        "description": "Event - Main Information Panel - Event Reason Dropdown",
+        "name": "EV-1-Event Reason"
+      },
+      "evolutionNumber": {
+        "description": "Event - Evolution Panel - Evolution Number Field",
+        "name": "EV-19-Evolution Number"
+      },
+      "evolutionPanel": {
+        "description": "Event - Evolution Panel",
+        "name": "EV-19-Evolution Panel"
+      },
+      "evolutionRevisionNumber": {
+        "description": "Event - Evolution Panel - Evolution Revision Number Field",
+        "name": "EV-19-Evolution Revision Number"
+      },
+      "evolutionTab": {
+        "description": "Event - - Evolution Tab",
+        "name": "EV-0-Evolution"
+      },
+      "evolutionType": {
+        "description": "Event - Evolution Panel - Evolution Type Field",
+        "name": "EV-19-Evolution Type"
+      },
+      "familyVariantCode": {
+        "description": "Event - Asset Panel - Family Variant Field",
+        "name": "EV-10-Family Variant"
+      },
+      "favorites": {
+        "description": "Event - Header - Favorites Button",
+        "name": "EV-0-Favorites"
+      },
+      "fieldNewValue": {
+        "description": "Event - Configuration Panel - Superior Asset Field",
+        "name": "EV-12-Superior Asset"
+      },
+      "fieldOldValue": {
+        "description": "Event - Configuration Panel - Old Superior Asset Field",
+        "name": "EV-12-Old Superior Asset"
+      },
+      "filler": {
+        "description": "Event - Main Information Panel - Filler Field",
+        "name": "EV-1-Filler"
+      },
+      "filler2": {
+        "description": "Event - Main Information Panel - Filler Field",
+        "name": "EV-1-Filler"
+      },
+      "filler3": {
+        "description": "Event - Main Information Panel - Filler Field",
+        "name": "EV-1-Filler"
+      },
+      "filler4": {
+        "description": "Event - Main Information Panel - Filler Field",
+        "name": "EV-1-Filler"
+      },
+      "filler5": {
+        "description": "Event - Main Information Panel - Filler Field",
+        "name": "EV-1-Filler"
+      },
+      "filler6": {
+        "description": "Event - Main Information Panel - Filler Field",
+        "name": "EV-1-Filler"
+      },
+      "filler7": {
+        "description": "Event - Asset Panel - Filler Field",
+        "name": "EV-10-Filler"
+      },
+      "filler8": {
+        "description": "Event - Work Postponment Panel - Filler Field",
+        "name": "EV-18-Filler"
+      },
+      "flightRestriction": {
+        "description": "Event - Work Postponment Panel - Flight Restriction Field",
+        "name": "EV-18-Flight Restriction"
+      },
+      "functionLocationStr": {
+        "description": "Event - Asset Panel - Function Location Field",
+        "name": "EV-10-Function Location"
+      },
+      "generateACRSForm": {
+        "description": "Event - Header - Generate ACRS Form Button",
+        "name": "EV-0-Generate ACRS Form"
+      },
+      "generateEASAForm": {
+        "description": "Event - Header - Generate EASA Form 1 Button",
+        "name": "EV-0-Generate EASA Form 1"
+      },
+      "geographicalLocationPanel": {
+        "description": "Event - Geographical Location Panel",
+        "name": "EV-4-Geographical Location Panel"
+      },
+      "historicAttributes": {
+        "description": "Event - Attributes Panel - Historic Field",
+        "name": "EV-17-Historic"
+      },
+      "historicAttributesPanel": {
+        "description": "Event - Attributes Panel - Historic Button",
+        "name": "EV-17-Historic"
+      },
+      "historicWorkPostponmentPanel": {
+        "description": "Event - Work Postponment Panel - Historic Button",
+        "name": "EV-18-Historic"
+      },
+      "homeTab": {
+        "description": "Event - - Home Tab",
+        "name": "EV-0-Home"
+      },
+      "isDeduced": {
+        "description": "Event - Main Information Panel - Is Deduced Checkbox",
+        "name": "EV-1-Is Deduced"
+      },
+      "isIgnoreInitialDeadlines": {
+        "description": "Event - Task Management Panel - Ignore initial deadline in next occurrence calculation Checkbox",
+        "name": "EV-15-Ignore initial deadline in next occurrence calculation"
+      },
+      "isIgnoreInitialDeadlines2": {
+        "description": "Event - Evolution Panel - Ignore initial deadline in next occurrence calculation Checkbox",
+        "name": "EV-19-Ignore initial deadline in next occurrence calculation"
+      },
+      "isScheduled": {
+        "description": "Event - Main Information Panel - Is Scheduled Checkbox",
+        "name": "EV-1-Is Scheduled"
+      },
+      "linkedEventPanel": {
+        "description": "Event - Linked Event Panel",
+        "name": "EV-2-Linked Event Panel"
+      },
+      "linkedEventStatus": {
+        "description": "Event - Linked Event Panel - Status Field",
+        "name": "EV-2-Status"
+      },
+      "linkedEventSubject": {
+        "description": "Event - Linked Event Panel - Subject Field",
+        "name": "EV-2-Subject"
+      },
+      "linkedEventType": {
+        "description": "Event - Linked Event Panel - Type Field",
+        "name": "EV-2-Type"
+      },
+      "location": {
+        "description": "Event - Main Information Panel - Location Dropdown",
+        "name": "EV-1-Location"
+      },
+      "mainDataPanel": {
+        "description": "Event - Main Information Panel",
+        "name": "EV-1-Main Information Panel"
+      },
+      "missionType": {
+        "description": "Event - Context Panel - Mission Type Dropdown",
+        "name": "EV-7-Mission Type"
+      },
+      "movementPanel": {
+        "description": "Event - Movement Panel",
+        "name": "EV-13-Movement Panel"
+      },
+      "movementPn": {
+        "description": "Event - Movement Panel - P/N Field",
+        "name": "EV-13-P/N"
+      },
+      "movementQuantity": {
+        "description": "Event - Movement Panel - Quantity Field",
+        "name": "EV-13-Quantity"
+      },
+      "notNotificationCode": {
+        "description": "Event - Linked Event Panel - Code Field",
+        "name": "EV-2-Code"
+      },
+      "notificationAsset": {
+        "description": "Event - Main Information Panel - Asset Field",
+        "name": "EV-1-Asset"
+      },
+      "notificationCode": {
+        "description": "Event - Main Information Panel - Code Field",
+        "name": "EV-1-Code"
+      },
+      "notificationDescription": {
+        "description": "Event - Main Information Panel - Event Description Field",
+        "name": "EV-1-Event Description"
+      },
+      "notificationDescription2": {
+        "description": "Event - Work Postponment Panel - Reason Field",
+        "name": "EV-18-Reason"
+      },
+      "notificationRemarks": {
+        "description": "Event - Main Information Panel - Event Comment Field",
+        "name": "EV-1-Event Comment"
+      },
+      "notificationSubject": {
+        "description": "Event - Main Information Panel - Subject Field",
+        "name": "EV-1-Subject"
+      },
+      "oldAssetName": {
+        "description": "Event - Configuration Panel - Name Field",
+        "name": "EV-12-Name"
+      },
+      "oldDesignation": {
+        "description": "Event - Configuration Panel - Designation Field",
+        "name": "EV-12-Designation"
+      },
+      "openBireDocumentDisplayedDataSource": {
+        "description": "Event - Documents Panel - Open Button",
+        "name": "EV-20-Open"
+      },
+      "openXLSFormat": {
+        "description": "Event - Header - Edit XLS Format Button",
+        "name": "EV-0-Edit XLS Format"
+      },
+      "operationalStatus": {
+        "description": "Event - Asset Panel - Asset Status Field",
+        "name": "EV-10-Asset Status"
+      },
+      "operatorCustomerCode": {
+        "description": "Event - Asset Panel - Operator Field",
+        "name": "EV-10-Operator"
+      },
+      "originalDeadlines": {
+        "description": "Event - Task Management Panel - Maintenance Plan original deadlines Field",
+        "name": "EV-15-Maintenance Plan original deadlines"
+      },
+      "originalDeadlines2": {
+        "description": "Event - Evolution Panel - Maintenance Plan original deadlines Field",
+        "name": "EV-19-Maintenance Plan original deadlines"
+      },
+      "ownerCustomerCode": {
+        "description": "Event - Asset Panel - Owner Field",
+        "name": "EV-10-Owner"
+      },
+      "pnCode": {
+        "description": "Event - Asset Panel - P/N Field",
+        "name": "EV-10-P/N"
+      },
+      "postponementAuthorizationNum": {
+        "description": "Event - Work Postponment Panel - Authorization Number Field",
+        "name": "EV-18-Authorization Number"
+      },
+      "postponementNewLimitDate": {
+        "description": "Event - Work Postponment Panel - New Limit Date Field",
+        "name": "EV-18-New Limit Date"
+      },
+      "priority": {
+        "description": "Event - Criticality Panel - Event Priority Dropdown",
+        "name": "EV-3-Event Priority"
+      },
+      "refresh": {
+        "description": "Event - Header - Refresh Button",
+        "name": "EV-0-Refresh"
+      },
+      "refusePostponementWorkPostponmentPanel": {
+        "description": "Event - Work Postponment Panel - Refuse Postponement Button",
+        "name": "EV-18-Refuse Postponement"
+      },
+      "registration": {
+        "description": "Event - Asset Panel - Registration Field",
+        "name": "EV-10-Registration"
+      },
+      "relatedEvolution": {
+        "description": "Event - Work Postponment Panel - Related Evolution Field",
+        "name": "EV-18-Related Evolution"
+      },
+      "relatedWorkOrder": {
+        "description": "Event - Work Postponment Panel - Related Work Order Field",
+        "name": "EV-18-Related Work Order"
+      },
+      "reopen": {
+        "description": "Event - Header - Reopen Event Button",
+        "name": "EV-0-Reopen Event"
+      },
+      "reportingDate": {
+        "description": "Event - Main Information Panel - Notification Date Field",
+        "name": "EV-1-Notification Date"
+      },
+      "reportingPeriodEndDate": {
+        "description": "Event - Main Information Panel - Closure Date Field",
+        "name": "EV-1-Closure Date"
+      },
+      "reportingPeriodStartDate": {
+        "description": "Event - Main Information Panel - Date Field",
+        "name": "EV-1-Date"
+      },
+      "requestAuthorTxt": {
+        "description": "Event - Work Postponment Panel - Author Field",
+        "name": "EV-18-Author"
+      },
+      "requestDecisionAuthorTxt": {
+        "description": "Event - Work Postponment Panel - Decision Author Field",
+        "name": "EV-18-Decision Author"
+      },
+      "rootCauseChapter": {
+        "description": "Event - Root Cause Panel - Item Code Field",
+        "name": "EV-6-Item Code"
+      },
+      "rootCauseComment": {
+        "description": "Event - Defect Panel - Event Description Field",
+        "name": "EV-8-Event Description"
+      },
+      "rootCauseFlCode": {
+        "description": "Event - Root Cause Panel - FL Code Dropdown",
+        "name": "EV-6-FL Code"
+      },
+      "rootCausePanel": {
+        "description": "Event - Root Cause Panel",
+        "name": "EV-6-Root Cause Panel"
+      },
+      "rootCausePn": {
+        "description": "Event - Root Cause Panel - Part Field",
+        "name": "EV-6-Part"
+      },
+      "rootCauseQuantity": {
+        "description": "Event - Root Cause Panel - Quantity Field",
+        "name": "EV-6-Quantity"
+      },
+      "save": {
+        "description": "Event - Header - Save (Creation) Button",
+        "name": "EV-0-Save (Creation)"
+      },
+      "save2": {
+        "description": "Event - Header - Save (Update) Button",
+        "name": "EV-0-Save (Update)"
+      },
+      "selectedAssetDesignation": {
+        "description": "Event - Asset Panel - Designation Field",
+        "name": "EV-16-Designation"
+      },
+      "selectedAssetName": {
+        "description": "Event - Asset Panel - Name Field",
+        "name": "EV-16-Name"
+      },
+      "selectedAssetPN": {
+        "description": "Event - Asset Panel - P/N Field",
+        "name": "EV-16-P/N"
+      },
+      "selectedAssetSN": {
+        "description": "Event - Asset Panel - S/N Field",
+        "name": "EV-16-S/N"
+      },
+      "selectedDefectLocation": {
+        "description": "Event - Defect Panel - Location Dropdown",
+        "name": "EV-8-Location"
+      },
+      "selectedDefectName": {
+        "description": "Event - Defect Panel - Name Dropdown",
+        "name": "EV-8-Name"
+      },
+      "selectedRootCause": {
+        "description": "Event - Root Cause Panel - Root Cause Dropdown",
+        "name": "EV-6-Root Cause"
+      },
+      "selectedSearchAsset": {
+        "description": "Event - Asset Panel - Selected Search Asset Field",
+        "name": "EV-16-Selected Search Asset"
+      },
+      "selectedSystemId": {
+        "description": "Event - Source Panel - System Id Dropdown",
+        "name": "EV-5-System Id"
+      },
+      "selectedTaskDescription": {
+        "description": "Event - Task Management Panel - Description Field",
+        "name": "EV-15-Description"
+      },
+      "selectedTaskDesignation": {
+        "description": "Event - Task Management Panel - Designation Field",
+        "name": "EV-15-Designation"
+      },
+      "selectedType": {
+        "description": "Event - Main Information Panel - Type Dropdown",
+        "name": "EV-1-Type"
+      },
+      "sendDiffusion": {
+        "description": "Event - Diffusion Panel - Send Button",
+        "name": "EV-21-Send"
+      },
+      "shopName": {
+        "description": "Event - Movement Panel - Shop Name Field",
+        "name": "EV-13-Shop Name"
+      },
+      "shopTechnicalLevel": {
+        "description": "Event - Movement Panel - Shop Technical Level Dropdown",
+        "name": "EV-13-Shop Technical Level"
+      },
+      "sn": {
+        "description": "Event - Asset Panel - S/N Field",
+        "name": "EV-10-S/N"
+      },
+      "sn2": {
+        "description": "Event - Asset Panel - MSN Field",
+        "name": "EV-10-MSN"
+      },
+      "sn3": {
+        "description": "Event - Asset Panel - ESN Field",
+        "name": "EV-10-ESN"
+      },
+      "sourcePanel": {
+        "description": "Event - Source Panel",
+        "name": "EV-5-Source Panel"
+      },
+      "structureTab": {
+        "description": "Event - - Structure Tab",
+        "name": "EV-0-Structure"
+      },
+      "symptomCode": {
+        "description": "Event - Context Panel - Context Dropdown",
+        "name": "EV-7-Context"
+      },
+      "symptomComment": {
+        "description": "Event - Context Panel - Event Comment Field",
+        "name": "EV-7-Event Comment"
+      },
+      "symptomManagementPanel": {
+        "description": "Event - Symptom Management Panel",
+        "name": "EV-9-Symptom Management Panel"
+      },
+      "symptomParameterTableDataSource": {
+        "description": "Event - Symptom Management Panel - Parameters associated to selected symptom Table",
+        "name": "EV-9-Parameters associated to selected symptom"
+      },
+      "symptomRowDataSource": {
+        "description": "Event - Symptom Management Panel - Symptoms Table",
+        "name": "EV-9-Symptoms"
+      },
+      "systemReference": {
+        "description": "Event - Source Panel - System Reference Field",
+        "name": "EV-5-System Reference"
+      },
+      "taskAssetCode": {
+        "description": "Event - Asset Panel - Asset Code Field",
+        "name": "EV-16-Asset Code"
+      },
+      "taskAssetPn": {
+        "description": "Event - Asset Panel - Part Field",
+        "name": "EV-16-Part"
+      },
+      "taskAtaChapter": {
+        "description": "Event - Asset Panel - Item Code Field",
+        "name": "EV-16-Item Code"
+      },
+      "taskCode": {
+        "description": "Event - Task Management Panel - Task Code Field",
+        "name": "EV-15-Task Code"
+      },
+      "taskManagementPanel": {
+        "description": "Event - Task Management Panel",
+        "name": "EV-15-Task Management Panel"
+      },
+      "taskTab": {
+        "description": "Event - - Task Tab",
+        "name": "EV-0-Task"
+      },
+      "taskVersion": {
+        "description": "Event - Task Management Panel - Task Version Field",
+        "name": "EV-15-Task Version"
+      },
+      "typeCategory": {
+        "description": "Event - Main Information Panel - Category Dropdown",
+        "name": "EV-1-Category"
+      },
+      "updateMeasureBidoMeasuresDisplayedDataSource": {
+        "description": "Event - Counters Panel - Update Measure Button",
+        "name": "EV-11-Update Measure"
+      },
+      "updates": {
+        "description": "Event - Header - Updates Button",
+        "name": "EV-0-Updates"
+      },
+      "validateAcrs": {
+        "description": "Event - Header - Validate ACRS Button",
+        "name": "EV-0-Validate ACRS"
+      },
+      "woCode": {
+        "description": "Event - Main Information Panel - Work Order Field",
+        "name": "EV-1-Work Order"
+      },
+      "workPostponmentDecisionAuthor": {
+        "description": "Event - Work Postponment Panel - Decision Author Field",
+        "name": "EV-18-Decision Author"
+      },
+      "workPostponmentPanel": {
+        "description": "Event - Work Postponment Panel",
+        "name": "EV-18-Work Postponment Panel"
+      },
+      "workPostponmentRefusalReason": {
+        "description": "Event - Work Postponment Panel - Refusal Reason Field",
+        "name": "EV-18-Refusal Reason"
+      },
+      "workPostponmentTab": {
+        "description": "Event - - Work Postponment Tab",
+        "name": "EV-0-Work Postponment"
+      },
+      "zone": {
+        "description": "Event - Geographical Location Panel - Zone Dropdown",
+        "name": "EV-4-Zone"
+      }
+    },
+    "FlightFormComponent": {
+      "acrsAvailabilityTable": {
+        "description": "Flight - ACRS Event Panel - ACRS Event Table",
+        "name": "FLI-12-ACRS Event"
+      },
+      "acrsEventComment": {
+        "description": "Flight - ACRS Event Panel - Comment Field",
+        "name": "FLI-12-Comment"
+      },
+      "acrsEventDate": {
+        "description": "Flight - ACRS Event Panel - ACRS Date Field",
+        "name": "FLI-12-ACRS Date"
+      },
+      "acrsEventPanel": {
+        "description": "Flight - ACRS Event Panel",
+        "name": "FLI-12-ACRS Event Panel"
+      },
+      "acrsEventStatus": {
+        "description": "Flight - ACRS Event Panel - Status Field",
+        "name": "FLI-12-Status"
+      },
+      "actions": {
+        "description": "Flight - Header - Actions Button",
+        "name": "FLI-0-Actions"
+      },
+      "addCrewMemberTable": {
+        "description": "Flight - Crew Panel - Add Button",
+        "name": "FLI-8-Add"
+      },
+      "addDefect": {
+        "description": "Flight - Defects Panel - Add Defect Button",
+        "name": "FLI-19-Add Defect"
+      },
+      "addOtherMeasures": {
+        "description": "Flight - Other Measures Panel - Add Button",
+        "name": "FLI-18-Add"
+      },
+      "additionalDataPanel": {
+        "description": "Flight - Additional Information Panel",
+        "name": "FLI-7-Additional Information Panel"
+      },
+      "additionalDataTab": {
+        "description": "Flight - - Additional Information Tab",
+        "name": "FLI-0-Additional Information"
+      },
+      "aircraftRepresentation": {
+        "description": "Flight - Main Information Panel - Aircraft Field",
+        "name": "FLI-1-Aircraft"
+      },
+      "applyTaskPostFlightVisitTable": {
+        "description": "Flight - Post-Flight Visits Panel - Apply Task Button",
+        "name": "FLI-20-Apply Task"
+      },
+      "area": {
+        "description": "Flight - Main Information Panel - Area Field",
+        "name": "FLI-1-Area"
+      },
+      "arrivalLocation": {
+        "description": "Flight - Main Information Panel - Arrival Location Dropdown",
+        "name": "FLI-1-Arrival Location"
+      },
+      "assetReview": {
+        "description": "Flight - Header - Asset Review Button",
+        "name": "FLI-0-Asset Review"
+      },
+      "cancel": {
+        "description": "Flight - Header - Cancel Button",
+        "name": "FLI-0-Cancel"
+      },
+      "chart": {
+        "description": "Flight - Load Desired Panel - Load Desired Chart",
+        "name": "FLI-16-Load Desired"
+      },
+      "commentGoNoGoPanel": {
+        "description": "Flight - GoNoGo Comment Panel",
+        "name": "FLI-11-GoNoGo Comment Panel"
+      },
+      "copilot": {
+        "description": "Flight - Crew Panel - Copilot Dropdown",
+        "name": "FLI-8-Copilot"
+      },
+      "crewMemberTable": {
+        "description": "Flight - Crew Panel - Crew Table",
+        "name": "FLI-8-Crew"
+      },
+      "crewPanel": {
+        "description": "Flight - Crew Panel",
+        "name": "FLI-8-Crew Panel"
+      },
+      "customerCode": {
+        "description": "Flight - Main Information Panel - Customer Dropdown",
+        "name": "FLI-1-Customer"
+      },
+      "cycleNumber": {
+        "description": "Flight - Dates and Durations Panel - Cycles Number Field",
+        "name": "FLI-2-Cycles Number"
+      },
+      "date": {
+        "description": "Flight - GoNoGo Panel - Date Field",
+        "name": "FLI-4-Date"
+      },
+      "datesAndDurationPanel": {
+        "description": "Flight - Dates and Durations Panel",
+        "name": "FLI-2-Dates and Durations Panel"
+      },
+      "defectTable": {
+        "description": "Flight - Defects To Process Panel - Defects To Process Table",
+        "name": "FLI-15-Defects To Process"
+      },
+      "defectsPanel": {
+        "description": "Flight - Defects Panel",
+        "name": "FLI-19-Defects Panel"
+      },
+      "defectsTable": {
+        "description": "Flight - Defects Panel - Defects Table",
+        "name": "FLI-19-Defects"
+      },
+      "defectsToProcessPanel": {
+        "description": "Flight - Defects To Process Panel",
+        "name": "FLI-15-Defects To Process Panel"
+      },
+      "deleteCrewMemberTable": {
+        "description": "Flight - Crew Panel - Delete Button",
+        "name": "FLI-8-Delete"
+      },
+      "deleteOtherMeasures": {
+        "description": "Flight - Other Measures Panel - Delete Button",
+        "name": "FLI-18-Delete"
+      },
+      "departureLocation": {
+        "description": "Flight - Main Information Panel - Departure Location Dropdown",
+        "name": "FLI-1-Departure Location"
+      },
+      "edit": {
+        "description": "Flight - Header - Edit Button",
+        "name": "FLI-0-Edit"
+      },
+      "editDatesEngineTable": {
+        "description": "Flight - Engines Panel - Edit Dates Button",
+        "name": "FLI-6-Edit Dates"
+      },
+      "editEngineTable": {
+        "description": "Flight - Engines Panel - Edit Button",
+        "name": "FLI-6-Edit"
+      },
+      "engineTable": {
+        "description": "Flight - Engines Panel - Engines Table",
+        "name": "FLI-6-Engines"
+      },
+      "enginesPanel": {
+        "description": "Flight - Engines Panel",
+        "name": "FLI-6-Engines Panel"
+      },
+      "exportTable": {
+        "description": "Flight - Flight Measures Panel - Export Button",
+        "name": "FLI-17-Export"
+      },
+      "favorites": {
+        "description": "Flight - Header - Favorites Button",
+        "name": "FLI-0-Favorites"
+      },
+      "flightConditionsPanel": {
+        "description": "Flight - Flight Conditions Panel",
+        "name": "FLI-10-Flight Conditions Panel"
+      },
+      "flightMeasuresPanel": {
+        "description": "Flight - Flight Measures Panel",
+        "name": "FLI-17-Flight Measures Panel"
+      },
+      "flightMeasurestable": {
+        "description": "Flight - Flight Measures Panel - Flight Measures Table",
+        "name": "FLI-17-Flight Measures"
+      },
+      "flightType": {
+        "description": "Flight - Main Information Panel - Flight Type Dropdown",
+        "name": "FLI-1-Flight Type"
+      },
+      "fuel1-rol": {
+        "description": "Flight - Load Desired Panel - Rolling Field",
+        "name": "FLI-16-Rolling"
+      },
+      "fuel2-ste": {
+        "description": "Flight - Load Desired Panel - Step consumption Field",
+        "name": "FLI-16-Step consumption"
+      },
+      "fuel3-roa": {
+        "description": "Flight - Load Desired Panel - Road reserve Field",
+        "name": "FLI-16-Road reserve"
+      },
+      "fuel4-cle": {
+        "description": "Flight - Load Desired Panel - Clearance reserve Field",
+        "name": "FLI-16-Clearance reserve"
+      },
+      "fuel5-fin": {
+        "description": "Flight - Load Desired Panel - Final reserve Field",
+        "name": "FLI-16-Final reserve"
+      },
+      "fuel6-add": {
+        "description": "Flight - Load Desired Panel - Additional reserve Field",
+        "name": "FLI-16-Additional reserve"
+      },
+      "fuelLoadDesiredPanel": {
+        "description": "Flight - Load Desired Panel",
+        "name": "FLI-16-Load Desired Panel"
+      },
+      "fuelLoadDesiredTotal": {
+        "description": "Flight - Fuel Panel - Load Desired Total Field",
+        "name": "FLI-3-Load Desired Total"
+      },
+      "fuelLoadDesiredTotal2": {
+        "description": "Flight - Load Desired Panel - Load Desired Total Field",
+        "name": "FLI-16-Load Desired Total"
+      },
+      "fuelLoadFactual": {
+        "description": "Flight - Fuel Panel - Load Factual Field",
+        "name": "FLI-3-Load Factual"
+      },
+      "fuelLoadFactual2": {
+        "description": "Flight - Load Desired Panel - Load Factual Field",
+        "name": "FLI-16-Load Factual"
+      },
+      "fuelPanel": {
+        "description": "Flight - Fuel Panel",
+        "name": "FLI-3-Fuel Panel"
+      },
+      "fuelTab": {
+        "description": "Flight - - Fuel Tab",
+        "name": "FLI-0-Fuel"
+      },
+      "goNoGoPanel": {
+        "description": "Flight - GoNoGo Panel",
+        "name": "FLI-4-GoNoGo Panel"
+      },
+      "goNoGoStatus": {
+        "description": "Flight - GoNoGo Panel - Status Field",
+        "name": "FLI-4-Status"
+      },
+      "goTo": {
+        "description": "Flight - Header - Go to Button",
+        "name": "FLI-0-Go to"
+      },
+      "gonogoValidationComment": {
+        "description": "Flight - GoNoGo Comment Panel - Comment Field",
+        "name": "FLI-11-Comment"
+      },
+      "gonogoValidationTab": {
+        "description": "Flight - - GoNoGo Validation Tab",
+        "name": "FLI-0-GoNoGo Validation"
+      },
+      "homeTab": {
+        "description": "Flight - - Home Tab",
+        "name": "FLI-0-Home"
+      },
+      "humsMessage": {
+        "description": "Flight - HUMS Panel - Message Field",
+        "name": "FLI-5-Message"
+      },
+      "humsPanel": {
+        "description": "Flight - HUMS Panel",
+        "name": "FLI-5-HUMS Panel"
+      },
+      "humsStatus": {
+        "description": "Flight - HUMS Panel - Status Field",
+        "name": "FLI-5-Status"
+      },
+      "ifrDuration": {
+        "description": "Flight - Flight Conditions Panel - IFR Duration Field",
+        "name": "FLI-10-IFR Duration"
+      },
+      "importTable": {
+        "description": "Flight - Flight Measures Panel - Import Button",
+        "name": "FLI-17-Import"
+      },
+      "lineMaintenance": {
+        "description": "Flight - Header - Line Maintenance Button",
+        "name": "FLI-0-Line Maintenance"
+      },
+      "mainPanel": {
+        "description": "Flight - Main Information Panel",
+        "name": "FLI-1-Main Information Panel"
+      },
+      "measuresTab": {
+        "description": "Flight - - Measures Tab",
+        "name": "FLI-0-Measures"
+      },
+      "missionAbilityPanel": {
+        "description": "Flight - Mission Ability Panel",
+        "name": "FLI-14-Mission Ability Panel"
+      },
+      "missionAbilityTable": {
+        "description": "Flight - Mission Ability Panel - Mission Ability Table",
+        "name": "FLI-14-Mission Ability"
+      },
+      "missionAvailabilityPanel": {
+        "description": "Flight - Mission Availability Panel",
+        "name": "FLI-13-Mission Availability Panel"
+      },
+      "missionAvailabilityTable": {
+        "description": "Flight - Mission Availability Panel - Mission Availability Table",
+        "name": "FLI-13-Mission Availability"
+      },
+      "missionCode": {
+        "description": "Flight - Dates and Durations Panel - Mission Field",
+        "name": "FLI-2-Mission"
+      },
+      "missionComment": {
+        "description": "Flight - Additional Information Panel - Comments Field",
+        "name": "FLI-7-Comments"
+      },
+      "missionDuration": {
+        "description": "Flight - Dates and Durations Panel - Duration Field",
+        "name": "FLI-2-Duration"
+      },
+      "missionEquipmentEndDate": {
+        "description": "Flight - Dates and Durations Panel - End Date (Time Zone) Field",
+        "name": "FLI-2-End Date (Time Zone)"
+      },
+      "missionEquipmentStartDate": {
+        "description": "Flight - Dates and Durations Panel - Start Date (Time Zone) Field",
+        "name": "FLI-2-Start Date (Time Zone)"
+      },
+      "nightMission": {
+        "description": "Flight - Flight Conditions Panel - Night Mission Checkbox",
+        "name": "FLI-10-Night Mission"
+      },
+      "occurrence": {
+        "description": "Flight - Dates and Durations Panel - Occurrence Field",
+        "name": "FLI-2-Occurrence"
+      },
+      "otherMeasuresPanel": {
+        "description": "Flight - Other Measures Panel",
+        "name": "FLI-18-Other Measures Panel"
+      },
+      "otherMeasuresTable": {
+        "description": "Flight - Other Measures Panel - Other Measures Table",
+        "name": "FLI-18-Other Measures"
+      },
+      "passengers": {
+        "description": "Flight - Passengers/Loads Panel - Passengers Field",
+        "name": "FLI-9-Passengers"
+      },
+      "passengersLoadsPanel": {
+        "description": "Flight - Passengers/Loads Panel",
+        "name": "FLI-9-Passengers/Loads Panel"
+      },
+      "pilot": {
+        "description": "Flight - Crew Panel - Pilot Dropdown",
+        "name": "FLI-8-Pilot"
+      },
+      "postFlightRecordsTab": {
+        "description": "Flight - - Post Flight Records Tab",
+        "name": "FLI-0-Post Flight Records"
+      },
+      "postFlightVisitTable": {
+        "description": "Flight - Post-Flight Visits Panel - Post-Flight Visits Table",
+        "name": "FLI-20-Post-Flight Visits"
+      },
+      "postFlightVisitsPanel": {
+        "description": "Flight - Post-Flight Visits Panel",
+        "name": "FLI-20-Post-Flight Visits Panel"
+      },
+      "realisedFuelUsed": {
+        "description": "Flight - Load Desired Panel - Used Fuel Field",
+        "name": "FLI-16-Used Fuel"
+      },
+      "refresh": {
+        "description": "Flight - Header - Refresh Button",
+        "name": "FLI-0-Refresh"
+      },
+      "removeRoleEquipmentTable": {
+        "description": "Flight - Role Equipments Panel - Remove Button",
+        "name": "FLI-21-Remove"
+      },
+      "requestedOpeConfigCode": {
+        "description": "Flight - Main Information Panel - Operational Configuration Field",
+        "name": "FLI-1-Operational Configuration"
+      },
+      "roleEquipmentTable": {
+        "description": "Flight - Role Equipments Panel - Role Equipments Table",
+        "name": "FLI-21-Role Equipments"
+      },
+      "roleEquipmentsPanel": {
+        "description": "Flight - Role Equipments Panel",
+        "name": "FLI-21-Role Equipments Panel"
+      },
+      "save": {
+        "description": "Flight - Header - Save Button",
+        "name": "FLI-0-Save"
+      },
+      "sendFscHumsPanel": {
+        "description": "Flight - HUMS Panel - Send FSC Button",
+        "name": "FLI-5-Send FSC"
+      },
+      "shipment": {
+        "description": "Flight - Passengers/Loads Panel - Shipment Field",
+        "name": "FLI-9-Shipment"
+      },
+      "sourceSystemId": {
+        "description": "Flight - Additional Information Panel - Source System Id Dropdown",
+        "name": "FLI-7-Source System Id"
+      },
+      "sourceSystemReference": {
+        "description": "Flight - Additional Information Panel - Source System Reference Field",
+        "name": "FLI-7-Source System Reference"
+      },
+      "timeZoneSelected": {
+        "description": "Flight - Dates and Durations Panel - Time Zone Dropdown",
+        "name": "FLI-2-Time Zone"
+      },
+      "updates": {
+        "description": "Flight - Header - Updates Button",
+        "name": "FLI-0-Updates"
+      },
+      "user": {
+        "description": "Flight - GoNoGo Panel - User Field",
+        "name": "FLI-4-User"
+      },
+      "userFlightNumber": {
+        "description": "Flight - Main Information Panel - Flight Number Field",
+        "name": "FLI-1-Flight Number"
+      },
+      "validateGonogo": {
+        "description": "Flight - Header - Validate GoNoGo Button",
+        "name": "FLI-0-Validate GoNoGo"
+      },
+      "validateMeasures": {
+        "description": "Flight - Header - Validate Measures Button",
+        "name": "FLI-0-Validate Measures"
+      }
+    },
+    "MaterialFormComponent": {
+      "addAlternative": {
+        "description": "Material - Alternatives Panel - Add Button",
+        "name": "MA-5-Add"
+      },
+      "addSupplier": {
+        "description": "Material - Suppliers Panel - Add Button",
+        "name": "MA-4-Add"
+      },
+      "addValuation": {
+        "description": "Material - Valuation Panel - Add Button",
+        "name": "MA-3-Add"
+      },
+      "addWarehouse": {
+        "description": "Material - Warehouses Panel - Add Button",
+        "name": "MA-2-Add"
+      },
+      "alternative": {
+        "description": "Material - Alternatives Panel",
+        "name": "MA-5-Alternatives Panel"
+      },
+      "alternativeTable": {
+        "description": "Material - Alternatives Panel - Alternatives Table",
+        "name": "MA-5-Alternatives"
+      },
+      "articleDesignation": {
+        "description": "Material - Main Information Panel - Name Field",
+        "name": "MA-1-Name"
+      },
+      "cancel": {
+        "description": "Material - Header - Cancel Button",
+        "name": "MA-0-Cancel"
+      },
+      "customerEvolutionTable": {
+        "description": "Material - Suppliers Panel - Suppliers Table",
+        "name": "MA-4-Suppliers"
+      },
+      "customerEvolutionTablePanel": {
+        "description": "Material - Suppliers Panel",
+        "name": "MA-4-Suppliers Panel"
+      },
+      "deleteAlternative": {
+        "description": "Material - Alternatives Panel - Delete Button",
+        "name": "MA-5-Delete"
+      },
+      "deleteSupplier": {
+        "description": "Material - Suppliers Panel - Delete Button",
+        "name": "MA-4-Delete"
+      },
+      "deleteValuation": {
+        "description": "Material - Valuation Panel - Delete Button",
+        "name": "MA-3-Delete"
+      },
+      "deleteWarehouse": {
+        "description": "Material - Warehouses Panel - Delete Button",
+        "name": "MA-2-Delete"
+      },
+      "edit": {
+        "description": "Material - Header - Edit Button",
+        "name": "MA-0-Edit"
+      },
+      "editAlternative": {
+        "description": "Material - Alternatives Panel - Edit Button",
+        "name": "MA-5-Edit"
+      },
+      "editSupplier": {
+        "description": "Material - Suppliers Panel - Edit Button",
+        "name": "MA-4-Edit"
+      },
+      "editValuation": {
+        "description": "Material - Valuation Panel - Edit Button",
+        "name": "MA-3-Edit"
+      },
+      "editWarehouse": {
+        "description": "Material - Warehouses Panel - Edit Button",
+        "name": "MA-2-Edit"
+      },
+      "expiration": {
+        "description": "Material - Main Information Panel - Expiration Section",
+        "name": "MA-1-Expiration"
+      },
+      "expirationDuration": {
+        "description": "Material - Main Information Panel - Duration Field",
+        "name": "MA-1-Duration"
+      },
+      "expirationThreshold": {
+        "description": "Material - Main Information Panel - Alert Threshold Field",
+        "name": "MA-1-Alert Threshold"
+      },
+      "expirationThresholdUnit": {
+        "description": "Material - Main Information Panel - Alert Threshold Unit Field",
+        "name": "MA-1-Alert Threshold Unit"
+      },
+      "expirationUnit": {
+        "description": "Material - Main Information Panel - Unit Field",
+        "name": "MA-1-Unit"
+      },
+      "favorite": {
+        "description": "Material - Header - Favorite Button",
+        "name": "MA-0-Favorite"
+      },
+      "goTo": {
+        "description": "Material - Header - Go To Button",
+        "name": "MA-0-Go To"
+      },
+      "goToStockStatus": {
+        "description": "Material - Warehouses Panel - Stock Status Button",
+        "name": "MA-2-Stock Status"
+      },
+      "main": {
+        "description": "Material - Main Information Panel",
+        "name": "MA-1-Main Information Panel"
+      },
+      "openAlternative": {
+        "description": "Material - Alternatives Panel - Open Button",
+        "name": "MA-5-Open"
+      },
+      "openSupplier": {
+        "description": "Material - Suppliers Panel - Open Button",
+        "name": "MA-4-Open"
+      },
+      "openValuation": {
+        "description": "Material - Valuation Panel - Open Button",
+        "name": "MA-3-Open"
+      },
+      "openWarehouse": {
+        "description": "Material - Warehouses Panel - Open Button",
+        "name": "MA-2-Open"
+      },
+      "pnCode": {
+        "description": "Material - Main Information Panel - Code Field",
+        "name": "MA-1-Code"
+      },
+      "pnType": {
+        "description": "Material - Main Information Panel - Material Type Field",
+        "name": "MA-1-Material Type"
+      },
+      "quantityUnit": {
+        "description": "Material - Main Information Panel - Quantity Unit Field",
+        "name": "MA-1-Quantity Unit"
+      },
+      "refresh": {
+        "description": "Material - Header - Refresh Button",
+        "name": "MA-0-Refresh"
+      },
+      "save": {
+        "description": "Material - Header - Save Button",
+        "name": "MA-0-Save"
+      },
+      "statusState": {
+        "description": "Material - Main Information Panel - Status Field",
+        "name": "MA-1-Status"
+      },
+      "storageConditionValue": {
+        "description": "Material - Main Information Panel - Storage Condition Field",
+        "name": "MA-1-Storage Condition"
+      },
+      "traceability": {
+        "description": "Material - Main Information Panel - Traceability Field",
+        "name": "MA-1-Traceability"
+      },
+      "valuation": {
+        "description": "Material - Valuation Panel",
+        "name": "MA-3-Valuation Panel"
+      },
+      "valuationTable": {
+        "description": "Material - Valuation Panel - Valuation Table",
+        "name": "MA-3-Valuation"
+      },
+      "warehouseTable": {
+        "description": "Material - Warehouses Panel - Warehouses Table",
+        "name": "MA-2-Warehouses"
+      },
+      "warhouse": {
+        "description": "Material - Warehouses Panel",
+        "name": "MA-2-Warehouses Panel"
+      }
+    },
+    "PartNumberFormComponent": {
+      "additionalText": {
+        "description": "Part Number - Additional Information Panel - Additional Text Field",
+        "name": "PN-2-Additional Text"
+      },
+      "articleDesignation": {
+        "description": "Part Number - Additional Information Panel - Article Designation Field",
+        "name": "PN-2-Article Designation"
+      },
+      "attributesPanel": {
+        "description": "Part Number - Attributes Panel",
+        "name": "PN-4-Attributes Panel"
+      },
+      "birePrograms": {
+        "description": "Part Number - Additional Information Panel - Maintenance Programs Associated Field",
+        "name": "PN-2-Maintenance Programs Associated"
+      },
+      "bireRefMeasurementsTable": {
+        "description": "Part Number - Reference Measurements Panel - Reference Measurements Table",
+        "name": "PN-5-Reference Measurements"
+      },
+      "cancel": {
+        "description": "Part Number - Header - Cancel Button",
+        "name": "PN-0-Cancel"
+      },
+      "createReferenceMeasurements": {
+        "description": "Part Number - Reference Measurements Panel - Add Button",
+        "name": "PN-5-Add"
+      },
+      "deleteReferenceMeasurements": {
+        "description": "Part Number - Reference Measurements Panel - Delete Button",
+        "name": "PN-5-Delete"
+      },
+      "dynamicAttributes": {
+        "description": "Part Number - Attributes Panel - Attributes Section",
+        "name": "PN-4-Attributes"
+      },
+      "edit": {
+        "description": "Part Number - Header - Edit Button",
+        "name": "PN-0-Edit"
+      },
+      "editReferenceMeasurements": {
+        "description": "Part Number - Reference Measurements Panel - Edit Button",
+        "name": "PN-5-Edit"
+      },
+      "evolutionAssociatedTable": {
+        "description": "Part Number - Evolutions Panel - P/N evolutions on the Item Table",
+        "name": "PN-7-P/N evolutions on the Item"
+      },
+      "evolutionImpactTable": {
+        "description": "Part Number - Evolutions Panel - Evolutions impacts on the Item and its PNs Table",
+        "name": "PN-7-Evolutions impacts on the Item and its PNs"
+      },
+      "evolutionsPanel": {
+        "description": "Part Number - Evolutions Panel - Evolutions",
+        "name": "PN-7-Evolutions"
+      },
+      "favorite": {
+        "description": "Part Number - Header - Favorite Button",
+        "name": "PN-0-Favorite"
+      },
+      "fromReparationSolution": {
+        "description": "Part Number - Additional Information Panel - From repair solution Checkbox",
+        "name": "PN-2-From repair solution"
+      },
+      "generalPanel": {
+        "description": "Part Number - Additional Information Panel",
+        "name": "PN-2-Additional Information Panel"
+      },
+      "goTo": {
+        "description": "Part Number - Header - Go To Button",
+        "name": "PN-0-Go To"
+      },
+      "isPma": {
+        "description": "Part Number - Additional Information Panel - Is PMA (Part under Manufacturer Approval) Checkbox",
+        "name": "PN-2-Is PMA (Part under Manufacturer Approval)"
+      },
+      "itemsPanel": {
+        "description": "Part Number - Items Panel",
+        "name": "PN-6-Items Panel"
+      },
+      "itemsTable": {
+        "description": "Part Number - Items Panel - Items Table",
+        "name": "PN-6-Items"
+      },
+      "mainPanel": {
+        "description": "Part Number - Main Information Panel",
+        "name": "PN-1-Main Information Panel"
+      },
+      "manufacturerOtanCode": {
+        "description": "Part Number - Main Information Panel - Manufacturer NATO Code Field",
+        "name": "PN-1-Manufacturer NATO Code"
+      },
+      "manufacturerOtanCode1": {
+        "description": "Part Number - NATO Codes Panel - Manufacturer NATO Code #1 Field",
+        "name": "PN-3-Manufacturer NATO Code #1"
+      },
+      "manufacturerOtanCode2": {
+        "description": "Part Number - NATO Codes Panel - Manufacturer NATO Code #2 Field",
+        "name": "PN-3-Manufacturer NATO Code #2"
+      },
+      "manufacturerOtanCode3": {
+        "description": "Part Number - NATO Codes Panel - Manufacturer NATO Code #3 Field",
+        "name": "PN-3-Manufacturer NATO Code #3"
+      },
+      "manufacturerOtanCode4": {
+        "description": "Part Number - NATO Codes Panel - Manufacturer NATO Code #4 Field",
+        "name": "PN-3-Manufacturer NATO Code #4"
+      },
+      "manufacturerOtanCode5": {
+        "description": "Part Number - NATO Codes Panel - Manufacturer NATO Code #5 Field",
+        "name": "PN-3-Manufacturer NATO Code #5"
+      },
+      "manufacturerOtanCode6": {
+        "description": "Part Number - NATO Codes Panel - Manufacturer NATO Code #6 Field",
+        "name": "PN-3-Manufacturer NATO Code #6"
+      },
+      "natoPanel": {
+        "description": "Part Number - NATO Codes Panel",
+        "name": "PN-3-NATO Codes Panel"
+      },
+      "openReferenceMeasurements": {
+        "description": "Part Number - Reference Measurements Panel - Open Button",
+        "name": "PN-5-Open"
+      },
+      "otanPnReference": {
+        "description": "Part Number - Additional Information Panel - Part NATO Code Field",
+        "name": "PN-2-Part NATO Code"
+      },
+      "pnCode": {
+        "description": "Part Number - Main Information Panel - Part Number Code Field",
+        "name": "PN-1-Part Number Code"
+      },
+      "pnCode1": {
+        "description": "Part Number - NATO Codes Panel - Part NATO Code #1 Field",
+        "name": "PN-3-Part NATO Code #1"
+      },
+      "pnCode2": {
+        "description": "Part Number - NATO Codes Panel - Part NATO Code #2 Field",
+        "name": "PN-3-Part NATO Code #2"
+      },
+      "pnCode3": {
+        "description": "Part Number - NATO Codes Panel - Part NATO Code #3 Field",
+        "name": "PN-3-Part NATO Code #3"
+      },
+      "pnCode4": {
+        "description": "Part Number - NATO Codes Panel - Part NATO Code #4 Field",
+        "name": "PN-3-Part NATO Code #4"
+      },
+      "pnCode5": {
+        "description": "Part Number - NATO Codes Panel - Part NATO Code #5 Field",
+        "name": "PN-3-Part NATO Code #5"
+      },
+      "pnCode6": {
+        "description": "Part Number - NATO Codes Panel - Part NATO Code #6 Field",
+        "name": "PN-3-Part NATO Code #6"
+      },
+      "pnType": {
+        "description": "Part Number - Main Information Panel - Type Field",
+        "name": "PN-1-Type"
+      },
+      "quantityUnit": {
+        "description": "Part Number - Additional Information Panel - Quantity Unit Field",
+        "name": "PN-2-Quantity Unit"
+      },
+      "referencePanel": {
+        "description": "Part Number - Reference Measurements Panel",
+        "name": "PN-5-Reference Measurements Panel"
+      },
+      "refresh": {
+        "description": "Part Number - Header - Refresh Button",
+        "name": "PN-0-Refresh"
+      },
+      "save": {
+        "description": "Part Number - Header - Save Button",
+        "name": "PN-0-Save"
+      },
+      "statusHistory": {
+        "description": "Part Number - Header - Status history Button",
+        "name": "PN-0-Status history"
+      },
+      "statusState": {
+        "description": "Part Number - Main Information Panel - Status Field",
+        "name": "PN-1-Status"
+      },
+      "traceability": {
+        "description": "Part Number - Additional Information Panel - Traceability Field",
+        "name": "PN-2-Traceability"
+      }
+    },
+    "SbadFormComponent": {
+      "actions": {
+        "description": "Service Bulletin - Header - Actions Button",
+        "name": "SB-0-Actions"
+      },
+      "addBireConcernedAssetDisplayed": {
+        "description": "Service Bulletin - Concerned Assets Panel - Add Button",
+        "name": "SB-4-Add"
+      },
+      "addBireDocumentDisplayed": {
+        "description": "Service Bulletin - Documents Panel - Add Button",
+        "name": "SB-7-Add"
+      },
+      "addBireSbVariantsDisplayed": {
+        "description": "Service Bulletin - Concerned Families Panel - Add Button",
+        "name": "SB-3-Add"
+      },
+      "addLimitsAndApplicabilitiesDisplayed": {
+        "description": "Service Bulletin - Limits and Periodicities Panel - Add Button",
+        "name": "SB-5-Add"
+      },
+      "applicabilitiesTab": {
+        "description": "Service Bulletin - - Applicabilities Tab",
+        "name": "SB-0-Applicabilities"
+      },
+      "attributesPanel": {
+        "description": "Service Bulletin - Attributes Panel",
+        "name": "SB-6-Attributes Panel"
+      },
+      "bireConcernedAssetDisplayed": {
+        "description": "Service Bulletin - Concerned Assets Panel - Concerned Assets Table",
+        "name": "SB-4-Concerned Assets"
+      },
+      "bireDocumentDisplayed": {
+        "description": "Service Bulletin - Documents Panel - Documents Table",
+        "name": "SB-7-Documents"
+      },
+      "bireEvolutionSbsDisplayed": {
+        "description": "Service Bulletin - Evolutions Panel - Evolutions Table",
+        "name": "SB-2-Evolutions"
+      },
+      "bireSbVariantsDisplayed": {
+        "description": "Service Bulletin - Concerned Families Panel - Concerned Families Table",
+        "name": "SB-3-Concerned Families"
+      },
+      "cancel": {
+        "description": "Service Bulletin - Header - Cancel Button",
+        "name": "SB-0-Cancel"
+      },
+      "concernedAssetsPanel": {
+        "description": "Service Bulletin - Concerned Assets Panel",
+        "name": "SB-4-Concerned Assets Panel"
+      },
+      "concernedFamiliesPanel": {
+        "description": "Service Bulletin - Concerned Families Panel",
+        "name": "SB-3-Concerned Families Panel"
+      },
+      "deleteBireConcernedAssetDisplayed": {
+        "description": "Service Bulletin - Concerned Assets Panel - Delete Button",
+        "name": "SB-4-Delete"
+      },
+      "deleteBireDocumentDisplayed": {
+        "description": "Service Bulletin - Documents Panel - Delete Button",
+        "name": "SB-7-Delete"
+      },
+      "deleteBireSbVariantsDisplayed": {
+        "description": "Service Bulletin - Concerned Families Panel - Delete Button",
+        "name": "SB-3-Delete"
+      },
+      "deleteLimitsAndApplicabilitiesDisplayed": {
+        "description": "Service Bulletin - Limits and Periodicities Panel - Delete Button",
+        "name": "SB-5-Delete"
+      },
+      "displayStatusBireEvolutionSbsDisplayed": {
+        "description": "Service Bulletin - Evolutions Panel - Display Status Button",
+        "name": "SB-2-Display Status"
+      },
+      "documentsPanel": {
+        "description": "Service Bulletin - Documents Panel",
+        "name": "SB-7-Documents Panel"
+      },
+      "documentsTab": {
+        "description": "Service Bulletin - - Documents Tab",
+        "name": "SB-0-Documents"
+      },
+      "downloadBireDocumentDisplayed": {
+        "description": "Service Bulletin - Documents Panel - Download Button",
+        "name": "SB-7-Download"
+      },
+      "dynamicAttributes": {
+        "description": "Service Bulletin - Attributes Panel - Attributes Attributes",
+        "name": "SB-6-Attributes"
+      },
+      "edit": {
+        "description": "Service Bulletin - Header - Edit Button",
+        "name": "SB-0-Edit"
+      },
+      "editBireConcernedAssetDisplayed": {
+        "description": "Service Bulletin - Concerned Assets Panel - Edit Button",
+        "name": "SB-4-Edit"
+      },
+      "editBireDocumentDisplayed": {
+        "description": "Service Bulletin - Documents Panel - Edit Button",
+        "name": "SB-7-Edit"
+      },
+      "editBireSbVariantsDisplayed": {
+        "description": "Service Bulletin - Concerned Families Panel - Edit Button",
+        "name": "SB-3-Edit"
+      },
+      "editLimitsAndApplicabilitiesDisplayed": {
+        "description": "Service Bulletin - Limits and Periodicities Panel - Edit Button",
+        "name": "SB-5-Edit"
+      },
+      "evolutionsPanel": {
+        "description": "Service Bulletin - Evolutions Panel",
+        "name": "SB-2-Evolutions Panel"
+      },
+      "favorites": {
+        "description": "Service Bulletin - Header - Favorites Button",
+        "name": "SB-0-Favorites"
+      },
+      "generateCommentLimitsAndApplicabilitiesDisplayed": {
+        "description": "Service Bulletin - Limits and Periodicities Panel - Generate Comment Button",
+        "name": "SB-5-Generate Comment"
+      },
+      "homeTab": {
+        "description": "Service Bulletin - - Home Tab",
+        "name": "SB-0-Home"
+      },
+      "limitsAndApplicabilitiesDisplayed": {
+        "description": "Service Bulletin - Limits and Periodicities Panel - Limits and Periodicities Table",
+        "name": "SB-5-Limits and Periodicities"
+      },
+      "limitsAndPeriodicitiesPanel": {
+        "description": "Service Bulletin - Limits and Periodicities Panel",
+        "name": "SB-5-Limits and Periodicities Panel"
+      },
+      "mainDataPanel": {
+        "description": "Service Bulletin - Main Information Panel",
+        "name": "SB-1-Main Information Panel"
+      },
+      "openBireConcernedAssetDisplayed": {
+        "description": "Service Bulletin - Concerned Assets Panel - Open Button",
+        "name": "SB-4-Open"
+      },
+      "openBireDocumentDisplayed": {
+        "description": "Service Bulletin - Documents Panel - Open Button",
+        "name": "SB-7-Open"
+      },
+      "openBireSbVariantsDisplayed": {
+        "description": "Service Bulletin - Concerned Families Panel - Open Button",
+        "name": "SB-3-Open"
+      },
+      "openLimitsAndApplicabilitiesDisplayed": {
+        "description": "Service Bulletin - Limits and Periodicities Panel - Open Button",
+        "name": "SB-5-Open"
+      },
+      "planCode": {
+        "description": "Service Bulletin - Main Information Panel - Material Maintenance Program Field",
+        "name": "SB-1-Material Maintenance Program"
+      },
+      "refresh": {
+        "description": "Service Bulletin - Header - Refresh Button",
+        "name": "SB-0-Refresh"
+      },
+      "save": {
+        "description": "Service Bulletin - Header - Save Button",
+        "name": "SB-0-Save"
+      },
+      "sbAssets": {
+        "description": "Service Bulletin - Concerned Assets Panel - At least P/N or S/N needs to be entered for each line. Field",
+        "name": "SB-4-At least P/N or S/N needs to be entered for each line."
+      },
+      "sbClass": {
+        "description": "Service Bulletin - Main Information Panel - Classification Dropdown",
+        "name": "SB-1-Classification"
+      },
+      "sbCompliance": {
+        "description": "Service Bulletin - Main Information Panel - Compliance Dropdown",
+        "name": "SB-1-Compliance"
+      },
+      "sbComplianceInformation": {
+        "description": "Service Bulletin - Main Information Panel - Compliance Information Field",
+        "name": "SB-1-Compliance Information"
+      },
+      "sbDocumentUrl": {
+        "description": "Service Bulletin - Main Information Panel - Document URL Field",
+        "name": "SB-1-Document URL"
+      },
+      "sbEffectiveDate": {
+        "description": "Service Bulletin - Main Information Panel - Effective Date Field",
+        "name": "SB-1-Effective Date"
+      },
+      "sbNumber": {
+        "description": "Service Bulletin - Main Information Panel - Number Field",
+        "name": "SB-1-Number"
+      },
+      "sbPublicationDate": {
+        "description": "Service Bulletin - Main Information Panel - Publication Date Field",
+        "name": "SB-1-Publication Date"
+      },
+      "sbRevisionNumber": {
+        "description": "Service Bulletin - Main Information Panel - Revision Number Field",
+        "name": "SB-1-Revision Number"
+      },
+      "sbTitle": {
+        "description": "Service Bulletin - Main Information Panel - Designation Field",
+        "name": "SB-1-Designation"
+      },
+      "sbType": {
+        "description": "Service Bulletin - Main Information Panel - Type Dropdown",
+        "name": "SB-1-Type"
+      },
+      "updates": {
+        "description": "Service Bulletin - Header - Updates Button",
+        "name": "SB-0-Updates"
+      },
+      "upgrade": {
+        "description": "Service Bulletin - Header - Upgrade Button",
+        "name": "SB-0-Upgrade"
+      }
+    },
+    "WorkOrderFormComponent": {
+      "actions": {
+        "description": "Work Order - Header - Actions Button",
+        "name": "WO-0-Actions"
+      },
+      "addDefectsTableForDisplay": {
+        "description": "Work Order - Defects Panel - Add Button",
+        "name": "WO-11-Add"
+      },
+      "addResultsTable": {
+        "description": "Work Order - Request Management Panel - Add Button",
+        "name": "WO-10-Add"
+      },
+      "addStakeholders": {
+        "description": "Work Order - Stakeholders Panel - Add Button",
+        "name": "WO-6-Add"
+      },
+      "addToAcrsEventDefectsTableForDisplay": {
+        "description": "Work Order - Defects Panel - Add to ACRS event Button",
+        "name": "WO-11-Add to ACRS event"
+      },
+      "addWo": {
+        "description": "Work Order - Header - Add Work Order Button",
+        "name": "WO-0-Add Work Order"
+      },
+      "addWoBidmDocumentsTableData": {
+        "description": "Work Order - Work Order Documents Panel - Add Button",
+        "name": "WO-13-Add"
+      },
+      "additionalWorkPanel": {
+        "description": "Work Order - Additional work Panel",
+        "name": "WO-9-Additional work Panel"
+      },
+      "aircraftRegistration": {
+        "description": "Work Order - Work Package Panel - Aircraft TN Field",
+        "name": "WO-3-Aircraft TN"
+      },
+      "bidtWorkCenter": {
+        "description": "Work Order - Main Information Panel - Workshop Field",
+        "name": "WO-1-Workshop"
+      },
+      "bireRepairCenterCode": {
+        "description": "Work Order - Work Package Panel - MRO Center Dropdown",
+        "name": "WO-3-MRO Center"
+      },
+      "cancelPost": {
+        "description": "Work Order - Header - Cancel Postponement Request Button",
+        "name": "WO-0-Cancel Postponement Request"
+      },
+      "cancelResultsTable": {
+        "description": "Work Order - Request Management Panel - Cancel Button",
+        "name": "WO-10-Cancel"
+      },
+      "chart": {
+        "description": "Work Order - Work in progress Panel - Operations Chart",
+        "name": "WO-2-Operations"
+      },
+      "closeDefectsTableForDisplay": {
+        "description": "Work Order - Defects Panel - Close Button",
+        "name": "WO-11-Close"
+      },
+      "commentPanel": {
+        "description": "Work Order - Comment Panel",
+        "name": "WO-8-Comment Panel"
+      },
+      "controlBtnOutgoingConfigurationPanel": {
+        "description": "Work Order - Outgoing Configuration Panel - CONTROL Button",
+        "name": "WO-5-CONTROL"
+      },
+      "defectTableSummary": {
+        "description": "Work Order - Defects Panel - Defects Summary Table",
+        "name": "WO-11-Defects Summary"
+      },
+      "defectsPanel": {
+        "description": "Work Order - Defects Panel",
+        "name": "WO-11-Defects Panel"
+      },
+      "defectsTab": {
+        "description": "Work Order - - Defects Tab",
+        "name": "WO-0-Defects"
+      },
+      "defectsTableForDisplay": {
+        "description": "Work Order - Defects Panel - Defects Table",
+        "name": "WO-11-Defects"
+      },
+      "deleteDefectsTableForDisplay": {
+        "description": "Work Order - Defects Panel - Delete Button",
+        "name": "WO-11-Delete"
+      },
+      "deleteOperationTable": {
+        "description": "Work Order - Operations Panel - Delete Button",
+        "name": "WO-7-Delete"
+      },
+      "deleteResultsTable": {
+        "description": "Work Order - Request Management Panel - Delete Button",
+        "name": "WO-10-Delete"
+      },
+      "deleteStakeholders": {
+        "description": "Work Order - Stakeholders Panel - Delete Button",
+        "name": "WO-6-Delete"
+      },
+      "deleteWoBidmDocumentsTableData": {
+        "description": "Work Order - Work Order Documents Panel - Delete Button",
+        "name": "WO-13-Delete"
+      },
+      "documentTableDisplayed": {
+        "description": "Work Order - Task Documents Panel - Task Documents Table",
+        "name": "WO-12-Task Documents"
+      },
+      "downloadDocumentTableDisplayed": {
+        "description": "Work Order - Task Documents Panel - Download Button",
+        "name": "WO-12-Download"
+      },
+      "downloadWoBidmDocumentsTableData": {
+        "description": "Work Order - Work Order Documents Panel - Download Button",
+        "name": "WO-13-Download"
+      },
+      "editAdditionalWorkPanel": {
+        "description": "Work Order - Additional work Panel - Edit Button",
+        "name": "WO-9-Edit"
+      },
+      "editCommentPanel": {
+        "description": "Work Order - Comment Panel - Edit Button",
+        "name": "WO-8-Edit"
+      },
+      "editDurationOperationTable": {
+        "description": "Work Order - Operations Panel - Edit Duration Button",
+        "name": "WO-7-Edit Duration"
+      },
+      "editResultsTable": {
+        "description": "Work Order - Request Management Panel - Edit Button",
+        "name": "WO-10-Edit"
+      },
+      "editStakeholders": {
+        "description": "Work Order - Stakeholders Panel - Edit Button",
+        "name": "WO-6-Edit"
+      },
+      "editWoBidmDocumentsTableData": {
+        "description": "Work Order - Work Order Documents Panel - Edit Button",
+        "name": "WO-13-Edit"
+      },
+      "endDate": {
+        "description": "Work Order - Work in progress Panel - Closing date Field",
+        "name": "WO-2-Closing date"
+      },
+      "exportDefectsTableForDisplay": {
+        "description": "Work Order - Defects Panel - Export Button",
+        "name": "WO-11-Export"
+      },
+      "favorites": {
+        "description": "Work Order - Header - Favorites Button",
+        "name": "WO-0-Favorites"
+      },
+      "filler": {
+        "description": "Work Order - Main Information Panel - Filler Field",
+        "name": "WO-1-Filler"
+      },
+      "filler2": {
+        "description": "Work Order - Work Package Panel - Filler Field",
+        "name": "WO-3-Filler"
+      },
+      "goTo": {
+        "description": "Work Order - Header - Go to Button",
+        "name": "WO-0-Go to"
+      },
+      "goodsMovements": {
+        "description": "Work Order - Header - Goods Movements Button",
+        "name": "WO-0-Goods Movements"
+      },
+      "homeTab": {
+        "description": "Work Order - - Home Tab",
+        "name": "WO-0-Home"
+      },
+      "mainInformationPanel": {
+        "description": "Work Order - Main Information Panel",
+        "name": "WO-1-Main Information Panel"
+      },
+      "materialAvailabilityPanel": {
+        "description": "Work Order - Material Availability Panel",
+        "name": "WO-4-Material Availability Panel"
+      },
+      "nok": {
+        "description": "Work Order - Material Availability Panel - NOK Field",
+        "name": "WO-4-NOK"
+      },
+      "nok2": {
+        "description": "Work Order - Outgoing Configuration Panel - NOK Field",
+        "name": "WO-5-NOK"
+      },
+      "ok": {
+        "description": "Work Order - Material Availability Panel - OK Field",
+        "name": "WO-4-OK"
+      },
+      "ok2": {
+        "description": "Work Order - Outgoing Configuration Panel - OK Field",
+        "name": "WO-5-OK"
+      },
+      "opeLogOperationTable": {
+        "description": "Work Order - Operations Panel - Operation Log Button",
+        "name": "WO-7-Operation Log"
+      },
+      "openBtnMaterialAvailabilityPanel": {
+        "description": "Work Order - Material Availability Panel - OPEN Button",
+        "name": "WO-4-OPEN"
+      },
+      "openBtnOutgoingConfigurationPanel": {
+        "description": "Work Order - Outgoing Configuration Panel - OPEN Button",
+        "name": "WO-5-OPEN"
+      },
+      "operationTable": {
+        "description": "Work Order - Operations Panel - Operations Table",
+        "name": "WO-7-Operations"
+      },
+      "operationsPanel": {
+        "description": "Work Order - Operations Panel",
+        "name": "WO-7-Operations Panel"
+      },
+      "originText": {
+        "description": "Work Order - Main Information Panel - Source Field",
+        "name": "WO-1-Source"
+      },
+      "outgoingConfigurationPanel": {
+        "description": "Work Order - Outgoing Configuration Panel",
+        "name": "WO-5-Outgoing Configuration Panel"
+      },
+      "print": {
+        "description": "Work Order - Header - Print Button",
+        "name": "WO-0-Print"
+      },
+      "procurementRequestsTab": {
+        "description": "Work Order - - Procurement Requests Tab",
+        "name": "WO-0-Procurement Requests"
+      },
+      "projectNumber": {
+        "description": "Work Order - Work Package Panel - Number Field",
+        "name": "WO-3-Number"
+      },
+      "qualificationNeeded": {
+        "description": "Work Order - Main Information Panel - Qualification Field",
+        "name": "WO-1-Qualification"
+      },
+      "refresh": {
+        "description": "Work Order - Header - Refresh Button",
+        "name": "WO-0-Refresh"
+      },
+      "refreshDefectsTableForDisplay": {
+        "description": "Work Order - Defects Panel - Refresh Button",
+        "name": "WO-11-Refresh"
+      },
+      "relatedItem": {
+        "description": "Work Order - Main Information Panel - Item Field",
+        "name": "WO-1-Item"
+      },
+      "request": {
+        "description": "Work Order - Header - Request For Postponement Button",
+        "name": "WO-0-Request For Postponement"
+      },
+      "requestManagmentPanel": {
+        "description": "Work Order - Request Management Panel",
+        "name": "WO-10-Request Management Panel"
+      },
+      "resultsTable": {
+        "description": "Work Order - Request Management Panel - Request Management Table",
+        "name": "WO-10-Request Management"
+      },
+      "saveAdditionalWorkPanel": {
+        "description": "Work Order - Additional work Panel - Save Button",
+        "name": "WO-9-Save"
+      },
+      "saveCommentPanel": {
+        "description": "Work Order - Comment Panel - Save Button",
+        "name": "WO-8-Save"
+      },
+      "saveWoBidmDocumentsTableData": {
+        "description": "Work Order - Work Order Documents Panel - Save Button",
+        "name": "WO-13-Save"
+      },
+      "stakeholdersPanel": {
+        "description": "Work Order - Stakeholders Panel",
+        "name": "WO-6-Stakeholders Panel"
+      },
+      "stakeholdersTableDataSource": {
+        "description": "Work Order - Stakeholders Panel - Stakeholders Table",
+        "name": "WO-6-Stakeholders"
+      },
+      "startDate": {
+        "description": "Work Order - Work in progress Panel - Opening date Field",
+        "name": "WO-2-Opening date"
+      },
+      "taskDocumentsPanel": {
+        "description": "Work Order - Task Documents Panel",
+        "name": "WO-12-Task Documents Panel"
+      },
+      "taskDocumentsTab": {
+        "description": "Work Order - - Task Documents Tab",
+        "name": "WO-0-Task Documents"
+      },
+      "totalDuration": {
+        "description": "Work Order - Work in progress Panel - Total duration Field",
+        "name": "WO-2-Total duration"
+      },
+      "totalElapsed": {
+        "description": "Work Order - Work in progress Panel - Total elapsed Field",
+        "name": "WO-2-Total elapsed"
+      },
+      "warning": {
+        "description": "Work Order - Material Availability Panel - Warning Field",
+        "name": "WO-4-Warning"
+      },
+      "warning2": {
+        "description": "Work Order - Outgoing Configuration Panel - Warning Field",
+        "name": "WO-5-Warning"
+      },
+      "woAdditionalWork": {
+        "description": "Work Order - Additional work Panel - Additional work Field",
+        "name": "WO-9-Additional work"
+      },
+      "woAssignedTo": {
+        "description": "Work Order - Main Information Panel - Accountable Field",
+        "name": "WO-1-Accountable"
+      },
+      "woBidmDocumentsTableData": {
+        "description": "Work Order - Work Order Documents Panel - Work Order Documents Table",
+        "name": "WO-13-Work Order Documents"
+      },
+      "woCheckedBy": {
+        "description": "Work Order - Work in progress Panel - Checked by Field",
+        "name": "WO-2-Checked by"
+      },
+      "woCode": {
+        "description": "Work Order - Main Information Panel - Number Field",
+        "name": "WO-1-Number"
+      },
+      "woComments": {
+        "description": "Work Order - Comment Panel - Comments Field",
+        "name": "WO-8-Comments"
+      },
+      "woDescription": {
+        "description": "Work Order - Main Information Panel - Description Field",
+        "name": "WO-1-Description"
+      },
+      "woDocumentsPanel": {
+        "description": "Work Order - Work Order Documents Panel",
+        "name": "WO-13-Work Order Documents Panel"
+      },
+      "woEquipement": {
+        "description": "Work Order - Main Information Panel - Asset Field",
+        "name": "WO-1-Asset"
+      },
+      "woPerformedBy": {
+        "description": "Work Order - Work in progress Panel - Performed by Field",
+        "name": "WO-2-Performed by"
+      },
+      "woStatusProgressPercent": {
+        "description": "Work Order - Work in progress Panel - Progress Field",
+        "name": "WO-2-Progress"
+      },
+      "woTask": {
+        "description": "Work Order - Main Information Panel - Task Field",
+        "name": "WO-1-Task"
+      },
+      "woType": {
+        "description": "Work Order - Main Information Panel - Type Dropdown",
+        "name": "WO-1-Type"
+      },
+      "workInProgressPanel": {
+        "description": "Work Order - Work in progress Panel",
+        "name": "WO-2-Work in progress Panel"
+      },
+      "workOrderDocumentsTab": {
+        "description": "Work Order - - Work Order Documents Tab",
+        "name": "WO-0-Work Order Documents"
+      },
+      "workPackagePanel": {
+        "description": "Work Order - Work Package Panel",
+        "name": "WO-3-Work Package Panel"
+      },
+      "worksTab": {
+        "description": "Work Order - - Works Tab",
+        "name": "WO-0-Works"
+      },
+      "wpAircraftType": {
+        "description": "Work Order - Work Package Panel - Aircraft type Field",
+        "name": "WO-3-Aircraft type"
+      }
+    },
+    "WorkPackageFormComponent": {
+      "actions": {
+        "description": "Work Package - Header - Actions Button",
+        "name": "WP-0-Actions"
+      },
+      "addDefectsTableForDisplay": {
+        "description": "Work Package - Defects Panel - Add Button",
+        "name": "WP-8-Add"
+      },
+      "addToAcrsEventDefectsTableForDisplay": {
+        "description": "Work Package - Defects Panel - Add to ACRS event Button",
+        "name": "WP-8-Add to ACRS event"
+      },
+      "addWorkOrderTable": {
+        "description": "Work Package - Work Orders Panel - Add Button",
+        "name": "WP-7-Add"
+      },
+      "additionalDataTab": {
+        "description": "Work Package - - Additional Information Tab",
+        "name": "WP-0-Additional Information"
+      },
+      "assetName": {
+        "description": "Work Package - Main Information Panel - Asset Field",
+        "name": "WP-1-Asset"
+      },
+      "bidoCustomerCode": {
+        "description": "Work Package - Additional Information Panel - Customer Field",
+        "name": "WP-6-Customer"
+      },
+      "bidoOperationCode": {
+        "description": "Work Package - Additional Information Panel - Operation Dropdown",
+        "name": "WP-6-Operation"
+      },
+      "bireRepairCenterCode": {
+        "description": "Work Package - Main Information Panel - MRO Center Dropdown",
+        "name": "WP-1-MRO Center"
+      },
+      "bireReturnReasonCode": {
+        "description": "Work Package - Additional Information Panel - Return Reason Dropdown",
+        "name": "WP-6-Return Reason"
+      },
+      "calendarWorkOrderTable": {
+        "description": "Work Package - Work Orders Panel - Calendar Button",
+        "name": "WP-7-Calendar"
+      },
+      "chart": {
+        "description": "Work Package - Work Order Progress Panel - Work Order Progress Chart",
+        "name": "WP-4-Work Order Progress"
+      },
+      "chart2": {
+        "description": "Work Package - Timeline and Costs Panel - Workload Chart",
+        "name": "WP-5-Workload"
+      },
+      "chart3": {
+        "description": "Work Package - Timeline and Costs Panel - Duration Chart",
+        "name": "WP-5-Duration"
+      },
+      "chart4": {
+        "description": "Work Package - Timeline and Costs Panel - Cost Chart",
+        "name": "WP-5-Cost"
+      },
+      "closeDefectsTableForDisplay": {
+        "description": "Work Package - Defects Panel - Close Button",
+        "name": "WP-8-Close"
+      },
+      "componentCockpitTab": {
+        "description": "Work Package -- Component Cockpit Panel",
+        "name": "WP-0-Component Cockpit"
+      },
+      "defectCALastAuthor": {
+        "description": "Work Package - Defects Panel - Corrective action last author Field",
+        "name": "WP-8-Corrective action last author"
+      },
+      "defectLastAuthor": {
+        "description": "Work Package - Defects Panel - Defect last author Field",
+        "name": "WP-8-Defect last author"
+      },
+      "defectName": {
+        "description": "Work Package - Defects Panel - Name Field",
+        "name": "WP-8-Name"
+      },
+      "defectTableSummary": {
+        "description": "Work Package - Defects Panel - Defects Table",
+        "name": "WP-8-Defects"
+      },
+      "defectsPanel": {
+        "description": "Work Package - Defects Panel",
+        "name": "WP-8-Defects Panel"
+      },
+      "defectsTab": {
+        "description": "Work Package - - Defects Tab",
+        "name": "WP-0-Defects"
+      },
+      "defectsTableForDisplay": {
+        "description": "Work Package - Defects Panel - Defects Table",
+        "name": "WP-8-Defects"
+      },
+      "deferralLastAuthor": {
+        "description": "Work Package - Defects Panel - Deferral last author Field",
+        "name": "WP-8-Deferral last author"
+      },
+      "deleteDefectsTableForDisplay": {
+        "description": "Work Package - Defects Panel - Delete Button",
+        "name": "WP-8-Delete"
+      },
+      "deleteDocument": {
+        "description": "Work Package - Documents Panel - Delete Button",
+        "name": "WP-9-Delete"
+      },
+      "deleteWorkOrderTable": {
+        "description": "Work Package - Work Orders Panel - Delete Button",
+        "name": "WP-7-Delete"
+      },
+      "documentTableDataSource": {
+        "description": "Work Package - Documents Panel - Documents Table",
+        "name": "WP-9-Documents"
+      },
+      "documentsPanel": {
+        "description": "Work Package - Documents Panel",
+        "name": "WP-9-Documents Panel"
+      },
+      "documentsTab": {
+        "description": "Work Package - - Documents Tab",
+        "name": "WP-0-Documents"
+      },
+      "downloadDocument": {
+        "description": "Work Package - Documents Panel - Download Button",
+        "name": "WP-9-Download"
+      },
+      "dueDateDelta": {
+        "description": "Work Package - Main Information Panel - Delta Field",
+        "name": "WP-1-Delta"
+      },
+      "edit": {
+        "description": "Work Package - Header - Edit Button",
+        "name": "WP-0-Edit"
+      },
+      "editDocument": {
+        "description": "Work Package - Documents Panel - Edit Button",
+        "name": "WP-9-Edit"
+      },
+      "editWorkOrderTable": {
+        "description": "Work Package - Work Orders Panel - Edit Button",
+        "name": "WP-7-Edit"
+      },
+      "exportDefectsTableForDisplay": {
+        "description": "Work Package - Defects Panel - Export Button",
+        "name": "WP-8-Export"
+      },
+      "favorites": {
+        "description": "Work Package - Header - Favorites Button",
+        "name": "WP-0-Favorites"
+      },
+      "generalPanel": {
+        "description": "Work Package - Additional Information Panel",
+        "name": "WP-6-Additional Information Panel"
+      },
+      "goTo": {
+        "description": "Work Package - Header - Go to Button",
+        "name": "WP-0-Go to"
+      },
+      "goodsMovement": {
+        "description": "Work Package - Header - Goods Movement Button",
+        "name": "WP-0-Goods Movement"
+      },
+      "goodsMovementsWorkOrderTable": {
+        "description": "Work Package - Work Orders Panel - Goods Movements Button",
+        "name": "WP-7-Goods Movements"
+      },
+      "homeTab": {
+        "description": "Work Package - - Home Tab",
+        "name": "WP-0-Home"
+      },
+      "importTask": {
+        "description": "Work Package - Header - Import Task List Button",
+        "name": "WP-0-Import Task List"
+      },
+      "mainInformationPanel": {
+        "description": "Work Package - Main Information Panel",
+        "name": "WP-1-Main Information Panel"
+      },
+      "materialAvailabilityPanel": {
+        "description": "Work Package - Material Availability Panel",
+        "name": "WP-2-Material Availability Panel"
+      },
+      "nok": {
+        "description": "Work Package - Material Availability Panel - NOK Field",
+        "name": "WP-2-NOK"
+      },
+      "nok2": {
+        "description": "Work Package - Outgoing Configuration Panel - NOK Field",
+        "name": "WP-3-NOK"
+      },
+      "ok": {
+        "description": "Work Package - Material Availability Panel - OK Field",
+        "name": "WP-2-OK"
+      },
+      "ok2": {
+        "description": "Work Package - Outgoing Configuration Panel - OK Field",
+        "name": "WP-3-OK"
+      },
+      "openBtnMaterialAvailabilityPanel": {
+        "description": "Work Package - Material Availability Panel - Open Button",
+        "name": "WP-2-Open"
+      },
+      "openBtnOutgoingConfigurationPanel": {
+        "description": "Work Package - Outgoing Configuration Panel - Open Button",
+        "name": "WP-3-Open"
+      },
+      "openDocument": {
+        "description": "Work Package - Documents Panel - Open Button",
+        "name": "WP-9-Open"
+      },
+      "openWorkOrderTable": {
+        "description": "Work Package - Work Orders Panel - Open Button",
+        "name": "WP-7-Open"
+      },
+      "outgoingConfigurationPanel": {
+        "description": "Work Package - Outgoing Configuration Panel",
+        "name": "WP-3-Outgoing Configuration Panel"
+      },
+      "projectContactName": {
+        "description": "Work Package - Additional Information Panel - Contact Name Field",
+        "name": "WP-6-Contact Name"
+      },
+      "projectContactPhone": {
+        "description": "Work Package - Additional Information Panel - Contact Phone Field",
+        "name": "WP-6-Contact Phone"
+      },
+      "projectDescription": {
+        "description": "Work Package - Additional Information Panel - Description Field",
+        "name": "WP-6-Description"
+      },
+      "projectDueDate": {
+        "description": "Work Package - Main Information Panel - Due Date Field",
+        "name": "WP-1-Due Date"
+      },
+      "projectName": {
+        "description": "Work Package - Main Information Panel - Name Field",
+        "name": "WP-1-Name"
+      },
+      "projectStartDate": {
+        "description": "Work Package - Main Information Panel - Start Date Field",
+        "name": "WP-1-Start Date"
+      },
+      "projectTAT": {
+        "description": "Work Package - Main Information Panel - Project TAT Field",
+        "name": "WP-1-Project TAT"
+      },
+      "projectTargetedTat": {
+        "description": "Work Package - Main Information Panel - Target TAT Field",
+        "name": "WP-1-Target TAT"
+      },
+      "projectType": {
+        "description": "Work Package - Additional Information Panel - Type Dropdown",
+        "name": "WP-6-Type"
+      },
+      "purchaseRequestCode": {
+        "description": "Work Package - Additional Information Panel - Purchase Request Field",
+        "name": "WP-6-Purchase Request"
+      },
+      "receivingAssignedTo": {
+        "description": "Work Package - Main Information Panel - Assigned to Dropdown",
+        "name": "WP-1-Assigned to"
+      },
+      "receivingDate": {
+        "description": "Work Package - Additional Information Panel - Date of Receipt Field",
+        "name": "WP-6-Date of Receipt"
+      },
+      "receivingDeliveyRef": {
+        "description": "Work Package - Additional Information Panel - Delivery Reference Field",
+        "name": "WP-6-Delivery Reference"
+      },
+      "receivingDescription": {
+        "description": "Work Package - Additional Information Panel - Description Field",
+        "name": "WP-6-Description"
+      },
+      "receivingInventory": {
+        "description": "Work Package - Additional Information Panel - Receiving Inventory Dropdown",
+        "name": "WP-6-Receiving Inventory"
+      },
+      "receivingIsDamaged": {
+        "description": "Work Package - Additional Information Panel - Damaged Checkbox",
+        "name": "WP-6-Damaged"
+      },
+      "receivingNumber": {
+        "description": "Work Package - Additional Information Panel - Receiving Number Field",
+        "name": "WP-6-Receiving Number"
+      },
+      "receivingNumberPackages": {
+        "description": "Work Package - Additional Information Panel - Number of Package Field",
+        "name": "WP-6-Number of Package"
+      },
+      "receivingPackagesRef": {
+        "description": "Work Package - Additional Information Panel - Package Reference Field",
+        "name": "WP-6-Package Reference"
+      },
+      "receivingPriority": {
+        "description": "Work Package - Additional Information Panel - Priority Dropdown",
+        "name": "WP-6-Priority"
+      },
+      "receivingRemarks": {
+        "description": "Work Package - Additional Information Panel - Remarks Field",
+        "name": "WP-6-Remarks"
+      },
+      "refresh": {
+        "description": "Work Package - Header - Refresh Button",
+        "name": "WP-0-Refresh"
+      },
+      "refreshDefectsTableForDisplay": {
+        "description": "Work Package - Defects Panel - Refresh Button",
+        "name": "WP-8-Refresh"
+      },
+      "report": {
+        "description": "Work Package - Header - Report Button",
+        "name": "WP-0-Report"
+      },
+      "salesRequestCode": {
+        "description": "Work Package - Additional Information Panel - Sales Request Field",
+        "name": "WP-6-Sales Request"
+      },
+      "save": {
+        "description": "Work Package - Header - Save Button",
+        "name": "WP-0-Save"
+      },
+      "timelineAndCostsPanel": {
+        "description": "Work Package - Timeline and Costs Panel",
+        "name": "WP-5-Timeline and Costs Panel"
+      },
+      "updateSchedulingWorkOrderTable": {
+        "description": "Work Package - Work Orders Panel - UPDATE SCHEDULING Button",
+        "name": "WP-7-UPDATE SCHEDULING"
+      },
+      "uploadDocument": {
+        "description": "Work Package - Documents Panel - Upload Chart",
+        "name": "WP-9-Upload"
+      },
+      "warning": {
+        "description": "Work Package - Material Availability Panel - Warning Field",
+        "name": "WP-2-Warning"
+      },
+      "warning2": {
+        "description": "Work Package - Outgoing Configuration Panel - Warning Field",
+        "name": "WP-3-Warning"
+      },
+      "workInProgressPanel": {
+        "description": "Work Package - Work Order Progress Panel",
+        "name": "WP-4-Work Order Progress Panel"
+      },
+      "workOrderTable": {
+        "description": "Work Package - Work Orders Panel - Work Orders Tree",
+        "name": "WP-7-Work Orders"
+      },
+      "workOrdersPanel": {
+        "description": "Work Package - Work Orders Panel",
+        "name": "WP-7-Work Orders Panel"
+      },
+      "workOrdersTab": {
+        "description": "Work Package - - Work Orders Tab",
+        "name": "WP-0-Work Orders"
+      }
+    },
+    "WorkshopHomeComponent": {
+      "articlesPanel": {
+        "description": "Workshop Home - Articles Panel",
+        "name": "WH-1-Articles Panel"
+      },
+      "cancel": {
+        "description": "Workshop Home - Header - Cancel Button",
+        "name": "WH-0-Cancel"
+      },
+      "edit": {
+        "description": "Workshop Home - Header - Edit Button",
+        "name": "WH-0-Edit"
+      },
+      "favorite": {
+        "description": "Workshop Home - Header - Favorite Button",
+        "name": "WH-0-Favorite"
+      },
+      "goTo": {
+        "description": "Workshop Home - Header - Go To Button",
+        "name": "WH-0-Go To"
+      },
+      "qualificationsStatusPanel": {
+        "description": "Workshop Home - Qualifications Status Panel",
+        "name": "WH-1-Qualifications Status Panel"
+      },
+      "refresh": {
+        "description": "Workshop Home - Header - Refresh Button",
+        "name": "WH-0-Refresh"
+      },
+      "save": {
+        "description": "Workshop Home - Header - Save Button",
+        "name": "WH-0-Save"
+      },
+      "statusHistory": {
+        "description": "Workshop Home - Header - Status history Button",
+        "name": "WH-0-Status history"
+      },
+      "supportResourcesPanel": {
+        "description": "Workshop Home - Support Resources Panel",
+        "name": "WH-1-Support Resources Panel"
+      },
+      "workloadPanel": {
+        "description": "Workshop Home - Workload Panel",
+        "name": "WH-1-Workload Panel"
+      }
+    },
+    "allStatus": "All status",
+    "assignmentOfProfiles": "Assignement of profiles",
+    "assignmentOfTargetStatus": "Assignement of the Target status",
+    "attributeControl": {
+      "description": "Attribute {{content}}",
+      "name": "Attribute {{content}}"
+    },
+    "bidtFuncObjectIdStr": "Functional Object",
+    "controlsManagement": "Controls management",
+    "errorOnDeletion": "Error while deletion",
+    "groupName": "Group Name",
+    "initialStatusStr": "Initial Status",
+    "isAffected": "Affected",
+    "isManaged": "Is Managed",
+    "isMandatory": "Is Mandatory",
+    "isReadOnly": "Is Read-Only",
+    "isVisible": "Is Visible",
+    "name": "Name",
+    "onSaveSuccess": "Save Successful",
+    "profileComment": "Comment",
+    "profileName": "Name",
+    "statusName": "Status"
+  },
+  "WorkflowManagementSearchComponent": {
+    "allStatus": "All status",
+    "bidtFuncObjectLabel": "Functional Object",
+    "bidtScenarioProfileList": "Associated Profiles List",
+    "confirmDeleteSelectedScenario": "Are you sure you want to delete selected Scenario?",
+    "confirmDeleteSelectedScenarios": "Are you sure you want to delete selected Scenarios?",
+    "initialStatusLabel": "Initial Status",
+    "name": "Name",
+    "targetStatusKeyList": "Target Status List"
+  }
+}

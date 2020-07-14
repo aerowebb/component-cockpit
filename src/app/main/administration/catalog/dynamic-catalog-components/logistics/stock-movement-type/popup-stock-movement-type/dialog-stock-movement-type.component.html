@@ -1,0 +1,280 @@
+<a-modal class="aw-modal" [(visible)]="display" [width]="70">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".title" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="grid-row">
+      <div class="grid-cell--12">
+        <div class="grid-cell--8">
+          <div class="grid-cell-content">
+            <div class="column">
+              <div class="row">
+                <div class="form-group" [ngClass]="{ required: isCreateOpenMode || isReadOpenMode || isWriteOpenMode }">
+                  <label class="form-label">
+                    {{ getComponentName() + ".key" | translate }}
+                  </label>
+
+                  <div class="form-control">
+                    <input
+                      #id="ngModel"
+                      type="text"
+                      class="aw-input"
+                      [(ngModel)]="bidtStockMvtTypeDTO.id"
+                      [disabled]="isReadOpenMode || !isCreateOpenMode"
+                      maxlength="50"
+                      [pKeyFilter]="inputValidationService.validatorOfNumber()"
+                      [pValidateOnly]="true"
+                    />
+                    <p-message
+                      *ngIf="id.invalid && (id.dirty || id.touched)"
+                      severity="error"
+                      [text]="inputValidationService.formatOfNumber()"
+                    ></p-message>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">
+                    {{ getComponentName() + ".name" | translate }}
+                  </label>
+
+                  <div class="form-control">
+                    <input
+                      type="text"
+                      class="aw-input"
+                      [(ngModel)]="bidtStockMvtTypeDTO.smtName"
+                      [disabled]="isReadOpenMode"
+                      maxlength="100"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="form-margin">
+                  <h3 class="grid-cell-title heading">
+                    {{ getComponentName() + ".meaning" | translate }}
+                  </h3>
+                </div>
+              </div>
+              <div class="row">
+                <div class="form-margin-selectbox">
+                  <p-selectButton
+                    [disabled]="isReadOpenMode"
+                    [(ngModel)]="bidtStockMvtTypeDTO.smtWay"
+                    [options]="changeMeaningList"
+                  ></p-selectButton>
+                </div>
+              </div>
+              <div class="row">
+                <div class="form-group">
+                  <label class="form-label">{{ getComponentName() + ".enteringAreaType" | translate }}</label>
+                  <div class="form-control">
+                    <p-dropdown
+                      name="status"
+                      class="aw-dropdown fixed-width"
+                      appendTo="body"
+                      placeholder="&nbsp;"
+                      [disabled]="isReadOpenMode"
+                      [options]="storageBinTypes"
+                      [(ngModel)]="bidtStockMvtTypeDTO.receiptAreaType"
+                    ></p-dropdown>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">{{ getComponentName() + ".outgoingZoneType" | translate }}</label>
+                  <div class="form-control">
+                    <p-dropdown
+                      name="status"
+                      class="aw-dropdown fixed-width"
+                      appendTo="body"
+                      placeholder="&nbsp;"
+                      [disabled]="isReadOpenMode"
+                      [options]="storageBinTypes"
+                      [(ngModel)]="bidtStockMvtTypeDTO.issueAreaType"
+                    ></p-dropdown>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="grid-cell--4">
+          <div class="details">
+            <div class="column">
+              <div class="section">
+                <h4 class="section-title">
+                  {{ getComponentName() + ".status" | translate }}
+                </h4>
+                <div class="section-content" style="height: 18em; overflow: auto;">
+                  <a-table [dataSource]="statusTableDataSource"> </a-table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="grid-row">
+      <div class="grid-cell--12">
+        <div class="grid-cell-header">
+          <div class="grid-cell-title-container">
+            <h3 class="grid-cell-title">
+              {{ getComponentName() + ".operations" | translate }}
+              ({{ operationsTableDataSource ? operationsTableDataSource.dataCount : 0 }})
+            </h3>
+          </div>
+        </div>
+        <div class="grid-cell-content">
+          <div class="column">
+            <div class="list-with-details">
+              <div class="grid-row">
+                <div class="grid-cell--12">
+                  <div class="grid-cell--8">
+                    <div class="list">
+                      <div class="list-header"></div>
+                      <a-table
+                        [dataSource]="operationsTableDataSource"
+                        (onRowSelect)="onOperationsRowSelectUnselect()"
+                        (onRowUnselect)="onOperationsRowSelectUnselect()"
+                      >
+                        <ng-template tableActionsDef>
+                          <button
+                            *ngIf="
+                              !isReadOpenMode &&
+                              operationsTableDataSource &&
+                              operationsTableDataSource.dataSrc.length > 1 &&
+                              operationsTableDataSource.hasDataSelection &&
+                              operationsTableDataSource.dataSelectionCount === 1
+                            "
+                            type="button"
+                            mat-raised-button
+                            (click)="moveDown()"
+                          >
+                            {{ getComponentName() + ".moveDown" | translate }}
+                          </button>
+                          <button
+                            *ngIf="
+                              !isReadOpenMode &&
+                              operationsTableDataSource &&
+                              operationsTableDataSource.dataSrc.length > 1 &&
+                              operationsTableDataSource.hasDataSelection &&
+                              operationsTableDataSource.dataSelectionCount === 1
+                            "
+                            type="button"
+                            mat-raised-button
+                            (click)="moveUp()"
+                          >
+                            {{ getComponentName() + ".moveUp" | translate }}
+                          </button>
+                          <button
+                            *ngIf="
+                              !isReadOpenMode &&
+                              operationsTableDataSource &&
+                              !operationsTableDataSource.hasDataSelection
+                            "
+                            type="button"
+                            mat-raised-button
+                            (click)="addOperation()"
+                          >
+                            {{ "global.add" | translate }}
+                          </button>
+                          <button
+                            *ngIf="
+                              !isReadOpenMode &&
+                              operationsTableDataSource &&
+                              operationsTableDataSource.hasDataSelection &&
+                              operationsTableDataSource.dataSelectionCount === 1
+                            "
+                            type="button"
+                            mat-raised-button
+                            (click)="editOperation()"
+                          >
+                            {{ "global.edit" | translate }}
+                          </button>
+                          <button
+                            *ngIf="
+                              !isReadOpenMode && operationsTableDataSource && operationsTableDataSource.hasDataSelection
+                            "
+                            type="button"
+                            mat-raised-button
+                            (click)="deleteOperations()"
+                          >
+                            {{ "global.delete" | translate }}
+                          </button>
+                        </ng-template>
+                      </a-table>
+                    </div>
+                  </div>
+                  <div class="grid-cell--4">
+                    <div class="details">
+                      <div class="column">
+                        <div class="section">
+                          <h4 class="section-title">
+                            {{ getComponentName() + ".materialTypes" | translate }}
+                          </h4>
+
+                          <div class="section-content" style="height: 18em; overflow: auto;">
+                            <a-table
+                              [dataSource]="partNumberTableDataSource"
+                              (onRowSelect)="onPartNumberRowSelectUnselect()"
+                              (onRowUnselect)="onPartNumberRowSelectUnselect()"
+                            >
+                            </a-table>
+                          </div>
+                        </div>
+
+                        <div class="section">
+                          <h4 class="section-title">
+                            {{ getComponentName() + ".linkedDocCategories" | translate }}
+                          </h4>
+
+                          <div class="section-content" style="height: 18em; overflow: auto;">
+                            <a-table
+                              [dataSource]="documentCategoriesTableDataSource"
+                              (onRowSelect)="onDocCategoriesRowSelectUnselect()"
+                              (onRowUnselect)="onDocCategoriesRowSelectUnselect()"
+                            >
+                            </a-table>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button *ngIf="isReadOpenMode" type="button" mat-raised-button (click)="closeDialog()">
+      <span>{{ "global.close" | translate }}</span>
+    </button>
+
+    <button *ngIf="!isReadOpenMode" type="button" mat-raised-button (click)="closeDialog()">
+      <span>{{ "global.cancel" | translate }}</span>
+    </button>
+
+    <button
+      *ngIf="!isReadOpenMode"
+      type="button"
+      color="primary"
+      mat-raised-button
+      (click)="validate()"
+      [disabled]="disableButton()"
+    >
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>
+<aw-dialog-operation-stock-movement
+  *ngIf="openDialogOperation"
+  [(display)]="openDialogOperation"
+  [data]="selectedOperation"
+  [openMode]="operationDialogOpenMode"
+  (onValidated)="validateOperation($event)"
+></aw-dialog-operation-stock-movement>

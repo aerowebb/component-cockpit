@@ -1,0 +1,8 @@
+{
+  "MaterialAvailabilityIndicatorsComponent": {
+    "materialAvailability": "Disponibilité du matériel",
+    "nok": "NOK",
+    "ok": "OK",
+    "warning": "ALERTE"
+  }
+}

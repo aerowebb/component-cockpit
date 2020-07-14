@@ -1,0 +1,217 @@
+<div class="page-header">
+  <div class="page-info">
+    <div>
+      <div class="page-title">
+        {{ "transaction." + componentData.componentId | translate }}
+      </div>
+
+      <div class="page-subtitle">
+        <div class="page-subtitle">- {{ "page.searchPage" | translate }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-actions">
+    <button
+      id="actions"
+      mat-icon-button
+      class="mat-elevation-z1"
+      matTooltip="{{ 'global.showAllActionTooltip' | translate }}"
+      matTooltipPosition="above"
+      aria-label="Show all actions"
+      [matMenuTriggerFor]="actions"
+    >
+      <mat-icon>more_horiz</mat-icon>
+    </button>
+
+    <mat-menu #actions="matMenu">
+      <button id="favorites" mat-menu-item (click)="updateFavoriteState()">
+        {{ (isFavoriteEntry ? "page.removeFromFavorites" : "page.addToFavorites") | translate }}
+      </button>
+    </mat-menu>
+  </div>
+</div>
+
+<div class="page-wrapper">
+  <div class="page-container search-page-container">
+    <div class="page-content">
+      <div class="grid-row">
+        <div class="grid-cell--12">
+          <div class="grid-cell grid-cell--container">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">
+                  {{ getComponentName() + ".searchCriteria" | translate }}
+                </h3>
+              </div>
+            </div>
+
+            <div class="grid-cell-content">
+              <div class="column">
+                <div class="row search-criteria-header">
+                  <i
+                    class="fa fa-fw fa-undo aw-icon aw-icon-with-border search-criteria-action"
+                    aria-hidden="true"
+                    pTooltip="{{ 'global.reset' | translate }}"
+                    tooltipPosition="top"
+                    (click)="resetSearchCriteria()"
+                  ></i>
+                </div>
+
+                <div class="row search-criteria-header">
+                  <div class="form-group flex--2 required">
+                    <label class="form-label">
+                      {{ getComponentName() + ".family" | translate }}
+                    </label>
+
+                    <div class="form-control">
+                      <p-dropdown
+                        class="aw-dropdown fixed-width"
+                        [options]="searchFamilyList"
+                        [(ngModel)]="searchSelectedFamily"
+                        [showClear]="true"
+                        placeholder="&nbsp;"
+                        (onChange)="onSelectFamily()"
+                      ></p-dropdown>
+                    </div>
+                  </div>
+
+                  <div class="form-group flex--2 required">
+                    <label class="form-label">
+                      {{ getComponentName() + ".variant" | translate }}
+                    </label>
+
+                    <div class="form-control">
+                      <p-dropdown
+                        class="aw-dropdown fixed-width"
+                        [options]="searchVariantList"
+                        [(ngModel)]="searchSelectedVariant"
+                        [showClear]="true"
+                        placeholder="&nbsp;"
+                        (keyup.enter)="search()"
+                        [disabled]="!searchSelectedFamily"
+                        (onChange)="onSelectVariant()"
+                      ></p-dropdown>
+                    </div>
+                  </div>
+
+                  <div class="form-group flex--2"></div>
+                </div>
+
+                <div *ngIf="searchSelectedVariant" class="row">
+                  <div class="form-group">
+                    <label class="form-label">
+                      {{ getComponentName() + ".chapter" | translate }}
+                    </label>
+
+                    <div class="form-control">
+                      <input type="text" class="aw-input" [(ngModel)]="searchChapter" />
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label">
+                      {{ getComponentName() + ".section" | translate }}
+                    </label>
+
+                    <div class="form-control">
+                      <input type="text" class="aw-input" [(ngModel)]="searchSection" />
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label">
+                      {{ getComponentName() + ".subject" | translate }}
+                    </label>
+
+                    <div class="form-control">
+                      <input type="text" class="aw-input" [(ngModel)]="searchSubject" />
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label">
+                      {{ getComponentName() + ".sheet" | translate }}
+                    </label>
+
+                    <div class="form-control">
+                      <input type="text" class="aw-input" [(ngModel)]="searchSheet" />
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label">
+                      {{ getComponentName() + ".marks" | translate }}
+                    </label>
+
+                    <div class="form-control">
+                      <input type="text" class="aw-input" [(ngModel)]="searchMarks" />
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label">
+                      {{ getComponentName() + ".pnCode" | translate }}
+                    </label>
+
+                    <div class="form-control">
+                      <input type="text" class="aw-input" [(ngModel)]="searchPn" />
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row search-criteria-footer">
+                  <div class="search-actions">
+                    <button
+                      type="button"
+                      mat-raised-button
+                      class="btn-with-spinner"
+                      (click)="search()"
+                      color="primary"
+                      [disabled]="!searchSelectedFamily || !searchSelectedVariant"
+                      appKeyPress
+                      [keyCode]="'Enter'"
+                      (keyPress)="search()"
+                    >
+                      <span *ngIf="tableLoading" class="lds-hourglass"></span>
+                      {{ "global.toSearch" | translate }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-row">
+        <div class="grid-cell--12">
+          <div #resultsContainerAnchor class="grid-cell grid-cell--container">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">
+                  {{ "global.results" | translate }} ({{ tableDataSource ? tableDataSource.dataCount : 0 }})
+                </h3>
+              </div>
+            </div>
+
+            <div class="grid-cell-content">
+              <a-table [dataSource]="tableDataSource">
+                <ng-template tableActionsDef>
+                  <button
+                    *ngIf="tableDataSource.hasDataSelection"
+                    type="button"
+                    mat-raised-button
+                    (click)="openTableSelectedList()"
+                  >
+                    {{ "global.open" | translate }}
+                  </button>
+                </ng-template>
+              </a-table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

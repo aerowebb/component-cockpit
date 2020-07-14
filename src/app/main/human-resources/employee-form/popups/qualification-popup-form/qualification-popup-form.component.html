@@ -1,0 +1,145 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div class="modal-title">{{ componentData.componentId + ".title" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="column">
+      <div class="row">
+        <div class="form-group" [ngClass]="{ required: !isReadOnlyForm }">
+          <label class="form-label">{{ componentData.componentId + ".type" | translate }}</label>
+
+          <div class="form-control">
+            <p-dropdown
+              class="aw-dropdown fixed-width"
+              [options]="qualificationTypes"
+              [showClear]="true"
+              placeholder="&nbsp;"
+              [disabled]="isReadOnlyForm"
+              [(ngModel)]="selectedQualificationType"
+              (onChange)="loadTitles()"
+              appendTo="body"
+            ></p-dropdown>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group" [ngClass]="{ required: !isReadOnlyForm }">
+          <label class="form-label">{{ componentData.componentId + ".qualificationTitle" | translate }}</label>
+
+          <div class="form-control">
+            <p-dropdown
+              class="aw-dropdown fixed-width"
+              [options]="qualificationTitles"
+              [(ngModel)]="selectedQualificationTitle"
+              [disabled]="isReadOnlyForm"
+              [showClear]="true"
+              placeholder="&nbsp;"
+              appendTo="body"
+            ></p-dropdown>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group">
+          <label class="form-label">{{ componentData.componentId + ".institution" | translate }}</label>
+
+          <div class="form-control">
+            <input
+              [(ngModel)]="bidtQualifEmployeeDTO.qualifEmployeeInstitution"
+              type="text"
+              class="aw-input"
+              [disabled]="isReadOnlyForm"
+              maxlength="100"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group">
+          <label class="form-label">{{ componentData.componentId + ".obtainingDate" | translate }}</label>
+
+          <div class="form-control">
+            <p-calendar
+              showButtonBar="true"
+              [monthNavigator]="true"
+              [yearNavigator]="true"
+              [yearRange]="sessionService.calendarYearRange"
+              class="aw-calendar"
+              [dateFormat]="sessionService.dateFormatPrimeNG"
+              [locale]="sessionService.calendarFormat"
+              [(ngModel)]="qualifEmployeeStartDate"
+              appendTo="body"
+              [disabled]="isReadOnlyForm"
+            ></p-calendar>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group">
+          <label class="form-label">{{ componentData.componentId + ".endingDate" | translate }}</label>
+
+          <div class="form-control">
+            <p-calendar
+              showButtonBar="true"
+              [monthNavigator]="true"
+              [yearNavigator]="true"
+              [yearRange]="sessionService.calendarYearRange"
+              class="aw-calendar"
+              [dateFormat]="sessionService.dateFormatPrimeNG"
+              [locale]="sessionService.calendarFormat"
+              [(ngModel)]="qualifEmployeeEndDate"
+              appendTo="body"
+              [disabled]="isReadOnlyForm"
+            ></p-calendar>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group">
+          <label class="form-label">{{ componentData.componentId + ".qualifOngoing" | translate }}</label>
+
+          <div class="form-control">
+            <p-checkbox
+              binary="true"
+              class="aw-checkbox general-type-checkbox"
+              [(ngModel)]="bidtQualifEmployeeDTO.qualifOngoing"
+              [disabled]="isReadOnlyForm"
+            ></p-checkbox>
+          </div>
+        </div>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button *ngIf="isReadOnlyForm" type="button" mat-raised-button (click)="cancel()">
+      <span>{{ "global.close" | translate }}</span>
+    </button>
+
+    <button *ngIf="!isReadOnlyForm" type="button" mat-raised-button (click)="cancel()">
+      <span>{{ "global.cancel" | translate }}</span>
+    </button>
+
+    <button
+      *ngIf="!isReadOnlyForm"
+      type="button"
+      color="primary"
+      mat-raised-button
+      (click)="validate()"
+      [disabled]="
+        selectedQualificationType === undefined ||
+        selectedQualificationType === null ||
+        selectedQualificationTitle === undefined ||
+        selectedQualificationTitle === null
+      "
+    >
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>

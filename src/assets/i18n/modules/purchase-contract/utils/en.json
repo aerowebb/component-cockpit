@@ -1,0 +1,6 @@
+{
+  "TableDataSourceWithHistoryComponent": {
+    "errorOnAddedDuplicate": "This value already exists in table, the table only accept unique value, this row can't be added",
+    "errorOnUpdatedDuplicate": "This value already exists in table, the table only accept unique value, this row can't be updated"
+  }
+}

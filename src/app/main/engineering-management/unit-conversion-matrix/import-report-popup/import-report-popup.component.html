@@ -1,0 +1,29 @@
+<a-modal class="aw-modal" [(visible)]="displayValue">
+  <a-header>
+    <div class="modal-title">{{ componentId + ".title" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="form-group">
+      <label class="form-label"></label>
+
+      <div class="form-control" style="height: auto">
+        <textarea
+          pInputTextArea
+          [cols]="60"
+          [rows]="15"
+          type="text"
+          class="aw-textarea"
+          [(ngModel)]="importReportMessage"
+          disabled
+        ></textarea>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button type="button" mat-raised-button (click)="close()">
+      <span>{{ "global.cancel" | translate }}</span>
+    </button>
+  </a-footer>
+</a-modal>

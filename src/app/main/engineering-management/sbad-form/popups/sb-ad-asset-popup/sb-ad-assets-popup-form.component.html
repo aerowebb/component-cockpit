@@ -1,0 +1,88 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".assetPopupTitle" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="column">
+      <div class="row">
+        <div class="form-group">
+          <label class="form-label">{{ getComponentName() + ".sbadAssetsDialogLine1" | translate }}</label>
+          <label class="form-label">{{ getComponentName() + ".sbadAssetsDialogLine2" | translate }}</label>
+          <label class="form-label">{{ getComponentName() + ".sbadAssetsDialogLine3" | translate }}</label>
+        </div>
+      </div>
+      <div class="row" *ngIf="sbAssets">
+        <div class="form-group">
+          <label class="form-label" style="white-space: pre-wrap">
+            {{ getComponentName() + ".sbAssets" | translate }}
+            ({{ getComponentName() + ".indicationTextSbAsset" | translate }})
+          </label>
+
+          <div class="form-control">
+            <textarea
+              class="aw-textarea"
+              [rows]="3"
+              [(ngModel)]="sbAssets"
+              pInputTextarea
+              [disabled]="true"
+              maxlength="4000"
+            ></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group">
+          <label class="form-label">{{ getComponentName() + ".assetPn" | translate }}</label>
+
+          <div class="form-control">
+            <input type="text" class="aw-input" [(ngModel)]="assetObject.assetPn" [disabled]="isReadOpenMode" />
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group">
+          <label class="form-label">{{ getComponentName() + ".assetSn" | translate }}</label>
+
+          <div class="form-control">
+            <input type="text" class="aw-input" [(ngModel)]="assetObject.assetSn" [disabled]="isReadOpenMode" />
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group">
+          <label class="form-label">{{ getComponentName() + ".assetActionType" | translate }}</label>
+
+          <div class="form-control">
+            <p-dropdown
+              class="aw-dropdown fixed-width"
+              [showClear]="true"
+              [options]="propertyActionType"
+              [(ngModel)]="assetObject.assetActionType"
+              placeholder="&nbsp;"
+              appendTo="body"
+              [disabled]="isReadOpenMode"
+            ></p-dropdown>
+          </div>
+        </div>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button *ngIf="isReadOpenMode" type="button" mat-raised-button (click)="closeDialog()">
+      {{ "global.close" | translate }}
+    </button>
+
+    <button *ngIf="!isReadOpenMode" type="button" mat-raised-button (click)="closeDialog()">
+      {{ "global.cancel" | translate }}
+    </button>
+
+    <button *ngIf="!isReadOpenMode" color="primary" type="button" mat-raised-button (click)="onValidate()">
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>

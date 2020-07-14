@@ -1,0 +1,312 @@
+<div class="page-header">
+  <div class="page-info">
+    <div>
+      <div class="page-title">
+        {{ "transaction." + componentData.componentId | translate }}
+      </div>
+
+      <div class="page-subtitle">
+        <div *ngIf="!isCreateOpenMode && componentData && componentData.objectId" class="page-subtitle">
+          <span class="page-subtitle">
+            - {{ serializationService.deserialize(componentData.objectId)["fleetCode"] }}
+          </span>
+
+          <span class="page-subtitle" *ngIf="serializationService.deserialize(componentData.objectId)['fleetName']">
+            - {{ serializationService.deserialize(componentData.objectId)["fleetName"] }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-actions">
+    <button *ngIf="!isCreateOpenMode" type="button" mat-raised-button (click)="checkFleet()">
+      {{ componentData.componentId + ".checkFleet" | translate }}
+    </button>
+
+    <button *ngIf="isReadOpenMode && hasUpdateAccessRight" type="button" mat-raised-button (click)="editFleet()">
+      {{ "global.edit" | translate }}
+    </button>
+
+    <button
+      *ngIf="!isReadOpenMode && !isCreateOpenMode"
+      type="button"
+      color="warn"
+      mat-raised-button
+      (click)="cancelFleet()"
+    >
+      {{ "global.cancel" | translate }}
+    </button>
+
+    <button
+      *ngIf="!isReadOpenMode"
+      class="btn-with-spinner"
+      color="primary"
+      type="button"
+      mat-raised-button
+      (click)="saveFleet()"
+    >
+      <span class="lds-hourglass" *ngIf="showSaveSpinner"></span>
+      {{ "global.save" | translate }}
+    </button>
+
+    <button
+      id="actions"
+      mat-icon-button
+      class="mat-elevation-z1"
+      matTooltip="{{ 'global.showAllActionTooltip' | translate }}"
+      matTooltipPosition="above"
+      aria-label="Show all actions"
+      [matMenuTriggerFor]="actions"
+    >
+      <mat-icon>more_horiz</mat-icon>
+    </button>
+
+    <mat-menu #actions="matMenu">
+      <button id="updates" mat-menu-item (click)="openStatusUpdatesPopup()">
+        {{ "global.updates" | translate }}
+      </button>
+
+      <button *ngIf="isReadOpenMode && !isCreateOpenMode" mat-menu-item (click)="reloadFleet()">
+        {{ "global.refresh" | translate }}
+      </button>
+
+      <button id="favorites" mat-menu-item (click)="updateFavoriteState()">
+        {{ (isFavoriteEntry ? "page.removeFromFavorites" : "page.addToFavorites") | translate }}
+      </button>
+    </mat-menu>
+  </div>
+</div>
+
+<div class="page-wrapper">
+  <div class="page-container search-page-container">
+    <div class="page-content">
+      <div class="grid-row">
+        <div class="grid-cell--4">
+          <div class="grid-cell grid-cell--container">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">{{ "page.mainData" | translate }}</h3>
+              </div>
+            </div>
+
+            <div class="grid-cell-content">
+              <div class="row">
+                <div class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+                  <label class="form-label"> {{ componentData.componentId + ".fleetCode" | translate }} </label>
+
+                  <div class="form-control">
+                    <input
+                      type="text"
+                      class="aw-input"
+                      [(ngModel)]="fleet.fleetCode"
+                      [disabled]="isReadOpenMode || !isCreateOpenMode"
+                      maxlength="50"
+                    />
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label"> {{ componentData.componentId + ".fleetName" | translate }} </label>
+
+                  <div class="form-control">
+                    <input
+                      type="text"
+                      class="aw-input"
+                      [(ngModel)]="fleet.fleetName"
+                      [disabled]="isReadOpenMode"
+                      maxlength="50"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="form-group">
+                  <label class="form-label"> {{ componentData.componentId + ".customerCode" | translate }} </label>
+
+                  <div class="form-control form-control-with-modal" [ngClass]="{ disabled: isReadOpenMode }">
+                    <div class="form-control-data" (click)="!isReadOpenMode && quickSearchBusinessPartner()">
+                      {{ fleet.customerCode }} <span *ngIf="customerName">- {{ customerName }}</span>
+                    </div>
+
+                    <div *ngIf="fleet.customerCode" class="btn-clear-wrapper">
+                      <i
+                        class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+                        aria-hidden="true"
+                        (click)="fleet.customerCode = undefined; customerName = undefined"
+                      ></i>
+                    </div>
+                    <div class="btn-search-wrapper">
+                      <i
+                        class="fa fa-fw fa-search aw-icon btn-search"
+                        aria-hidden="true"
+                        (click)="!isReadOpenMode && quickSearchBusinessPartner()"
+                      ></i>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label"> {{ componentData.componentId + ".creationDate" | translate }} </label>
+
+                  <div class="form-control">
+                    <p-calendar
+                      showButtonBar="true"
+                      [monthNavigator]="true"
+                      [yearNavigator]="true"
+                      [yearRange]="sessionService.calendarYearRange"
+                      class="aw-calendar"
+                      [dateFormat]="sessionService.dateFormatPrimeNG"
+                      [locale]="sessionService.calendarFormat"
+                      [(ngModel)]="fleet.creationDate"
+                      [disabled]="isReadOpenMode"
+                    ></p-calendar>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="grid-cell-content">
+              <div class="row">
+                <div class="form-group flex--2">
+                  <label class="form-label"> {{ componentData.componentId + ".fleetDescription" | translate }} </label>
+
+                  <div class="form-control">
+                    <textarea
+                      class="aw-textarea"
+                      [rows]="3"
+                      autoResize="autoResize"
+                      pInputTextarea
+                      [(ngModel)]="fleet.fleetDescription"
+                      [disabled]="isReadOpenMode"
+                      maxlength="300"
+                    ></textarea>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="grid-cell--8">
+          <div #table class="grid-cell grid-cell--container">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">
+                  {{ componentData.componentId + ".assets" | translate }} ({{
+                    assetsTableDataSource ? assetsTableDataSource.dataCount : 0
+                  }})
+                </h3>
+              </div>
+            </div>
+
+            <span *ngIf="!isLoading"> &nbsp;</span>
+
+            <div *ngIf="isLoading" class="aw-table-loading-indicator">
+              <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+              <div class="lds-hourglass"></div>
+            </div>
+
+            <div class="grid-cell-content">
+              <a-table [dataSource]="assetsTableDataSource">
+                <ng-template tableActionsDef>
+                  <button
+                    *ngIf="!isReadOpenMode && assetsTableDataSource.hasDataSelection"
+                    type="button"
+                    mat-raised-button
+                    color="warn"
+                    (click)="deleteAssets()"
+                  >
+                    {{ "global.detach" | translate }}
+                  </button>
+
+                  <button
+                    *ngIf="!isReadOpenMode && !assetsTableDataSource.hasDataSelection"
+                    type="button"
+                    mat-raised-button
+                    (click)="addAsset()"
+                  >
+                    {{ "global.add" | translate }}
+                  </button>
+
+                  <button
+                    *ngIf="!isReadOpenMode && !assetsTableDataSource.hasDataSelection"
+                    type="button"
+                    mat-raised-button
+                    (click)="addAssetByCriteria()"
+                  >
+                    {{ "global.addAll" | translate }}
+                  </button>
+
+                  <button
+                    *ngIf="assetsTableDataSource.hasDataSelection"
+                    type="button"
+                    mat-raised-button
+                    (click)="openSelectedAssets()"
+                  >
+                    {{ componentData.componentId + ".configurationControl" | translate }}
+                  </button>
+                </ng-template>
+
+                <ng-template columnDef="status" let-rowData="rowData">
+                  <span
+                    *ngIf="isFleetCheck && rowData.status === controlConfigConstants.ICON_GREEN"
+                    class="alert alert--ok"
+                  >
+                    {{ componentData.componentId + ".alertOk" | translate }}
+                  </span>
+                  <span
+                    *ngIf="isFleetCheck && rowData.status === controlConfigConstants.ICON_RED"
+                    class="alert alert--nok"
+                  >
+                    {{ componentData.componentId + ".alertNok" | translate }}
+                  </span>
+                  <span
+                    *ngIf="isFleetCheck && rowData.status === controlConfigConstants.ICON_YELLOW"
+                    class="alert alert--warning"
+                  >
+                    {{ componentData.componentId + ".alertWarning" | translate }}
+                  </span>
+                </ng-template>
+                <ng-template columnDef="sn" let-rowData="rowData">
+                  <a (click)="openAssetsForm(rowData)">
+                    {{ rowData.sn }}
+                  </a>
+                </ng-template>
+              </a-table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <aw-dialog-search-customer
+      *ngIf="showQuickSearchBusinessPartnerPopup"
+      [(display)]="showQuickSearchBusinessPartnerPopup"
+      [customer-code]="fleet.customerCode"
+      (onSelected)="setSelectedBusinessPartner($event)"
+    >
+    </aw-dialog-search-customer>
+
+    <aw-asset-selection-popup
+      *ngIf="showAssetSelectionDialog"
+      [(display)]="showAssetSelectionDialog"
+      (onAdded)="onAddAsset($event)"
+    >
+    </aw-asset-selection-popup>
+
+    <aw-multiple-assets-selection-popup
+      *ngIf="showMultipleAssetsSelectionDialog"
+      [(display)]="showMultipleAssetsSelectionDialog"
+      (onAdded)="onAddMultipleAssets($event)"
+    >
+    </aw-multiple-assets-selection-popup>
+
+    <aw-dialog-status *ngIf="showStatusPopup" [item]="fleet" [itemId]="fleetContextId" [(display)]="showStatusPopup">
+    </aw-dialog-status>
+    <aw-dialog-status
+      *ngIf="showStatusUpdatesPopup"
+      [isStatusEditable]="false"
+      [item]="fleet"
+      [itemId]="fleet.fleetCode"
+      [(display)]="showStatusUpdatesPopup"
+    ></aw-dialog-status>
+  </div>
+</div>

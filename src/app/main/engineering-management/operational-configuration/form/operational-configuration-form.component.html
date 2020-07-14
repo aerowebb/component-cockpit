@@ -1,0 +1,338 @@
+<div class="page-header">
+  <div class="page-info">
+    <div>
+      <div class="page-title">
+        {{ "transaction." + componentData.componentId | translate }}
+      </div>
+
+      <div class="page-subtitle">
+        <div *ngIf="!isCreateOpenMode && componentData && componentData.objectId" class="page-subtitle">
+          - {{ subTitle }}
+        </div>
+      </div>
+    </div>
+    <div class="object-status" *ngIf="selectedFunctionalLocationComponent.statusState" (click)="showStatus()">
+      {{ selectedFunctionalLocationComponent.statusState | formatSelectOption: flStatusList }}
+    </div>
+  </div>
+
+  <div class="page-actions">
+    <button *ngIf="isReadOpenMode && hasUpdateAccessRight" type="button" mat-raised-button (click)="edit()">
+      {{ "global.edit" | translate }}
+    </button>
+
+    <button
+      *ngIf="!isReadOpenMode && !isCreateOpenMode"
+      type="button"
+      color="warn"
+      mat-raised-button
+      (click)="cancel()"
+    >
+      {{ "global.cancel" | translate }}
+    </button>
+
+    <button
+      *ngIf="!isReadOpenMode"
+      class="btn-with-spinner"
+      color="primary"
+      type="button"
+      mat-raised-button
+      (click)="save()"
+    >
+      <span class="lds-hourglass" *ngIf="showSaveSpinner"></span>
+      {{ "global.save" | translate }}
+    </button>
+
+    <button
+      id="actions"
+      mat-icon-button
+      class="mat-elevation-z1"
+      matTooltip="{{ 'global.showAllActionTooltip' | translate }}"
+      matTooltipPosition="above"
+      aria-label="Show all actions"
+      [matMenuTriggerFor]="actions"
+    >
+      <mat-icon>more_horiz</mat-icon>
+    </button>
+
+    <mat-menu #actions="matMenu">
+      <button *ngIf="isReadOpenMode && !isCreateOpenMode" type="button" mat-menu-item (click)="refresh()">
+        {{ "global.refresh" | translate }}
+      </button>
+
+      <button id="updates" mat-menu-item (click)="openStatusUpdatesPopup()">
+        {{ "global.updates" | translate }}
+      </button>
+
+      <button id="favorites" mat-menu-item (click)="updateFavoriteState()">
+        {{ (isFavoriteEntry ? "page.removeFromFavorites" : "page.addToFavorites") | translate }}
+      </button>
+    </mat-menu>
+  </div>
+</div>
+
+<div class="page-wrapper">
+  <div class="page-container search-page-container">
+    <div class="page-content">
+      <mat-tab-group animationDuration="0ms" dynamicHeight>
+        <mat-tab>
+          <ng-template mat-tab-label>
+            {{ "home" | translate }}
+          </ng-template>
+          <div class="grid-row">
+            <div class="grid-cell--equally no-padding">
+              <div class="grid-cell--12">
+                <div class="grid-cell grid-cell--container">
+                  <div class="grid-cell-header">
+                    <div class="grid-cell-title-container">
+                      <h3 class="grid-cell-title">{{ "page.mainData" | translate }}</h3>
+                    </div>
+                  </div>
+
+                  <div class="grid-cell-content">
+                    <div class="column">
+                      <div class="row">
+                        <div class="form-group" [ngClass]="{ required: isCreateOpenMode }">
+                          <label class="form-label">{{ componentData.componentId + ".flCode" | translate }}</label>
+
+                          <div class="form-control">
+                            <input
+                              type="text"
+                              class="aw-input"
+                              [(ngModel)]="selectedFunctionalLocationComponent.flCode"
+                              [disabled]="!isCreateOpenMode"
+                            />
+                          </div>
+                        </div>
+
+                        <div class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+                          <label class="form-label">{{
+                            componentData.componentId + ".familyVariant" | translate
+                          }}</label>
+                          <div class="form-control">
+                            <p-dropdown
+                              class="aw-dropdown fixed-width"
+                              [options]="familyVariants"
+                              [(ngModel)]="familyVariantCode"
+                              [showClear]="true"
+                              [disabled]="!isCreateOpenMode"
+                              placeholder="&nbsp;"
+                              appendTo="body"
+                            ></p-dropdown>
+                          </div>
+                        </div>
+
+                        <div class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+                          <label class="form-label">{{
+                            componentData.componentId + ".flDescriptionMain" | translate
+                          }}</label>
+
+                          <div class="form-control">
+                            <textarea
+                              class="aw-textarea"
+                              [rows]="3"
+                              pInputTextarea
+                              [disabled]="isReadOpenMode"
+                              [(ngModel)]="selectedFunctionalLocationComponent.flDescription"
+                              maxlength="300"
+                            ></textarea>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div *ngIf="!isCreateOpenMode" class="grid-cell--12">
+                <div class="grid-cell grid-cell--container">
+                  <div class="grid-cell-header">
+                    <div class="grid-cell-title-container loading-indicator">
+                      <h3 class="grid-cell-title">
+                        {{ componentData.componentId + ".illustration" | translate }}
+                      </h3>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="!isCreateOpenMode" class="grid-cell--6">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container loading-indicator">
+                    <h3 class="grid-cell-title">
+                      {{ componentData.componentId + ".structure" | translate }} ({{
+                        bireStructureDisplayed ? bireStructureDisplayed.length : 0
+                      }})
+                      <div *ngIf="bireStructurePanelLoading" class="lds-hourglass"></div>
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <p-treeTable
+                    #ptreetableStructure
+                    class="aw-tree-table2"
+                    [columns]="structureTableCols"
+                    [value]="bireStructureDisplayed"
+                    [(selection)]="selectedStructure"
+                    selectionMode="checkBox"
+                    [scrollable]="true"
+                    (onNodeSelect)="onRowSelected($event.node)"
+                    (onNodeUnselect)="onRowUnSelected($event.node)"
+                    [resizableColumns]="true"
+                  >
+                    <ng-template pTemplate="emptymessage">
+                      <span *ngIf="!isLoadingStructureTable"> &nbsp;</span>
+
+                      <div *ngIf="isLoadingStructureTable" class="aw-table-loading-indicator">
+                        <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                        <div class="lds-hourglass"></div>
+                      </div>
+                    </ng-template>
+
+                    <ng-template pTemplate="caption">
+                      <div class="aw-table-header" [ngClass]="{ 'rows-selected': selectedStructure.length > 0 }">
+                        <div class="aw-table-global-filter">
+                          <label class="aw-table-global-filter-label">
+                            <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                          </label>
+
+                          <input
+                            #ptreetableStructureGlobalFilter
+                            class="aw-table-global-filter-input"
+                            type="text"
+                            placeholder="{{ 'table.globalFilterText' | translate }}"
+                            (input)="ptreetableStructure.filterGlobal($event.target.value, 'contains')"
+                          />
+                        </div>
+
+                        <div class="aw-table-actions">
+                          <button
+                            *ngIf="!isReadOpenMode && selectedStructure.length > 0"
+                            type="button"
+                            mat-raised-button
+                            color="warn"
+                            (click)="detachSelectedStructure()"
+                          >
+                            {{ "global.detach" | translate }}
+                          </button>
+
+                          <button
+                            *ngIf="!isReadOpenMode && selectedStructure.length === 1 && !!selectedStructure[0].parent"
+                            type="button"
+                            mat-raised-button
+                            (click)="editStructure()"
+                          >
+                            {{ "global.edit" | translate }}
+                          </button>
+
+                          <button
+                            *ngIf="!isReadOpenMode && selectedStructure.length === 1"
+                            type="button"
+                            mat-raised-button
+                            (click)="openStructure()"
+                          >
+                            {{ "global.open" | translate }}
+                          </button>
+
+                          <button *ngIf="!isReadOpenMode" type="button" mat-raised-button (click)="createStructure()">
+                            {{ "global.add" | translate }}
+                          </button>
+                        </div>
+                      </div>
+                    </ng-template>
+
+                    <ng-template pTemplate="colgroup" let-columns>
+                      <colgroup>
+                        <col class="aw-table-checkbox-wrapper" />
+                        <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                      </colgroup>
+                    </ng-template>
+
+                    <ng-template pTemplate="header" let-columns>
+                      <tr>
+                        <th class="aw-table-checkbox-wrapper">
+                          <p-treeTableHeaderCheckbox class="aw-table-checkbox"></p-treeTableHeaderCheckbox>
+                        </th>
+
+                        <th ttResizableColumn *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                          {{ componentData.componentId + "." + col.field | translate }}
+                        </th>
+                      </tr>
+                    </ng-template>
+
+                    <ng-template pTemplate="body" let-rowNode let-rowData="rowData" let-columns="columns">
+                      <tr>
+                        <td class="aw-table-checkbox-wrapper">
+                          <p-treeTableCheckbox class="aw-table-checkbox" [value]="rowNode"></p-treeTableCheckbox>
+                        </td>
+
+                        <td *ngFor="let col of columns; let i = index" [ngSwitch]="col.field">
+                          <p-treeTableToggler [rowNode]="rowNode" *ngIf="i == 0"></p-treeTableToggler>
+
+                          <span *ngSwitchCase="'flCode'" pTooltip="{{ rowData[col.field] }}" tooltipPosition="top">
+                            {{ rowData[col.field] }}
+                          </span>
+                          <span *ngSwitchDefault> {{ rowData[col.field] }} </span>
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-treeTable>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+        <mat-tab *ngIf="!isCreateOpenMode">
+          <ng-template mat-tab-label>
+            {{ componentData.componentId + ".assets" | translate }}
+          </ng-template>
+          <div class="grid-row">
+            <div class="grid-cell--12">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container loading-indicator">
+                    <h3 class="grid-cell-title">
+                      {{ componentData.componentId + ".assets" | translate }} ({{
+                        assetTableDataSource ? assetTableDataSource.dataCount : 0
+                      }})
+                    </h3>
+                    <div *ngIf="assetPanelLoading" class="lds-hourglass"></div>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <a-table [dataSource]="assetTableDataSource"> </a-table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+  </div>
+
+  <aw-dialog-status
+    *ngIf="displayStatusPopup"
+    [item]="currentAsset"
+    [itemId]="currentAssetId"
+    [(display)]="displayStatusPopup"
+  ></aw-dialog-status>
+
+  <aw-dialog-status
+    *ngIf="showStatusUpdatesPopup"
+    [isStatusEditable]="false"
+    [item]="statusDTO"
+    [itemId]="statusTitle"
+    [(display)]="showStatusUpdatesPopup"
+  ></aw-dialog-status>
+
+  <aw-dialog-search-functional-location
+    [title]="getComponentName() + '.popupFunctionalLocationTitle' | translate"
+    [familyVariant]="familyVariantCode ? [familyVariantCode] : undefined"
+    [authorizedFunctionsId]="propertyValueId"
+    [includeUndefinedFunction]="false"
+    [(display)]="showFlCodeTableDialog"
+    (onSelected)="addOrUpdateStructure($event)"
+  ></aw-dialog-search-functional-location>
+</div>

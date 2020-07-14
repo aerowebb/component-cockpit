@@ -1,0 +1,375 @@
+<div class="page-header">
+  <div class="page-info">
+    <div>
+      <h2 class="page-title">
+        {{ "transaction." + componentData.componentId | translate }}
+      </h2>
+
+      <div class="page-subtitle">
+        <div *ngIf="wareHouseTitleText" class="page-subtitle">- {{ wareHouseTitleText }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-actions">
+    <button *ngIf="isReadOpenMode && hasUpdateAccessRight" type="button" mat-raised-button (click)="editWarehouse()">
+      {{ "global.edit" | translate }}
+    </button>
+
+    <button
+      *ngIf="!isReadOpenMode && !isCreateOpenMode"
+      type="button"
+      color="warn"
+      mat-raised-button
+      (click)="cancelWarehouse()"
+    >
+      {{ "global.cancel" | translate }}
+    </button>
+
+    <button
+      *ngIf="!isReadOpenMode"
+      class="btn-with-spinner"
+      color="primary"
+      type="button"
+      mat-raised-button
+      (click)="saveWarehouse()"
+    >
+      <span class="lds-hourglass" *ngIf="showSaveSpinner"></span>
+      {{ "global.save" | translate }}
+    </button>
+
+    <button
+      mat-icon-button
+      class="mat-elevation-z1"
+      matTooltip="{{ 'global.showAllActionTooltip' | translate }}"
+      matTooltipPosition="above"
+      aria-label="Show all actions"
+      [matMenuTriggerFor]="actions"
+    >
+      <mat-icon>more_horiz</mat-icon>
+    </button>
+    <mat-menu #actions="matMenu">
+      <button mat-menu-item (click)="reloadWarehouse()">{{ "global.refresh" | translate }}</button>
+      <button mat-menu-item (click)="updateFavoriteState()">
+        {{ (isFavoriteEntry ? "page.removeFromFavorites" : "page.addToFavorites") | translate }}
+      </button>
+    </mat-menu>
+  </div>
+</div>
+
+<div class="page-wrapper">
+  <div class="page-container search-page-container">
+    <div class="page-content">
+      <div class="grid-row">
+        <div class="grid-cell--12">
+          <div class="grid-cell grid-cell--container">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">
+                  {{ componentData.componentId + ".mainInformation" | translate }}
+                </h3>
+              </div>
+            </div>
+            <div class="grid-cell-content">
+              <div class="column">
+                <div class="grid-row">
+                  <div class="form-group required">
+                    <label class="form-label">{{ componentData.componentId + ".whCode" | translate }}</label>
+                    <div class="form-control">
+                      <input
+                        type="text"
+                        name="whCode"
+                        class="aw-input"
+                        [disabled]="isReadOpenMode"
+                        [(ngModel)]="bidtWarehouseDTO.whCode"
+                        required
+                        maxlength="50"
+                      />
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">{{ componentData.componentId + ".whName" | translate }}</label>
+                    <div class="form-control">
+                      <input
+                        type="text"
+                        name="whName"
+                        class="aw-input"
+                        [disabled]="isReadOpenMode"
+                        [(ngModel)]="bidtWarehouseDTO.whName"
+                        maxlength="100"
+                      />
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">{{ componentData.componentId + ".whType" | translate }}</label>
+                    <div class="form-control">
+                      <p-dropdown
+                        name="whType"
+                        class="aw-dropdown fixed-width"
+                        placeholder="&nbsp;"
+                        [disabled]="isReadOpenMode"
+                        [options]="types"
+                        [(ngModel)]="bidtWarehouseDTO.whType"
+                        [showClear]="true"
+                      ></p-dropdown>
+                    </div>
+                  </div>
+                </div>
+                <div class="grid-row">
+                  <div class="form-group">
+                    <label class="form-label">{{ componentData.componentId + ".company" | translate }}</label>
+                    <div class="form-control">
+                      <p-dropdown
+                        name="whCompany"
+                        class="aw-dropdown fixed-width"
+                        placeholder="&nbsp;"
+                        [disabled]="isReadOpenMode"
+                        [options]="companies"
+                        [(ngModel)]="bidtWarehouseDTO.bidtCompanyId"
+                        [showClear]="true"
+                        (onChange)="onSelectCompany()"
+                        required
+                      ></p-dropdown>
+                    </div>
+                  </div>
+                  <div class="form-group required">
+                    <label class="form-label">{{ componentData.componentId + ".whSite" | translate }}</label>
+                    <div class="form-control">
+                      <p-dropdown
+                        name="whSite"
+                        class="aw-dropdown fixed-width"
+                        placeholder="&nbsp;"
+                        [disabled]="isReadOpenMode"
+                        [options]="sites"
+                        [(ngModel)]="bidtWarehouseDTO.bidtSiteId"
+                        [showClear]="true"
+                        (onChange)="onSelectSite()"
+                        required
+                      ></p-dropdown>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label">{{
+                      componentData.componentId + ".supplyingWarehouse" | translate
+                    }}</label>
+                    <div class="form-control">
+                      <p-dropdown
+                        name="whSite"
+                        class="aw-dropdown fixed-width"
+                        placeholder="&nbsp;"
+                        [disabled]="isReadOpenMode"
+                        [options]="supplyingWarehouses"
+                        [(ngModel)]="bidtWarehouseDTO.bidtWarehouseId"
+                        [showClear]="true"
+                        required
+                      ></p-dropdown>
+                    </div>
+                  </div>
+                </div>
+                <div class="grid-row">
+                  <div class="form-group">
+                    <label class="form-label"> {{ componentData.componentId + ".whPhoneNumber" | translate }} </label>
+                    <div class="form-control">
+                      <input
+                        type="text"
+                        name="whPhoneNumber"
+                        class="aw-input"
+                        [disabled]="isReadOpenMode"
+                        [(ngModel)]="bidtWarehouseDTO.whPhoneNumber"
+                        maxlength="20"
+                      />
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">{{ componentData.componentId + ".whZipCode" | translate }}</label>
+                    <div class="form-control">
+                      <input
+                        type="text"
+                        name="whZipCode"
+                        class="aw-input"
+                        [disabled]="isReadOpenMode"
+                        [(ngModel)]="bidtWarehouseDTO.whZipCode"
+                        maxlength="10"
+                      />
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">{{ componentData.componentId + ".country" | translate }}</label>
+                    <div class="form-control">
+                      <p-dropdown
+                        name="whType"
+                        class="aw-dropdown fixed-width"
+                        placeholder="&nbsp;"
+                        [disabled]="isReadOpenMode"
+                        [options]="countries"
+                        [(ngModel)]="bidtWarehouseDTO.whCountry"
+                        [showClear]="true"
+                      ></p-dropdown>
+                    </div>
+                  </div>
+                </div>
+                <div class="grid-row">
+                  <div class="form-group">
+                    <label class="form-label">{{ componentData.componentId + ".whAdress" | translate }}</label>
+                    <div class="form-control">
+                      <textarea
+                        class="aw-textarea"
+                        [rows]="3"
+                        pInputTextarea
+                        [disabled]="isReadOpenMode"
+                        [(ngModel)]="bidtWarehouseDTO.whAdress"
+                        maxlength="300"
+                      ></textarea>
+                    </div>
+                  </div>
+                  <div class="form-group"></div>
+                  <div class="form-group"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="grid-row">
+        <div class="grid-cell--12">
+          <div #wareHouseTableAnchor class="grid-cell grid-cell--container">
+            <!-- Storage bins table -->
+
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">
+                  {{ componentData.componentId + ".storage" | translate }}
+                </h3>
+              </div>
+            </div>
+            <div class="grid-cell-content">
+              <div class="list-with-details">
+                <div class="list">
+                  <div class="grid-cell-title-container">
+                    <h4 class="grid-cell-title">
+                      {{ componentData.componentId + ".areaList" | translate }} ({{
+                        areaTableDataSource ? areaTableDataSource.dataCount : 0
+                      }})
+                    </h4>
+                  </div>
+                  <a-table
+                    [dataSource]="areaTableDataSource"
+                    (onRowSelect)="onSelectOrDeselectedArea()"
+                    (onRowUnselect)="onSelectOrDeselectedArea()"
+                  >
+                    <ng-template tableActionsDef>
+                      <button
+                        *ngIf="!isReadOpenMode && areaTableDataSource.hasDataSelection"
+                        type="button"
+                        color="warn"
+                        mat-raised-button
+                        (click)="deleteSelectedAreas()"
+                      >
+                        {{ "global.delete" | translate }}
+                      </button>
+                      <button
+                        *ngIf="!isReadOpenMode && areaTableDataSource.dataSelectionCount === 1"
+                        type="button"
+                        mat-raised-button
+                        (click)="editArea()"
+                      >
+                        {{ "global.edit" | translate }}
+                      </button>
+                      <button
+                        type="button"
+                        mat-raised-button
+                        (click)="openSelectedAreas()"
+                        *ngIf="areaTableDataSource.dataSelectionCount === 1"
+                      >
+                        {{ "global.open" | translate }}
+                      </button>
+                      <button
+                        *ngIf="!isReadOpenMode && !areaTableDataSource.hasDataSelection"
+                        type="button"
+                        mat-raised-button
+                        (click)="createArea()"
+                      >
+                        {{ "global.add" | translate }}
+                      </button>
+                    </ng-template>
+                  </a-table>
+                </div>
+                <div class="details">
+                  <div class="grid-cell-title-container">
+                    <h4 class="grid-cell-title">
+                      {{ componentData.componentId + ".storageBinList" | translate }} ({{
+                        storageBinsTableDataSource ? storageBinsTableDataSource.dataCount : 0
+                      }})
+                    </h4>
+                  </div>
+                  <a-table [dataSource]="storageBinsTableDataSource">
+                    <ng-template tableActionsDef>
+                      <button
+                        *ngIf="!isReadOpenMode && storageBinsTableDataSource.hasDataSelection"
+                        type="button"
+                        color="warn"
+                        mat-raised-button
+                        (click)="deleteSelectedStorageBins()"
+                      >
+                        {{ "global.delete" | translate }}
+                      </button>
+                      <button
+                        *ngIf="!isReadOpenMode && storageBinsTableDataSource.dataSelectionCount === 1"
+                        type="button"
+                        mat-raised-button
+                        (click)="editStorageBin()"
+                      >
+                        {{ "global.edit" | translate }}
+                      </button>
+                      <button
+                        type="button"
+                        mat-raised-button
+                        (click)="openSelectedStorageBins()"
+                        *ngIf="storageBinsTableDataSource.dataSelectionCount === 1"
+                      >
+                        {{ "global.open" | translate }}
+                      </button>
+                      <button
+                        *ngIf="
+                          !isReadOpenMode &&
+                          areaTableDataSource.dataSelectionCount === 1 &&
+                          !storageBinsTableDataSource.hasDataSelection
+                        "
+                        type="button"
+                        mat-raised-button
+                        (click)="createStorageBin()"
+                      >
+                        {{ "global.add" | translate }}
+                      </button>
+                    </ng-template>
+                  </a-table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <aw-dialog-storage-bin
+    *ngIf="showStorageBinDialog"
+    [(display)]="showStorageBinDialog"
+    [document]="currentStorageBin"
+    [openMode]="storageBinDialogOpenMode"
+    [types]="storageBinTypes"
+    [isArea]="false"
+    (onValidated)="onAddStorageBin($event)"
+  >
+  </aw-dialog-storage-bin>
+  <aw-dialog-storage-bin
+    *ngIf="showAreaDialog"
+    [(display)]="showAreaDialog"
+    [document]="currentArea"
+    [openMode]="areaDialogOpenMode"
+    [types]="areaBinTypes"
+    [isArea]="true"
+    (onValidated)="onAddArea($event)"
+  >
+  </aw-dialog-storage-bin>
+</div>

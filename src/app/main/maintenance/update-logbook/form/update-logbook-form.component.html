@@ -1,0 +1,656 @@
+<div class="page-header">
+  <div class="page-info">
+    <div>
+      <div class="page-title">
+        {{ getComponentName() + ".title" | translate }}
+      </div>
+
+      <div class="page-subtitle">
+        <div *ngIf="!isCreateOpenMode && componentData && componentData.objectId" class="page-subtitle">
+          <span *ngIf="bidoEquipmentDTO.equipmentFunction === '1-air'">
+            - WP {{ workPackage.projectNumber }}, {{ getComponentName() + ".aircraft" | translate }}
+            {{ subtitleAsset }}</span
+          >
+          <span *ngIf="bidoEquipmentDTO.equipmentFunction === '2-eng'">
+            - WP {{ workPackage.projectNumber }}, {{ getComponentName() + ".engine" | translate }}
+            {{ subtitleAsset }}</span
+          >
+          <span
+            *ngIf="bidoEquipmentDTO.equipmentFunction !== '1-air' && bidoEquipmentDTO.equipmentFunction !== '2-eng'"
+          >
+            - WP {{ workPackage.projectNumber }}, {{ getComponentName() + ".equipment" | translate }}
+            {{ subtitleAsset }}</span
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-actions">
+    <button *ngIf="recordEvent" type="button" mat-raised-button class="custom-margin" (click)="report()">
+      {{ componentData.componentId + ".report" | translate }}
+    </button>
+    <button
+      type="button"
+      mat-raised-button
+      class="custom-margin"
+      (click)="onClickConfirm()"
+      *ngIf="workPackage && !workPackage.maintenancePlanUpdatedAttributeId"
+    >
+      <i class="fa fa-fw fa-check"></i>
+      {{ getComponentName() + ".confirmUpdateLogbook" | translate }}
+    </button>
+    <button
+      type="button"
+      mat-raised-button
+      class="custom-margin"
+      (click)="onClickRevert()"
+      *ngIf="workPackage && workPackage.maintenancePlanUpdatedAttributeId"
+    >
+      <i class="fa fa-fw fa-times"></i>
+      {{ getComponentName() + ".revertUpdateLogbook" | translate }}
+    </button>
+  </div>
+
+  <button
+    id="actions"
+    mat-icon-button
+    class="mat-elevation-z1"
+    matTooltip="{{ 'global.showAllActionTooltip' | translate }}"
+    matTooltipPosition="above"
+    aria-label="Show all actions"
+    [matMenuTriggerFor]="actions"
+  >
+    <mat-icon>more_horiz</mat-icon>
+  </button>
+
+  <mat-menu #actions="matMenu">
+    <button type="button" mat-menu-item (click)="onClickRefresh()">{{ "global.refresh" | translate }}</button>
+    <button id="favorites" mat-menu-item (click)="updateFavoriteState()">
+      {{ (isFavoriteEntry ? "page.removeFromFavorites" : "page.addToFavorites") | translate }}
+    </button>
+  </mat-menu>
+</div>
+
+<div class="page-wrapper">
+  <div class="page-container">
+    <div class="page-content">
+      <!-- Main -->
+      <div class="grid-row">
+        <!-- Main information -->
+        <div class="grid-cell--6">
+          <div class="grid-cell grid-cell--container">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">
+                  {{ getComponentName() + ".mainInformation" | translate }}
+                </h3>
+              </div>
+            </div>
+
+            <div class="grid-cell-content">
+              <div class="column">
+                <div class="row">
+                  <div class="form-group flex--2">
+                    <label class="form-label">{{ getComponentName() + ".name" | translate }}</label>
+                    <div class="form-control">
+                      <input type="text" class="aw-input" [(ngModel)]="workPackage.projectName" [disabled]="true" />
+                    </div>
+                  </div>
+
+                  <div class="form-group flex--1">
+                    <label class="form-label">{{ getComponentName() + ".status" | translate }}</label>
+                    <div class="form-control">
+                      <p-dropdown
+                        class="aw-dropdown fixed-width"
+                        [options]="wpStatusList"
+                        [(ngModel)]="workPackage.statusState"
+                        [showClear]="true"
+                        placeholder="&nbsp;"
+                        [disabled]="true"
+                      ></p-dropdown>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="form-group flex--2">
+                    <label class="form-label">{{ getComponentName() + ".asset" | translate }}</label>
+                    <div class="form-control form-control-with-actions" style="margin-top: 10px">
+                      <span class="spanMargin" *ngIf="bidoEquipmentDTO.equipmentFunction === '1-air'"
+                        >{{ getComponentName() + ".aircraft" | translate }} {{ subtitleAsset }}</span
+                      >
+
+                      <span class="spanMargin" *ngIf="bidoEquipmentDTO.equipmentFunction === '2-eng'"
+                        >{{ getComponentName() + ".engine" | translate }} {{ subtitleAsset }}</span
+                      >
+
+                      <span
+                        class="spanMargin"
+                        *ngIf="
+                          bidoEquipmentDTO.equipmentFunction !== '1-air' &&
+                          bidoEquipmentDTO.equipmentFunction !== '2-eng'
+                        "
+                        >{{ getComponentName() + ".equipment" | translate }} {{ subtitleAsset }}</span
+                      >
+                      <div class="form-control-actions">
+                        <i
+                          class="fa fa-fw fa-external-link aw-icon"
+                          aria-hidden="true"
+                          pTooltip="{{ 'global.open' | translate }}"
+                          tooltipPosition="top"
+                          (click)="openLogbookAsset()"
+                        ></i>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-group flex--1">
+                    <label class="form-label">{{ getComponentName() + ".logbookUpdateStatus" | translate }}</label>
+                    <div class="form-control" style="margin-top: 10px">
+                      <!-- <input type="text" class="aw-input" [(ngModel)]="workPackage.statusState" [disabled]="true" /> -->
+                      <span *ngIf="warningCount === 0" class="alert alert--ok">
+                        {{ getComponentName() + ".alertOk" | translate }}
+                      </span>
+
+                      <span *ngIf="warningCount >= 1" class="alert alert--nok">
+                        {{ getComponentName() + ".alertNok" | translate }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="form-group flex--2">
+                    <label class="form-label">{{ getComponentName() + ".mroCenter" | translate }}</label>
+                    <div class="form-control">
+                      <input
+                        type="text"
+                        class="aw-input"
+                        [(ngModel)]="workPackage.bireRepairCenterCode"
+                        [disabled]="true"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="form-group flex--1">
+                    <label class="form-label">{{ getComponentName() + ".assignedTo" | translate }}</label>
+                    <div class="form-control">
+                      <input
+                        type="text"
+                        class="aw-input"
+                        [(ngModel)]="workPackage.receivingAssignedTo"
+                        [disabled]="true"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <!-- <div class="row">
+                  <div class="form-group">
+                    <label class="form-label">{{ getComponentName() + ".startDate" | translate }}</label>
+                    <div class="form-control">
+                      <p-calendar showButtonBar="true" [monthNavigator]="true" [yearNavigator]="true" [yearRange]="sessionService.calendarYearRange"
+                        class="aw-calendar"
+                        [dateFormat]="sessionService.dateFormatPrimeNG"
+                        [locale]="sessionService.calendarFormat"
+                        [(ngModel)]="workPackage.projectStartDate"
+                        [disabled]="true"
+                      ></p-calendar>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label">{{ getComponentName() + ".dueDate" | translate }}</label>
+                    <div class="form-control">
+                      <p-calendar showButtonBar="true" [monthNavigator]="true" [yearNavigator]="true" [yearRange]="sessionService.calendarYearRange"
+                        class="aw-calendar"
+                        [dateFormat]="sessionService.dateFormatPrimeNG"
+                        [locale]="sessionService.calendarFormat"
+                        [(ngModel)]="workPackage.projectDueDate"
+                        [disabled]="true"
+                      ></p-calendar>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label">{{ getComponentName() + ".endDate" | translate }}</label>
+                    <div class="form-control">
+                      <p-calendar showButtonBar="true" [monthNavigator]="true" [yearNavigator]="true" [yearRange]="sessionService.calendarYearRange"
+                        class="aw-calendar"
+                        [dateFormat]="sessionService.dateFormatPrimeNG"
+                        [locale]="sessionService.calendarFormat"
+                        [(ngModel)]="workPackage.projectEndDate"
+                        [disabled]="true"
+                      ></p-calendar>
+                    </div>
+                  </div>
+                </div> -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Summary -->
+        <div class="grid-cell--6">
+          <div class="grid-cell grid-cell--container">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container loading-indicator">
+                <div class="grid-cell-title">
+                  <span>{{ getComponentName() + ".summary" | translate }}</span>
+                  <div *ngIf="isSummaryTableLoading" class="lds-hourglass"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid-cell-content">
+              <div class="row">
+                <div class="table-summary-wrapper">
+                  <p-table
+                    [resizableColumns]="true"
+                    class="aw-table2 summary"
+                    [columns]="summaryDataCols"
+                    [value]="summaryData"
+                  >
+                    <ng-template pTemplate="colgroup" let-columns>
+                      <colgroup>
+                        <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                      </colgroup>
+                    </ng-template>
+
+                    <ng-template pTemplate="header" let-columns>
+                      <tr>
+                        <th pResizableColumn *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                          <span> {{ getComponentName() + "." + col.field | translate }} </span>
+                        </th>
+                      </tr>
+                    </ng-template>
+
+                    <ng-template pTemplate="body" let-columns="columns" let-rowData>
+                      <tr>
+                        <td
+                          *ngFor="let col of columns"
+                          [ngSwitch]="col.field"
+                          [ngStyle]="{ 'text-align': col.alignment }"
+                        >
+                          <span
+                            *ngSwitchCase="'nok'"
+                            class="control-result"
+                            [ngClass]="{ toBeRecorded: rowData['nok'] > 0 }"
+                          >
+                            {{ rowData[col.field] }}
+                          </span>
+
+                          <span *ngSwitchCase="'ok'" class="control-result" [ngClass]="{ ok: rowData['ok'] > 0 }">
+                            {{ rowData[col.field] }}
+                          </span>
+
+                          <span *ngSwitchDefault> {{ rowData[col.field] }} </span>
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </div>
+              </div>
+              <div class="row" style="width: 100%">
+                <div class="form-group"></div>
+                <div class="form-group"></div>
+                <div class="form-group"></div>
+                <div class="form-group"></div>
+              </div>
+              <div class="row">
+                <div class="form-group">
+                  <label class="form-label">{{ getComponentName() + ".recordDate" | translate }}</label>
+                  <div class="form-control">
+                    <p-calendar
+                      showButtonBar="true"
+                      [monthNavigator]="true"
+                      [yearNavigator]="true"
+                      [yearRange]="sessionService.calendarYearRange"
+                      class="aw-calendar"
+                      [dateFormat]="sessionService.dateFormatPrimeNG"
+                      [locale]="sessionService.calendarFormat"
+                      [disabled]="isReadOpenMode"
+                      [(ngModel)]="recordDate"
+                      [showTime]="true"
+                    ></p-calendar>
+                  </div>
+                </div>
+                <div class="form-group"></div>
+                <div class="form-group" style="align-items: center;margin-top: 2em;">
+                  <button type="button" mat-raised-button (click)="onClickRecordAllEvent()">
+                    {{ getComponentName() + ".recordAllEvents" | translate }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Work orders -->
+      <div class="grid-row">
+        <div class="grid-cell--12">
+          <div class="grid-cell grid-cell--container grid-cell-configuration-control">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container loading-indicator">
+                <div class="grid-cell-title">
+                  {{ getComponentName() + ".workOrders" | translate }}
+                  <div *ngIf="isEventCreatedLoading" class="lds-hourglass"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid-cell-content">
+              <div class="column">
+                <div class="list-with-details">
+                  <div class="list">
+                    <p-treeTable
+                      #ptable
+                      class="aw-tree-table2"
+                      [value]="workOrderStructure"
+                      selectionMode="single"
+                      [(selection)]="workOrderStructureSelection"
+                      [scrollable]="true"
+                      (onNodeSelect)="selectWorkOrderStructureNode()"
+                      (onNodeUnselect)="selectWorkOrderStructureNode()"
+                      [resizableColumns]="true"
+                    >
+                      <ng-template pTemplate="emptymessage">
+                        <span *ngIf="!isLoadingWorkOrderTable"> &nbsp;</span>
+
+                        <div *ngIf="isLoadingWorkOrderTable" class="aw-table-loading-indicator">
+                          <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                          <div class="lds-hourglass"></div>
+                        </div>
+                      </ng-template>
+
+                      <ng-template pTemplate="caption">
+                        <div class="aw-table-header">
+                          <div class="aw-table-global-filter">
+                            <label class="aw-table-global-filter-label">
+                              <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                            </label>
+
+                            <input
+                              class="aw-table-global-filter-input"
+                              type="text"
+                              placeholder="{{ 'table.globalFilterText' | translate }}"
+                              [(ngModel)]="searchWorkOrderStructureGlobalFilter"
+                              (keyup)="filterWorkOrderStructureWithGlobalFilter(searchWorkOrderStructureGlobalFilter)"
+                            />
+                          </div>
+
+                          <div class="aw-table-icon-actions">
+                            <i
+                              class="fa fa-fw fa-filter aw-icon aw-icon-with-border aw-icon-with-overlay"
+                              aria-hidden="true"
+                              pTooltip="{{
+                                getComponentName() + (workOrderUpdateFiltersVisible ? '.hideFilters' : '.showFilters')
+                                  | translate
+                              }}"
+                              tooltipPosition="top"
+                              [ngClass]="{ active: workOrderUpdateFiltersVisible }"
+                              (click)="opFilters.toggle($event)"
+                            ></i>
+                          </div>
+                        </div>
+                      </ng-template>
+
+                      <ng-template pTemplate="colgroup">
+                        <colgroup>
+                          <col style="width: 20%" />
+                          <col style="width: 80%" />
+                        </colgroup>
+                      </ng-template>
+
+                      <ng-template pTemplate="header">
+                        <tr>
+                          <th ttResizableColumn style="text-align: center"></th>
+                          <th ttResizableColumn style="text-align: left"></th>
+                        </tr>
+                      </ng-template>
+
+                      <ng-template pTemplate="body" let-rowNode let-rowData="rowData">
+                        <tr [ttSelectableRow]="rowNode">
+                          <td style="text-align: center">
+                            <span *ngIf="rowData.control === 'OK'" class="alert alert--ok">
+                              {{ "ConfigurationControlComponent.ok" | translate }}
+                            </span>
+                            <span *ngIf="rowData.control === 'NOK'" class="alert alert--nok">
+                              {{ "ConfigurationControlComponent.nok" | translate }}
+                            </span>
+                            <span *ngIf="rowData.control === 'WARN'" class="alert alert--warning">
+                              {{ "ConfigurationControlComponent.warning" | translate }}
+                            </span>
+                          </td>
+                          <td style="text-align: left">
+                            <div class="display--flex-row flex-row--align-start">
+                              <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
+
+                              <div>
+                                <ng-container>
+                                  <span class="node fl-node">{{ rowData.woCode }}</span>
+                                  <span
+                                    *ngIf="rowData.description"
+                                    class="node asset"
+                                    style="display: flex; white-space: normal"
+                                    >{{ rowData.description }}</span
+                                  >
+                                </ng-container>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      </ng-template>
+                    </p-treeTable>
+                  </div>
+
+                  <div class="details">
+                    <div class="column" *ngIf="selectedWorkOrder !== undefined">
+                      <div class="section">
+                        <div class="section-content">
+                          <div class="row configuration-control-node-action-list">
+                            <div class="row">
+                              <div class="form-group">
+                                <label class="form-label">{{ getComponentName() + ".status" | translate }}</label>
+                                <div class="form-control">
+                                  <input
+                                    type="text"
+                                    class="aw-input"
+                                    [(ngModel)]="selectedWorkOrder.status"
+                                    [disabled]="true"
+                                  />
+                                </div>
+                              </div>
+
+                              <div class="form-group">
+                                <label class="form-label">{{ getComponentName() + ".closedDate" | translate }}</label>
+                                <div class="form-control">
+                                  <p-calendar
+                                    showButtonBar="true"
+                                    [monthNavigator]="true"
+                                    [yearNavigator]="true"
+                                    [yearRange]="sessionService.calendarYearRange"
+                                    class="aw-calendar"
+                                    [dateFormat]="sessionService.dateFormatPrimeNG"
+                                    [locale]="sessionService.calendarFormat"
+                                    [(ngModel)]="selectedWorkOrder.closedDate"
+                                    [disabled]="true"
+                                  ></p-calendar>
+                                </div>
+                              </div>
+
+                              <div class="form-group flex--1">
+                                <label class="form-label">{{ getComponentName() + ".closedBy" | translate }}</label>
+                                <div class="form-control">
+                                  <input
+                                    type="text"
+                                    class="aw-input"
+                                    [(ngModel)]="selectedWorkOrder.closedBy"
+                                    [disabled]="true"
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <!-- WO information -->
+                      <div class="section">
+                        <div class="section-content">
+                          <p-table
+                            [resizableColumns]="true"
+                            #ptable
+                            class="aw-table2"
+                            [columns]="tableDataCols"
+                            [value]="tableData"
+                            [(selection)]="selectedTableData"
+                          >
+                            <ng-template pTemplate="colgroup" let-columns>
+                              <colgroup>
+                                <col class="aw-table-checkbox-wrapper" />
+                                <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                              </colgroup>
+                            </ng-template>
+
+                            <ng-template pTemplate="caption">
+                              <div
+                                class="aw-table-header"
+                                [ngClass]="{ 'rows-selected': selectedTableData.length > 0 }"
+                              >
+                                <div class="aw-table-global-filter">
+                                  <label class="aw-table-global-filter-label">
+                                    <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                                  </label>
+
+                                  <input
+                                    #ptableGlobalFilter
+                                    class="aw-table-global-filter-input"
+                                    type="text"
+                                    placeholder="{{ 'table.globalFilterText' | translate }}"
+                                    (input)="ptable.filterGlobal($event.target.value, 'contains')"
+                                  />
+                                </div>
+
+                                <div class="aw-table-actions">
+                                  <button
+                                    *ngIf="selectedTableData.length !== 0"
+                                    type="button"
+                                    mat-raised-button
+                                    (click)="onClickRecordEvent()"
+                                  >
+                                    {{ getComponentName() + ".recordEvent" | translate }}
+                                  </button>
+                                </div>
+                              </div>
+                            </ng-template>
+
+                            <ng-template pTemplate="header" let-columns>
+                              <tr>
+                                <th class="aw-table-checkbox-wrapper">
+                                  <p-tableHeaderCheckbox class="aw-table-checkbox"></p-tableHeaderCheckbox>
+                                </th>
+                                <th
+                                  pResizableColumn
+                                  *ngFor="let col of columns"
+                                  [ngStyle]="{ 'text-align': col.alignment }"
+                                >
+                                  {{ getComponentName() + "." + col.field | translate }}
+                                </th>
+                              </tr>
+                            </ng-template>
+
+                            <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                              <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                                <td class="aw-table-checkbox-wrapper">
+                                  <p-tableCheckbox
+                                    class="aw-table-checkbox"
+                                    [value]="rowData"
+                                    [disabled]="!enableSelect(rowData)"
+                                  ></p-tableCheckbox>
+                                </td>
+
+                                <td
+                                  *ngFor="let col of columns"
+                                  [ngSwitch]="col.field"
+                                  [ngStyle]="{ 'text-align': col.alignment }"
+                                >
+                                  <span
+                                    *ngSwitchCase="'control'"
+                                    [class.ok]="rowData[col.field] === 'OK'"
+                                    [class.nok]="rowData[col.field] === 'NOK'"
+                                    >{{ rowData[col.field] }}</span
+                                  >
+
+                                  <span *ngSwitchCase="'eventKey'">
+                                    <a (click)="onClickEventKey(rowData)">{{ rowData[col.field] }}</a>
+                                  </span>
+
+                                  <span *ngSwitchCase="'eventDate'">
+                                    <span>{{ rowData[col.field] | date: "yyyy/MM/dd HH:mm:ss" }}</span>
+                                  </span>
+
+                                  <span *ngSwitchDefault style="display: contents;"> {{ rowData[col.field] }} </span>
+                                </td>
+                              </tr>
+                            </ng-template>
+                          </p-table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p-overlayPanel
+    #opFilters
+    class="aw-overlay"
+    (onShow)="workOrderFiltersVisible = true"
+    (onHide)="workOrderFiltersVisible = false"
+  >
+    <div class="row">
+      <div class="form-group flex--auto">
+        <label class="form-label"> &nbsp; </label>
+
+        <div class="form-control aw-selectbutton-wrapper">
+          <p-selectButton
+            [(ngModel)]="selectedControlList"
+            [options]="searchControlList"
+            multiple="multiple"
+          ></p-selectButton>
+        </div>
+      </div>
+    </div>
+    <div class="row action-list">
+      <button type="button" mat-raised-button (click)="resetWorkOrderStructureCriteria()">
+        {{ getComponentName() + ".reset" | translate }}
+      </button>
+      <button
+        type="button"
+        mat-raised-button
+        (click)="opFilters.hide(); workOrderFiltersVisible = false; filterWorkOrderStructureWithCriteria()"
+      >
+        {{ getComponentName() + ".filter" | translate }}
+      </button>
+    </div>
+  </p-overlayPanel>
+</div>
+
+<aw-valid-wo-line
+  *ngIf="showValidationModal"
+  [(display)]="showValidationModal"
+  [elementsToValidate]="selectedTableData"
+  (onFinished)="validationFinished()"
+></aw-valid-wo-line>
+
+<aw-dialog-record-report
+  *ngIf="showRecordReport"
+  [(display)]="showRecordReport"
+  [report]="dialogRecordReportInput"
+></aw-dialog-record-report>

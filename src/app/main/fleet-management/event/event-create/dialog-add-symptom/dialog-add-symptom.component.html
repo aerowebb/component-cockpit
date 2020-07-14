@@ -1,0 +1,49 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".title" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="form-group">
+      <label class="form-label" [ngClass]="{ required: !isReadOpenMode }">
+        {{ getComponentName() + ".name" | translate }}
+      </label>
+      <div class="form-control">
+        <p-dropdown
+          class="aw-dropdown fixed-width"
+          [disabled]="isReadOpenMode || !isAdd"
+          [showClear]="true"
+          [options]="symptomMap"
+          [(ngModel)]="symptom.symptomCode"
+          placeholder="&nbsp;"
+          appendTo="body"
+        ></p-dropdown>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">
+        {{ getComponentName() + ".comment" | translate }}
+      </label>
+      <div class="form-control">
+        <textarea
+          class="aw-textarea"
+          [rows]="3"
+          pInputTextarea
+          [(ngModel)]="symptom.symptomComment"
+          maxlength="300"
+          [disabled]="isReadOpenMode"
+        ></textarea>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button type="button" mat-raised-button (click)="closeDialog()">
+      <span>{{ "global.cancel" | translate }}</span>
+    </button>
+
+    <button *ngIf="!isReadOpenMode" color="primary" type="button" mat-raised-button (click)="validate()">
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>

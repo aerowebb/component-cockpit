@@ -1,0 +1,17 @@
+@import "constants";
+@import "mixins";
+
+.heading {
+  color: $accent-color;
+}
+
+.form-margin {
+  margin: 0 calc(8px * 2);
+  margin-top: 10px;
+}
+
+.form-margin-selectbox {
+  margin: 0 calc(8px * 2);
+  margin-top: 10px;
+  margin-bottom: 15px;
+}

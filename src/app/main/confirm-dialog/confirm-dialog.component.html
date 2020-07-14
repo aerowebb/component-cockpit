@@ -1,0 +1,21 @@
+<a-modal class="aw-modal" [(visible)]="display" (modalClosed)="onModalClosed($event)">
+  <a-header>
+    <div class="modal-title">{{ title | translate }}</div>
+  </a-header>
+
+  <a-content>
+    {{ mainMessage }}
+
+    <p *ngFor="let contextKey of contextMessages">{{ contextKey }}</p>
+  </a-content>
+
+  <a-footer>
+    <button *ngIf="!isReadOpenMode" type="button" mat-raised-button (click)="reject()">
+      <span>{{ "global.no" | translate }}</span>
+    </button>
+
+    <button *ngIf="!isReadOpenMode" type="button" mat-raised-button (click)="accept()">
+      {{ "global.yes" | translate }}
+    </button>
+  </a-footer>
+</a-modal>

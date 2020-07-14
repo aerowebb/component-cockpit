@@ -1,0 +1,93 @@
+<div class="page-header">
+  <div class="page-info">
+    <div>
+      <div class="page-title">
+        {{ "transaction." + componentData.componentId | translate }}
+      </div>
+
+      <div class="page-subtitle">
+        <div class="page-subtitle"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-actions">
+    <button type="button" class="btn-with-spinner" mat-raised-button (click)="checkLicensing()">
+      <span class="lds-hourglass" *ngIf="showSpinner"></span>
+      {{ componentData.componentId + ".checkLicensing" | translate }}
+    </button>
+
+    <button
+      mat-icon-button
+      class="mat-elevation-z1"
+      matTooltip="{{ 'global.showAllActionTooltip' | translate }}"
+      matTooltipPosition="above"
+      aria-label="Show all actions"
+      [matMenuTriggerFor]="actions"
+    >
+      <mat-icon>more_horiz</mat-icon>
+    </button>
+    <mat-menu #actions="matMenu">
+      <button mat-menu-item (click)="updateFavoriteState()">
+        {{ (isFavoriteEntry ? "page.removeFromFavorites" : "page.addToFavorites") | translate }}
+      </button>
+    </mat-menu>
+  </div>
+</div>
+
+<div class="page-wrapper">
+  <div class="page-container">
+    <div class="page-content">
+      <div class="grid-row">
+        <div class="grid-cell--12">
+          <div class="grid-cell grid-cell--container">
+            <div class="grid-cell-content">
+              <div class="column">
+                <div class="row">
+                  <div class="form-group">
+                    <label class="form-label">
+                      {{ componentData.componentId + ".numberOfLicenseAquired" | translate }}
+                    </label>
+
+                    <div class="form-control">
+                      <input
+                        type="text"
+                        class="aw-input"
+                        [(ngModel)]="pageData.licencingAutorised"
+                        title="{{ pageData.licencingAutorised }}"
+                        disabled
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="form-group">
+                    <label class="form-label">
+                      {{ componentData.componentId + ".licensingCheckReport" | translate }}
+                      <span
+                        class="alertIcon"
+                        [class.none]="alertIcon === componentId.ICON_NONE"
+                        [class.ok]="alertIcon === componentId.ICON_GREEN"
+                        [class.nok]="alertIcon === componentId.ICON_RED"
+                      ></span>
+                    </label>
+                    <div class="form-control text-area">
+                      <textarea
+                        class="aw-textarea heightClass cell-grey"
+                        pInputTextarea
+                        disabled
+                        rows="30"
+                        [(ngModel)]="licenseReport"
+                      ></textarea>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

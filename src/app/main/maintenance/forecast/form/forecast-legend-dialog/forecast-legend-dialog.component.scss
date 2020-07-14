@@ -1,0 +1,71 @@
+$event-width: 21.21px;
+
+:host {
+  .legend-item {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    height: 2.25rem;
+
+    .label {
+      margin-left: 1rem;
+    }
+
+    .flight {
+      background-color: purple;
+      height: 4px;
+      width: calc(#{$event-width} * 2);
+    }
+
+    .upcoming-event {
+      height: $event-width;
+      transform: rotate(45deg);
+      width: $event-width;
+
+      &.in-past {
+        background-color: #000;
+        color: #fff;
+      }
+
+      &.nok {
+        background-color: #ab000d;
+        color: #fff;
+      }
+
+      &.ok {
+        background-color: #7cb342;
+        color: #000;
+      }
+
+      &.warn {
+        background-color: #fbc02d;
+        color: #000;
+      }
+    }
+
+    .work-package {
+      height: $event-width;
+      width: calc(#{$event-width} * 2);
+
+      &.simulated {
+        background-color: #63a4ff;
+      }
+
+      &.scheduled {
+        background-color: #004ba0;
+      }
+
+      &.released {
+        background-color: #bcbcbc;
+      }
+
+      &.closed {
+        background-color: #232323;
+      }
+
+      &.other {
+        background-color: #595959;
+      }
+    }
+  }
+}

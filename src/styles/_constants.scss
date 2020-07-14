@@ -1,0 +1,63 @@
+$primary-background-color: #fff;
+$secondary-background-color: #f0f0f0;
+$primary-text-color: #000;
+$secondary-text-color: #595959;
+$accent-color: #01579b;
+
+$body-background-color: #e8ebed;
+$topbar-color: #fafafa;
+
+// $primary-background-color: #1e1e1e;
+// $secondary-background-color: #333333;
+// $primary-text-color: #e8e8e8;
+// $secondary-text-color: #fff;
+// $accent-color: #9cdcfe;
+
+$border-color: $secondary-text-color;
+$border-color--disabled: transparent;
+$border-color--focus: $accent-color;
+$border-color--hover: #1a1a1a;
+
+$green-dark1: #27632a;
+$green-light1: #4caf50;
+$orange: #ffc107;
+$red-dark1: #a82525;
+$red-light1: #f6685e;
+$blue-light1: #b8d0e8;
+$blue-dark1: #006ea9;
+$grey1: #c8d4d6;
+$yellow1: #dddf00;
+
+$critical-value-dark: #fba643; // TODO: remove it
+$critical-value-light: #fecc8e; // TODO: remove it
+$calendar-yellow: #efefb0; // TODO: remove it
+$bad-value-dark: #ff6758; // TODO: remove it
+
+///////////////////////////////////////////////////////////////////////////////
+
+$border-radius: 4px;
+$border-style: solid;
+$border-width: 1px;
+$font-family: "LatoLatinWeb";
+$font-size: 0.875rem;
+$font-weight: 400;
+$line-height: 1.428571429;
+$margin-value: 8px;
+$page-max-width: 1366px;
+$attributes-column-width-4: 4;
+$attributes-column-width-3: 3;
+$attributes-column-width-2: 2;
+
+///////////////////////////////////////////////////////////////////////////////
+
+$left-sidebar-width--collapsed: 50px;
+$left-sidebar-width--expanded: 220px;
+$right-sidebar-width--collapsed: 50px;
+$right-sidebar-width--expanded: 220px;
+$topbar-height: 40px;
+$mainbar-border-color: darken($secondary-background-color, 5%);
+$mainbar-border-width: 2px;
+$page-header-height: 5.5rem;
+$form-control-height: 2.5rem;
+$checkbox-height: 1.25rem;
+$radiobutton-height: 1.25rem;

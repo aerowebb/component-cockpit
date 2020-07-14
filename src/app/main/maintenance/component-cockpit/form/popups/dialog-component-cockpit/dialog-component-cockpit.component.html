@@ -1,0 +1,163 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div *ngIf="elementFlag" class="modal-title">{{ getComponentName() + ".elementPopup" | translate }}</div>
+    <div *ngIf="profileFlag" class="modal-title">{{ getComponentName() + ".profilePopup" | translate }}</div>
+    <div *ngIf="variantFlag" class="modal-title">{{ getComponentName() + ".variantPopup" | translate }}</div>
+    <div *ngIf="siteFlag" class="modal-title">{{ getComponentName() + ".sitePopup" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="column">
+      <div *ngIf="elementFlag">
+        <div class="row">
+          <div class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+            <label class="form-label"> {{ getComponentName() + ".object" | translate }} </label>
+
+            <div class="form-control">
+              <p-dropdown
+                class="aw-dropdown fixed-width"
+                [options]="propertyObject"
+                appendTo="body"
+                [(ngModel)]="dialogData.object"
+                (onChange)="loadData()"
+                [showClear]="true"
+                placeholder="&nbsp;"
+                [disabled]="isReadOpenMode"
+              ></p-dropdown>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+            <label class="form-label"> {{ getComponentName() + ".data" | translate }} </label>
+
+            <div class="form-control">
+              <p-dropdown
+                class="aw-dropdown fixed-width"
+                [options]="propertyData"
+                appendTo="body"
+                [(ngModel)]="selectedData"
+                (onChange)="loadType()"
+                [showClear]="true"
+                [disabled]="isReadOpenMode"
+                placeholder="&nbsp;"
+              ></p-dropdown>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+            <label class="form-label"> {{ getComponentName() + ".type" | translate }} </label>
+
+            <div class="form-control">
+              <p-dropdown
+                class="aw-dropdown fixed-width"
+                [options]="propertyType"
+                appendTo="body"
+                [(ngModel)]="dialogData.type"
+                (onChange)="loadValue()"
+                [showClear]="true"
+                [disabled]="isReadOpenMode"
+                placeholder="&nbsp;"
+              ></p-dropdown>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="form-group">
+            <label class="form-label"> {{ getComponentName() + ".value" | translate }} </label>
+
+            <div class="form-control">
+              <p-dropdown
+                class="aw-dropdown fixed-width"
+                [options]="propertyValue"
+                appendTo="body"
+                [(ngModel)]="dialogData.value"
+                [showClear]="true"
+                [disabled]="isReadOpenMode"
+                placeholder="&nbsp;"
+              ></p-dropdown>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="profileFlag">
+        <div class="row">
+          <div class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+            <label class="form-label"> {{ getComponentName() + ".profile" | translate }} </label>
+
+            <div class="form-control">
+              <p-dropdown
+                class="aw-dropdown fixed-width"
+                [options]="propertyProfile"
+                appendTo="body"
+                [(ngModel)]="profileValue.profileId"
+                [showClear]="true"
+                placeholder="&nbsp;"
+                [disabled]="isReadOpenMode"
+              ></p-dropdown>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="variantFlag">
+        <div class="row">
+          <div class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+            <label class="form-label"> {{ getComponentName() + ".variant" | translate }} </label>
+
+            <div class="form-control">
+              <p-dropdown
+                class="aw-dropdown fixed-width"
+                [options]="propertyVariant"
+                appendTo="body"
+                [(ngModel)]="variantValue.name"
+                [showClear]="true"
+                placeholder="&nbsp;"
+                [disabled]="isReadOpenMode"
+              ></p-dropdown>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="siteFlag">
+        <div class="row">
+          <div class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+            <label class="form-label"> {{ getComponentName() + ".site" | translate }} </label>
+
+            <div class="form-control">
+              <p-dropdown
+                class="aw-dropdown fixed-width"
+                [options]="propertySite"
+                appendTo="body"
+                [(ngModel)]="siteValue.name"
+                [showClear]="true"
+                placeholder="&nbsp;"
+                [disabled]="isReadOpenMode"
+              ></p-dropdown>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button type="button" mat-raised-button (click)="closeDialog()">
+      <span>{{ "global.cancel" | translate }}</span>
+    </button>
+
+    <button
+      *ngIf="!isReadOpenMode"
+      color="primary"
+      type="button"
+      mat-raised-button
+      (click)="onValidate()"
+      [disabled]="isChecked()"
+    >
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>

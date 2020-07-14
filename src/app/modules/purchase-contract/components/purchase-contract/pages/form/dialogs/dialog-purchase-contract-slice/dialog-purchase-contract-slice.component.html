@@ -1,0 +1,268 @@
+<a-modal class="aw-modal" [(visible)]="display" [width]="70">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".title" | translate }}</div>
+  </a-header>
+  <a-content>
+    <div class="section-content">
+      <div class="column">
+        <div class="row">
+          <div class="form-group required">
+            <label class="form-label">
+              {{ getComponentName() + ".pcsOrder" | translate }}
+            </label>
+            <div class="form-control">
+              <input type="number" class="aw-input" [(ngModel)]="data.pcsOrder" [disabled]="isReadOpenMode" />
+            </div>
+          </div>
+
+          <div class="form-group required">
+            <label class="form-label">
+              {{ getComponentName() + ".pcsType" | translate }}
+            </label>
+
+            <div class="form-control">
+              <p-dropdown
+                class="aw-dropdown fixed-width"
+                appendTo="body"
+                placeholder="&nbsp;"
+                [options]="sliceTypeListDisplay"
+                (onChange)="onSliceTypeChange($event)"
+                [showClear]="true"
+                [(ngModel)]="data.pcsType"
+                [disabled]="isReadOpenMode"
+              ></p-dropdown>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              {{ getComponentName() + ".statusState" | translate }}
+            </label>
+            <div class="form-control">
+              <p-dropdown
+                class="aw-dropdown fixed-width"
+                appendTo="body"
+                placeholder="&nbsp;"
+                [options]="sliceStatusListDisplay"
+                (onChange)="onSliceStatusChange($event)"
+                [showClear]="true"
+                [(ngModel)]="data.statusState"
+                [disabled]="isReadOpenMode"
+              ></p-dropdown>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-content">
+      <div class="row">
+        <div class="form-group required">
+          <label class="form-label">
+            {{ getComponentName() + ".pcsDescription" | translate }}
+          </label>
+          <div class="form-control">
+            <textarea
+              class="aw-textarea"
+              [rows]="1"
+              pInputTextarea
+              [(ngModel)]="data.pcsDescription"
+              [disabled]="isReadOpenMode"
+            ></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-content">
+      <div class="row">
+        <div class="form-group">
+          <label class="form-label">{{ getComponentName() + ".pcsConsolidationDate" | translate }}</label>
+
+          <div class="form-control">
+            <p-calendar
+              showButtonBar="true"
+              [monthNavigator]="true"
+              [yearNavigator]="true"
+              [yearRange]="sessionService.calendarYearRange"
+              class="aw-calendar"
+              [dateFormat]="sessionService.dateFormatPrimeNG"
+              [locale]="sessionService.calendarFormat"
+              [(ngModel)]="data.pcsConsolidationDate"
+              appendTo="body"
+              [disabled]="true"
+            ></p-calendar>
+          </div>
+        </div>
+
+        <div id="pcsDuration" class="form-group">
+          <label class="form-label">
+            {{ getComponentName() + ".pcsDuration" | translate }}
+          </label>
+          <div class="form-control">
+            <input
+              numeric
+              type="text"
+              class="aw-input"
+              maxlength="50"
+              [(ngModel)]="data.pcsDuration"
+              (ngModelChange)="onDurationValueChange($event)"
+              [disabled]="isReadOpenMode"
+            />
+          </div>
+        </div>
+        <div id="pcsDurationUnit" class="form-group">
+          <label class="form-label">
+            {{ getComponentName() + ".unit" | translate }}
+          </label>
+
+          <div class="form-control">
+            <input
+              numeric
+              type="text"
+              class="aw-input"
+              maxlength="50"
+              [ngModel]="data.pcsDuration"
+              (ngModelChange)="onDurationValueChange($event)"
+              [disabled]="isReadOpenMode"
+            />
+          </div>
+        </div>
+        <div id="pcsDurationUnit" class="form-group">
+          <label class="form-label">
+            {{ getComponentName() + ".unit" | translate }}
+          </label>
+
+          <div class="form-control">
+            <p-dropdown
+              class="aw-dropdown fixed-width"
+              [showClear]="true"
+              placeholder="&nbsp;"
+              [options]="sliceUnitList"
+              [disabled]="isReadOpenMode"
+              [ngModel]="data.pcsDurationUnit"
+              (ngModelChange)="onDurationUnitValueChange($event)"
+            ></p-dropdown>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-content">
+      <div class="row">
+        <div class="form-group">
+          <label class="form-label">
+            {{ getComponentName() + ".pcsStartDate" | translate }}
+          </label>
+
+          <div class="form-control">
+            <p-calendar
+              showButtonBar="true"
+              [monthNavigator]="true"
+              [yearNavigator]="true"
+              [yearRange]="sessionService.calendarYearRange"
+              class="aw-calendar"
+              appendTo="body"
+              [dateFormat]="sessionService.dateFormatPrimeNG"
+              [locale]="sessionService.calendarFormat"
+              [ngModel]="data.pcsStartDate"
+              (ngModelChange)="onStartDateValueChange($event)"
+              [disabled]="isReadOpenMode"
+            ></p-calendar>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">
+            {{ getComponentName() + ".pcsEndDate" | translate }}
+          </label>
+
+          <div class="form-control">
+            <p-calendar
+              showButtonBar="true"
+              [monthNavigator]="true"
+              [yearNavigator]="true"
+              [yearRange]="sessionService.calendarYearRange"
+              class="aw-calendar"
+              appendTo="body"
+              [dateFormat]="sessionService.dateFormatPrimeNG"
+              [locale]="sessionService.calendarFormat"
+              [(ngModel)]="data.pcsEndDate"
+              [disabled]="true"
+            ></p-calendar>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-content">
+      <div class="row">
+        <div class="form-group">
+          <label class="form-label">
+            {{ getComponentName() + ".minAmount" | translate }}
+          </label>
+
+          <div class="form-control">
+            <input
+              numeric
+              decimals="2"
+              type="text"
+              class="aw-input"
+              maxlength="50"
+              [(ngModel)]="data.pcsMinimumAmount"
+              [disabled]="isReadOpenMode"
+            />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">
+            {{ getComponentName() + ".maxAmount" | translate }}
+          </label>
+
+          <div class="form-control">
+            <input
+              numeric
+              decimals="2"
+              type="text"
+              class="aw-input"
+              maxlength="50"
+              [(ngModel)]="data.pcsMaximumAmount"
+              [disabled]="isReadOpenMode"
+            />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">
+            {{ getComponentName() + ".commitedAmount" | translate }}
+          </label>
+
+          <div class="form-control">
+            <input
+              numeric
+              decimals="2"
+              type="text"
+              class="aw-input"
+              maxlength="50"
+              [(ngModel)]="data.pcsCommitedAmount"
+              [disabled]="isReadOpenMode"
+            />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">
+            {{ getComponentName() + ".currency" | translate }}
+          </label>
+          <div class="form-control">
+            <input type="text" class="aw-input" [(ngModel)]="currency" [disabled]="true" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </a-content>
+  <a-footer>
+    <button type="button" mat-raised-button (click)="closeDialog()">{{ "global.cancel" | translate }}</button>
+
+    <button type="button" color="primary" mat-raised-button (click)="validate()" [disabled]="!isValid()">
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>

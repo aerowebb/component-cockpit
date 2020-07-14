@@ -1,0 +1,82 @@
+<a-modal class="aw-modal" [(visible)]="display" [width]="60">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".searchPart" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="search-dialog-container">
+      <div class="section">
+        <h4 class="section-title">{{ "global.search" | translate }}</h4>
+
+        <div class="section-content">
+          <div class="column">
+            <div class="row">
+              <div class="form-group">
+                <label class="form-label">
+                  {{ getComponentName() + ".partType" | translate }}
+                </label>
+
+                <div class="form-control">
+                  <p-dropdown
+                    class="aw-dropdown fixed-width"
+                    [options]="pnTypeList"
+                    [(ngModel)]="selectedPnType"
+                    [showClear]="true"
+                    placeholder="&nbsp;"
+                    appendTo="body"
+                  ></p-dropdown>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">
+                  {{ getComponentName() + ".partNumber" | translate }}
+                </label>
+
+                <div class="form-control">
+                  <input type="text" class="aw-input" [(ngModel)]="searchCriteria.pnCode" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">
+                  {{ getComponentName() + ".partDesignation" | translate }}
+                </label>
+
+                <div class="form-control">
+                  <input type="text" class="aw-input" [(ngModel)]="searchCriteria.partDesignation" />
+                </div>
+              </div>
+            </div>
+
+            <div class="row search-criteria-footer">
+              <div class="search-actions">
+                <button type="button" color="primary" mat-raised-button (click)="search()">
+                  {{ "global.toSearch" | translate }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h4 class="section-title">
+          {{ "global.results" | translate }} ({{ partNumberTableDataSource ? partNumberTableDataSource.dataCount : 0 }})
+        </h4>
+
+        <div class="section-content">
+          <a-table [dataSource]="partNumberTableDataSource"> </a-table>
+        </div>
+      </div>
+    </div>
+  </a-content>
+  <a-footer>
+    <button type="button" mat-raised-button (click)="closeDialog()">
+      {{ "global.cancel" | translate }}
+    </button>
+    <button mat-raised-button color="primary" type="button" (click)="validate()">
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>

@@ -1,0 +1,91 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".title" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="form-group">
+      <label class="form-label">{{ getComponentName() + ".asset" | translate }}</label>
+
+      <div class="form-control">
+        <input type="text" class="aw-input" [(ngModel)]="event.equipmentText" [disabled]="true" />
+      </div>
+    </div>
+
+    <div class="form-group required">
+      <label class="form-label">{{ getComponentName() + ".category" | translate }}</label>
+
+      <div class="form-control">
+        <p-dropdown
+          class="aw-dropdown fixed-width"
+          [options]="categories"
+          [(ngModel)]="event.notificationCategroy"
+          [disabled]="isReadOpenMode || categories.length === 1"
+          (onChange)="loadTypeByCategory()"
+          [showClear]="true"
+          placeholder="&nbsp;"
+          appendTo="body"
+        ></p-dropdown>
+      </div>
+    </div>
+
+    <div class="form-group required">
+      <label class="form-label">{{ getComponentName() + ".type" | translate }}</label>
+
+      <div class="form-control">
+        <p-dropdown
+          class="aw-dropdown fixed-width"
+          [options]="typeList"
+          [(ngModel)]="event.bidoNotificationDTO.typeCode"
+          [disabled]="isReadOpenMode"
+          [showClear]="true"
+          placeholder="&nbsp;"
+          appendTo="body"
+        ></p-dropdown>
+      </div>
+    </div>
+
+    <div class="form-group required">
+      <label class="form-label">{{ getComponentName() + ".eventDate" | translate }}</label>
+
+      <div class="form-control">
+        <p-calendar
+          showButtonBar="true"
+          [monthNavigator]="true"
+          [yearNavigator]="true"
+          [yearRange]="sessionService.calendarYearRange"
+          class="aw-calendar"
+          [dateFormat]="sessionService.dateFormatPrimeNG"
+          [locale]="sessionService.calendarFormat"
+          [(ngModel)]="event.bidoNotificationDTO.reportingPeriodStartDate"
+          appendTo="body"
+          [disabled]="isReadOpenMode"
+          [maxDate]="maxDate"
+          [showTime]="true"
+          [hideOnDateTimeSelect]="true"
+        ></p-calendar>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button *ngIf="isReadOpenMode" type="button" mat-raised-button (click)="closeDialog()">
+      <span>{{ "global.close" | translate }}</span>
+    </button>
+
+    <button *ngIf="!isReadOpenMode" type="button" mat-raised-button (click)="closeDialog()">
+      <span>{{ "global.cancel" | translate }}</span>
+    </button>
+
+    <button
+      *ngIf="!isReadOpenMode"
+      color="primary"
+      [disabled]="showValidate()"
+      type="button"
+      mat-raised-button
+      (click)="validate()"
+    >
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>

@@ -1,0 +1,13 @@
+<a-modal class="aw-modal" [(visible)]="display" [width]="25">
+  <a-content>
+    <div class="column container">
+      <i class="fa fa-fw fa-qrcode icon" aria-hidden="true"></i>
+
+      <span class="label">
+        {{ getComponentName() + ".scan" | translate }}
+      </span>
+
+      <input #codeInput type="text" class="aw-input" [(ngModel)]="code" (keyup)="onScan(code)" />
+    </div>
+  </a-content>
+</a-modal>

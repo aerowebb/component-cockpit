@@ -1,0 +1,168 @@
+<div class="page-header">
+  <div class="page-info">
+    <div>
+      <div class="page-title">
+        {{ "transaction." + componentData.componentId | translate }}
+      </div>
+
+      <div class="page-subtitle">
+        <div class="page-subtitle">- {{ "page.searchPage" | translate }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-actions">
+    <button
+      mat-icon-button
+      class="mat-elevation-z1"
+      matTooltip="{{ 'global.showAllActionTooltip' | translate }}"
+      matTooltipPosition="above"
+      aria-label="Show all actions"
+      [matMenuTriggerFor]="actions"
+    >
+      <mat-icon>more_horiz</mat-icon>
+    </button>
+    <mat-menu #actions="matMenu">
+      <button mat-menu-item (click)="updateFavoriteState()">
+        {{ (isFavoriteEntry ? "page.removeFromFavorites" : "page.addToFavorites") | translate }}
+      </button>
+    </mat-menu>
+  </div>
+</div>
+
+<div class="page-wrapper">
+  <div class="page-container search-page-container">
+    <div class="page-content">
+      <aw-fleet-data-form
+        (searchLaunched)="searchLaunched($event)"
+        (selectedTypeUpdated)="selectedTypeUpdated($event)"
+        (resultsTableAircraftUpdated)="resultsTableAircraftUpdated($event)"
+        (resultsTableEngineUpdated)="resultsTableEngineUpdated($event)"
+        (resultsTableEquipmentUpdated)="resultsTableEquipmentUpdated($event)"
+      ></aw-fleet-data-form>
+
+      <div class="grid-row">
+        <div class="grid-cell--12">
+          <div #resultsContainerAnchor class="grid-cell grid-cell--container">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 *ngIf="selectedType === 'aircraft'" class="grid-cell-title">
+                  {{ "global.results" | translate }} ({{
+                    aircraftTableDataSource ? aircraftTableDataSource.dataCount : 0
+                  }})
+                </h3>
+                <h3 *ngIf="selectedType === 'engine'" class="grid-cell-title">
+                  {{ "global.results" | translate }} ({{ engineTableDataSource ? engineTableDataSource.dataCount : 0 }})
+                </h3>
+                <h3 *ngIf="selectedType === 'equipment'" class="grid-cell-title">
+                  {{ "global.results" | translate }} ({{
+                    equipmentTableDataSource ? equipmentTableDataSource.dataCount : 0
+                  }})
+                </h3>
+              </div>
+            </div>
+
+            <div class="grid-cell-content">
+              <a-table [dataSource]="aircraftTableDataSource" *ngIf="selectedType === 'aircraft'">
+                <ng-template tableActionsDef>
+                  <button
+                    *ngIf="aircraftTableDataSource.hasDataSelection"
+                    type="button"
+                    mat-raised-button
+                    (click)="openSelectedAircraftsOwner()"
+                  >
+                    {{ componentData.componentId + ".ownerTransfer" | translate }}
+                  </button>
+                  <button
+                    *ngIf="aircraftTableDataSource.hasDataSelection"
+                    type="button"
+                    mat-raised-button
+                    (click)="openSelectedAircraftsOperator()"
+                  >
+                    {{ componentData.componentId + ".operatorTransfer" | translate }}
+                  </button>
+                </ng-template>
+                <ng-template columnDef="asset" let-rowData="rowData">
+                  <a *ngIf="rowData['pnCode']" (click)="openLinkAircraft(rowData['equipmentCode'])">
+                    {{ "P/N " + rowData["pnCode"] }}</a
+                  >
+                  <a *ngIf="rowData['sn']" (click)="openLinkAircraft(rowData['equipmentCode'])">
+                    {{ " | S/N " + rowData["sn"] }}</a
+                  >
+                </ng-template>
+              </a-table>
+
+              <a-table [dataSource]="engineTableDataSource" *ngIf="selectedType === 'engine'">
+                <ng-template tableActionsDef>
+                  <button
+                    *ngIf="engineTableDataSource.hasDataSelection"
+                    type="button"
+                    mat-raised-button
+                    (click)="openSelectedEngineOwner()"
+                  >
+                    {{ componentData.componentId + ".ownerTransfer" | translate }}
+                  </button>
+                  <button
+                    *ngIf="engineTableDataSource.hasDataSelection"
+                    type="button"
+                    mat-raised-button
+                    (click)="openSelectedEngineOperator()"
+                  >
+                    {{ componentData.componentId + ".operatorTransfer" | translate }}
+                  </button>
+                </ng-template>
+                <ng-template columnDef="asset" let-rowData="rowData">
+                  <a *ngIf="rowData['pnCode']" (click)="openLinkEngine(rowData['equipmentCode'])">
+                    {{ "P/N " + rowData["pnCode"] }}</a
+                  >
+                  <a *ngIf="rowData['sn']" (click)="openLinkEngine(rowData['equipmentCode'])">
+                    {{ " | S/N " + rowData["sn"] }}</a
+                  >
+                </ng-template>
+              </a-table>
+
+              <a-table [dataSource]="equipmentTableDataSource" *ngIf="selectedType === 'equipment'">
+                <ng-template tableActionsDef>
+                  <button
+                    *ngIf="equipmentTableDataSource.hasDataSelection"
+                    type="button"
+                    mat-raised-button
+                    (click)="openSelectedEquipmentOwner()"
+                  >
+                    {{ componentData.componentId + ".ownerTransfer" | translate }}
+                  </button>
+                  <button
+                    *ngIf="equipmentTableDataSource.hasDataSelection"
+                    type="button"
+                    mat-raised-button
+                    (click)="openSelectedEquipmentOperator()"
+                  >
+                    {{ componentData.componentId + ".operatorTransfer" | translate }}
+                  </button>
+                </ng-template>
+                <ng-template columnDef="asset" let-rowData="rowData">
+                  <a *ngIf="rowData['pnCode']" (click)="openLinkEquipment(rowData['equipmentCode'])">
+                    {{ "P/N " + rowData["pnCode"] }}</a
+                  >
+                  <a *ngIf="rowData['sn']" (click)="openLinkEquipment(rowData['equipmentCode'])">
+                    {{ " | S/N " + rowData["sn"] }}</a
+                  >
+                </ng-template>
+              </a-table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <aw-fleet-data-transfer-owner-dialog
+    *ngIf="showFleetDataTransferPopup"
+    [airCraftSelected]="airCraftSelected"
+    [operatorSelected]="operatorSelected"
+    [ownerSelected]="ownerSelected"
+    [(display)]="showFleetDataTransferPopup"
+    [assets]="currentAssets"
+  >
+  </aw-fleet-data-transfer-owner-dialog>
+</div>

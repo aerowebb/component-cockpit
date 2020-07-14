@@ -1,0 +1,59 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".title" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="form-group required">
+      <div class="form-group">
+        <label class="form-label"> {{ getComponentName() + ".customerCode" | translate }}</label>
+        <div class="form-control">
+          <p-dropdown
+            appendTo="body"
+            class="aw-dropdown fixed-width"
+            placeholder="&nbsp;"
+            [showClear]="true"
+            [options]="cudstomersCodeOptions"
+            [disabled]="isReadOpenMode"
+            [(ngModel)]="bidtPurchaseContractPartnerDTO.customerCode"
+          >
+          </p-dropdown>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group required">
+      <div class="form-group">
+        <label class="form-label"> {{ getComponentName() + ".pcpRole" | translate }}</label>
+        <div class="form-control">
+          <p-dropdown
+            appendTo="body"
+            class="aw-dropdown fixed-width"
+            placeholder="&nbsp;"
+            [showClear]="true"
+            [options]="partnerRoleList"
+            [disabled]="isReadOpenMode"
+            [(ngModel)]="bidtPurchaseContractPartnerDTO.pcpRole"
+          >
+          </p-dropdown>
+        </div>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button *ngIf="isReadOpenMode" type="button" mat-raised-button (click)="closeDialog()">
+      {{ "global.close" | translate }}
+    </button>
+    <button type="button" mat-raised-button (click)="closeDialog()">{{ "global.cancel" | translate }}</button>
+    <button
+      type="button"
+      color="primary"
+      mat-raised-button
+      (click)="validate()"
+      [disabled]="!bidtPurchaseContractPartnerDTO.customerCode"
+    >
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>

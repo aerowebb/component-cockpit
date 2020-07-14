@@ -1,0 +1,3276 @@
+<div class="page-header">
+  <div class="page-info">
+    <div>
+      <div class="page-title">{{ "transaction." + componentData.componentId | translate }}</div>
+
+      <div class="page-subtitle">
+        <div *ngIf="!isCreateOpenMode && componentData && componentData.objectId" class="page-subtitle">
+          - {{ context }}
+        </div>
+      </div>
+    </div>
+    <div>
+      <div
+        class="object-status"
+        *ngIf="equipment.bidoEquipmentDTO.operationalStatus"
+        (click)="searchOperationalStatus()"
+      >
+        {{ equipment.bidoEquipmentDTO.operationalStatus }}
+      </div>
+      <div class="on-aircraft" *ngIf="isInstalledOnAircraft && (isEngine() || isEquipment())">
+        {{ componentData.componentId + ".onAircraft" | translate }}
+      </div>
+    </div>
+  </div>
+
+  <div class="page-actions">
+    <button
+      *ngIf="isEquipment() && showSendToRepairButton()"
+      type="button"
+      mat-raised-button
+      (click)="openSendToRepairPopup()"
+    >
+      {{ componentData.componentId + ".openRepair" | translate }}
+    </button>
+    <button
+      *ngIf="!isCreateOpenMode && displayLockUnlockButton && !showLockFlag"
+      type="button"
+      mat-raised-button
+      (click)="lockToolResources()"
+    >
+      {{ componentData.componentId + ".lock" | translate }}
+    </button>
+    <button
+      *ngIf="!isCreateOpenMode && displayLockUnlockButton && showLockFlag"
+      type="button"
+      mat-raised-button
+      (click)="unLockToolResources()"
+    >
+      {{ componentData.componentId + ".unlock" | translate }}
+    </button>
+
+    <button
+      *ngIf="isReadOpenMode && hasUpdateAccessRight && !showLockFlag"
+      type="button"
+      mat-raised-button
+      (click)="edit()"
+    >
+      {{ "global.edit" | translate }}
+    </button>
+
+    <button
+      *ngIf="!isReadOpenMode && !isCreateOpenMode"
+      type="button"
+      color="warn"
+      mat-raised-button
+      (click)="cancel()"
+    >
+      {{ "global.cancel" | translate }}
+    </button>
+
+    <button
+      *ngIf="!isReadOpenMode"
+      class="btn-with-spinner"
+      color="primary"
+      type="button"
+      mat-raised-button
+      (click)="saveAssetData()"
+    >
+      <span class="lds-hourglass" *ngIf="showSaveSpinner"></span>
+      {{ "global.save" | translate }}
+    </button>
+
+    <button
+      mat-icon-button
+      class="mat-elevation-z1"
+      matTooltip="{{ 'global.showAllActionTooltip' | translate }}"
+      matTooltipPosition="above"
+      aria-label="Show all actions"
+      [matMenuTriggerFor]="actions"
+    >
+      <mat-icon>more_horiz</mat-icon>
+    </button>
+    <mat-menu #actions="matMenu">
+      <button mat-menu-item [matMenuTriggerFor]="navigations">{{ "goTo" | translate }}</button>
+      <button mat-menu-item (click)="opWorkPackageToShow.toggle($event)">
+        {{ componentData.componentId + ".report" | translate }}
+      </button>
+      <button *ngIf="isReadOpenMode" mat-menu-item (click)="openAssetLog(undefined, isReadOpenMode)">
+        {{ "updates" | translate }}
+      </button>
+      <button *ngIf="isCreateOpenMode" mat-menu-item (click)="openAssetLog(undefined, isCreateOpenMode)">
+        {{ "updates" | translate }}
+      </button>
+      <button mat-menu-item (click)="refresh()">{{ "global.refresh" | translate }}</button>
+      <button mat-menu-item (click)="updateFavoriteState()">
+        {{ (isFavoriteEntry ? "page.removeFromFavorites" : "page.addToFavorites") | translate }}
+      </button>
+    </mat-menu>
+    <mat-menu #navigations="matMenu">
+      <button mat-menu-item (click)="openAssetPlan()">
+        {{ getComponentName() + ".assetPlan" | translate }}
+      </button>
+      <button mat-menu-item (click)="openAssetReview()">
+        {{ getComponentName() + ".assetReview" | translate }}
+      </button>
+      <button mat-menu-item (click)="openAcontrol()">
+        {{ getComponentName() + ".aControl" | translate }}
+      </button>
+      <button mat-menu-item (click)="openMaintenancePlanning()">
+        {{ getComponentName() + ".mPlanning" | translate }}
+      </button>
+      <button mat-menu-item (click)="openAssetAtDate()">
+        {{ getComponentName() + ".assetAtDate" | translate }}
+      </button>
+      <button mat-menu-item (click)="openConfigurationControl()">
+        {{ getComponentName() + ".configControl" | translate }}
+      </button>
+    </mat-menu>
+  </div>
+</div>
+
+<div class="page-wrapper">
+  <div class="page-container">
+    <mat-tab-group animationDuration="0ms" dynamicHeight>
+      <mat-tab>
+        <ng-template mat-tab-label>
+          {{ "home" | translate }}
+        </ng-template>
+
+        <div class="grid-row">
+          <div class="grid-cell--12">
+            <div id="mainPanel">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <div class="grid-cell-title">
+                      <span>{{ "page.mainData" | translate }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <div class="column">
+                    <div class="row">
+                      <div class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+                        <label class="form-label">{{ componentData.componentId + ".familyVariant" | translate }}</label>
+
+                        <div
+                          *ngIf="isCreateOpenMode"
+                          class="form-control form-control-with-modal"
+                          [ngClass]="{ disabled: isReadOpenMode }"
+                        >
+                          <div class="form-control-data" (click)="searchFamilyCode()">
+                            {{ equipment.bidoEquipmentDTO.familyVariantCode }}
+                          </div>
+
+                          <div *ngIf="equipment.bidoEquipmentDTO.familyVariantCode" class="btn-clear-wrapper">
+                            <i
+                              class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+                              aria-hidden="true"
+                              (click)="equipment.bidoEquipmentDTO.familyVariantCode = undefined"
+                            ></i>
+                          </div>
+                          <div class="btn-search-wrapper">
+                            <i
+                              class="fa fa-fw fa-search aw-icon btn-search"
+                              aria-hidden="true"
+                              (click)="searchFamilyCode()"
+                            ></i>
+                          </div>
+                        </div>
+
+                        <div
+                          *ngIf="!isCreateOpenMode"
+                          class="form-control form-control-with-modal"
+                          [ngClass]="{ disabled: isReadOpenMode }"
+                        >
+                          <div class="form-control-data" (click)="!isReadOpenMode ? searchFamilyPopup() : ''">
+                            {{ equipment.bidoEquipmentDTO.familyVariantCode }}
+                          </div>
+                          <div *ngIf="equipment.bidoEquipmentDTO.familyVariantCode" class="btn-clear-wrapper">
+                            <i
+                              class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+                              aria-hidden="true"
+                              (click)="equipment.bidoEquipmentDTO.familyVariantCode = undefined"
+                            ></i>
+                          </div>
+                          <div class="btn-search-wrapper">
+                            <i
+                              class="fa fa-fw fa-edit aw-icon btn-search"
+                              aria-hidden="true"
+                              (click)="searchFamilyPopup()"
+                            ></i>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div *ngIf="isEngine() || isEquipment()" class="form-group">
+                        <label class="form-label">{{
+                          componentData.componentId + ".packagingNumber" | translate
+                        }}</label>
+
+                        <div class="form-control">
+                          <input
+                            type="text"
+                            class="aw-input"
+                            [(ngModel)]="equipment.bidoEquipmentDTO.batchNumber"
+                            [disabled]="true"
+                          />
+                        </div>
+                      </div>
+
+                      <div
+                        *ngIf="!isTool()"
+                        class="form-group"
+                        [ngClass]="{ required: !isReadOpenMode && configurationTracked }"
+                      >
+                        <label class="form-label">{{ componentData.componentId + ".snCode" | translate }}</label>
+
+                        <div *ngIf="isCreateOpenMode" class="form-control">
+                          <input
+                            type="text"
+                            maxlength="35"
+                            class="aw-input"
+                            [(ngModel)]="equipment.bidoEquipmentDTO.sn"
+                            [disabled]="isReadOpenMode"
+                          />
+                        </div>
+
+                        <div
+                          *ngIf="!isCreateOpenMode"
+                          class="form-control form-control-with-modal"
+                          [ngClass]="{ disabled: isReadOpenMode }"
+                        >
+                          <div class="form-control-data" (click)="!isReadOpenMode ? searchSnCodePopup() : ''">
+                            {{ equipment.bidoEquipmentDTO.sn }}
+                          </div>
+                          <div class="btn-search-wrapper">
+                            <i
+                              class="fa fa-fw fa-edit aw-icon btn-search"
+                              aria-hidden="true"
+                              (click)="searchSnCodePopup()"
+                            ></i>
+                          </div>
+                        </div>
+                      </div>
+                      <div *ngIf="isTool()" class="form-group required">
+                        <label class="form-label">{{ componentData.componentId + ".snCode" | translate }}</label>
+
+                        <div *ngIf="isCreateOpenMode" class="form-control">
+                          <input
+                            type="text"
+                            maxlength="35"
+                            class="aw-input"
+                            [(ngModel)]="equipment.bidoEquipmentDTO.sn"
+                            [disabled]="isReadOpenMode"
+                          />
+                        </div>
+
+                        <div
+                          *ngIf="!isCreateOpenMode"
+                          class="form-control form-control-with-modal"
+                          [ngClass]="{ disabled: isReadOpenMode }"
+                        >
+                          <div class="form-control-data" (click)="!isReadOpenMode ? searchSnCodePopup() : ''">
+                            {{ equipment.bidoEquipmentDTO.sn }}
+                          </div>
+                          <div class="btn-search-wrapper">
+                            <i
+                              class="fa fa-fw fa-edit aw-icon btn-search"
+                              aria-hidden="true"
+                              (click)="searchSnCodePopup()"
+                            ></i>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div *ngIf="!isAircraft()" class="form-group">
+                        <label class="form-label">{{ componentData.componentId + ".pn" | translate }}</label>
+
+                        <div
+                          *ngIf="isCreateOpenMode"
+                          class="form-control form-control-with-modal"
+                          [ngClass]="{ disabled: isReadOpenMode }"
+                        >
+                          <div class="form-control-data" (click)="searchPNCode()">
+                            {{ equipment.bidoEquipmentDTO.pnCode }}
+                          </div>
+                          <div *ngIf="equipment.bidoEquipmentDTO.pnCode" class="btn-clear-wrapper">
+                            <i
+                              class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+                              aria-hidden="true"
+                              (click)="equipment.bidoEquipmentDTO.pnCode = undefined"
+                            ></i>
+                          </div>
+                          <div class="btn-search-wrapper">
+                            <i
+                              class="fa fa-fw fa-search aw-icon btn-search"
+                              aria-hidden="true"
+                              (click)="searchPNCode()"
+                            ></i>
+                          </div>
+                        </div>
+
+                        <div
+                          *ngIf="!isCreateOpenMode"
+                          class="form-control form-control-with-modal"
+                          [ngClass]="{ disabled: isReadOpenMode }"
+                        >
+                          <div class="form-control-data" (click)="!isReadOpenMode ? searchPnPopup() : ''">
+                            {{ equipment.bidoEquipmentDTO.pnCode }}
+                          </div>
+                          <div *ngIf="equipment.bidoEquipmentDTO.pnCode" class="btn-clear-wrapper">
+                            <i
+                              class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+                              aria-hidden="true"
+                              (click)="equipment.bidoEquipmentDTO.pnCode = undefined"
+                            ></i>
+                          </div>
+                          <div class="btn-search-wrapper">
+                            <i
+                              class="fa fa-fw fa-edit aw-icon btn-search"
+                              aria-hidden="true"
+                              (click)="searchPnPopup()"
+                            ></i>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="form-group" *ngIf="!isTool()">
+                        <label class="form-label">{{ componentData.componentId + ".eisDate" | translate }}</label>
+                        <div class="form-control">
+                          <p-calendar
+                            showButtonBar="true"
+                            [monthNavigator]="true"
+                            [yearNavigator]="true"
+                            [yearRange]="sessionService.calendarYearRange"
+                            class="aw-calendar"
+                            appendTo="body"
+                            [dateFormat]="sessionService.dateFormatPrimeNG"
+                            [locale]="sessionService.calendarFormat"
+                            [(ngModel)]="equipment.bidoEquipmentDTO.eisDate"
+                            [disabled]="isReadOpenMode"
+                            [maxDate]="maxDate"
+                          ></p-calendar>
+                        </div>
+                      </div>
+
+                      <div *ngIf="isAircraft()" class="form-group">
+                        <label class="form-label">{{ componentData.componentId + ".registration" | translate }}</label>
+
+                        <div *ngIf="isCreateOpenMode" class="form-control">
+                          <input
+                            type="text"
+                            maxlength="100"
+                            class="aw-input"
+                            [(ngModel)]="equipment.bidoEquipmentDTO.registration"
+                            [disabled]="isReadOpenMode"
+                          />
+                        </div>
+
+                        <div
+                          *ngIf="!isCreateOpenMode"
+                          class="form-control form-control-with-modal"
+                          [ngClass]="{ disabled: isReadOpenMode }"
+                        >
+                          <div class="form-control-data" (click)="!isReadOpenMode ? searchRegistrationPopup() : ''">
+                            {{ equipment.bidoEquipmentDTO.registration }}
+                          </div>
+                          <div class="btn-search-wrapper">
+                            <i
+                              class="fa fa-fw fa-edit aw-icon btn-search"
+                              aria-hidden="true"
+                              (click)="searchRegistrationPopup()"
+                            ></i>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="form-group text-area flex--2">
+                        <label class="form-label">{{ "global.designation" | translate }}</label>
+
+                        <div class="form-control">
+                          <textarea
+                            class="aw-textarea"
+                            [rows]="3"
+                            [(ngModel)]="equipment.bidoEquipmentDTO.equipmentDesignation"
+                            maxlength="50"
+                            pInputTextarea
+                            [disabled]="isReadOpenMode"
+                          ></textarea>
+                        </div>
+                      </div>
+
+                      <div class="form-group">
+                        <label class="form-label">{{
+                          componentData.componentId + ".configurationTracked" | translate
+                        }}</label>
+
+                        <div class="form-control">
+                          <p-checkbox
+                            class="aw-checkbox"
+                            binary="true"
+                            [disabled]="true"
+                            [(ngModel)]="configurationTracked"
+                            [disabled]="isReadOpenMode"
+                          ></p-checkbox>
+                        </div>
+                      </div>
+
+                      <div class="form-group">
+                        <label class="form-label">{{ componentData.componentId + ".owner" | translate }}</label>
+
+                        <div
+                          class="form-control form-control-with-modal"
+                          [ngClass]="{ disabled: isReadOpenMode || !isCreateOpenMode }"
+                        >
+                          <div class="form-control-data" (click)="isCreateOpenMode ? searchOwners() : ''">
+                            {{ equipment.bidoEquipmentDTO.ownerCustomerCode }}
+                            <span *ngIf="ownerCustomerName">({{ ownerCustomerName }})</span>
+                          </div>
+
+                          <div
+                            *ngIf="equipment.bidoEquipmentDTO.ownerCustomerCode && !isReadOpenMode"
+                            class="btn-clear-wrapper"
+                          >
+                            <i
+                              class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+                              aria-hidden="true"
+                              (click)="
+                                equipment.bidoEquipmentDTO.ownerCustomerCode = undefined; ownerCustomerName = undefined
+                              "
+                            ></i>
+                          </div>
+                          <div class="btn-search-wrapper" *ngIf="!isReadOpenMode">
+                            <i
+                              class="fa fa-fw fa-search aw-icon btn-search"
+                              aria-hidden="true"
+                              (click)="searchOwners()"
+                            ></i>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="form-group">
+                        <label class="form-label">{{ componentData.componentId + ".operator" | translate }}</label>
+
+                        <div
+                          class="form-control form-control-with-modal"
+                          [ngClass]="{ disabled: isReadOpenMode || !isCreateOpenMode }"
+                        >
+                          <div class="form-control-data" (click)="isCreateOpenMode ? searchOperators() : ''">
+                            {{ equipment.bidoEquipmentDTO.operatorCustomerCode }}
+                            <span *ngIf="operatorCustomerName">({{ operatorCustomerName }})</span>
+                          </div>
+
+                          <div
+                            *ngIf="equipment.bidoEquipmentDTO.operatorCustomerCode && !isReadOpenMode"
+                            class="btn-clear-wrapper"
+                          >
+                            <i
+                              class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+                              aria-hidden="true"
+                              (click)="
+                                equipment.bidoEquipmentDTO.operatorCustomerCode = undefined;
+                                operatorCustomerName = undefined
+                              "
+                            ></i>
+                          </div>
+                          <div class="btn-search-wrapper" *ngIf="!isReadOpenMode">
+                            <i
+                              class="fa fa-fw fa-search aw-icon btn-search"
+                              aria-hidden="true"
+                              (click)="searchOperators()"
+                            ></i>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="form-group">
+                        <label class="form-label">{{ componentData.componentId + ".manufacturer" | translate }}</label>
+
+                        <div class="form-control">
+                          <input
+                            type="text"
+                            maxlength="35"
+                            class="aw-input"
+                            [disabled]="isReadOpenMode"
+                            [(ngModel)]="equipment.bidoEquipmentDTO.snManufacturer"
+                          />
+                        </div>
+                      </div>
+
+                      <div class="form-group general-field">
+                        <label class="form-label">{{
+                          componentData.componentId + ".manufacturingDate" | translate
+                        }}</label>
+
+                        <div class="form-control">
+                          <p-calendar
+                            showButtonBar="true"
+                            [monthNavigator]="true"
+                            [yearNavigator]="true"
+                            [yearRange]="sessionService.calendarYearRange"
+                            class="aw-calendar"
+                            [dateFormat]="sessionService.dateFormatPrimeNG"
+                            [locale]="sessionService.calendarFormat"
+                            [(ngModel)]="equipment.bidoEquipmentDTO.manufacturingDate"
+                            [disabled]="isReadOpenMode"
+                            appendTo="body"
+                          >
+                          </p-calendar>
+                        </div>
+                      </div>
+
+                      <div *ngIf="!isEngine() && !isAircraft()" class="form-group">
+                        <label class="form-label">{{ componentData.componentId + ".model" | translate }}</label>
+
+                        <div class="form-control">
+                          <input
+                            type="text"
+                            class="aw-input"
+                            [disabled]="true"
+                            [(ngModel)]="equipmentModelCodeAndName"
+                          />
+                        </div>
+                      </div>
+
+                      <div *ngIf="isEngine() && !isAircraft()" class="form-group">
+                        <label class="form-label">{{ componentData.componentId + ".model" | translate }}</label>
+
+                        <div *ngIf="isCreateOpenMode" class="form-control">
+                          <input
+                            type="text"
+                            class="aw-input"
+                            [(ngModel)]="equipmentModelCodeAndName"
+                            [disabled]="true"
+                          />
+                        </div>
+
+                        <div
+                          *ngIf="!isCreateOpenMode"
+                          class="form-control form-control-with-modal"
+                          [ngClass]="{ disabled: isReadOpenMode }"
+                        >
+                          <div class="form-control-data" (click)="!isReadOpenMode ? searchModelCodePopup() : ''">
+                            {{ equipmentModelCodeAndName }}
+                          </div>
+                          <div class="btn-search-wrapper">
+                            <i
+                              class="fa fa-fw fa-edit aw-icon btn-search"
+                              aria-hidden="true"
+                              (click)="searchModelCodePopup()"
+                            ></i>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div *ngIf="!isEngine() && !isAircraft()" class="form-group">
+                        <label class="form-label">{{ componentData.componentId + ".rating" | translate }}</label>
+
+                        <div class="form-control">
+                          <input
+                            type="text"
+                            class="aw-input"
+                            [disabled]="true"
+                            [(ngModel)]="equipmentRatingCodeAndName"
+                          />
+                        </div>
+                      </div>
+
+                      <div *ngIf="isEngine() && !isAircraft()" class="form-group">
+                        <label class="form-label">{{ componentData.componentId + ".rating" | translate }}</label>
+
+                        <div *ngIf="isCreateOpenMode" class="form-control">
+                          <input
+                            type="text"
+                            class="aw-input"
+                            [(ngModel)]="equipmentRatingCodeAndName"
+                            [disabled]="true"
+                          />
+                        </div>
+
+                        <div
+                          *ngIf="!isCreateOpenMode"
+                          class="form-control form-control-with-modal"
+                          [ngClass]="{ disabled: isReadOpenMode }"
+                        >
+                          <div class="form-control-data" (click)="!isReadOpenMode ? searchRatingCodePopup() : ''">
+                            {{ equipmentRatingCodeAndName }}
+                          </div>
+                          <div class="btn-search-wrapper">
+                            <i
+                              class="fa fa-fw fa-edit aw-icon btn-search"
+                              aria-hidden="true"
+                              (click)="searchRatingCodePopup()"
+                            ></i>
+                          </div>
+                        </div>
+                      </div>
+                      <div *ngIf="!isAircraft()" class="form-group"></div>
+                      <div *ngIf="isAircraft()" class="form-group flex--2"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-row">
+          <div *ngIf="!isAircraft()" class="grid-cell--12">
+            <div id="engineeringReferencesPanel">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <div class="grid-cell-title">
+                      <span>{{ getComponentName() + ".engineeringReferences" | translate }}</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="grid-cell-content grid-cell-content-with-section">
+                  <div *ngIf="isTool()" class="section">
+                    <div class="section-content">
+                      <div class="column">
+                        <div class="row">
+                          <div class="form-group">
+                            <label class="form-label">{{ componentData.componentId + ".itemCode" | translate }}</label>
+                            <div class="form-control display--flex-row" *ngIf="!isReadOpenMode">
+                              <input
+                                type="text"
+                                class="aw-input flex--1"
+                                [disabled]="isReadOpenMode"
+                                [(ngModel)]="equipment.bidoEquipmentDTO.chapter"
+                                maxlength="2"
+                              />
+                              <span class="separator"></span>
+                              <input
+                                type="text"
+                                class="aw-input flex--1"
+                                [disabled]="isReadOpenMode"
+                                [(ngModel)]="equipment.bidoEquipmentDTO.section"
+                                maxlength="2"
+                              />
+                              <span class="separator"></span>
+                              <input
+                                type="text"
+                                class="aw-input flex--1"
+                                [disabled]="isReadOpenMode"
+                                [(ngModel)]="equipment.bidoEquipmentDTO.subject"
+                                maxlength="2"
+                              />
+                              <span class="separator"></span>
+                              <input
+                                type="text"
+                                class="aw-input flex--1"
+                                [disabled]="isReadOpenMode"
+                                [(ngModel)]="equipment.bidoEquipmentDTO.sheet"
+                                maxlength="5"
+                              />
+                              <span class="separator"></span>
+                              <input
+                                type="text"
+                                class="aw-input flex--1"
+                                [disabled]="isReadOpenMode"
+                                [(ngModel)]="equipment.bidoEquipmentDTO.marks"
+                                maxlength="5"
+                              />
+
+                              <div class="btn-search-wrapper" *ngIf="!isReadOpenMode">
+                                <i
+                                  class="fa fa-fw fa-search aw-icon btn-search"
+                                  aria-hidden="true"
+                                  (click)="openItemTableDialog()"
+                                ></i>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="form-group">
+                            <label class="form-label">{{ componentData.componentId + ".assetCode" | translate }}</label>
+
+                            <div class="form-control">
+                              <input
+                                type="text"
+                                maxlength="25"
+                                class="aw-input"
+                                [(ngModel)]="equipment.bidoEquipmentDTO.equipmentCode"
+                                [disabled]="isReadOpenMode || !isCreateOpenMode"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div *ngIf="!isTool()" class="section">
+                    <div *ngIf="!isAircraft()" class="section-content">
+                      <div class="column">
+                        <div class="row">
+                          <div class="form-group">
+                            <label class="form-label">{{ componentData.componentId + ".itemCode" | translate }}</label>
+                            <div class="form-control display--flex-row">
+                              <input
+                                type="text"
+                                class="aw-input flex--1"
+                                [disabled]="isReadOpenMode"
+                                [(ngModel)]="equipment.bidoEquipmentDTO.chapter"
+                                maxlength="2"
+                              />
+                              <span class="separator"></span>
+                              <input
+                                type="text"
+                                class="aw-input flex--1"
+                                [disabled]="isReadOpenMode"
+                                [(ngModel)]="equipment.bidoEquipmentDTO.section"
+                                maxlength="2"
+                              />
+                              <span class="separator"></span>
+                              <input
+                                type="text"
+                                class="aw-input flex--1"
+                                [disabled]="isReadOpenMode"
+                                [(ngModel)]="equipment.bidoEquipmentDTO.subject"
+                                maxlength="2"
+                              />
+                              <span class="separator"></span>
+                              <input
+                                type="text"
+                                class="aw-input flex--1"
+                                [disabled]="isReadOpenMode"
+                                [(ngModel)]="equipment.bidoEquipmentDTO.sheet"
+                                maxlength="5"
+                              />
+                              <span class="separator"></span>
+                              <input
+                                type="text"
+                                class="aw-input flex--1"
+                                [disabled]="isReadOpenMode"
+                                [(ngModel)]="equipment.bidoEquipmentDTO.marks"
+                                maxlength="5"
+                              />
+
+                              <div class="btn-search-wrapper" *ngIf="!isReadOpenMode">
+                                <i
+                                  class="fa fa-fw fa-search aw-icon btn-search"
+                                  aria-hidden="true"
+                                  (click)="openItemTableDialog()"
+                                ></i>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="form-group general-field">
+                            <label class="form-label">{{
+                              componentData.componentId + ".itemNumber" | translate
+                            }}</label>
+
+                            <div class="form-control">
+                              <input
+                                type="text"
+                                class="aw-input"
+                                [(ngModel)]="equipment.itemNumber"
+                                [disabled]="isReadOpenMode"
+                              />
+                            </div>
+                          </div>
+
+                          <div class="form-group general-field">
+                            <label class="form-label">{{
+                              componentData.componentId + ".functionCode" | translate
+                            }}</label>
+
+                            <div class="form-control">
+                              <input
+                                type="text"
+                                class="aw-input"
+                                [(ngModel)]="equipment.bidoEquipmentDTO.functionCode"
+                                [disabled]="isReadOpenMode"
+                              />
+                            </div>
+                          </div>
+
+                          <div class="form-group">
+                            <label class="form-label">{{ componentData.componentId + ".position" | translate }}</label>
+
+                            <div class="form-control">
+                              <p-dropdown
+                                class="aw-dropdown fixed-width"
+                                [options]="propertyPositions"
+                                [(ngModel)]="equipment.bidoEquipmentDTO.equiPosition"
+                                [showClear]="true"
+                                placeholder="&nbsp;"
+                                [disabled]="isReadOpenMode"
+                              ></p-dropdown>
+                            </div>
+                          </div>
+
+                          <div *ngIf="!isEngine()" class="form-group">
+                            <label class="form-label">{{ componentData.componentId + ".function" | translate }}</label>
+                            <div class="form-control">
+                              <p-dropdown
+                                class="aw-dropdown fixed-width"
+                                [options]="propertyFunctions"
+                                [(ngModel)]="equipment.bidoEquipmentDTO.equipmentFunction"
+                                [showClear]="true"
+                                placeholder="&nbsp;"
+                                [disabled]="isReadOpenMode"
+                              ></p-dropdown>
+                            </div>
+                          </div>
+
+                          <div *ngIf="!isEngine()" class="form-group">
+                            <label class="form-label">{{
+                              componentData.componentId + ".lifeRestriction" | translate
+                            }}</label>
+
+                            <div class="form-control">
+                              <p-checkbox
+                                class="aw-checkbox"
+                                binary="true"
+                                [disabled]="true"
+                                [(ngModel)]="equipment.bidoEquipmentDTO.lifeRestriction"
+                                [disabled]="isReadOpenMode"
+                              >
+                              </p-checkbox>
+                            </div>
+                          </div>
+
+                          <div *ngIf="isEngine()" class="form-group">
+                            <label class="form-label">{{ componentData.componentId + ".manApp" | translate }}</label>
+
+                            <div class="form-control">
+                              <p-checkbox
+                                class="aw-checkbox"
+                                binary="true"
+                                [disabled]="true"
+                                [(ngModel)]="equipment.pMa"
+                                [disabled]="isReadOpenMode"
+                              ></p-checkbox>
+                            </div>
+                          </div>
+
+                          <div *ngIf="!isEngine() && !isAircraft()" class="form-group general-field">
+                            <label class="form-label">{{
+                              componentData.componentId + ".manufacturingConfiguration" | translate
+                            }}</label>
+
+                            <div class="form-control">
+                              <p-checkbox
+                                binary="true"
+                                class="aw-checkbox"
+                                [(ngModel)]="equipment.bidoEquipmentDTO.manufacturingConfiguration"
+                                [disabled]="isReadOpenMode"
+                              ></p-checkbox>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-row">
+          <div class="grid-cell--5">
+            <div class="grid-cell grid-cell--container">
+              <div class="grid-cell-header">
+                <div class="grid-cell-title-container">
+                  <div class="grid-cell-title">
+                    <span>{{ componentData.componentId + ".functionalLocation" | translate }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="grid-cell-content">
+                <div class="column">
+                  <div class="row">
+                    <div class="grid-cell--12">
+                      <div class="row">
+                        <div class="form-group">
+                          <label class="form-label">{{ componentData.componentId + ".code" | translate }}</label>
+                          <div
+                            class="form-control form-control-with-modal"
+                            [ngClass]="{ disabled: isReadOpenMode || isCreateOpenMode }"
+                          >
+                            <div class="form-control-data">
+                              {{ equipment.currentFLCode }}
+                            </div>
+                            <div class="btn-search-wrapper">
+                              <i class="fa fa-info-circle aw-icon" aria-hidden="true" (click)="showFlStatus()"></i>
+                              <i
+                                class="fa fa-fw fa-edit aw-icon"
+                                aria-hidden="true"
+                                style="margin-left: 10px"
+                                (click)="openFlAssignment()"
+                              ></i>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="form-group">
+                          <label class="form-label">{{
+                            componentData.componentId + ".attachmentDate" | translate
+                          }}</label>
+
+                          <div class="form-control">
+                            <p-calendar
+                              showButtonBar="true"
+                              [monthNavigator]="true"
+                              [yearNavigator]="true"
+                              [yearRange]="sessionService.calendarYearRange"
+                              class="aw-calendar"
+                              [dateFormat]="sessionService.dateFormatPrimeNG"
+                              [locale]="sessionService.calendarFormat"
+                              [(ngModel)]="equipment.currentFLAttachmentDate"
+                              [disabled]="true"
+                              appendTo="body"
+                            ></p-calendar>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="form-group text-area">
+                          <label class="form-label">{{
+                            componentData.componentId + ".descriptionEquipment" | translate
+                          }}</label>
+
+                          <div class="form-control">
+                            <textarea
+                              class="aw-textarea"
+                              [rows]="2"
+                              [(ngModel)]="equipment.currentFLDescription"
+                              pInputTextarea
+                              [disabled]="true"
+                            ></textarea>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-cell--5">
+            <div class="grid-cell grid-cell--container">
+              <div class="grid-cell-header">
+                <div class="grid-cell-title-container">
+                  <div class="grid-cell-title">
+                    <span>{{ componentData.componentId + ".geographicalLocation" | translate }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="grid-cell-content">
+                <div class="column">
+                  <div class="row">
+                    <div class="grid-cell--12">
+                      <div class="row">
+                        <div class="form-group">
+                          <label class="form-label">{{ componentData.componentId + ".zone" | translate }}</label>
+
+                          <div *ngIf="isCreateOpenMode" class="form-control">
+                            <p-dropdown
+                              class="aw-dropdown fixed-width"
+                              [options]="propertyZones"
+                              [(ngModel)]="equipment.bidoEquipmentDTO.zone"
+                              (onChange)="changeZone()"
+                              [showClear]="true"
+                              placeholder="&nbsp;"
+                              [disabled]="isReadOpenMode"
+                            ></p-dropdown>
+                          </div>
+
+                          <div
+                            *ngIf="!isCreateOpenMode"
+                            class="form-control form-control-with-modal"
+                            [ngClass]="{ disabled: isReadOpenMode }"
+                          >
+                            <div class="form-control-data" (click)="!isReadOpenMode ? searchGeoLocation() : ''">
+                              {{ equipment.bidoEquipmentDTO.zone }}
+                            </div>
+                            <div *ngIf="equipment.bidoEquipmentDTO.zone" class="btn-clear-wrapper">
+                              <i
+                                class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+                                aria-hidden="true"
+                                (click)="equipment.bidoEquipmentDTO.zone = undefined"
+                              ></i>
+                            </div>
+                            <div class="btn-search-wrapper">
+                              <i
+                                class="fa fa-fw fa-edit aw-icon btn-search"
+                                aria-hidden="true"
+                                (click)="searchGeoLocation()"
+                              ></i>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="form-group">
+                          <label class="form-label">{{ componentData.componentId + ".country" | translate }}</label>
+
+                          <div *ngIf="isCreateOpenMode" class="form-control">
+                            <p-dropdown
+                              class="aw-dropdown fixed-width"
+                              [options]="propertyCountries"
+                              [(ngModel)]="equipment.bidoEquipmentDTO.country"
+                              (onChange)="changeCountry()"
+                              [showClear]="true"
+                              placeholder="&nbsp;"
+                              [disabled]="isReadOpenMode"
+                            ></p-dropdown>
+                          </div>
+                          <div *ngIf="!isCreateOpenMode" class="form-control">
+                            <input
+                              type="text"
+                              class="aw-input fixed-width"
+                              [disabled]="true"
+                              [(ngModel)]="equipment.bidoEquipmentDTO.country"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="form-group">
+                          <label class="form-label">{{ componentData.componentId + ".location" | translate }}</label>
+
+                          <div class="form-control">
+                            <p-dropdown
+                              class="aw-dropdown fixed-width"
+                              [options]="propertyLocations"
+                              [(ngModel)]="locationValue"
+                              [showClear]="true"
+                              placeholder="&nbsp;"
+                              [disabled]="isReadOpenMode"
+                            ></p-dropdown>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="grid-cell--2 cropped-width">
+            <div #mainAnchor class="grid-cell grid-cell--container">
+              <div class="grid-cell-header">
+                <div class="grid-cell-title-container">
+                  <div class="grid-cell-title">
+                    <span>{{ componentData.componentId + ".usCounters" | translate }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="grid-cell-content">
+                <div class="column">
+                  <div class="row">
+                    <div class="grid-cell--12">
+                      <div class="row">
+                        <div class="form-group">
+                          <label class="form-label">{{ componentData.componentId + ".usage" | translate }}</label>
+
+                          <div
+                            class="form-control"
+                            [ngClass]="
+                              !equipment.usageCounterCalculationDTO.usageValue ||
+                              equipment.usageCounterCalculationDTO.usageValue === NOT_ACTIVATED
+                                ? COLOR_RED
+                                : COLOR_GREEN
+                            "
+                          >
+                            <input
+                              type="text"
+                              class="aw-input"
+                              [(ngModel)]="equipment.usageCounterCalculationDTO.usageValue"
+                              [disabled]="true"
+                            />
+                          </div>
+                        </div>
+
+                        <div class="form-group">
+                          <label class="form-label">{{ componentData.componentId + ".storage" | translate }}</label>
+
+                          <div
+                            class="form-control"
+                            [ngClass]="
+                              !equipment.usageCounterCalculationDTO.storageValue ||
+                              equipment.usageCounterCalculationDTO.storageValue === NOT_ACTIVATED
+                                ? COLOR_RED
+                                : COLOR_GREEN
+                            "
+                          >
+                            <input
+                              type="text"
+                              class="aw-input"
+                              [(ngModel)]="equipment.usageCounterCalculationDTO.storageValue"
+                              [disabled]="true"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="form-group">
+                          <label class="form-label">{{
+                            componentData.componentId + ".usageStorage" | translate
+                          }}</label>
+
+                          <div
+                            class="form-control"
+                            [ngClass]="
+                              !equipment.usageCounterCalculationDTO.usageStorageValue ||
+                              equipment.usageCounterCalculationDTO.usageStorageValue === NOT_ACTIVATED
+                                ? COLOR_RED
+                                : COLOR_GREEN
+                            "
+                          >
+                            <input
+                              type="text"
+                              class="aw-input"
+                              [(ngModel)]="equipment.usageCounterCalculationDTO.usageStorageValue"
+                              [disabled]="true"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab>
+        <ng-template mat-tab-label>
+          {{ componentData.componentId + ".tabStructure" | translate }}
+        </ng-template>
+
+        <div *ngIf="!isAircraft()" [hidden]="isCreateOpenMode">
+          <div class="grid-row">
+            <div class="grid-cell--12">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container loading-indicator">
+                    <div class="grid-cell-title">
+                      <span>{{ componentData.componentId + ".superiorEquipment" | translate }}</span>
+                      <div *ngIf="subequipmentsLoading && !isCreateOpenMode" class="lds-hourglass"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content grid-cell-content-with-section">
+                  <div *ngIf="!isAircraft()" class="section">
+                    <div class="section-content">
+                      <div class="row">
+                        <div class="form-group">
+                          <label class="form-label">{{ componentData.componentId + ".aircraft" | translate }}</label>
+                          <div class="form-control" style="margin-top: 6px;">
+                            <a style="cursor: pointer" (click)="openSuperiorAircraft()"> {{ superiorAircraftFront }}</a>
+                          </div>
+                        </div>
+
+                        <div class="form-group" *ngIf="isEquipment()">
+                          <label class="form-label">{{ componentData.componentId + ".engine" | translate }}</label>
+                          <div class="form-control" style="margin-top: 6px;">
+                            <a style="cursor: pointer" (click)="openSuperiorEngine()"> {{ superiorEngineFront }}</a>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="row">
+                        <div class="form-group text-area">
+                          <label class="form-label">{{ "global.designation" | translate }}</label>
+
+                          <div class="form-control">
+                            <textarea
+                              class="aw-textarea"
+                              [rows]="3"
+                              [(ngModel)]="fatherEquipment.designation"
+                              pInputTextarea
+                              [disabled]="true"
+                            ></textarea>
+                          </div>
+                        </div>
+
+                        <div class="form-group">
+                          <label class="form-label">{{ componentData.componentId + ".sn" | translate }}</label>
+
+                          <div class="form-control" *ngIf="!fatherEquipment.sn">
+                            <input type="text" class="aw-input" [(ngModel)]="fatherEquipment.sn" [disabled]="true" />
+                          </div>
+                          <div class="form-control" *ngIf="!!fatherEquipment.sn">
+                            <a style="cursor: pointer" (click)="openFatherEquipment()" class="form-control-generic">
+                              {{ fatherEquipment.sn }}
+                            </a>
+                          </div>
+                        </div>
+
+                        <div class="form-group">
+                          <label class="form-label">{{ componentData.componentId + ".pn" | translate }}</label>
+
+                          <div class="form-control">
+                            <input
+                              type="text"
+                              class="aw-input"
+                              [(ngModel)]="fatherEquipment.pnCode"
+                              [disabled]="true"
+                            />
+                          </div>
+                        </div>
+
+                        <div class="form-group">
+                          <label class="form-label">{{ componentData.componentId + ".seStatus" | translate }}</label>
+
+                          <div class="form-control">
+                            <span *ngIf="fatherEquipment.designation || fatherEquipment.sn || fatherEquipment.pnCode">
+                              <p-dropdown
+                                class="aw-dropdown fixed-width"
+                                [options]="propertyOperationalStatus"
+                                [(ngModel)]="fatherEquipment.operationalStatus"
+                                [disabled]="true"
+                              ></p-dropdown>
+                            </span>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="form-label">&nbsp;</label>
+                          <div class="form-control">
+                            <button
+                              *ngIf="!isReadOpenMode && !fatherEquipment.pnCode && !fatherEquipment.sn"
+                              type="button"
+                              mat-raised-button
+                              style="margin-left: 17px"
+                              (click)="installSelectedEquipments()"
+                            >
+                              {{ componentData.componentId + ".install" | translate }}
+                            </button>
+                            <button
+                              *ngIf="!isReadOpenMode && (fatherEquipment.pnCode || fatherEquipment.sn)"
+                              type="button"
+                              mat-raised-button
+                              style="margin-left: 17px"
+                              (click)="removeSelectedEquipments()"
+                            >
+                              {{ componentData.componentId + ".removal" | translate }}
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div [hidden]="isCreateOpenMode">
+          <div class="grid-row">
+            <div class="grid-cell--12">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container loading-indicator">
+                    <div class="grid-cell-title">
+                      <span>{{ componentData.componentId + ".tabSubEquipment" | translate }}</span>
+                      <div *ngIf="subequipmentsLoading && !isCreateOpenMode" class="lds-hourglass"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content grid-cell-content-with-section">
+                  <div class="section">
+                    <h4 class="section-title">
+                      {{ componentData.componentId + ".tabSubEquipment" | translate }} ({{
+                        subEquipmentTableDataSource ? subEquipmentTableDataSource.dataCount : 0
+                      }})
+                    </h4>
+                    <div class="section-content">
+                      <div class="row">
+                        <a-table [dataSource]="subEquipmentTableDataSource">
+                          <ng-template tableActionsDef>
+                            <button
+                              *ngIf="!isReadOpenMode && subEquipmentTableDataSource.hasDataSelection"
+                              type="button"
+                              mat-raised-button
+                              (click)="removeSubEquipments()"
+                            >
+                              {{ componentData.componentId + ".removal" | translate }}
+                            </button>
+                            <button
+                              *ngIf="!isReadOpenMode && !subEquipmentTableDataSource.hasDataSelection"
+                              type="button"
+                              mat-raised-button
+                              (click)="installSubEquipment()"
+                            >
+                              {{ componentData.componentId + ".install" | translate }}
+                            </button>
+                          </ng-template>
+                          <ng-template columnDef="sn" let-rowData="rowData">
+                            <a *ngIf="rowData.sn" (click)="openLinkEquipment(rowData)"> {{ rowData.sn }}</a>
+                          </ng-template>
+                          <ng-template columnDef="seStatus" let-rowData="rowData">
+                            {{ rowData.operationalStatus }}
+                          </ng-template>
+                        </a-table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab>
+        <ng-template mat-tab-label>
+          {{ componentData.componentId + ".tabMeasures" | translate }}
+        </ng-template>
+
+        <div [hidden]="isCreateOpenMode">
+          <div class="grid-row">
+            <div class="grid-cell--12">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <div class="grid-cell-title">
+                      {{ componentData.componentId + ".tabMeasures" | translate }}
+                      ({{ bidoMeasuresDisplayed ? bidoMeasuresDisplayed.length : 0 }})
+                    </div>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content" *ngIf="showMeasureChart">
+                  <div class="grid-cell-chart" style="width: 100%">
+                    <div class="grid-cell-header">
+                      <div class="grid-cell-title-container loading-indicator">
+                        <div class="grid-cell-title">
+                          <div *ngIf="isLoadingMeasureTable" class="lds-hourglass"></div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="form-group flex--2">
+                          <label class="form-label"> {{ tsnLabel }} </label>
+
+                          <div class="form-control">
+                            <input
+                              type="text"
+                              class="aw-input"
+                              [(ngModel)]="tsn"
+                              [disabled]="true"
+                              style="color: #D3C632;"
+                            />
+                          </div>
+                        </div>
+                        <div class="form-group flex--2">
+                          <label class="form-label"> {{ csnLabel }} </label>
+
+                          <div class="form-control">
+                            <input
+                              type="text"
+                              class="aw-input"
+                              [(ngModel)]="csn"
+                              [disabled]="true"
+                              style="color: #42A5F5;"
+                            />
+                          </div>
+                        </div>
+                        <div class="form-group flex--2">
+                          <p-selectButton
+                            [options]="measureTypes"
+                            [(ngModel)]="selectedMeasureType"
+                            (onChange)="setMeasureChartData()"
+                          ></p-selectButton>
+                        </div>
+
+                        <div class="form-group flex--2">
+                          <label class="form-label">{{ componentData.componentId + ".from" | translate }}</label>
+
+                          <div class="form-control">
+                            <p-calendar
+                              showButtonBar="true"
+                              [monthNavigator]="true"
+                              [yearNavigator]="true"
+                              [yearRange]="sessionService.calendarYearRange"
+                              class="aw-calendar"
+                              appendTo="body"
+                              [dateFormat]="sessionService.dateFormatPrimeNG"
+                              [locale]="sessionService.calendarFormat"
+                              [(ngModel)]="startDate"
+                              (onSelect)="setMeasureChartData()"
+                              (onInput)="setMeasureChartData()"
+                            ></p-calendar>
+                          </div>
+                        </div>
+
+                        <div class="form-group flex--2">
+                          <label class="form-label">{{ componentData.componentId + ".to" | translate }}</label>
+
+                          <div class="form-control">
+                            <p-calendar
+                              showButtonBar="true"
+                              [monthNavigator]="true"
+                              [yearNavigator]="true"
+                              [yearRange]="sessionService.calendarYearRange"
+                              class="aw-calendar"
+                              appendTo="body"
+                              [dateFormat]="sessionService.dateFormatPrimeNG"
+                              [locale]="sessionService.calendarFormat"
+                              [(ngModel)]="endDate"
+                              (onSelect)="setMeasureChartData()"
+                              (onInput)="setMeasureChartData()"
+                            ></p-calendar>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row flex-row--justify-center">
+                      <div class="chart-container flex--1">
+                        <div
+                          class="chart-wrapper"
+                          style="height: 17rem;
+                            width: 100%;"
+                        >
+                          <p-chart
+                            type="line"
+                            [data]="measureVariationData"
+                            [options]="measureChartOptions"
+                            width="100%"
+                            height="100%"
+                          ></p-chart>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content grid-cell-content-with-section">
+                  <div class="section">
+                    <div class="section-content">
+                      <p-table
+                        [resizableColumns]="true"
+                        #ptableMeasures
+                        class="aw-table2"
+                        [columns]="measuresTableCols"
+                        [value]="bidoMeasuresDisplayed"
+                        [(selection)]="selectedMeasure"
+                        [scrollable]="true"
+                        [paginator]="true"
+                        [rows]="TABLE_PAGINATION_DEFAULT_ROWS"
+                      >
+                        <ng-template pTemplate="emptymessage">
+                          <span *ngIf="!isLoadingMeasureTable"> &nbsp;</span>
+
+                          <div *ngIf="isLoadingMeasureTable" class="aw-table-loading-indicator">
+                            <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                            <div class="lds-hourglass"></div>
+                          </div>
+                        </ng-template>
+
+                        <ng-template pTemplate="caption">
+                          <div class="aw-table-header" [ngClass]="{ 'rows-selected': selectedMeasure.length > 0 }">
+                            <div class="aw-table-global-filter">
+                              <label class="aw-table-global-filter-label">
+                                <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                              </label>
+
+                              <input
+                                #ptableMeasuresGlobalFilter
+                                class="aw-table-global-filter-input"
+                                type="text"
+                                placeholder="{{ 'table.globalFilterText' | translate }}"
+                                (input)="ptableMeasures.filterGlobal($event.target.value, 'contains')"
+                              />
+                            </div>
+
+                            <div class="aw-table-actions">
+                              <button
+                                *ngIf="!isReadOpenMode && selectedMeasure.length > 0"
+                                type="button"
+                                mat-raised-button
+                                (click)="confirmDissociateCounter()"
+                              >
+                                {{ componentData.componentId + ".dissociateCounter" | translate }}
+                              </button>
+
+                              <button
+                                *ngIf="!isReadOpenMode && selectedMeasure.length === 0"
+                                type="button"
+                                mat-raised-button
+                                (click)="associateCounter()"
+                              >
+                                {{ componentData.componentId + ".associateCounter" | translate }}
+                              </button>
+
+                              <button
+                                *ngIf="!isReadOpenMode && selectedMeasure.length === 1"
+                                type="button"
+                                mat-raised-button
+                                (click)="addMeasure()"
+                              >
+                                {{ componentData.componentId + ".addMeasure" | translate }}
+                              </button>
+
+                              <button
+                                *ngIf="!isReadOpenMode && selectedMeasure.length === 1"
+                                type="button"
+                                mat-raised-button
+                                (click)="editLimit()"
+                              >
+                                {{ componentData.componentId + ".editLimit" | translate }}
+                              </button>
+                              <button
+                                *ngIf="selectedMeasure.length === 1"
+                                type="button"
+                                mat-raised-button
+                                (click)="openAssetMeasureLog()"
+                              >
+                                {{ componentData.componentId + ".assetMeasureLog" | translate }}
+                              </button>
+                            </div>
+                          </div>
+                        </ng-template>
+
+                        <ng-template pTemplate="colgroup" let-columns>
+                          <colgroup>
+                            <col class="aw-table-checkbox-wrapper" />
+                            <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                          </colgroup>
+                        </ng-template>
+
+                        <ng-template pTemplate="header" let-columns>
+                          <tr>
+                            <th class="aw-table-checkbox-wrapper">
+                              <p-tableHeaderCheckbox class="aw-table-checkbox"></p-tableHeaderCheckbox>
+                            </th>
+
+                            <th
+                              pResizableColumn
+                              *ngFor="let col of columns"
+                              [ngStyle]="{ 'text-align': col.alignment }"
+                            >
+                              {{ componentData.componentId + "." + col.field | translate }}
+                            </th>
+                          </tr>
+                        </ng-template>
+
+                        <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                          <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                            <td class="aw-table-checkbox-wrapper">
+                              <p-tableCheckbox class="aw-table-checkbox" [value]="rowData"></p-tableCheckbox>
+                            </td>
+
+                            <td
+                              *ngFor="let col of columns"
+                              [ngSwitch]="col.field"
+                              [ngStyle]="{ 'text-align': col.alignment }"
+                            >
+                              <span *ngSwitchCase="'counterCode'">
+                                <span>
+                                  {{ rowData[col.field] }}
+                                </span>
+                              </span>
+                              <span
+                                *ngSwitchCase="'remainingValue'"
+                                [ngClass]="{
+                                  'value-none': getAlertIcon(rowData) === COLOR_NONE,
+                                  'value-red': getAlertIcon(rowData) === COLOR_RED,
+                                  'value-green': getAlertIcon(rowData) === COLOR_GREEN,
+                                  'value-yellow': getAlertIcon(rowData) === COLOR_YELLOW
+                                }"
+                                pTooltip="{{ getAlertIconTooltip(rowData) }}"
+                              >
+                                {{ rowData[col.field] }}
+                              </span>
+                              <span *ngSwitchDefault>
+                                {{ rowData[col.field] }}
+                              </span>
+                            </td>
+                          </tr>
+                        </ng-template>
+                      </p-table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab>
+        <ng-template mat-tab-label>
+          {{ componentData.componentId + ".tabUsage" | translate }}
+        </ng-template>
+
+        <div class="grid-cell--12">
+          <div class="grid-cell-content">
+            <div class="column">
+              <div class="row">
+                <div class="grid-cell--12">
+                  <div class="row">
+                    <div [hidden]="isCreateOpenMode" class="custom-div">
+                      <div class="grid-row">
+                        <div class="grid-cell--12">
+                          <div class="grid-cell grid-cell--container">
+                            <div class="grid-cell-header">
+                              <div class="grid-cell-title-container">
+                                <h3 class="grid-cell-title">
+                                  {{ componentData.componentId + ".tabUsage" | translate }}
+                                </h3>
+                              </div>
+                            </div>
+                            <div class="grid-cell-content grid-cell-content-with-section" *ngIf="isTool()">
+                              <div class="section">
+                                <h4 class="section-title">
+                                  {{ componentData.componentId + ".utilisationModel" | translate }}
+                                </h4>
+                              </div>
+                            </div>
+                            <div class="grid-row" *ngIf="!isTool()">
+                              <div class="form-group">
+                                <div class="form-control">
+                                  <p-selectButton [options]="types" [(ngModel)]="selectedType"></p-selectButton>
+                                </div>
+                              </div>
+                            </div>
+                            <div *ngIf="selectedType === 'graph'">
+                              <button
+                                style="float: right"
+                                *ngIf="!isCreateOpenMode && !isReadOpenMode"
+                                type="button"
+                                mat-raised-button
+                                (click)="showDialogUsage()"
+                              >
+                                {{ componentData.componentId + ".update" | translate }}
+                              </button>
+                              <div class="grid-cell-content">
+                                <div class="grid-cell-chart" style="width: 100%">
+                                  <div class="row flex-row--justify-center">
+                                    <div *ngIf="chartContentReady" class="chart-container">
+                                      <div
+                                        class="chart-wrapper"
+                                        style="height: 17rem;
+                                    width: 66rem;"
+                                      >
+                                        <p-chart
+                                          type="bar"
+                                          [data]="usageGraphData"
+                                          [options]="usageChartOptions"
+                                          width="100%"
+                                          height="100%"
+                                        ></p-chart>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <div *ngIf="selectedType === 'table'">
+                              <div class="grid-cell-content grid-cell-content-with-section ">
+                                <div class="section">
+                                  <h4 class="section-title">
+                                    {{ componentData.componentId + ".results" | translate }}({{
+                                      bidoMissionDisplayed ? bidoMissionDisplayed.length : 0
+                                    }})
+                                  </h4>
+
+                                  <div class="section-content">
+                                    <div class="row">
+                                      <div class="form-group">
+                                        <label class="form-label">
+                                          {{ componentData.componentId + ".timeZone" | translate }}
+                                        </label>
+
+                                        <div class="form-control">
+                                          <p-dropdown
+                                            class="aw-dropdown fixed-width"
+                                            [options]="timeZoneList"
+                                            [(ngModel)]="currentTimeZone"
+                                            [showClear]="true"
+                                            placeholder="&nbsp;"
+                                            (onChange)="updateMissionEquipmentDates()"
+                                            [disabled]="isReadOpenMode"
+                                          ></p-dropdown>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <p-table
+                                      [resizableColumns]="true"
+                                      #ptableMission
+                                      class="aw-table2"
+                                      [columns]="missionTableCols"
+                                      [value]="bidoMissionDisplayed"
+                                      [scrollable]="true"
+                                      [paginator]="true"
+                                      [rows]="TABLE_PAGINATION_DEFAULT_ROWS"
+                                    >
+                                      <ng-template pTemplate="emptymessage">
+                                        <span *ngIf="!isLoadingMissionTable"> &nbsp;</span>
+
+                                        <div *ngIf="isLoadingMissionTable" class="aw-table-loading-indicator">
+                                          <div class="loading-message">
+                                            {{ "table.loadingData" | translate }}
+                                          </div>
+                                          <div class="lds-hourglass"></div>
+                                        </div>
+                                      </ng-template>
+
+                                      <ng-template pTemplate="caption">
+                                        <div class="aw-table-header">
+                                          <div class="aw-table-global-filter">
+                                            <label class="aw-table-global-filter-label">
+                                              <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                                            </label>
+
+                                            <input
+                                              #ptableMissionGlobalFilter
+                                              class="aw-table-global-filter-input"
+                                              type="text"
+                                              placeholder="{{ 'table.globalFilterText' | translate }}"
+                                              (input)="ptableMission.filterGlobal($event.target.value, 'contains')"
+                                            />
+                                          </div>
+                                        </div>
+                                      </ng-template>
+
+                                      <ng-template pTemplate="colgroup" let-columns>
+                                        <colgroup>
+                                          <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                                        </colgroup>
+                                      </ng-template>
+
+                                      <ng-template pTemplate="header" let-columns>
+                                        <tr>
+                                          <th
+                                            pResizableColumn
+                                            *ngFor="let col of columns"
+                                            [ngStyle]="{ 'text-align': col.alignment }"
+                                          >
+                                            {{ componentData.componentId + "." + col.field | translate }}
+                                          </th>
+                                        </tr>
+                                      </ng-template>
+
+                                      <ng-template
+                                        pTemplate="body"
+                                        let-rowData
+                                        let-columns="columns"
+                                        let-rowIndex="rowIndex"
+                                      >
+                                        <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                                          <td
+                                            *ngFor="let col of columns"
+                                            [ngSwitch]="col.field"
+                                            [ngStyle]="{ 'text-align': col.alignment }"
+                                          >
+                                            <span *ngSwitchCase="'missionCode'">
+                                              <a
+                                                *ngIf="rowData['missionCode']"
+                                                (click)="openMissionScreen(rowData['missionCode'])"
+                                              >
+                                                {{ rowData["missionCode"] }}</a
+                                              >
+                                            </span>
+                                            <span *ngSwitchCase="'missionStatus'">
+                                              <i
+                                                class="fa fa-info-circle aw-icon"
+                                                aria-hidden="true"
+                                                (click)="OpenStatusInfoMission(rowData)"
+                                              ></i>
+                                            </span>
+                                            <span *ngSwitchDefault>{{ rowData[col.field] }}</span>
+                                          </td>
+                                        </tr>
+                                      </ng-template>
+                                    </p-table>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab>
+        <ng-template mat-tab-label>
+          {{ componentData.componentId + ".tabEvents" | translate }}
+        </ng-template>
+
+        <div [hidden]="isCreateOpenMode">
+          <div class="grid-row">
+            <div class="grid-cell--12">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <div class="grid-cell-title">
+                      {{ componentData.componentId + ".tabEvents" | translate }} ({{
+                        eventsTableDataSource ? eventsTableDataSource.dataCount : 0
+                      }})
+                    </div>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <a-table [dataSource]="eventsTableDataSource">
+                    <ng-template tableActionsDef>
+                      <button
+                        *ngIf="!isReadOpenMode && !eventsTableDataSource.hasDataSelection && showHideEvent"
+                        type="button"
+                        mat-raised-button
+                        (click)="hideClosedEvents()"
+                      >
+                        {{ componentData.componentId + ".hideClosedEvents" | translate }}
+                      </button>
+                      <button
+                        *ngIf="!isReadOpenMode && !eventsTableDataSource.hasDataSelection && !showHideEvent"
+                        type="button"
+                        mat-raised-button
+                        (click)="showClosedEvents()"
+                      >
+                        {{ componentData.componentId + ".showClosedEvents" | translate }}
+                      </button>
+                      <button
+                        *ngIf="!isReadOpenMode && !eventsTableDataSource.hasDataSelection"
+                        type="button"
+                        mat-raised-button
+                        (click)="createEvents()"
+                      >
+                        {{ componentData.componentId + ".createEvents" | translate }}
+                      </button>
+                    </ng-template>
+                    <ng-template columnDef="notificationCode" let-rowData="rowData">
+                      <a
+                        pTooltip="{{ rowData['bidoNotificationDTO']['notificationCode'] }}"
+                        (click)="openEvent(rowData)"
+                        *ngIf="rowData['bidoNotificationDTO']['notificationCode']"
+                      >
+                        {{ rowData["bidoNotificationDTO"]["notificationCode"] }}</a
+                      >
+                    </ng-template>
+                    <ng-template columnDef="equipmentText" let-rowData="rowData">
+                      <span pTooltip="{{ rowData['equipmentText'] }}">
+                        {{ rowData["equipmentText"] }}
+                      </span>
+                    </ng-template>
+                    <ng-template columnDef="eventStatus" let-rowData="rowData">
+                      <span *ngIf="rowData['bidoNotificationDTO']['notificationStatusVisibility']">
+                        {{ rowData["eventStatus"] }}
+                      </span>
+                    </ng-template>
+                  </a-table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab>
+        <ng-template mat-tab-label>
+          {{ componentData.componentId + ".tabAirworthinessDocuments" | translate }}
+        </ng-template>
+
+        <div [hidden]="isCreateOpenMode">
+          <div class="grid-row">
+            <div #sbadAnchor class="grid-cell--12" (click)="setSelectedAnchor('sbadAnchor')">
+              <div class="grid-cell grid-cell--container" [ngClass]="{ active: isSelectedAnchor('sbadAnchor') }">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <div class="grid-cell-title">
+                      {{ componentData.componentId + ".tabAirworthinessDocuments" | translate }} ({{
+                        bidoSbadDisplayed ? bidoSbadDisplayed.length : 0
+                      }})
+                    </div>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <div class="table-wrapper">
+                    <p-table
+                      [resizableColumns]="true"
+                      #ptableSbad
+                      class="aw-table2"
+                      [columns]="sbadTableCols"
+                      [value]="bidoSbadDisplayed"
+                      [(selection)]="selectedSbad"
+                      [scrollable]="true"
+                      dataKey="bidoEquipmentEvolutionDTO.evolutionNumber"
+                      [globalFilterFields]="[
+                        'designation',
+                        'bidoEquipmentEvolutionDTO.evolutionNumber',
+                        'bidoEquipmentEvolutionDTO.evolutionRevisionNumber',
+                        'bidoEquipmentEvolutionDTO.summary',
+                        'bidoEquipmentEvolutionDTO.evolutionType',
+                        'bidoEquipmentEvolutionDTO.dateAppliedStr',
+                        'bidoEquipmentEvolutionDTO.dateRemoveStr',
+                        'newApplication',
+                        'bidoEquipmentEvolutionDTO.description',
+                        'bidoEquipmentEvolutionDTO.manufacturingModification'
+                      ]"
+                      [paginator]="true"
+                      [rows]="TABLE_PAGINATION_DEFAULT_ROWS"
+                    >
+                      <ng-template pTemplate="emptymessage">
+                        <span *ngIf="!isLoadingSbad"> &nbsp;</span>
+
+                        <div *ngIf="isLoadingSbad" class="aw-table-loading-indicator">
+                          <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                          <div class="lds-hourglass"></div>
+                        </div>
+                      </ng-template>
+
+                      <ng-template pTemplate="caption">
+                        <div class="aw-table-header" [ngClass]="{ 'rows-selected': selectedSbad.length > 0 }">
+                          <div class="aw-table-global-filter">
+                            <label class="aw-table-global-filter-label">
+                              <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                            </label>
+
+                            <input
+                              #ptableSbadGlobalFilter
+                              class="aw-table-global-filter-input"
+                              type="text"
+                              placeholder="{{ 'table.globalFilterText' | translate }}"
+                              (input)="ptableSbad.filterGlobal($event.target.value, 'contains')"
+                            />
+                          </div>
+
+                          <div class="aw-table-actions">
+                            <button
+                              *ngIf="!isReadOpenMode && selectedSbad.length > 0"
+                              type="button"
+                              mat-raised-button
+                              color="warn"
+                              (click)="deleteSbad()"
+                            >
+                              {{ "global.delete" | translate }}
+                            </button>
+
+                            <button
+                              *ngIf="!isReadOpenMode && selectedSbad.length === 1"
+                              type="button"
+                              mat-raised-button
+                              (click)="editSbad()"
+                            >
+                              {{ "global.edit" | translate }}
+                            </button>
+                            <button
+                              *ngIf="selectedSbad.length === 1"
+                              type="button"
+                              mat-raised-button
+                              (click)="openSbad()"
+                            >
+                              {{ "global.open" | translate }}
+                            </button>
+                            <button
+                              *ngIf="!isReadOpenMode && selectedSbad.length === 0"
+                              type="button"
+                              mat-raised-button
+                              (click)="addSbad()"
+                            >
+                              {{ componentData.componentId + ".add" | translate }}
+                            </button>
+                          </div>
+                        </div>
+                      </ng-template>
+
+                      <ng-template pTemplate="colgroup" let-columns>
+                        <colgroup>
+                          <col class="aw-table-checkbox-wrapper" />
+                          <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                          <col class="row-expand-wrapper" />
+                          <col class="row-action-wrapper" />
+                        </colgroup>
+                      </ng-template>
+
+                      <ng-template pTemplate="header" let-columns>
+                        <tr>
+                          <th class="aw-table-checkbox-wrapper">
+                            <p-tableHeaderCheckbox class="aw-table-checkbox"></p-tableHeaderCheckbox>
+                          </th>
+
+                          <th pResizableColumn *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                            {{ componentData.componentId + "." + col.field | translate }}
+                          </th>
+
+                          <th class="row-expand-wrapper"></th>
+                          <th class="row-action-wrapper"></th>
+                        </tr>
+                      </ng-template>
+
+                      <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                        <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                          <td class="aw-table-checkbox-wrapper">
+                            <p-tableCheckbox class="aw-table-checkbox" [value]="rowData"></p-tableCheckbox>
+                          </td>
+
+                          <td
+                            *ngFor="let col of columns"
+                            [ngSwitch]="col.field"
+                            [ngStyle]="{ 'text-align': col.alignment }"
+                          >
+                            <span *ngSwitchCase="'newApplication'">
+                              {{ rowData[col.field] }}
+                            </span>
+
+                            <span *ngSwitchCase="'evolutionNumber'">
+                              <a
+                                *ngIf="rowData['bidoEquipmentEvolutionDTO']['evolutionNumber']"
+                                (click)="openLinkEvolution(rowData['bidoEquipmentEvolutionDTO'])"
+                              >
+                                {{ rowData["bidoEquipmentEvolutionDTO"]["evolutionNumber"] }}
+                              </a>
+                            </span>
+
+                            <span *ngSwitchCase="'event'">
+                              {{ rowData["event"] }}
+                            </span>
+
+                            <span *ngSwitchCase="'summary'">
+                              {{ rowData["designation"] }}
+                            </span>
+
+                            <span *ngSwitchDefault> {{ rowData["bidoEquipmentEvolutionDTO"][col.field] }} </span>
+                          </td>
+
+                          <td class="row-expand-wrapper" [pRowToggler]="rowData">
+                            <i
+                              class="fa fa-fw aw-icon aw-icon-with-border"
+                              [ngClass]="rowData._expand ? 'fa-minus' : 'fa-plus'"
+                              aria-hidden="true"
+                              pTooltip="{{ 'global.showTableRowDetails' | translate }}"
+                              tooltipPosition="top"
+                              (click)="toggleRowDetailsVisibilitySabd(rowData)"
+                            ></i>
+                          </td>
+                        </tr>
+                      </ng-template>
+
+                      <ng-template pTemplate="rowexpansion" let-rowData let-columns="columns">
+                        <tr class="row-expanded" *ngIf="rowData._expand">
+                          <td [attr.colspan]="columns.length + 2">
+                            <div class="row">
+                              <div class="form-group">
+                                <label class="form-label">
+                                  {{ getComponentName() + ".description" | translate }}
+                                </label>
+
+                                <div class="form-control">
+                                  <input
+                                    class="aw-input"
+                                    type="text"
+                                    [(ngModel)]="rowData.bidoEquipmentEvolutionDTO.description"
+                                    [disabled]="true"
+                                  />
+                                </div>
+                              </div>
+
+                              <div class="form-group">
+                                <label class="form-label">
+                                  {{ getComponentName() + ".manufacturingModification" | translate }}
+                                </label>
+
+                                <div class="form-control" style="padding:8px 0;">
+                                  <span
+                                    *ngIf="
+                                      rowData['bidoEquipmentEvolutionDTO']['manufacturingModification'] !== null &&
+                                      rowData['bidoEquipmentEvolutionDTO']['manufacturingModification']
+                                    "
+                                  >
+                                    <i class="fa fa-fw fa-check" aria-hidden="true"></i>
+                                  </span>
+                                </div>
+                              </div>
+
+                              <div class="form-group">
+                                <label class="form-label">
+                                  {{ getComponentName() + ".event" | translate }}
+                                </label>
+
+                                <div class="form-control" style="padding:8px 0;">
+                                  <span *ngIf="rowData['event'] !== null && rowData['event']">
+                                    <i class="fa fa-fw fa-check" aria-hidden="true"></i>
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      </ng-template>
+                    </p-table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab>
+        <ng-template mat-tab-label>
+          {{ componentData.componentId + ".tabVisit" | translate }}
+        </ng-template>
+
+        <div [hidden]="isCreateOpenMode">
+          <div class="grid-row">
+            <div #visitAnchor class="grid-cell--12" (click)="setSelectedAnchor('visitAnchor')">
+              <div class="grid-cell grid-cell--container" [ngClass]="{ active: isSelectedAnchor('visitAnchor') }">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ componentData.componentId + ".tabVisit" | translate }} ({{
+                        bidoVisitDisplayed ? bidoVisitDisplayed.length : 0
+                      }})
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <div class="table-wrapper">
+                    <p-table
+                      [resizableColumns]="true"
+                      #ptableVisit
+                      class="aw-table2"
+                      [columns]="visitTableCols"
+                      [value]="bidoVisitDisplayed"
+                      [scrollable]="true"
+                      dataKey="projectId"
+                      [paginator]="true"
+                      [rows]="TABLE_PAGINATION_DEFAULT_ROWS"
+                    >
+                      <ng-template pTemplate="emptymessage">
+                        <span *ngIf="!isLoadingVisitTable"> &nbsp;</span>
+
+                        <div *ngIf="isLoadingVisitTable" class="aw-table-loading-indicator">
+                          <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                          <div class="lds-hourglass"></div>
+                        </div>
+                      </ng-template>
+
+                      <ng-template pTemplate="caption">
+                        <div class="aw-table-header">
+                          <div class="aw-table-global-filter">
+                            <label class="aw-table-global-filter-label">
+                              <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                            </label>
+
+                            <input
+                              #ptableVisitGlobalFilter
+                              class="aw-table-global-filter-input"
+                              type="text"
+                              placeholder="{{ 'table.globalFilterText' | translate }}"
+                              (input)="ptableVisit.filterGlobal($event.target.value, 'contains')"
+                            />
+                          </div>
+
+                          <div class="aw-table-actions">
+                            <button
+                              *ngIf="!isReadOpenMode && showHideButton"
+                              type="button"
+                              mat-raised-button
+                              (click)="hideClosedMaintenance()"
+                            >
+                              {{ componentData.componentId + ".hideClosedMaintenance" | translate }}
+                            </button>
+                            <button
+                              *ngIf="!isReadOpenMode && !showHideButton"
+                              type="button"
+                              mat-raised-button
+                              (click)="showClosedMaintenance()"
+                            >
+                              {{ componentData.componentId + ".showClosedMaintenance" | translate }}
+                            </button>
+                          </div>
+                        </div>
+                      </ng-template>
+
+                      <ng-template pTemplate="colgroup" let-columns>
+                        <colgroup>
+                          <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                          <col class="row-expand-wrapper" />
+                          <col class="row-action-wrapper" />
+                        </colgroup>
+                      </ng-template>
+
+                      <ng-template pTemplate="header" let-columns>
+                        <tr>
+                          <th pResizableColumn *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                            {{ componentData.componentId + "." + col.field | translate }}
+                          </th>
+                          <th class="row-expand-wrapper"></th>
+                          <th class="row-action-wrapper"></th>
+                        </tr>
+                      </ng-template>
+
+                      <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                        <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                          <td
+                            *ngFor="let col of columns"
+                            [ngSwitch]="col.field"
+                            [ngStyle]="{ 'text-align': col.alignment }"
+                          >
+                            <span *ngSwitchCase="'projectNum'">
+                              <a (click)="openWorkPackage(rowData)" *ngIf="rowData['projectNum']">
+                                {{ rowData["projectNum"] }}</a
+                              >
+                            </span>
+                            <span *ngSwitchCase="'projectStartDate'">
+                              {{ rowData[col.field] }}
+                            </span>
+                            <span *ngSwitchCase="'projectEndDate'">
+                              {{ rowData[col.field] }}
+                            </span>
+                            <span *ngSwitchDefault>{{ rowData[col.field] }}</span>
+                          </td>
+
+                          <td class="row-expand-wrapper" [pRowToggler]="rowData">
+                            <i
+                              class="fa fa-fw aw-icon aw-icon-with-border"
+                              [ngClass]="rowData._expand ? 'fa-minus' : 'fa-plus'"
+                              aria-hidden="true"
+                              pTooltip="{{ 'global.showTableRowDetails' | translate }}"
+                              tooltipPosition="top"
+                              (click)="toggleRowDetailsVisibilityVisit(rowData)"
+                            ></i>
+                          </td>
+                        </tr>
+                      </ng-template>
+
+                      <ng-template pTemplate="rowexpansion" let-rowData let-columns="columns">
+                        <tr class="row-expanded" *ngIf="rowData._expand">
+                          <td [attr.colspan]="columns.length + 2">
+                            <div class="row">
+                              <div class="form-group">
+                                <label class="form-label">
+                                  {{ getComponentName() + ".repairCenterCode" | translate }}
+                                </label>
+                                <div class="form-control">
+                                  <input
+                                    class="aw-input"
+                                    type="text"
+                                    [(ngModel)]="rowData.repairCenterCode"
+                                    [disabled]="true"
+                                  />
+                                </div>
+                              </div>
+                              <div class="form-group">
+                                <label class="form-label">
+                                  {{ getComponentName() + ".businessPartner" | translate }}
+                                </label>
+
+                                <div class="form-control">
+                                  <input
+                                    class="aw-input"
+                                    type="text"
+                                    [(ngModel)]="rowData.businessPartner"
+                                    [disabled]="true"
+                                  />
+                                </div>
+                              </div>
+                              <div class="form-group">
+                                <label class="form-label">
+                                  {{ getComponentName() + ".statusUser" | translate }}
+                                </label>
+
+                                <div class="form-control">
+                                  <input
+                                    class="aw-input"
+                                    type="text"
+                                    [(ngModel)]="rowData.statusUser"
+                                    [disabled]="true"
+                                  />
+                                </div>
+                              </div>
+                              <div class="form-group">
+                                <label class="form-label">
+                                  {{ getComponentName() + ".statusDate" | translate }}
+                                </label>
+                                <div class="form-control">
+                                  <p-calendar
+                                    showButtonBar="true"
+                                    [monthNavigator]="true"
+                                    [yearNavigator]="true"
+                                    [yearRange]="sessionService.calendarYearRange"
+                                    class="aw-calendar"
+                                    [dateFormat]="sessionService.dateFormatPrimeNG"
+                                    [locale]="sessionService.calendarFormat"
+                                    [(ngModel)]="rowData.statusDate"
+                                    [disabled]="true"
+                                  ></p-calendar>
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      </ng-template>
+                    </p-table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab *ngIf="!isAircraft()">
+        <ng-template mat-tab-label>
+          {{ componentData.componentId + ".stock" | translate }}
+        </ng-template>
+        <div [hidden]="isCreateOpenMode || isAircraft()" *ngIf="!awPropertiesConstants.MM_FULL_MODULE_ACTIVATED">
+          <div class="grid-row">
+            <div #stockAnchor class="grid-cell--12" (click)="setSelectedAnchor('stockAnchor')">
+              <div class="grid-cell grid-cell--container" [ngClass]="{ active: isSelectedAnchor('stockAnchor') }">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ componentData.componentId + ".tabStock" | translate }}
+                    </h3>
+                  </div>
+                </div>
+                <div class="grid-cell-content grid-cell-content-with-section">
+                  <div class="grid-cell-content-action">
+                    <button
+                      *ngIf="!isReadOpenMode && !isCreateOpenMode"
+                      type="button"
+                      mat-raised-button
+                      (click)="createStockMovement()"
+                    >
+                      {{ componentData.componentId + ".createStockMovement" | translate }}
+                    </button>
+                  </div>
+
+                  <div class="section">
+                    <h4 class="section-title">{{ componentData.componentId + ".currentStock" | translate }}</h4>
+                    <div class="section-content">
+                      <div class="row">
+                        <div class="form-group">
+                          <label class="form-label">{{ componentData.componentId + ".site" | translate }}</label>
+
+                          <div class="form-control">
+                            <input
+                              type="text"
+                              class="aw-input"
+                              [(ngModel)]="equipment.stockOutputDto.site"
+                              [disabled]="true"
+                            />
+                          </div>
+                        </div>
+
+                        <div class="form-group">
+                          <label class="form-label">{{ componentData.componentId + ".warehouse" | translate }}</label>
+
+                          <div class="form-control">
+                            <input
+                              type="text"
+                              class="aw-input"
+                              [(ngModel)]="equipment.stockOutputDto.warehouse"
+                              [disabled]="true"
+                            />
+                          </div>
+                        </div>
+
+                        <div class="form-group">
+                          <label class="form-label">{{ componentData.componentId + ".bin" | translate }}</label>
+
+                          <div class="form-control">
+                            <input
+                              type="text"
+                              class="aw-input"
+                              [(ngModel)]="equipment.stockOutputDto.storageBin"
+                              [disabled]="true"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="section">
+                    <h4 class="section-title">
+                      {{ componentData.componentId + ".stockLog" | translate }} ({{
+                        bidoStockDisplayed ? bidoStockDisplayed.length : 0
+                      }})
+                    </h4>
+                    <div class="section-content">
+                      <div class="row">
+                        <div class="table-wrapper">
+                          <p-table
+                            [resizableColumns]="true"
+                            #ptableStock
+                            class="aw-table2"
+                            [columns]="stockTableCols"
+                            [value]="bidoStockDisplayed"
+                            [scrollable]="true"
+                            dataKey="code"
+                            [paginator]="true"
+                            [rows]="TABLE_PAGINATION_DEFAULT_ROWS"
+                          >
+                            <ng-template pTemplate="emptymessage">
+                              <span *ngIf="!isLoadingStockTable"> &nbsp;</span>
+
+                              <div *ngIf="isLoadingStockTable" class="aw-table-loading-indicator">
+                                <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                                <div class="lds-hourglass"></div>
+                              </div>
+                            </ng-template>
+
+                            <ng-template pTemplate="caption">
+                              <div class="aw-table-header">
+                                <div class="aw-table-global-filter">
+                                  <label class="aw-table-global-filter-label">
+                                    <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                                  </label>
+
+                                  <input
+                                    #ptableStockGlobalFilter
+                                    class="aw-table-global-filter-input"
+                                    type="text"
+                                    placeholder="{{ 'table.globalFilterText' | translate }}"
+                                    (input)="ptableStock.filterGlobal($event.target.value, 'contains')"
+                                  />
+                                </div>
+
+                                <div class="aw-table-actions"></div>
+                              </div>
+                            </ng-template>
+
+                            <ng-template pTemplate="colgroup" let-columns>
+                              <colgroup>
+                                <col
+                                  *ngFor="let col of columns"
+                                  [ngStyle]="{ width: col.width, 'text-align': col.alignment }"
+                                />
+                                <col class="row-expand-wrapper" />
+                                <col class="row-action-wrapper" />
+                              </colgroup>
+                            </ng-template>
+
+                            <ng-template pTemplate="header" let-columns>
+                              <tr>
+                                <th
+                                  pResizableColumn
+                                  *ngFor="let col of columns"
+                                  [ngStyle]="{ width: col.width, 'text-align': col.alignment }"
+                                >
+                                  {{ componentData.componentId + "." + col.field | translate }}
+                                </th>
+                                <th class="row-expand-wrapper"></th>
+                                <th class="row-action-wrapper"></th>
+                              </tr>
+                            </ng-template>
+
+                            <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                              <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                                <td
+                                  *ngFor="let col of columns"
+                                  [ngSwitch]="col.field"
+                                  [ngStyle]="{ width: col.width, 'text-align': col.alignment }"
+                                >
+                                  <span *ngSwitchCase="'stockMvtDate'">
+                                    {{ rowData[col.field] }}
+                                  </span>
+                                  <span *ngSwitchCase="'code'">
+                                    {{ rowData["code"] }}
+                                  </span>
+
+                                  <span *ngSwitchCase="'document'">
+                                    <a *ngIf="rowData['document']" (click)="onClickDocument(rowData)">
+                                      {{ rowData["document"] }}</a
+                                    >
+                                  </span>
+                                  <span *ngSwitchDefault>{{ rowData[col.field] }}</span>
+                                </td>
+
+                                <td class="row-expand-wrapper" [pRowToggler]="rowData">
+                                  <i
+                                    class="fa fa-fw aw-icon aw-icon-with-border"
+                                    [ngClass]="rowData._expand ? 'fa-minus' : 'fa-plus'"
+                                    aria-hidden="true"
+                                    pTooltip="{{ 'global.showTableRowDetails' | translate }}"
+                                    tooltipPosition="top"
+                                    (click)="toggleRowDetailsVisibilityStock(rowData)"
+                                  ></i>
+                                </td>
+                              </tr>
+                            </ng-template>
+
+                            <ng-template pTemplate="rowexpansion" let-rowData let-columns="columns">
+                              <tr class="row-expanded" *ngIf="rowData._expand">
+                                <td [attr.colspan]="columns.length + 2">
+                                  <div class="row">
+                                    <div class="form-group">
+                                      <label class="form-label">
+                                        {{ getComponentName() + ".stockMvtBatchNumber" | translate }}
+                                      </label>
+
+                                      <div class="form-control">
+                                        <input
+                                          class="aw-input"
+                                          type="text"
+                                          [(ngModel)]="rowData.stockMvtBatchNumber"
+                                          [disabled]="true"
+                                        />
+                                      </div>
+                                    </div>
+                                    <div class="form-group">
+                                      <label class="form-label">
+                                        {{ getComponentName() + ".bin" | translate }}
+                                      </label>
+                                      <div class="form-control">
+                                        <input
+                                          class="aw-input"
+                                          type="text"
+                                          [(ngModel)]="rowData.bin"
+                                          [disabled]="true"
+                                        />
+                                      </div>
+                                    </div>
+                                    <div class="form-group">
+                                      <label class="form-label">
+                                        {{ getComponentName() + ".stockType" | translate }}
+                                      </label>
+
+                                      <div class="form-control">
+                                        <input
+                                          class="aw-input"
+                                          type="text"
+                                          [(ngModel)]="rowData.stockType"
+                                          [disabled]="true"
+                                        />
+                                      </div>
+                                    </div>
+                                    <div class="form-group">
+                                      <label class="form-label">
+                                        {{ getComponentName() + ".valuation" | translate }}
+                                      </label>
+
+                                      <div class="form-control">
+                                        <input
+                                          class="aw-input"
+                                          type="text"
+                                          [(ngModel)]="rowData.valuation"
+                                          [disabled]="true"
+                                        />
+                                      </div>
+                                    </div>
+                                    <div class="form-group">
+                                      <label class="form-label">
+                                        {{ getComponentName() + ".comments" | translate }}
+                                      </label>
+
+                                      <div class="form-control">
+                                        <input
+                                          class="aw-input"
+                                          type="text"
+                                          [(ngModel)]="rowData.comments"
+                                          [disabled]="true"
+                                        />
+                                      </div>
+                                    </div>
+                                  </div>
+                                </td>
+                              </tr>
+                            </ng-template>
+                          </p-table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div [hidden]="isCreateOpenMode || isAircraft()" *ngIf="awPropertiesConstants.MM_FULL_MODULE_ACTIVATED">
+          <div class="grid-row">
+            <div class="grid-cell--12">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ componentData.componentId + ".currentStock" | translate }}
+                    </h3>
+                  </div>
+                </div>
+                <div class="grid-cell-content grid-cell-content-with-section">
+                  <div class="section">
+                    <div class="section-content">
+                      <div class="row">
+                        <div class="form-group">
+                          <label class="form-label">{{ componentData.componentId + ".site" | translate }}</label>
+
+                          <div class="form-control">
+                            <input type="text" class="aw-input" [(ngModel)]="mmfSiteText" [disabled]="true" />
+                          </div>
+                        </div>
+
+                        <div class="form-group">
+                          <label class="form-label">{{ componentData.componentId + ".warehouse" | translate }}</label>
+
+                          <div class="form-control">
+                            <input type="text" class="aw-input" [(ngModel)]="mmfWarehouseText" [disabled]="true" />
+                          </div>
+                        </div>
+
+                        <div class="form-group">
+                          <label class="form-label">{{ componentData.componentId + ".zone" | translate }}</label>
+
+                          <div class="form-control">
+                            <input type="text" class="aw-input" [(ngModel)]="mmfStorageZoneText" [disabled]="true" />
+                          </div>
+                        </div>
+
+                        <div class="form-group">
+                          <label class="form-label">{{ componentData.componentId + ".bin" | translate }}</label>
+
+                          <div class="form-control">
+                            <input type="text" class="aw-input" [(ngModel)]="mmfStorageBinText" [disabled]="true" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div [hidden]="isCreateOpenMode || isAircraft()" *ngIf="awPropertiesConstants.MM_FULL_MODULE_ACTIVATED">
+          <div class="grid-row">
+            <div class="grid-cell--12">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ componentData.componentId + ".stockLog" | translate }}
+                    </h3>
+                  </div>
+                </div>
+                <div class="grid-cell-content grid-cell-content-with-section">
+                  <div class="section">
+                    <h4 class="section-title">
+                      {{ componentData.componentId + ".stockLog" | translate }} ({{
+                        stockMvtTableDataSource.dataCount
+                      }})
+                    </h4>
+                    <div class="section-content">
+                      <div class="row">
+                        <div class="table-wrapper">
+                          <a-table [dataSource]="stockMvtTableDataSource">
+                            <ng-template columnDef="movement" let-rowData="rowData">
+                              <div>
+                                <a style="font-weight: 600;" (click)="openStovkMvt()">
+                                  {{ rowData["stockMvtCode"] }}
+                                </a>
+                              </div>
+
+                              <div>
+                                {{ rowData["bidtStockMvtType"]?.smtName | extractTranslation }}
+                              </div>
+                            </ng-template>
+
+                            <ng-template columnDef="type" let-rowData="rowData">
+                              <i
+                                *ngIf="rowData['bidtStockMvtType']?.smtWay === bidtStockMvtConstants.MVT_WAY_CREDIT"
+                                class="fa fa-fw fa-arrow-right procurement-type--in"
+                                aria-hidden="true"
+                              ></i>
+                              <i
+                                *ngIf="rowData['bidtStockMvtType']?.smtWay === bidtStockMvtConstants.MVT_WAY_DEBIT"
+                                class="fa fa-fw fa-arrow-right procurement-type--out"
+                                aria-hidden="true"
+                              ></i>
+                              <i
+                                *ngIf="rowData['bidtStockMvtType']?.smtWay === bidtStockMvtConstants.MVT_WAY_TRANSFER"
+                                class="fa fa-fw fa-arrow-right procurement-type--transfer"
+                                aria-hidden="true"
+                              ></i>
+                            </ng-template>
+
+                            <ng-template columnDef="warehouseWorkshop" let-rowData="rowData">
+                              <div>
+                                <div style="min-width: 3rem; display: inline-block;">
+                                  {{ getComponentName() + ".site" | translate }}
+                                </div>
+                                <span style="font-weight: 600">{{ rowData["siteName"] }} </span>
+                              </div>
+                              <div>
+                                <span style="font-weight: 600">{{ rowData["warehousename"] }}</span>
+                              </div>
+                            </ng-template>
+
+                            <ng-template columnDef="outbound" let-rowData="rowData">
+                              <div *ngIf="rowData['bidtStorageBinZoneIssue']?.sbNumber">
+                                <div style="min-width: 2rem; display: inline-block;">
+                                  {{ getComponentName() + ".zone" | translate }}
+                                </div>
+                                <span style="font-weight: 600">
+                                  {{ rowData["bidtStorageBinZoneIssue"]?.sbNumber }}
+                                  <ng-container *ngIf="rowData['bidtStorageBinZoneIssue']?.sbDescription">
+                                    - {{ rowData["bidtStorageBinZoneIssue"]?.sbDescription }}
+                                  </ng-container>
+                                </span>
+                              </div>
+
+                              <div *ngIf="rowData['bidtStorageBinBinIssue']?.sbNumber">
+                                <div style="min-width: 3rem; display: inline-block;">
+                                  {{ getComponentName() + ".emp" | translate }}
+                                </div>
+                                <span style="font-weight: 600">{{ rowData["bidtStorageBinBinIssue"]?.sbNumber }}</span>
+                              </div>
+                            </ng-template>
+
+                            <ng-template columnDef="inbound" let-rowData="rowData">
+                              <div *ngIf="rowData['bidtStorageBinZoneReceipt']?.sbNumber">
+                                <div style="min-width: 2rem; display: inline-block;">
+                                  {{ getComponentName() + ".zone" | translate }}
+                                </div>
+                                <span style="font-weight: 600">
+                                  {{ rowData["bidtStorageBinZoneReceipt"]?.sbNumber }}
+                                  <ng-container *ngIf="rowData['bidtStorageBinZoneReceipt']?.sbDescription">
+                                    - {{ rowData["bidtStorageBinZoneReceipt"]?.sbDescription }}
+                                  </ng-container>
+                                </span>
+                              </div>
+
+                              <div *ngIf="rowData['bidtStorageBinBinReceipt']?.sbNumber">
+                                <div style="min-width: 3rem; display: inline-block;">
+                                  {{ getComponentName() + ".emp" | translate }}
+                                </div>
+                                <span style="font-weight: 600">{{
+                                  rowData["bidtStorageBinBinReceipt"]?.sbNumber
+                                }}</span>
+                              </div>
+                            </ng-template>
+
+                            <ng-template columnDef="status" let-rowData="rowData">
+                              <div>
+                                <span style="font-weight: 600;">{{ rowData["smoStatus"].label }}</span>
+                              </div>
+
+                              <div>
+                                {{
+                                  (rowData["_stockMvt"].stockMvtDate
+                                    ? rowData["_stockMvt"].stockMvtDate
+                                    : rowData["_stockMvt"].stockMvtPlannedDate
+                                  ) | date: "yyyy/MM/dd HH:mm":"":translateService.currentLang
+                                }}
+                              </div>
+                            </ng-template>
+
+                            <ng-template columnDef="document" let-rowData="rowData">
+                              <div>
+                                <a (click)="openDocOrigine(rowData)">{{ rowData["documentNum"] }}</a>
+                              </div>
+                              <div>
+                                <i>{{ rowData["documentDescription"] }}</i>
+                              </div>
+                            </ng-template>
+                          </a-table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab>
+        <ng-template mat-tab-label>
+          {{ "page.additionalData" | translate }}
+        </ng-template>
+
+        <div [hidden]="isCreateOpenMode">
+          <div class="grid-row">
+            <div class="grid-cell--12">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container loading-indicator ">
+                    <div class="grid-cell-title">
+                      <span>{{ "page.additionalData" | translate }}</span>
+                      <div *ngIf="assetLoading && !isCreateOpenMode" class="lds-hourglass"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content grid-cell-content-with-section">
+                  <div *ngIf="isTool()" class="section">
+                    <div class="section-content">
+                      <div class="column">
+                        <div class="row">
+                          <div class="form-group">
+                            <label class="form-label">{{ componentData.componentId + ".itemCode" | translate }}</label>
+                            <div class="form-control display--flex-row" *ngIf="!isReadOpenMode">
+                              <input
+                                type="text"
+                                class="aw-input flex--1"
+                                [disabled]="isReadOpenMode"
+                                [(ngModel)]="equipment.bidoEquipmentDTO.chapter"
+                                maxlength="2"
+                              />
+                              <span class="separator"></span>
+                              <input
+                                type="text"
+                                class="aw-input flex--1"
+                                [disabled]="isReadOpenMode"
+                                [(ngModel)]="equipment.bidoEquipmentDTO.section"
+                                maxlength="2"
+                              />
+                              <span class="separator"></span>
+                              <input
+                                type="text"
+                                class="aw-input flex--1"
+                                [disabled]="isReadOpenMode"
+                                [(ngModel)]="equipment.bidoEquipmentDTO.subject"
+                                maxlength="2"
+                              />
+                              <span class="separator"></span>
+                              <input
+                                type="text"
+                                class="aw-input flex--1"
+                                [disabled]="isReadOpenMode"
+                                [(ngModel)]="equipment.bidoEquipmentDTO.sheet"
+                                maxlength="5"
+                              />
+                              <span class="separator"></span>
+                              <input
+                                type="text"
+                                class="aw-input flex--1"
+                                [disabled]="isReadOpenMode"
+                                [(ngModel)]="equipment.bidoEquipmentDTO.marks"
+                                maxlength="5"
+                              />
+
+                              <div class="btn-search-wrapper" *ngIf="!isReadOpenMode">
+                                <i
+                                  class="fa fa-fw fa-search aw-icon btn-search"
+                                  aria-hidden="true"
+                                  (click)="openItemTableDialog()"
+                                ></i>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="form-group">
+                            <label class="form-label">{{ componentData.componentId + ".assetCode" | translate }}</label>
+
+                            <div class="form-control">
+                              <input
+                                type="text"
+                                maxlength="25"
+                                class="aw-input"
+                                [(ngModel)]="equipment.bidoEquipmentDTO.equipmentCode"
+                                [disabled]="isReadOpenMode || !isCreateOpenMode"
+                              />
+                            </div>
+                          </div>
+                          <div class="form-group"></div>
+                          <div class="form-group"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div *ngIf="isTool()" class="section">
+                    <h4 class="section-title">
+                      {{ componentData.componentId + ".configurationLabel" | translate }}
+                    </h4>
+                    <div class="section-content">
+                      <div class="row">
+                        <div class="form-group">
+                          <label class="form-label">{{
+                            componentData.componentId + ".manufacturer" | translate
+                          }}</label>
+
+                          <div class="form-control">
+                            <input
+                              type="text"
+                              maxlength="35"
+                              class="aw-input"
+                              [disabled]="isReadOpenMode"
+                              [(ngModel)]="equipment.bidoEquipmentDTO.snManufacturer"
+                            />
+                          </div>
+                        </div>
+
+                        <div class="form-group general-field">
+                          <label class="form-label">{{
+                            componentData.componentId + ".manufacturingDate" | translate
+                          }}</label>
+
+                          <div class="form-control">
+                            <p-calendar
+                              showButtonBar="true"
+                              [monthNavigator]="true"
+                              [yearNavigator]="true"
+                              [yearRange]="sessionService.calendarYearRange"
+                              class="aw-calendar"
+                              appendTo="body"
+                              [dateFormat]="sessionService.dateFormatPrimeNG"
+                              [locale]="sessionService.calendarFormat"
+                              [(ngModel)]="equipment.bidoEquipmentDTO.manufacturingDate"
+                              [disabled]="isReadOpenMode"
+                              [maxDate]="maxDate"
+                            >
+                            </p-calendar>
+                          </div>
+                        </div>
+
+                        <div class="form-group"></div>
+                        <div class="form-group"></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label">{{ componentData.componentId + ".assetCode" | translate }}</label>
+
+                    <div class="form-control">
+                      <input
+                        type="text"
+                        maxlength="25"
+                        class="aw-input"
+                        [(ngModel)]="equipment.bidoEquipmentDTO.equipmentCode"
+                        [disabled]="isReadOpenMode || !isCreateOpenMode"
+                      />
+                    </div>
+                    <div class="form-group"></div>
+                    <div class="form-group"></div>
+                    <aw-dynamic-attributes
+                      [showHistory]="true"
+                      [history]="dynamicAttributesHistoric"
+                      [attributes]="dynamicAttributes"
+                      [isReadOpenMode]="isReadOpenMode"
+                    >
+                    </aw-dynamic-attributes>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab>
+        <ng-template mat-tab-label>
+          {{ "global.documents" | translate }}
+        </ng-template>
+        <div [hidden]="isCreateOpenMode">
+          <div class="grid-row">
+            <div #documentAnchor class="grid-cell--12" (click)="setSelectedAnchor('documentAnchor')">
+              <div class="grid-cell grid-cell--container" [ngClass]="{ active: isSelectedAnchor('documentAnchor') }">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ "global.documents" | translate }} ({{
+                        documentTableDataSource ? documentTableDataSource.dataCount : 0
+                      }})
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <a-table [dataSource]="documentTableDataSource">
+                    <ng-template tableActionsDef>
+                      <button
+                        *ngIf="documentTableDataSource.hasDataSelection"
+                        type="button"
+                        mat-raised-button
+                        (click)="downloadFiles()"
+                      >
+                        {{ "global.download" | translate }}
+                      </button>
+                      <button
+                        *ngIf="!isReadOpenMode && documentTableDataSource.hasDataSelection"
+                        type="button"
+                        mat-raised-button
+                        color="warn"
+                        (click)="deleteDocuments()"
+                      >
+                        {{ "global.delete" | translate }}
+                      </button>
+                      <button
+                        *ngIf="!isReadOpenMode && documentTableDataSource.dataSelectionCount === 1"
+                        type="button"
+                        mat-raised-button
+                        (click)="editDocument()"
+                      >
+                        {{ "global.edit" | translate }}
+                      </button>
+
+                      <button
+                        *ngIf="!isReadOpenMode && documentTableDataSource.dataSelectionCount === 1"
+                        type="button"
+                        mat-raised-button
+                        (click)="openDocument()"
+                      >
+                        {{ "global.open" | translate }}
+                      </button>
+                      <p-fileUpload
+                        #fileUploader
+                        *ngIf="!isReadOpenMode && !documentTableDataSource.hasDataSelection"
+                        chooseLabel="{{ 'global.upload' | translate }}"
+                        name="document[]"
+                        customUpload="true"
+                        mode="basic"
+                        auto="true"
+                        (uploadHandler)="uploadDocument($event, fileUploader)"
+                      ></p-fileUpload>
+                    </ng-template>
+                    <ng-template columnDef="docEndOfValidityDate" let-rowData="rowData">
+                      {{ rowData.docEndOfValidityDate | date: "yyyy/MM/dd" }}
+                    </ng-template>
+                    <ng-template columnDef="docExtension" let-rowData="rowData">
+                      <span> {{ showDocExtension(rowData) }} </span>
+                    </ng-template>
+                    <ng-template columnDef="docPublicationDate" let-rowData="rowData">
+                      <span>
+                        {{ rowData.docPublicationDate | date: "yyyy/MM/dd" }}
+                      </span>
+                    </ng-template>
+                  </a-table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+
+  <aw-dialog-create-stock-receipt
+    *ngIf="showCreateReceipt"
+    [(display)]="showCreateReceipt"
+    [equipment]="equipment.bidoEquipmentDTO"
+    (onValidated)="reloadStockReceipt()"
+  ></aw-dialog-create-stock-receipt>
+
+  <aw-document-upload-dialog
+    *ngIf="showAddDocumentDialog"
+    [(display)]="showAddDocumentDialog"
+    [openMode]="documentDialogOpenMode"
+    [document]="currentDocument"
+    [types]="documentTypes"
+    (onValidated)="addNewDocument($event)"
+  >
+  </aw-document-upload-dialog>
+
+  <aw-dialog-fl-history *ngIf="showFlStatusFlag" [(display)]="showFlStatusFlag" [flHistoryData]="flHistoryData">
+  </aw-dialog-fl-history>
+
+  <aw-dialog-usage
+    *ngIf="showUsageDialogFlag"
+    [(display)]="showUsageDialogFlag"
+    [usageHistoryData]="usageHistoryData"
+    (onValidate)="onAddUsageData($event)"
+  >
+  </aw-dialog-usage>
+
+  <aw-edit-data-popup-form
+    *ngIf="editDataPopupFlag"
+    [(display)]="editDataPopupFlag"
+    [propertyOperationalStatus]="propertyOperationalStatus"
+    [propertyZones]="propertyZones"
+    [propertyCountries]="propertyCountries"
+    [propertyAllCountries]="propertyAllCountries"
+    [editPopupData]="editPopupData"
+    (onValidated)="onAddEditPopuData($event)"
+    (onValdiatedEngineData)="onAddEnginePopupData($event)"
+    [operationalFlag]="operationalFlag"
+    [familyFlag]="familyFlag"
+    [snFlag]="snFlag"
+    [registrationFlag]="registrationFlag"
+    [pnFlag]="pnFlag"
+    [geoFlag]="geoFlag"
+    [isAircraft]="isAircraft()"
+    [isTool]="isTool()"
+    [isEngine]="isEngine()"
+    [ratingFlag]="ratingFlag"
+    [modelFlag]="modelFlag"
+    [rating]="equipment.ratingCode"
+    [modelCode]="equipment.modelCode"
+  >
+  </aw-edit-data-popup-form>
+
+  <aw-dialog-status-popupy
+    *ngIf="statusDialog"
+    [(display)]="statusDialog"
+    [equipmentStatus]="fatherEquipmentStatus"
+    (onValidated)="onUpdatedStatus($event)"
+  >
+  </aw-dialog-status-popupy>
+
+  <aw-dialog-table
+    *ngIf="showFamilyCodeDialog"
+    [keyMap]="keyMap"
+    [(display)]="showFamilyCodeDialog"
+    [data]="dialogTableDataFamilyCode"
+    (onSelected)="setSelectedFamilyCode($event)"
+  ></aw-dialog-table>
+
+  <aw-dialog-table
+    *ngIf="showPnCodeDialog"
+    [keyMap]="keyMap"
+    [(display)]="showPnCodeDialog"
+    [data]="dialogTableDataPnCode"
+    (onSelected)="setSelectedPnCode($event)"
+  ></aw-dialog-table>
+  <aw-dialog-table
+    *ngIf="showItemTableDialog"
+    [keyMap]="keyMap"
+    [data]="itemTableData"
+    [(display)]="showItemTableDialog"
+    (onSelected)="setSelectedItems($event)"
+  ></aw-dialog-table>
+
+  <aw-dialog-table
+    *ngIf="showItemsDialog"
+    [(display)]="showItemsDialog"
+    [data]="dialogTableDataItems"
+    (onSelected)="setSelectedItems($event)"
+  ></aw-dialog-table>
+
+  <aw-dialog-table
+    *ngIf="showDialogOwner"
+    [(display)]="showDialogOwner"
+    [data]="dialogTableDataOwner"
+    (onSelected)="setSelectedOwner($event)"
+  ></aw-dialog-table>
+
+  <aw-dialog-table
+    *ngIf="showDialogOperator"
+    [(display)]="showDialogOperator"
+    [data]="dialogTableDataOperator"
+    (onSelected)="setSelectedOperator($event)"
+  ></aw-dialog-table>
+
+  <aw-counter-popup-form
+    *ngIf="showCounterPopup"
+    [(display)]="showCounterPopup"
+    [component-data]="dataMeasure"
+    [equipment]="equipment.bidoEquipmentDTO"
+    (onCreate)="addCounter($event)"
+    [followedInRatingVisibility]="followedInRatingVisibility"
+  ></aw-counter-popup-form>
+
+  <aw-limit-popup-form
+    *ngIf="showLimitPopup"
+    [(display)]="showLimitPopup"
+    [component-data]="dataMeasure"
+    (onCreate)="updateLimit($event)"
+    [equipment]="equipment.bidoEquipmentDTO"
+    [followedInRatingVisibility]="followedInRatingVisibility"
+  ></aw-limit-popup-form>
+
+  <aw-dialog-measure-update
+    *ngIf="showMeasurePopup"
+    [(display)]="showMeasurePopup"
+    [component-data]="dataMeasure"
+    [context]="context"
+    [equipment]="equipment.bidoEquipmentDTO"
+    [isReadOnlyForm]="isReadOnlyMeasureUpdateDialog"
+    (onUpdate)="createMeasure($event)"
+    [followedInRatingVisibility]="followedInRatingVisibility"
+    (onReport)="showMeasureReport($event)"
+  ></aw-dialog-measure-update>
+
+  <aw-create-event-form
+    *ngIf="showEventPopup"
+    [(display)]="showEventPopup"
+    [event]="currentEvent"
+    [assetTitle]="assetTitle"
+    [openMode]="eventPopupOpenMode"
+    (onValidated)="onAddEvent($event)"
+  ></aw-create-event-form>
+
+  <aw-sbad-popup-form
+    *ngIf="showSbadPopup"
+    [(display)]="showSbadPopup"
+    [complianceStatus]="bidoEquipmentEvolutionConstant.STATUS_NO_STATUS"
+    [equipmentCode]="equipment.bidoEquipmentDTO.equipmentCode"
+    [familyVariantCode]="equipment.bidoEquipmentDTO.familyVariantCode"
+    [pnCode]="equipment.bidoEquipmentDTO.pnCode"
+    [sbad]="currentSbad"
+    [sn]="equipment.bidoEquipmentDTO.sn"
+    [openMode]="sbadPopupOpenMode"
+    (onValidated)="onAddSbad($event)"
+  ></aw-sbad-popup-form>
+
+  <p-overlayPanel
+    #opWorkPackageToShow
+    [appendTo]="'body'"
+    (onShow)="workPackageListToShowVisible = true"
+    (onHide)="workPackageListToShowVisible = false"
+  >
+    <aw-report-dialog
+      [showReport]="true"
+      [isAircraft]="isAircraft()"
+      [isEngine]="isEngine()"
+      [bidoEquipmentDTOId]="this.equipmentId"
+      [data]="equipment.bidoEquipmentDTO"
+      [bidoNotificationData]="bidoNotificationData"
+    ></aw-report-dialog>
+  </p-overlayPanel>
+
+  <p-overlayPanel #navigationAnchor [appendTo]="'body'" (onShow)="showVisible = true" (onHide)="showVisible = false">
+    <aw-report-dialog
+      [showList]="true"
+      [bidoEquipmentDTOId]="this.equipmentId"
+      [data]="equipment.bidoEquipmentDTO"
+      (onValidate)="navigationAnchor.hide(); showVisible = false"
+    ></aw-report-dialog>
+  </p-overlayPanel>
+
+  <aw-alert-report-dialog *ngIf="showAlertPopup" [(display)]="showAlertPopup" [reportAlertMessage]="reportAlertMessage">
+  </aw-alert-report-dialog>
+
+  <aw-measure-report-dialog
+    *ngIf="showMeasureReportText"
+    [(display)]="showMeasureReportText"
+    [reportMessage]="measureReportText"
+  ></aw-measure-report-dialog>
+</div>
+
+<aw-dialog-search-pn
+  *ngIf="showSearchPartDialog"
+  [(display)]="showSearchPartDialog"
+  (onSelected)="setSelectedPnCode($event)"
+  [familyVariant]="partsSearch.familyVariantSelected"
+  [pnType]="partsSearch.type"
+  [toolSearch]="partsSearch.toolSearch"
+></aw-dialog-search-pn>
+
+<aw-send-to-repair-popup
+  *ngIf="sendToRepairPopupVisible"
+  [(display)]="sendToRepairPopupVisible"
+  [(siteList)]="siteList"
+  [(partnerList)]="partnerList"
+  [pnCode]="equipment.bidoEquipmentDTO.pnCode"
+  [sn]="equipment.bidoEquipmentDTO.sn"
+  (onValidate)="onValidateSendToRepair($event)"
+></aw-send-to-repair-popup>

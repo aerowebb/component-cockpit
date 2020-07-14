@@ -1,0 +1,173 @@
+<div class="page-header">
+  <div class="page-info">
+    <div>
+      <div class="page-title">
+        {{ "transaction." + componentData.componentId | translate }}
+      </div>
+
+      <div class="page-subtitle">
+        <div class="page-subtitle">- {{ "page.searchPage" | translate }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-actions">
+    <button type="button" mat-raised-button (click)="openNewSite()" *ngIf="hasUpdateAccessRight">
+      {{ "global.create" | translate }}
+    </button>
+
+    <button
+      id="actions"
+      mat-icon-button
+      class="mat-elevation-z1"
+      matTooltip="{{ 'global.showAllActionTooltip' | translate }}"
+      matTooltipPosition="above"
+      aria-label="Show all actions"
+      [matMenuTriggerFor]="actions"
+    >
+      <mat-icon>more_horiz</mat-icon>
+    </button>
+
+    <mat-menu #actions="matMenu">
+      <button id="favorites" mat-menu-item (click)="updateFavoriteState()">
+        {{ (isFavoriteEntry ? "page.removeFromFavorites" : "page.addToFavorites") | translate }}
+      </button>
+    </mat-menu>
+  </div>
+</div>
+
+<div class="page-wrapper">
+  <div class="page-container search-page-container">
+    <div class="page-content">
+      <div class="grid-row">
+        <div class="grid-cell--12">
+          <div class="grid-cell grid-cell--container">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">{{ "global.search" | translate }}</h3>
+              </div>
+            </div>
+
+            <div class="grid-cell-content">
+              <div class="column">
+                <div class="row search-criteria-header">
+                  <aw-manage-search-criteria
+                    [componentId]="SEARCH_CRITERIA_ID"
+                    (onSelected)="loadSearchCriteria($event)"
+                    (onSavedAsked)="saveSearchCriteriaAsked()"
+                    [objectFromPage]="criteriaToSave"
+                    [canChange]="!hasBeenCalculated"
+                  ></aw-manage-search-criteria>
+                </div>
+
+                <div class="row">
+                  <div class="form-group">
+                    <label class="form-label"> {{ componentData.componentId + ".siteCode" | translate }} </label>
+
+                    <div class="form-control">
+                      <input type="text" class="aw-input" [(ngModel)]="searchObject.siteCode" />
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label"> {{ componentData.componentId + ".siteName" | translate }} </label>
+
+                    <div class="form-control">
+                      <input type="text" class="aw-input" [(ngModel)]="searchObject.siteName" />
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label"> {{ componentData.componentId + ".bidtCompanyId" | translate }} </label>
+
+                    <div class="form-control">
+                      <p-dropdown
+                        name="bidtCompanyName"
+                        class="aw-dropdown fixed-width"
+                        [options]="companies"
+                        [(ngModel)]="searchObject.bidtCompanyId"
+                        [showClear]="true"
+                        (keyup.enter)="search()"
+                        (onChange)="loadCompany()"
+                        placeholder="&nbsp;"
+                        required
+                      ></p-dropdown>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row search-criteria-footer">
+                  <div class="search-actions">
+                    <button
+                      type="button"
+                      mat-raised-button
+                      class="btn-with-spinner"
+                      color="primary"
+                      (click)="search()"
+                      appKeyPress
+                      [keyCode]="'Enter'"
+                      (keyPress)="search()"
+                    >
+                      <span *ngIf="isLoading" class="lds-hourglass"></span>
+                      {{ "global.toSearch" | translate }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-row">
+        <div class="grid-cell--12">
+          <div #resultsContainerAnchor class="grid-cell grid-cell--container">
+            <!-- Sites table -->
+
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">
+                  {{ "global.results" | translate }} ({{ siteTableDataSource ? siteTableDataSource.dataCount : 0 }})
+                </h3>
+              </div>
+            </div>
+
+            <div class="grid-cell-content">
+              <a-table [dataSource]="siteTableDataSource">
+                <ng-template tableActionsDef>
+                  <button
+                    *ngIf="siteTableDataSource && siteTableDataSource.hasData && !siteTableDataSource.hasDataSelection"
+                    type="button"
+                    mat-raised-button
+                    (click)="exportTable()"
+                  >
+                    {{ "global.export" | translate }}
+                  </button>
+
+                  <button
+                    *ngIf="hasManageAccessRight && siteTableDataSource.hasDataSelection"
+                    type="button"
+                    mat-raised-button
+                    color="warn"
+                    (click)="deleteSites()"
+                  >
+                    {{ "global.delete" | translate }}
+                  </button>
+
+                  <button
+                    *ngIf="siteTableDataSource.hasDataSelection"
+                    type="button"
+                    mat-raised-button
+                    (click)="openSelectedSites()"
+                  >
+                    {{ "global.open" | translate }}
+                  </button>
+                </ng-template>
+              </a-table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

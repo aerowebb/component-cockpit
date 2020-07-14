@@ -1,0 +1,10 @@
+@import "mixins";
+
+:host {
+  .action-list {
+    @include flex-row();
+
+    align-items: flex-end;
+    justify-content: flex-end;
+  }
+}

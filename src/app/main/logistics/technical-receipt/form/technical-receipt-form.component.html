@@ -1,0 +1,1000 @@
+<aw-component-sidebar
+  *ngIf="!isCreateOpenMode"
+  [toc]="toc"
+  [(visibility)]="rightSidebarVisibility"
+  [ngClass]="{ collapsed: rightSidebarCollapsed, expanded: rightSidebarExpanded }"
+></aw-component-sidebar>
+
+<div class="page-header-container">
+  <div class="page-context">
+    <div class="page-title-container">
+      <div class="page-title">
+        {{ "transaction." + componentData.componentId | translate }}
+      </div>
+
+      <div class="page-secondary-actions">
+        <i
+          class="fa fa-fw aw-icon aw-icon-with-border"
+          [ngClass]="{ 'fa-star': isFavoriteEntry, 'fa-star-o': !isFavoriteEntry }"
+          aria-hidden="true"
+          (click)="updateFavoriteState()"
+          pTooltip="{{ 'page.' + (isFavoriteEntry ? 'removeFromFavorites' : 'addToFavorites') | translate }}"
+          tooltipPosition="bottom"
+        ></i>
+      </div>
+    </div>
+
+    <div class="page-subtitle-container">
+      <div class="page-subtitle">
+        {{ mainInfo.partNumber }}
+      </div>
+    </div>
+  </div>
+
+  <div class="page-primary-actions">
+    <button type="button" mat-raised-button (click)="validateTechnicalCondition()">
+      {{ componentData.componentId + ".validateTechnicalCondition" | translate }}
+    </button>
+    <button type="button" mat-raised-button (click)="refresh()">
+      {{ "global.refresh" | translate }}
+    </button>
+  </div>
+</div>
+
+<div class="page-wrapper">
+  <div class="page-container">
+    <div class="page-content">
+      <div class="grid-row">
+        <!-- EQUIPMENT PANEL -->
+        <div #equipmentAnchor class="grid-cell--6" (click)="selectPageTocEntry(component.EQUIPMENT_ANCHOR_ID)">
+          <div
+            class="grid-cell grid-cell--container"
+            [ngClass]="{ active: isPageTocEntrySelected(component.EQUIPMENT_ANCHOR_ID) }"
+          >
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">
+                  {{ getComponentName() + ".equipment" | translate }}
+                </h3>
+              </div>
+            </div>
+
+            <div class="grid-cell-content">
+              <!-- ROW 1 -->
+              <div class="row">
+                <div class="form-group">
+                  <label class="form-label">{{ getComponentName() + ".partNumber" | translate }}</label>
+
+                  <div class="form-control custom-control">
+                    <a>{{ mainInfo.partNumber }}</a>
+                    <div>
+                      <i>{{ mainInfo.designation }}</i>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">{{ getComponentName() + ".snLot" | translate }}</label>
+
+                  <div class="form-control custom-control">
+                    <a>{{ mainInfo.snLot }}</a>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">{{ getComponentName() + ".worthiness" | translate }}</label>
+
+                  <div class="form-control custom-control">
+                    <span class="alert alert--nok">
+                      {{ mainInfo.worthiness }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ROW 2 -->
+              <div class="row">
+                <div class="form-group">
+                  <label class="form-label">{{ getComponentName() + ".location" | translate }}</label>
+
+                  <div class="form-control">
+                    <input class="aw-input" type="text" disabled [(ngModel)]="mainInfo.location" />
+                    <i>{{ mainInfo.warehouse }}</i>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">{{ getComponentName() + ".emplacement" | translate }}</label>
+
+                  <div class="form-control">
+                    <input class="aw-input" type="text" disabled [(ngModel)]="mainInfo.emplacement" />
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">{{ getComponentName() + ".operationalStatus" | translate }}</label>
+
+                  <div class="form-control">
+                    <input class="aw-input" type="text" disabled [(ngModel)]="mainInfo.operationalStatus" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- NEXT DUE DATE -->
+        <div #dueDate class="grid-cell--6" (click)="selectPageTocEntry(component.DUE_DATE_ANCHOR_ID)">
+          <div
+            class="grid-cell grid-cell--container"
+            [ngClass]="{ active: isPageTocEntrySelected(component.DUE_DATE_ANCHOR_ID) }"
+          >
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">
+                  {{ getComponentName() + ".nextDueDate" | translate }}
+                </h3>
+              </div>
+            </div>
+
+            <div class="grid-cell-content">
+              <p-table
+                [resizableColumns]="true"
+                #ptableResult
+                class="aw-table2"
+                [columns]="dueDateTableCols"
+                [value]="dueDateTable"
+                [scrollable]="true"
+              >
+                <ng-template pTemplate="emptymessage">
+                  <span *ngIf="!isLoading"> &nbsp;</span>
+
+                  <div *ngIf="isLoading" class="aw-table-loading-indicator">
+                    <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                    <div class="lds-hourglass"></div>
+                  </div>
+                </ng-template>
+
+                <ng-template pTemplate="colgroup" let-columns>
+                  <colgroup>
+                    <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                  </colgroup>
+                </ng-template>
+
+                <ng-template pTemplate="header" let-columns>
+                  <tr>
+                    <th pResizableColumn *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                      {{ componentData.componentId + "." + col.field | translate }}
+                    </th>
+                  </tr>
+                </ng-template>
+
+                <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                  <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                    <td *ngFor="let col of columns" [ngSwitch]="col.field" [ngStyle]="{ 'text-align': col.alignment }">
+                      <span *ngSwitchDefault>{{ rowData[col.field] }}</span>
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </div>
+        </div>
+
+        <!-- LOGISTICS RECEPTION -->
+        <div #reception class="grid-cell--6" (click)="selectPageTocEntry(component.RECEPTION_ANCHOR_ID)">
+          <div
+            class="grid-cell grid-cell--container"
+            [ngClass]="{ active: isPageTocEntrySelected(component.RECEPTION_ANCHOR_ID) }"
+          >
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">
+                  {{ getComponentName() + ".logisticsReception" | translate }}
+                </h3>
+              </div>
+            </div>
+
+            <div class="grid-cell-content">
+              <!-- ROW 1 -->
+              <div class="row">
+                <div class="form-group">
+                  <label class="form-label">{{ getComponentName() + ".fileNumber" | translate }}</label>
+
+                  <div class="form-control custom-control">
+                    <a>{{ mainInfo.fileNumber }}</a>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">{{ getComponentName() + ".type" | translate }}</label>
+
+                  <div class="form-control">
+                    <input class="aw-input" type="text" disabled [(ngModel)]="mainInfo.type" />
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">{{ getComponentName() + ".status" | translate }}</label>
+
+                  <div class="form-control">
+                    <input class="aw-input" type="text" disabled [(ngModel)]="mainInfo.status" />
+                  </div>
+                </div>
+              </div>
+
+              <!-- ROW 2 -->
+              <div class="row">
+                <div class="form-group">
+                  <label class="form-label">{{ getComponentName() + ".location" | translate }}</label>
+
+                  <div class="form-control">
+                    <input class="aw-input" type="text" disabled [(ngModel)]="mainInfo.logisticLocation" />
+                    <i>{{ mainInfo.warehouse }}</i>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">{{ getComponentName() + ".releaseBy" | translate }}</label>
+
+                  <div class="form-control">
+                    <input class="aw-input" type="text" disabled [(ngModel)]="mainInfo.releaseBy" />
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">{{ getComponentName() + ".date" | translate }}</label>
+
+                  <div class="form-control">
+                    <p-calendar
+                      showButtonBar="true"
+                      [monthNavigator]="true"
+                      [yearNavigator]="true"
+                      [yearRange]="sessionService.calendarYearRange"
+                      class="aw-calendar"
+                      [dateFormat]="sessionService.dateFormatPrimeNG"
+                      [locale]="sessionService.calendarFormat"
+                      [(ngModel)]="mainInfo.date"
+                      disabled
+                      appendTo="body"
+                    ></p-calendar>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SUB ASSEMBLY AND APPLIED CONF -->
+        <div class="grid-cell--6">
+          <div class="row">
+            <div
+              #subAssembly
+              class="grid-cell--6 custom-height sub-assembly-padding"
+              (click)="selectPageTocEntry(component.SUB_ASSEMBLY_ANCHOR_ID)"
+            >
+              <div
+                class="grid-cell grid-cell--container"
+                [ngClass]="{ active: isPageTocEntrySelected(component.SUB_ASSEMBLY_ANCHOR_ID) }"
+              >
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ getComponentName() + ".subsets" | translate }}
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <div class="column">
+                    <div class="chart-container">
+                      <div class="chart-wrapper">
+                        <p-chart
+                          [type]="chartType"
+                          [data]="chartData"
+                          [options]="chartOptions"
+                          width="100%"
+                          height="100%"
+                        ></p-chart>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="column legant-width">
+                    <div class="chart-legend">
+                      <div class="chart-legend-label">
+                        <div class="chart-legend-label-color completed"></div>
+                        {{ chartData.labels[0] }}
+                        <span class="chart-value">{{ navigable }} </span>
+                      </div>
+
+                      <div class="chart-legend-label">
+                        <div class="chart-legend-label-color warning"></div>
+                        {{ chartData.labels[1] }}
+                        <span class="chart-value">{{ navigableWithAlerts }} </span>
+                      </div>
+
+                      <div class="chart-legend-label">
+                        <div class="chart-legend-label-color not-completed"></div>
+                        {{ chartData.labels[2] }}
+                        <span class="chart-value">{{ nonNavigable }} </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              #appliedConf
+              class="grid-cell--6 custom-height applied-conf-padding"
+              (click)="selectPageTocEntry(component.APPLIED_CONF_ANCHOR_ID)"
+            >
+              <div
+                class="grid-cell grid-cell--container custom-width"
+                [ngClass]="{ active: isPageTocEntrySelected(component.APPLIED_CONF_ANCHOR_ID) }"
+              >
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ getComponentName() + ".applicableConfiguration" | translate }}
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content grid-cell-content-with-section">
+                  <div class="section">
+                    <div class="section-content">
+                      <div class="row flex-row--justify-end">
+                        <button type="button" mat-raised-button (click)="openConfControl()">
+                          {{ "global.open" | translate }}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="column">
+                    <div class="section margin-top-custom">
+                      <div class="section-content">
+                        <div class="row">
+                          <div class="table-summary-wrapper">
+                            <p-table
+                              [resizableColumns]="true"
+                              class="aw-table-control-summary aw-table-control-summary-single-row"
+                              [value]="configurationControlTable"
+                            >
+                              <ng-template pTemplate="colgroup">
+                                <colgroup>
+                                  <col [ngStyle]="{ width: '33%' }" />
+                                  <col [ngStyle]="{ width: '33%' }" />
+                                  <col [ngStyle]="{ width: '33%' }" />
+                                </colgroup>
+                              </ng-template>
+
+                              <ng-template pTemplate="header" let-columns>
+                                <tr>
+                                  <th [ngStyle]="{ 'text-align': 'center' }">
+                                    {{ getComponentName() + ".ok" | translate }}
+                                  </th>
+                                  <th [ngStyle]="{ 'text-align': 'center' }">
+                                    {{ getComponentName() + ".warning" | translate }}
+                                  </th>
+                                  <th [ngStyle]="{ 'text-align': 'center' }">
+                                    {{ getComponentName() + ".nok" | translate }}
+                                  </th>
+                                </tr>
+                              </ng-template>
+
+                              <ng-template pTemplate="body" let-columns="columns" let-rowData>
+                                <tr>
+                                  <td [ngStyle]="{ 'text-align': 'center' }">
+                                    <span
+                                      class="control-result"
+                                      [ngClass]="{
+                                        ok: rowData['nok'] == 0 && rowData['warning'] == 0 && rowData['ok'] >= 0
+                                      }"
+                                    >
+                                      {{ rowData["ok"] }}
+                                    </span>
+                                  </td>
+                                  <td [ngStyle]="{ 'text-align': 'center' }">
+                                    <span
+                                      class="control-result"
+                                      [ngClass]="{ warning: rowData['nok'] == 0 && rowData['warning'] > 0 }"
+                                    >
+                                      {{ rowData["warning"] }}
+                                    </span>
+                                  </td>
+                                  <td [ngStyle]="{ 'text-align': 'center' }">
+                                    <span class="control-result" [ngClass]="{ nok: rowData['nok'] > 0 }">
+                                      {{ rowData["nok"] }}
+                                    </span>
+                                  </td>
+                                </tr>
+                              </ng-template>
+                            </p-table>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Opearations -->
+        <div #operation class="grid-cell--12" (click)="selectPageTocEntry(component.OPERATION_ANCHOR_ID)">
+          <div
+            class="grid-cell grid-cell--container"
+            [ngClass]="{ active: isPageTocEntrySelected(component.OPERATION_ANCHOR_ID) }"
+          >
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">
+                  {{ getComponentName() + ".operations" | translate }} ({{ operationTable.length }})
+                </h3>
+              </div>
+            </div>
+
+            <div class="grid-cell-content">
+              <div class="row">
+                <div class="form-group">
+                  <label class="form-label">{{ getComponentName() + ".wp" | translate }}</label>
+
+                  <div class="form-control custom-control">
+                    <a>{{ mainInfo.wp }}</a>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">{{ getComponentName() + ".mroCenter" | translate }}</label>
+
+                  <div class="form-control custom-control">
+                    <b>{{ mainInfo.mroCenter }}</b>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">{{ getComponentName() + ".wo" | translate }}</label>
+
+                  <div class="form-control custom-control">
+                    <a>{{ mainInfo.wo }}</a>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">{{ getComponentName() + ".technicalAcceptanceTask" | translate }}</label>
+
+                  <div class="form-control custom-control">
+                    <a>{{ mainInfo.taskAcceptance }}</a>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">{{ getComponentName() + ".status" | translate }}</label>
+
+                  <div class="form-control custom-control">
+                    <b>{{ mainInfo.status }}</b>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">{{ getComponentName() + ".progress" | translate }}</label>
+
+                  <div class="form-control custom-control">
+                    <p-progressBar [value]="mainInfo.progress"></p-progressBar>
+                  </div>
+                </div>
+              </div>
+              <p-table
+                [resizableColumns]="true"
+                #ptableResults
+                class="aw-table2"
+                [value]="operationTable"
+                [columns]="operationTableCols"
+                [scrollable]="true"
+                selectionMode="checkbox"
+                [(selection)]="selectedOperations"
+                dataKey="bireOpeCode"
+              >
+                <ng-template pTemplate="emptymessage">
+                  <span *ngIf="!isLoadingOperationTable"> &nbsp;</span>
+
+                  <div *ngIf="isLoadingOperationTable" class="aw-table-loading-indicator">
+                    <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                    <div class="lds-hourglass"></div>
+                  </div>
+                </ng-template>
+
+                <ng-template pTemplate="caption">
+                  <div class="aw-table-header">
+                    <div class="aw-table-global-filter">
+                      <label class="aw-table-global-filter-label">
+                        <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                      </label>
+
+                      <input
+                        #ptableResultsGlobalFilter
+                        class="aw-table-global-filter-input"
+                        type="text"
+                        placeholder="{{ 'table.globalFilterText' | translate }}"
+                        (input)="ptableResults.filterGlobal($event.target.value, 'contains')"
+                      />
+                    </div>
+
+                    <div class="aw-table-actions">
+                      <button
+                        *ngIf="selectedOperations.length === 1 && !isReadOpenMode"
+                        type="button"
+                        mat-raised-button
+                      >
+                        {{ componentData.componentId + ".editDuration" | translate }}
+                      </button>
+
+                      <button
+                        *ngIf="selectedOperations.length === 1 && !isReadOpenMode"
+                        type="button"
+                        mat-raised-button
+                      >
+                        {{ componentData.componentId + ".opeLog" | translate }}
+                      </button>
+
+                      <button
+                        *ngIf="selectedOperations.length > 0 && !isReadOpenMode"
+                        type="button"
+                        mat-raised-button
+                        color="warn"
+                        (click)="deleteOperation()"
+                      >
+                        {{ "global.delete" | translate }}
+                      </button>
+
+                      <div class="form-control">
+                        <p-selectButton
+                          class="woDisplayType-btn"
+                          [(ngModel)]="tableDisplayType"
+                          [options]="tableDisplayTypeList"
+                        ></p-selectButton>
+                      </div>
+                    </div>
+                  </div>
+                </ng-template>
+
+                <ng-template pTemplate="colgroup" let-columns>
+                  <colgroup>
+                    <col class="aw-table-checkbox-wrapper" />
+                    <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                  </colgroup>
+                </ng-template>
+
+                <ng-template pTemplate="header" let-columns>
+                  <tr>
+                    <th class="aw-table-checkbox-wrapper">
+                      <p-tableHeaderCheckbox class="aw-table-checkbox"></p-tableHeaderCheckbox>
+                    </th>
+
+                    <th pResizableColumn *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                      {{ componentData.componentId + "." + col.field | translate }}
+                    </th>
+                    <th [ngStyle]="{ width: '5%', 'text-align': 'center' }" *ngIf="woStatus.isCritical === true">
+                      {{ componentData.componentId + ".check" | translate }}
+                    </th>
+                    <th [ngStyle]="{ width: '2.5%', 'text-align': 'left' }"></th>
+                  </tr>
+                </ng-template>
+
+                <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                  <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                    <td class="aw-table-checkbox-wrapper">
+                      <p-tableCheckbox class="aw-table-checkbox" [value]="rowData"></p-tableCheckbox>
+                    </td>
+
+                    <td *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }" [ngSwitch]="col.field">
+                      <span *ngSwitchCase="'sequence'">{{ rowData["opeSequence"] }}</span>
+
+                      <a *ngSwitchCase="'bireOpeCode'" (click)="openOperationUC(rowData)"
+                        >{{ rowData[col.field] }}-{{ rowData["bireOpeVersion"] }}</a
+                      >
+
+                      <span *ngSwitchCase="'opePerformedDuration'">
+                        <span
+                          *ngIf="
+                            rowData['isOpeOnPerformed'] === false &&
+                            rowData['opeStatus'] !== awPropertiesConstants.AIRM_OPERATION_STATUS_PERFORMED &&
+                            rowData['opeStatus'] !== awPropertiesConstants.AIRM_OPERATION_STATUS_CLOSE &&
+                            !isReadOpenMode
+                          "
+                          (click)="startOrEndDuration(rowData)"
+                        >
+                          <i class="fa fa-play" aria-hidden="true"></i>
+
+                          <a>
+                            {{ rowData["opePerformedDurationDisplay"] }}
+                          </a>
+                        </span>
+
+                        <span
+                          *ngIf="
+                            rowData['isOpeOnPerformed'] === true &&
+                            rowData['opeStatus'] !== awPropertiesConstants.AIRM_OPERATION_STATUS_PERFORMED &&
+                            rowData['opeStatus'] !== awPropertiesConstants.AIRM_OPERATION_STATUS_CLOSE
+                          "
+                          (click)="startOrEndDuration(rowData)"
+                        >
+                          <i class="fa fa-stop" aria-hidden="true"></i>
+
+                          <a style="color: rgb(0, 200, 0); font-weight: bold">
+                            {{ rowData["opePerformedDurationDisplay"] }}
+                          </a>
+                        </span>
+
+                        <span
+                          *ngIf="
+                            (rowData['isOpeOnPerformed'] === false &&
+                              (rowData['opeStatus'] === awPropertiesConstants.AIRM_OPERATION_STATUS_PERFORMED ||
+                                rowData['opeStatus'] === awPropertiesConstants.AIRM_OPERATION_STATUS_CLOSE)) ||
+                            isReadOpenMode
+                          "
+                        >
+                          <i class="fa fa-play" aria-hidden="true"></i>
+
+                          <span>
+                            {{ rowData["opePerformedDurationDisplay"] }}
+                          </span>
+                        </span>
+                      </span>
+
+                      <span *ngSwitchCase="'opePerformedElapsed'">
+                        <span *ngIf="rowData['isOpeOnElapsed'] === false">
+                          {{ rowData["opePerformedElapsedDisplay"] }}
+                        </span>
+
+                        <span *ngIf="rowData['isOpeOnElapsed'] === true" (click)="startOrEndElapsed(rowData)">
+                          <i class="fa fa-stop" aria-hidden="true"></i>
+
+                          <a style="color: rgb(0, 200, 0); font-weight: bold">
+                            {{ rowData["opePerformedElapsedDisplay"] }}
+                          </a>
+                        </span>
+                      </span>
+
+                      <span *ngSwitchCase="'achievement'">
+                        <span
+                          *ngIf="
+                            rowData['opeStatus'] !== awPropertiesConstants.AIRM_OPERATION_STATUS_PERFORMED &&
+                            rowData['opeStatus'] !== awPropertiesConstants.AIRM_OPERATION_STATUS_CLOSE &&
+                            woStatus.status !== awPropertiesConstants.AIRM_OPERATION_STATUS_CLOSE
+                          "
+                        >
+                          <i class="fa fa-unlock" aria-hidden="true" *ngIf="isReadOpenMode"></i>
+                          <i
+                            class="fa fa-unlock"
+                            aria-hidden="true"
+                            *ngIf="!isReadOpenMode"
+                            (click)="performOperation(rowData, false)"
+                          ></i>
+                        </span>
+
+                        <span
+                          *ngIf="
+                            rowData['opeStatus'] === awPropertiesConstants.AIRM_OPERATION_STATUS_PERFORMED &&
+                            woStatus.status !== awPropertiesConstants.AIRM_OPERATION_STATUS_CLOSE &&
+                            woStatus.status !== awPropertiesConstants.AIRM_OPERATION_STATUS_PERFORMED
+                          "
+                        >
+                          <i class="fa fa-unlock-alt" aria-hidden="true" *ngIf="isReadOpenMode"></i>
+                          <i
+                            class="fa fa-unlock-alt"
+                            aria-hidden="true"
+                            *ngIf="!isReadOpenMode"
+                            (click)="performOperation(rowData, false)"
+                          ></i>
+                        </span>
+
+                        <span
+                          *ngIf="
+                            rowData['opeStatus'] === awPropertiesConstants.AIRM_OPERATION_STATUS_CLOSE &&
+                            woStatus.status !== awPropertiesConstants.AIRM_OPERATION_STATUS_CLOSE &&
+                            woStatus.status !== awPropertiesConstants.AIRM_OPERATION_STATUS_PERFORMED
+                          "
+                        >
+                          <i class="fa fa-lock" aria-hidden="true" *ngIf="isReadOpenMode"></i>
+                          <i
+                            class="fa fa-lock"
+                            aria-hidden="true"
+                            *ngIf="!isReadOpenMode"
+                            (click)="performOperation(rowData, false)"
+                          ></i>
+                        </span>
+
+                        <span
+                          *ngIf="
+                            (rowData['opeStatus'] === awPropertiesConstants.AIRM_OPERATION_STATUS_CLOSE ||
+                              rowData['opeStatus'] === awPropertiesConstants.AIRM_OPERATION_STATUS_PERFORMED) &&
+                            (woStatus.status === awPropertiesConstants.AIRM_OPERATION_STATUS_CLOSE ||
+                              woStatus.status === awPropertiesConstants.AIRM_OPERATION_STATUS_PERFORMED)
+                          "
+                        >
+                          <i class="fa fa-check" aria-hidden="true"></i>
+                        </span>
+                      </span>
+
+                      <p-progressBar
+                        *ngSwitchCase="'opeStatusDisplay'"
+                        [ngClass]="rowData[col.field]"
+                        [value]="rowData['opeStatusPercent']"
+                      >
+                      </p-progressBar>
+
+                      <span *ngSwitchDefault> {{ rowData[col.field] }} </span>
+                    </td>
+
+                    <td [ngStyle]="{ width: '5%', 'text-align': 'center' }" *ngIf="woStatus.isCritical === true">
+                      <span
+                        *ngIf="
+                          rowData['opeStatus'] === awPropertiesConstants.AIRM_OPERATION_STATUS_PERFORMED &&
+                          woStatus.status === awPropertiesConstants.AIRM_OPERATION_STATUS_PERFORMED &&
+                          rowData['isCriticalTask'] === true
+                        "
+                      >
+                        <i class="fa fa-times" aria-hidden="true" *ngIf="isReadOpenMode"></i>
+                        <i
+                          class="fa fa-times"
+                          aria-hidden="true"
+                          *ngIf="!isReadOpenMode"
+                          (click)="checkOperation(rowData, false)"
+                        ></i>
+                      </span>
+
+                      <span
+                        *ngIf="
+                          rowData['opeStatus'] === awPropertiesConstants.AIRM_OPERATION_STATUS_CLOSE &&
+                          woStatus.status === awPropertiesConstants.AIRM_OPERATION_STATUS_PERFORMED &&
+                          rowData['isCriticalTask'] === true
+                        "
+                      >
+                        <i class="fa fa-check" aria-hidden="true" *ngIf="isReadOpenMode"></i>
+                        <i
+                          class="fa fa-check"
+                          aria-hidden="true"
+                          *ngIf="!isReadOpenMode"
+                          (click)="checkOperation(rowData, false)"
+                        ></i>
+                      </span>
+
+                      <span
+                        *ngIf="
+                          rowData['opeStatus'] === awPropertiesConstants.AIRM_OPERATION_STATUS_CLOSE &&
+                          woStatus.status === awPropertiesConstants.AIRM_OPERATION_STATUS_CLOSE &&
+                          rowData['isCriticalTask'] === true
+                        "
+                      >
+                        <i class="fa fa-check" aria-hidden="true" *ngIf="isReadOpenMode"></i>
+                        <i class="fa fa-check" aria-hidden="true" *ngIf="!isReadOpenMode"></i>
+                      </span>
+                    </td>
+
+                    <td
+                      class="row-expand-wrapper"
+                      [pRowToggler]="rowData"
+                      [ngStyle]="{ width: '2.5%', 'text-align': 'center' }"
+                    >
+                      <i
+                        class="fa fa-fw aw-icon aw-icon-with-border"
+                        [ngClass]="rowData._expand ? 'fa-minus' : 'fa-plus'"
+                        aria-hidden="true"
+                        pTooltip="{{ 'global.showTableRowDetails' | translate }}"
+                        tooltipPosition="top"
+                        (click)="toggleWorkPackageExpand(rowData)"
+                      ></i>
+                    </td>
+                  </tr>
+                </ng-template>
+
+                <ng-template pTemplate="rowexpansion" let-rowData let-columns="columns">
+                  <tr class="row-expanded">
+                    <td [attr.colspan]="columns.length + 2">
+                      <div class="column forced-backgroung">
+                        <div class="row">
+                          <div class="form-group">
+                            <label class="form-label">
+                              {{ getComponentName() + "." + "startDate" | translate }}
+                            </label>
+                            <div class="form-control">
+                              <input
+                                type="text"
+                                class="aw-input"
+                                [disabled]="true"
+                                [(ngModel)]="rowData.opeStartDateDisplay"
+                              />
+                            </div>
+                          </div>
+
+                          <div class="form-group">
+                            <label class="form-label">
+                              {{ getComponentName() + "." + "performedOn" | translate }}
+                            </label>
+                            <div class="form-control">
+                              <input
+                                type="text"
+                                class="aw-input"
+                                [disabled]="true"
+                                [(ngModel)]="rowData.opePerformedOnDisplay"
+                              />
+                            </div>
+                          </div>
+
+                          <div class="form-group">
+                            <label class="form-label">
+                              {{ getComponentName() + "." + "performedBy" | translate }}
+                            </label>
+                            <div class="form-control">
+                              <input
+                                type="text"
+                                class="aw-input"
+                                [disabled]="true"
+                                [(ngModel)]="rowData.opePerformedLastByDisplay"
+                              />
+                            </div>
+                          </div>
+
+                          <div class="form-group">
+                            <label class="form-label">
+                              {{ getComponentName() + "." + "checkedOn" | translate }}
+                            </label>
+                            <div class="form-control">
+                              <input
+                                type="text"
+                                class="aw-input"
+                                [disabled]="true"
+                                [(ngModel)]="rowData.opeCheckOnDisplay"
+                              />
+                            </div>
+                          </div>
+
+                          <div class="form-group">
+                            <label class="form-label">
+                              {{ getComponentName() + "." + "checkedBy" | translate }}
+                            </label>
+                            <div class="form-control">
+                              <input
+                                type="text"
+                                class="aw-input"
+                                [disabled]="true"
+                                [(ngModel)]="rowData.opeCheckByDisplay"
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="row">
+                          <div class="form-group">
+                            <label class="form-label">
+                              {{ getComponentName() + "." + "stdDuration" | translate }}
+                            </label>
+                            <div class="form-control">
+                              <input
+                                type="text"
+                                class="aw-input"
+                                [disabled]="true"
+                                [(ngModel)]="rowData.opeStdDurationDisplay"
+                              />
+                            </div>
+                          </div>
+
+                          <div class="form-group">
+                            <label class="form-label">
+                              {{ getComponentName() + "." + "qualification" | translate }}
+                            </label>
+                            <div class="form-control">
+                              <input
+                                type="text"
+                                class="aw-input"
+                                [disabled]="true"
+                                [(ngModel)]="rowData.opeQualification"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </div>
+        </div>
+
+        <!-- COMMENTS -->
+        <div #comment class="grid-cell--6" (click)="selectPageTocEntry(component.COMMENT_ANCHOR_ID)">
+          <div
+            class="grid-cell grid-cell--container"
+            [ngClass]="{ active: isPageTocEntrySelected(component.COMMENT_ANCHOR_ID) }"
+          >
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">
+                  {{ getComponentName() + ".comments" | translate }}
+                </h3>
+              </div>
+            </div>
+
+            <div class="grid-cell-content  grid-cell-content-with-section">
+              <div class="aw-table-actions action-list">
+                <button
+                  *ngIf="!isCommentEdit && !isReadOpenMode"
+                  type="button"
+                  mat-raised-button
+                  (click)="editComments()"
+                >
+                  {{ "global.edit" | translate }}
+                </button>
+
+                <button *ngIf="isCommentEdit" type="button" color="primary" mat-raised-button (click)="saveComents()">
+                  {{ "global.save" | translate }}
+                </button>
+              </div>
+              <div class="column">
+                <div class="row">
+                  <!-- Comments -->
+                  <div class="form-group  grid-cell--6" [ngClass]="{ required: !isCommentEdit }">
+                    <div class="form-control">
+                      <textarea
+                        class="aw-textarea"
+                        [rows]="2"
+                        pInputTextarea
+                        [(ngModel)]="woComments"
+                        [disabled]="!isCommentEdit"
+                      ></textarea>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Additional Work -->
+        <div #additionalWork class="grid-cell--6" (click)="selectPageTocEntry(component.ADDITIONAL_WORK_ANCHOR_ID)">
+          <div
+            class="grid-cell grid-cell--container"
+            [ngClass]="{ active: isPageTocEntrySelected(component.ADDITIONAL_WORK_ANCHOR_ID) }"
+          >
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">
+                  {{ getComponentName() + ".additionalWork" | translate }}
+                </h3>
+              </div>
+            </div>
+
+            <div class="grid-cell-content  grid-cell-content-with-section">
+              <div class="aw-table-actions action-list">
+                <button
+                  *ngIf="!isCommentEdit && !isReadOpenMode"
+                  type="button"
+                  mat-raised-button
+                  (click)="editComments()"
+                >
+                  {{ "global.edit" | translate }}
+                </button>
+
+                <button *ngIf="isCommentEdit" type="button" color="primary" mat-raised-button (click)="saveComents()">
+                  {{ "global.save" | translate }}
+                </button>
+              </div>
+              <div class="column">
+                <div class="row">
+                  <!-- Comments -->
+                  <div class="form-group  grid-cell--6" [ngClass]="{ required: !isCommentEdit }">
+                    <div class="form-control">
+                      <textarea
+                        class="aw-textarea"
+                        [rows]="2"
+                        pInputTextarea
+                        [(ngModel)]="woComments"
+                        [disabled]="!isCommentEdit"
+                      ></textarea>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<aw-dialog-validate-technical-condition
+  *ngIf="showValidateTechnicalConditionDialog"
+  [(display)]="showValidateTechnicalConditionDialog"
+  (onValidated)="onValidateTechnicalCondition($event)"
+></aw-dialog-validate-technical-condition>

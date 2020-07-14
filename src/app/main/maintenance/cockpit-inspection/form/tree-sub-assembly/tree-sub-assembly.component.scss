@@ -1,0 +1,98 @@
+@import "constants";
+@import "mixins";
+@import "modifiers";
+
+:host {
+  .list-with-details {
+    .details,
+    .list {
+      max-height: 50rem;
+    }
+
+    .details {
+      flex-grow: 1;
+
+      .item-structure-node-action-list {
+        justify-content: flex-end;
+
+        & > button {
+          margin-right: $margin-value;
+
+          &:last-of-type {
+            margin-right: 0;
+          }
+        }
+      }
+
+      .item-structure-node-image {
+        & > img {
+          max-width: 100%;
+          min-width: 100%;
+        }
+      }
+    }
+
+    .list {
+      min-width: 25rem;
+    }
+  }
+
+  ::ng-deep .chapter {
+    display: inline-block;
+    color: #01579b;
+    font-weight: 600;
+  }
+
+  ::ng-deep .info {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .illustration {
+    text-align: center;
+  }
+
+  .img-class {
+    max-height: 3rem;
+    cursor: pointer;
+  }
+
+  /deep/ p-progressbar.pla .ui-progressbar-value {
+    background: $grey1;
+  }
+  /deep/ p-progressbar.ong .ui-progressbar-value {
+    background: $blue-light1;
+  }
+  /deep/ p-progressbar.tbc .ui-progressbar-value {
+    background: $blue-light1;
+  }
+  /deep/ p-progressbar.per .ui-progressbar-value {
+    background: $blue-dark1;
+  }
+  /deep/ p-progressbar.clo .ui-progressbar-value {
+    background: $green-light1;
+  }
+  /deep/ p-progressbar.pos .ui-progressbar-value {
+    background: $green-light1;
+  }
+  /deep/ p-progressbar.por .ui-progressbar-value {
+    background: $yellow1;
+  }
+
+  .loader {
+    position: absolute;
+    right: 2em;
+    z-index: 1000;
+    top: 1.5em;
+  }
+
+  .item-class {
+    display: inline-grid;
+  }
+
+  .action-button {
+    width: 50%;
+    margin: 0 auto;
+  }
+}

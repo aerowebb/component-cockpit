@@ -1,0 +1,371 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div *ngIf="operationalFlag" class="modal-title">
+      {{ getComponentName() + ".changeOperationalSatus" | translate }}
+    </div>
+    <div *ngIf="familyFlag" class="modal-title">{{ getComponentName() + ".changeFamilyVariant" | translate }}</div>
+    <div *ngIf="snFlag" class="modal-title">{{ getComponentName() + ".changeSerialNumber" | translate }}</div>
+    <div *ngIf="registrationFlag" class="modal-title">{{ getComponentName() + ".changeRegistration" | translate }}</div>
+    <div *ngIf="pnFlag" class="modal-title">{{ getComponentName() + ".changePartNumber" | translate }}</div>
+    <div *ngIf="geoFlag" class="modal-title">{{ getComponentName() + ".changeGeoLocation" | translate }}</div>
+    <div *ngIf="ratingFlag" class="modal-title">{{ getComponentName() + ".changeRating" | translate }}</div>
+    <div *ngIf="modelFlag" class="modal-title">{{ getComponentName() + ".changeModel" | translate }}</div>
+  </a-header>
+  <a-content>
+    <div class="search-dialog-container">
+      <div class="section results-section">
+        <h4 class="section-title">
+          {{ getComponentName() + ".information" | translate }}
+        </h4>
+        <div class="grid-row">
+          <div class="form-group ">
+            <label class="form-label"> {{ getComponentName() + ".user" | translate }} </label>
+            <div class="form-control">
+              <input type="text" class="aw-input" [(ngModel)]="editPopupData.statusUser" [disabled]="true" />
+            </div>
+          </div>
+        </div>
+        <div class="grid-row">
+          <div class="form-group">
+            <label class="form-label"> {{ getComponentName() + ".date" | translate }} </label>
+
+            <div class="form-control">
+              <p-calendar
+                showButtonBar="true"
+                [monthNavigator]="true"
+                [yearNavigator]="true"
+                [yearRange]="sessionService.calendarYearRange"
+                showTime="true"
+                class="aw-calendar"
+                (ngModelChange)="reloadvalue()"
+                [dateFormat]="sessionService.dateFormatPrimeNG"
+                [locale]="sessionService.calendarFormat"
+                [disabled]="isReadOpenMode"
+                [(ngModel)]="statusDate"
+                appendTo="body"
+                [maxDate]="maxDate"
+              ></p-calendar>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="section results-section">
+        <h4 *ngIf="operationalFlag" class="section-title">
+          {{ getComponentName() + ".operationalSatus" | translate }}
+        </h4>
+
+        <h4 *ngIf="familyFlag" class="section-title">
+          {{ getComponentName() + ".familyVariant" | translate }}
+        </h4>
+
+        <h4 *ngIf="snFlag" class="section-title">
+          {{ getComponentName() + ".sn" | translate }}
+        </h4>
+        <h4 *ngIf="registrationFlag" class="section-title">
+          {{ getComponentName() + ".registration" | translate }}
+        </h4>
+        <h4 *ngIf="pnFlag" class="section-title">
+          {{ getComponentName() + ".pn" | translate }}
+        </h4>
+        <h4 *ngIf="geoFlag" class="section-title">
+          {{ getComponentName() + ".zone" | translate }}
+        </h4>
+        <h4 *ngIf="ratingFlag" class="section-title">
+          {{ getComponentName() + ".rating" | translate }}
+        </h4>
+        <h4 *ngIf="modelFlag" class="section-title">
+          {{ getComponentName() + ".model" | translate }}
+        </h4>
+        <div class="grid-row">
+          <div class="form-group ">
+            <label class="form-label"> {{ getComponentName() + ".oldValue" | translate }} </label>
+
+            <div *ngIf="operationalFlag" class="form-control">
+              <input type="text" class="aw-input" [disabled]="true" [(ngModel)]="editPopupData.operationalStatus" />
+            </div>
+
+            <div *ngIf="familyFlag" class="form-control">
+              <input type="text" class="aw-input" [disabled]="true" [(ngModel)]="editPopupData.familyVariantCode" />
+            </div>
+
+            <div *ngIf="snFlag" class="form-control">
+              <input type="text" class="aw-input" [disabled]="true" maxlength="35" [(ngModel)]="editPopupData.sn" />
+            </div>
+
+            <div *ngIf="registrationFlag" class="form-control">
+              <input type="text" class="aw-input" [disabled]="true" [(ngModel)]="editPopupData.registration" />
+            </div>
+
+            <div *ngIf="pnFlag" class="form-control">
+              <input type="text" class="aw-input" [disabled]="true" [(ngModel)]="editPopupData.pnCode" />
+            </div>
+            <div *ngIf="geoFlag" class="form-control">
+              <input type="text" class="aw-input" [disabled]="true" [(ngModel)]="editPopupData.zone" />
+            </div>
+            <div *ngIf="ratingFlag" class="form-control">
+              <input type="text" class="aw-input" [disabled]="true" [(ngModel)]="rating" />
+            </div>
+            <div *ngIf="modelFlag" class="form-control">
+              <input type="text" class="aw-input" [disabled]="true" [(ngModel)]="modelCode" />
+            </div>
+          </div>
+        </div>
+        <div class="grid-row">
+          <div class="form-group general-field">
+            <label class="form-label"> {{ getComponentName() + ".newValue" | translate }} </label>
+
+            <div *ngIf="operationalFlag" class="form-control">
+              <p-dropdown
+                class="aw-dropdown fixed-width"
+                [options]="propertyOperationalStatus"
+                [showClear]="true"
+                [(ngModel)]="formData.operationalStatus"
+                placeholder="&nbsp;"
+                [disabled]="isReadOpenMode"
+                appendTo="body"
+              ></p-dropdown>
+            </div>
+
+            <div
+              *ngIf="familyFlag"
+              class="form-control form-control-with-modal"
+              [ngClass]="{ disabled: isReadOpenMode }"
+            >
+              <div class="form-control-data" (click)="searchFamilyCode()">
+                {{ formData.familyVariantCode }}
+              </div>
+              <div class="btn-search-wrapper">
+                <i class="fa fa-fw fa-search aw-icon btn-search" aria-hidden="true" (click)="searchFamilyCode()"></i>
+              </div>
+            </div>
+
+            <div *ngIf="snFlag" class="form-control">
+              <input
+                type="text"
+                maxlength="35"
+                class="aw-input"
+                [disabled]="isReadOpenMode"
+                [(ngModel)]="formData.sn"
+              />
+            </div>
+            <div *ngIf="registrationFlag" class="form-control">
+              <input
+                type="text"
+                maxlength="100"
+                class="aw-input"
+                [disabled]="isReadOpenMode"
+                [(ngModel)]="formData.registration"
+              />
+            </div>
+
+            <div *ngIf="pnFlag" class="form-control form-control-with-modal" [ngClass]="{ disabled: isReadOpenMode }">
+              <div class="form-control-data" (click)="searchPNCode()">
+                {{ formData.pnCode }}
+              </div>
+              <div class="btn-search-wrapper">
+                <i class="fa fa-fw fa-search aw-icon btn-search" aria-hidden="true" (click)="searchPNCode()"></i>
+              </div>
+            </div>
+
+            <div
+              *ngIf="ratingFlag"
+              class="form-control form-control-with-modal"
+              [ngClass]="{ disabled: isReadOpenMode }"
+            >
+              <div class="form-control-data" (click)="searchRatingCode()">
+                {{ engineData.ratingCode }}
+              </div>
+              <div class="btn-search-wrapper">
+                <i class="fa fa-fw fa-search aw-icon btn-search" aria-hidden="true" (click)="searchRatingCode()"></i>
+              </div>
+            </div>
+
+            <div
+              *ngIf="modelFlag"
+              class="form-control form-control-with-modal"
+              [ngClass]="{ disabled: isReadOpenMode }"
+            >
+              <div class="form-control-data" (click)="searchModelCode()">
+                {{ engineData.modelCode }}
+              </div>
+              <div class="btn-search-wrapper">
+                <i class="fa fa-fw fa-search aw-icon btn-search" aria-hidden="true" (click)="searchModelCode()"></i>
+              </div>
+            </div>
+
+            <div *ngIf="geoFlag" class="form-control">
+              <p-dropdown
+                class="aw-dropdown fixed-width"
+                [options]="propertyZones"
+                [showClear]="true"
+                (onChange)="changeZone()"
+                [(ngModel)]="formData.zone"
+                placeholder="&nbsp;"
+                [disabled]="isReadOpenMode"
+                appendTo="body"
+              ></p-dropdown>
+            </div>
+          </div>
+        </div>
+        <h4 *ngIf="geoFlag" class="section-title">
+          {{ getComponentName() + ".country" | translate }}
+        </h4>
+
+        <div *ngIf="geoFlag" class="grid-row">
+          <div class="form-group ">
+            <label class="form-label"> {{ getComponentName() + ".oldValue" | translate }} </label>
+
+            <div class="form-control">
+              <input type="text" class="aw-input" [disabled]="true" [(ngModel)]="editPopupData.country" />
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="geoFlag" class="grid-row">
+          <div class="form-group general-field">
+            <label class="form-label"> {{ getComponentName() + ".newValue" | translate }} </label>
+
+            <div class="form-control">
+              <p-dropdown
+                class="aw-dropdown fixed-width"
+                [options]="propertyCountries"
+                [showClear]="true"
+                (onChange)="changeCountry()"
+                [(ngModel)]="formData.country"
+                placeholder="&nbsp;"
+                [disabled]="isReadOpenMode"
+                appendTo="body"
+              ></p-dropdown>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="modelFlag" class="section results-section">
+        <h4 class="section-title">
+          {{ getComponentName() + ".evolutionModal" | translate }}
+        </h4>
+        <div class="grid-row">
+          <div class="form-group">
+            <label class="form-label">{{ getComponentName() + ".number" | translate }}</label>
+
+            <div class="form-control form-control-with-modal" [ngClass]="{ disabled: isReadOpenMode }">
+              <div class="form-control-data" (click)="openEvolutionPopup()">
+                {{ modelInputData.sbIntroucingModel.evolutionNumber }}
+              </div>
+
+              <div *ngIf="modelInputData.sbIntroucingModel.evolutionNumber" class="btn-clear-wrapper">
+                <i
+                  class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+                  aria-hidden="true"
+                  (click)="modelInputData.sbIntroucingModel.evolutionNumber = undefined"
+                ></i>
+              </div>
+              <div class="btn-search-wrapper">
+                <i class="fa fa-fw fa-search aw-icon btn-search" aria-hidden="true" (click)="openEvolutionPopup()"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="grid-row">
+          <div class="form-group">
+            <label class="form-label">{{ getComponentName() + ".revisionNumber" | translate }}</label>
+
+            <div class="form-control">
+              <input
+                type="text"
+                class="aw-input"
+                [(ngModel)]="modelInputData.sbIntroucingModel.evolutionRevisionNumber"
+                [disabled]="true"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="modelFlag" class="section results-section">
+        <h4 class="section-title">
+          {{ getComponentName() + ".pn" | translate }}
+        </h4>
+        <div class="grid-row">
+          <div class="form-group general-field">
+            <label class="form-label"> {{ getComponentName() + ".partNumber" | translate }} </label>
+            <div class="form-control form-control-with-modal" [ngClass]="{ disabled: isReadOpenMode }">
+              <div class="form-control-data" (click)="searchPNCode()">
+                {{ modelInputData.pnCode }}
+              </div>
+              <div class="btn-search-wrapper">
+                <i class="fa fa-fw fa-search aw-icon btn-search" aria-hidden="true" (click)="searchPNCode()"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button type="button" mat-raised-button (click)="closeDialog()">
+      <i class="fa fa-fw fa-times" aria-hidden="true"></i> <span>{{ "global.cancel" | translate }}</span>
+    </button>
+    <button
+      type="button"
+      color="primary"
+      class="btn-with-spinner"
+      [disabled]="isChecked()"
+      mat-raised-button
+      (click)="onValidate()"
+    >
+      <span class="lds-hourglass" *ngIf="showValidateSpinner"></span>
+      <i class="fa fa-fw fa-check" aria-hidden="true"></i> <span>{{ "global.validate" | translate }}</span>
+    </button>
+  </a-footer>
+</a-modal>
+
+<aw-dialog-table
+  *ngIf="showFamilyCodeDialog"
+  [keyMap]="keyMap"
+  [(display)]="showFamilyCodeDialog"
+  [data]="dialogTableDataFamilyCode"
+  (onSelected)="setSelectedFamilyCode($event)"
+></aw-dialog-table>
+
+<aw-dialog-search-pn
+  *ngIf="showPnCodeDialog"
+  [(display)]="showPnCodeDialog"
+  (onSelected)="setSelectedPnCode($event)"
+  [familyVariant]="partsSearch.familyVariantSelected"
+  [pnType]="partsSearch.type"
+  [toolSearch]="partsSearch.toolSearch"
+></aw-dialog-search-pn>
+
+<aw-dialog-search-rating
+  [structure-type]="structureType"
+  [family-code]="familyCode"
+  [variant-code]="variantCode"
+  *ngIf="showRatingDialog"
+  [(display)]="showRatingDialog"
+  (onSelected)="onValidateRating($event)"
+>
+</aw-dialog-search-rating>
+
+<aw-dialog-search-model
+  [model-code]="modelCode"
+  [family-code]="familyCode"
+  [variant-code]="variantCode"
+  *ngIf="showModelDialog"
+  [(display)]="showModelDialog"
+  (onSelected)="onValidateModel($event)"
+>
+</aw-dialog-search-model>
+
+<aw-dialog-search-evolution
+  *ngIf="showEvolutionPopup"
+  [(display)]="showEvolutionPopup"
+  [evolutionSource]="evolutionType"
+  [equipmentCode]="editPopupData.equipmentCode"
+  [familyVariantCode]="editPopupData.familyVariantCode"
+  [pnCode]="editPopupData.pnCode"
+  [sn]="editPopupData.sn"
+  (onSelected)="setSelectedCode($event)"
+>
+</aw-dialog-search-evolution>

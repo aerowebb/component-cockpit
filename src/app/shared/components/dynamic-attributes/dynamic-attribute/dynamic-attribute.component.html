@@ -1,0 +1,89 @@
+<!-- ********************************************************************** -->
+<!-- Calendar                                                               -->
+<!-- ********************************************************************** -->
+<div
+  [attr.id]="workflowControl && workflowControl.itemIdentifier"
+  [attr.required]="isRequired()"
+  *ngIf="isCalendarAttribute(attribute)"
+  class="form-group"
+>
+  <label class="form-label">
+    {{ attribute.label }}
+  </label>
+
+  <div class="form-control">
+    <p-calendar
+      showButtonBar="true"
+      [monthNavigator]="true"
+      [yearNavigator]="true"
+      [yearRange]="sessionService.calendarYearRange"
+      class="aw-calendar"
+      [(ngModel)]="attribute.value"
+      [dateFormat]="sessionService.dateFormatPrimeNG"
+      [locale]="sessionService.calendarFormat"
+      [disabled]="isDisabled()"
+    ></p-calendar>
+  </div>
+</div>
+
+<!-- ********************************************************************** -->
+<!-- Checkbox                                                               -->
+<!-- ********************************************************************** -->
+<div
+  [attr.id]="workflowControl && workflowControl.itemIdentifier"
+  [attr.required]="isRequired()"
+  *ngIf="isCheckboxAttribute(attribute)"
+  class="form-group"
+>
+  <label class="form-label">
+    {{ attribute.label }}
+  </label>
+
+  <div class="form-control">
+    <p-checkbox binary="true" class="aw-checkbox" [(ngModel)]="attribute.value" [disabled]="isDisabled()"></p-checkbox>
+  </div>
+</div>
+
+<!-- ********************************************************************** -->
+<!-- Dropdown                                                               -->
+<!-- ********************************************************************** -->
+<div
+  [attr.id]="workflowControl && workflowControl.itemIdentifier"
+  [attr.required]="isRequired()"
+  *ngIf="isDropdownAttribute(attribute)"
+  class="form-group"
+>
+  <label class="form-label">
+    {{ attribute.label }}
+  </label>
+
+  <div class="form-control">
+    <p-dropdown
+      class="aw-dropdown"
+      [(ngModel)]="attribute.value"
+      [options]="attribute.listOptions"
+      placeholder="&nbsp;"
+      [disabled]="isDisabled()"
+      [appendTo]="'body'"
+      [showClear]="true"
+    ></p-dropdown>
+  </div>
+</div>
+
+<!-- ********************************************************************** -->
+<!-- Input                                                                  -->
+<!-- ********************************************************************** -->
+<div
+  [attr.id]="workflowControl && workflowControl.itemIdentifier"
+  [attr.required]="isRequired()"
+  *ngIf="isInputAttribute(attribute)"
+  class="form-group"
+>
+  <label class="form-label">
+    {{ attribute.label }}
+  </label>
+
+  <div class="form-control">
+    <input type="text" class="aw-input" [(ngModel)]="attribute.value" [disabled]="isDisabled()" />
+  </div>
+</div>

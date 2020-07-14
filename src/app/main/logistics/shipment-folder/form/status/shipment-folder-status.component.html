@@ -1,0 +1,113 @@
+<div class="overlay">
+  <div class="stepper">
+    <aw-stepper [steps]="steps"></aw-stepper>
+  </div>
+
+  <div class="status-info" *ngIf="currentStatus === constants.SHIPMENT_FOLDER_STATUS_DRAFT">
+    <p class="bold">
+      {{ getComponentName() + ".draftRow1" | translate }}
+    </p>
+
+    <p class="bold end">
+      {{ getComponentName() + ".draftRow2" | translate }}
+    </p>
+
+    <p>
+      {{ getComponentName() + ".draftRow3" | translate }}
+    </p>
+
+    <div class="actions" *ngIf="isUserCanAddHaveRightOnDeliveryFolder()">
+      <button mat-raised-button (click)="updateStatus(constants.SHIPMENT_FOLDER_STATUS_PLANNED)">
+        {{ getComponentName() + ".passToPlaned" | translate }}
+      </button>
+    </div>
+  </div>
+
+  <div class="status-info" *ngIf="currentStatus === constants.SHIPMENT_FOLDER_STATUS_PLANNED">
+    <p class="bold">
+      {{ getComponentName() + ".scheduledRow1" | translate }}
+    </p>
+
+    <p class="bold end">
+      {{ getComponentName() + ".scheduledRow2" | translate }}
+    </p>
+
+    <p>
+      {{ getComponentName() + ".scheduledRow3" | translate }}
+    </p>
+    <div class="actions" *ngIf="isUserCanAddHaveRightOnDeliveryFolder() && isAllPackageValidated">
+      <button mat-raised-button (click)="updateStatus(constants.SHIPMENT_FOLDER_STATUS_ON_GOING)">
+        {{ getComponentName() + ".passToOnGoing" | translate }}
+      </button>
+    </div>
+  </div>
+
+  <div class="status-info" *ngIf="currentStatus === constants.SHIPMENT_FOLDER_STATUS_ON_GOING">
+    <p class="bold end">
+      {{ getComponentName() + ".ongoingRow1" | translate }}
+    </p>
+
+    <p *ngIf="!isAllPackageValidated">
+      {{ getComponentName() + ".ongoingRow3" | translate }}
+    </p>
+
+    <p *ngIf="isAllPackageValidated">
+      {{ getComponentName() + ".ongoingRow2" | translate }}
+    </p>
+
+    <div class="actions" *ngIf="isUserCanAddHaveRightOnDeliveryFolder() && isAllPackageValidated">
+      <button mat-raised-button (click)="updateStatus(constants.SHIPMENT_FOLDER_STATUS_AWAITING)">
+        {{ getComponentName() + ".passToAwaiting" | translate }}
+      </button>
+    </div>
+  </div>
+
+  <div class="status-info" *ngIf="currentStatus === constants.SHIPMENT_FOLDER_STATUS_AWAITING">
+    <p class="bold end">
+      {{ getComponentName() + ".waitRow1" | translate }}
+    </p>
+
+    <p>
+      {{ getComponentName() + ".waitRow2" | translate }}
+    </p>
+
+    <p>
+      {{ getComponentName() + ".waitRow3" | translate }}
+    </p>
+
+    <div class="actions" *ngIf="isUserCanAddHaveRightOnDeliveryFolder()">
+      <button mat-raised-button (click)="updateStatus(constants.SHIPMENT_FOLDER_STATUS_ON_GOING)">
+        {{ getComponentName() + ".returnToOngoing" | translate }}
+      </button>
+      <button mat-raised-button (click)="updateStatus(constants.SHIPMENT_FOLDER_STATUS_TAKEN_IN_CHARGE)">
+        {{ getComponentName() + ".execShipment" | translate }}
+      </button>
+    </div>
+  </div>
+
+  <div class="status-info" *ngIf="currentStatus === constants.SHIPMENT_FOLDER_STATUS_TAKEN_IN_CHARGE">
+    <p class="bold">
+      {{ getComponentName() + ".takeRow1" | translate }}
+    </p>
+
+    <p class="bold end">
+      {{ getComponentName() + ".takeRow2" | translate }}
+    </p>
+
+    <p>
+      {{ getComponentName() + ".takeRow3" | translate }}
+    </p>
+  </div>
+
+  <div class="status-info" *ngIf="currentStatus === constants.SHIPMENT_FOLDER_STATUS_PERFORMED">
+    <p class="bold end">
+      {{ getComponentName() + ".performedRow1" | translate }}
+    </p>
+  </div>
+
+  <div class="status-info" *ngIf="currentStatus === constants.SHIPMENT_FOLDER_STATUS_CANCELED">
+    <p class="bold end">
+      {{ getComponentName() + ".canceledRow1" | translate }}
+    </p>
+  </div>
+</div>

@@ -1,0 +1,95 @@
+<div class="grid-row">
+  <div class="grid-cell--12">
+    <div class="grid-cell grid-cell--container">
+      <div class="grid-cell-content">
+        <div class="form-group">
+          <label class="form-label"> {{ "PublicHolidayComponent.company" | translate }} </label>
+          <div class="form-control">
+            <p-dropdown
+              class="aw-dropdown fixed-width"
+              [showClear]="true"
+              [(ngModel)]="selectedCompany"
+              [options]="companies"
+              placeholder="&nbsp;"
+              (onChange)="loadPublicHolidayTableData()"
+            ></p-dropdown>
+          </div>
+        </div>
+        <div class="form-group"></div>
+        <div class="form-group"></div>
+        <div class="form-group"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="grid-row">
+  <div class="grid-cell--12">
+    <div class="grid-cell grid-cell--container">
+      <div class="grid-cell-header">
+        <div class="grid-cell-title-container">
+          <h3 class="grid-cell-title">
+            {{ getComponentName() + ".publicHolidayList" | translate }} ({{ publicHolidayTableDataSource.dataCount }})
+          </h3>
+        </div>
+      </div>
+      <div class="grid-cell-content">
+        <a-table [dataSource]="publicHolidayTableDataSource">
+          <ng-template tableActionsDef>
+            <button
+              type="button"
+              *ngIf="!publicHolidayTableDataSource.hasDataSelection"
+              mat-raised-button
+              (click)="addHoliday()"
+            >
+              {{ "global.add" | translate }}
+            </button>
+
+            <button
+              type="button"
+              *ngIf="publicHolidayTableDataSource.hasDataSelection"
+              mat-raised-button
+              (click)="deleteHoliday()"
+            >
+              {{ "global.delete" | translate }}
+            </button>
+
+            <button
+              type="button"
+              *ngIf="publicHolidayTableDataSource.dataSelectionCount === 1"
+              mat-raised-button
+              (click)="editHoliday()"
+            >
+              {{ "global.edit" | translate }}
+            </button>
+          </ng-template>
+
+          <ng-template columnDef="startDateString" let-rowData="rowData">
+            {{ rowData?.startDateString | date: "yyyy/MM/dd" }}
+          </ng-template>
+
+          <ng-template columnDef="endDateString" let-rowData="rowData">
+            {{ rowData?.endDateString | date: "yyyy/MM/dd" }}
+          </ng-template>
+
+          <ng-template columnDef="statusBool" let-rowData="rowData">
+            <i
+              *ngIf="rowData.statusBool !== null && rowData.statusBool"
+              class="fa fa-fw fa-check"
+              aria-hidden="true"
+            ></i>
+          </ng-template>
+        </a-table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<aw-dialog-public-holiday
+  *ngIf="showHolidayDialog"
+  [(display)]="showHolidayDialog"
+  [publicHoliday]="currentPublicHoliday"
+  [isNewPublicHoliday]="isNewPublicHoliday"
+  (onCreate)="createPublicHoliday($event)"
+  (onUpdate)="updatePublicHoliday($event)"
+></aw-dialog-public-holiday>

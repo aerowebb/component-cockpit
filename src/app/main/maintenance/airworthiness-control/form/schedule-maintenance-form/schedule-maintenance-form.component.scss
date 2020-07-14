@@ -1,0 +1,14 @@
+@import "constants";
+@import "mixins";
+
+:host {
+  .filter-list {
+    border: $border-width $border-style $accent-color;
+    border-radius: $border-radius;
+  }
+
+  .table-summary-wrapper {
+    margin: calc(8px * 2) auto 0 auto;
+    width: 30rem;
+  }
+}

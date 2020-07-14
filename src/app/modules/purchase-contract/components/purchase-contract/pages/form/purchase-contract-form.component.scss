@@ -1,0 +1,33 @@
+@import "constants";
+@import "mixins";
+
+:host {
+  .grid-cell-item-structure {
+    .list-with-details {
+      .details,
+      .list {
+        max-height: 100rem;
+      }
+
+      .details {
+        flex-grow: 1;
+
+        .structure-node-action-list {
+          justify-content: flex-end;
+
+          & > button {
+            margin-right: $margin-value;
+
+            &:last-of-type {
+              margin-right: 0;
+            }
+          }
+        }
+      }
+
+      .list {
+        min-width: 25rem;
+      }
+    }
+  }
+}

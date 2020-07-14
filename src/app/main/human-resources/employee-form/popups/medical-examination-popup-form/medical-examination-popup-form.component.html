@@ -1,0 +1,89 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div class="modal-title">{{ componentData.componentId + ".title" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="column">
+      <div class="row">
+        <div class="form-group" [ngClass]="{ required: !isReadOnlyForm }">
+          <label class="form-label">{{ componentData.componentId + ".date" | translate }}</label>
+
+          <div class="form-control">
+            <p-calendar
+              showButtonBar="true"
+              [monthNavigator]="true"
+              [yearNavigator]="true"
+              [yearRange]="sessionService.calendarYearRange"
+              class="aw-calendar"
+              [dateFormat]="sessionService.dateFormatPrimeNG"
+              [locale]="sessionService.calendarFormat"
+              [disabled]="isReadOnlyForm"
+              [(ngModel)]="visitDate"
+              appendTo="body"
+            ></p-calendar>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group">
+          <label class="form-label">{{ componentData.componentId + ".endOfValidity" | translate }}</label>
+
+          <div class="form-control">
+            <p-calendar
+              showButtonBar="true"
+              [monthNavigator]="true"
+              [yearNavigator]="true"
+              [yearRange]="sessionService.calendarYearRange"
+              class="aw-calendar"
+              [dateFormat]="sessionService.dateFormatPrimeNG"
+              [locale]="sessionService.calendarFormat"
+              [disabled]="isReadOnlyForm"
+              appendTo="body"
+              [(ngModel)]="visitExpiration"
+            ></p-calendar>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group">
+          <label class="form-label">{{ componentData.componentId + ".comment" | translate }}</label>
+
+          <div class="form-control">
+            <textarea
+              class="aw-textarea"
+              [rows]="3"
+              pInputTextarea
+              [disabled]="isReadOnlyForm"
+              [(ngModel)]="medicalExaminationObj.visitComment"
+              maxlength="300"
+            ></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button *ngIf="isReadOnlyForm" type="button" mat-raised-button (click)="cancel()">
+      <span>{{ "global.close" | translate }}</span>
+    </button>
+
+    <button *ngIf="!isReadOnlyForm" type="button" mat-raised-button (click)="cancel()">
+      <span>{{ "global.cancel" | translate }}</span>
+    </button>
+
+    <button
+      *ngIf="!isReadOnlyForm"
+      type="button"
+      color="primary"
+      mat-raised-button
+      (click)="validate()"
+      [disabled]="visitDate === undefined || visitDate === null"
+    >
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>

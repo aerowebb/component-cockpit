@@ -1,0 +1,144 @@
+@import "constants";
+@import "mixins";
+
+:host {
+  .served--nok {
+    background-color: $red-light1 !important;
+  }
+
+  .served--ok {
+    background-color: $green-light1 !important;
+  }
+
+  .served--warning {
+    background-color: $orange !important;
+  }
+
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .message {
+    color: #01579b;
+    font-size: 1rem;
+    text-align: center;
+    width: 100%;
+  }
+
+  .materials {
+    width: 100%;
+  }
+
+  .warehouse {
+    width: 100%;
+  }
+
+  .snBatch {
+    width: 100%;
+  }
+
+  .ok {
+    background-color: $green-light1 !important;
+    padding: 0.2em;
+  }
+
+  .warning {
+    background-color: $orange !important;
+    padding: 0.2em;
+  }
+
+  .nok {
+    background-color: $red-light1 !important;
+    padding: 0.2em;
+  }
+
+  .font-ok {
+    color: $green-light1 !important;
+  }
+
+  .font-warning {
+    color: $orange !important;
+  }
+
+  .font-nok {
+    color: $red-light1 !important;
+  }
+
+  .font-bold {
+    font-weight: bold;
+  }
+
+  .font-italic {
+    font-style: italic;
+  }
+
+  .select-box .arrow::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    margin-top: -1.5em;
+    border-top: 1.5em solid transparent;
+    border-bottom: 1.5em solid transparent;
+    border-left: 0.7em solid #01579b;
+    right: -0.45em;
+  }
+
+  .section-without-margin {
+    margin-left: 0px !important;
+    margin-bottom: 1rem !important;
+  }
+
+  .col-width-20 {
+    width: 20% !important;
+  }
+
+  ::ng-deep .red {
+    .ui-progressbar {
+      .ui-progressbar-value {
+        border: 0 none;
+        margin: 0;
+        background: $red-light1 !important;
+      }
+    }
+  }
+
+  ::ng-deep .yellow {
+    .ui-progressbar {
+      .ui-progressbar-value {
+        border: 0 none;
+        margin: 0;
+        background: $orange !important;
+      }
+    }
+  }
+
+  ::ng-deep .green {
+    .ui-progressbar {
+      .ui-progressbar-value {
+        border: 0 none;
+        margin: 0;
+        background: $green-light1 !important;
+      }
+    }
+  }
+
+  span {
+    &.green {
+      color: $green-light1 !important;
+    }
+
+    &.red {
+      color: $red-light1 !important;
+    }
+
+    &.yellow {
+      color: $orange !important;
+    }
+  }
+
+  .img-dimension {
+    height: 10rem;
+  }
+}

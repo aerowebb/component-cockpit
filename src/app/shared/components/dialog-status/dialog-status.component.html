@@ -1,0 +1,54 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".title" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="form-group">
+      <label class="form-label">{{ getComponentName() + ".statusState" | translate }}</label>
+
+      <div class="form-control">
+        <p-dropdown
+          class="aw-dropdown fixed-width"
+          [options]="statusList"
+          [(ngModel)]="item.statusState"
+          [showClear]="true"
+          placeholder="&nbsp;"
+          [disabled]="!isStatusEditable"
+          appendTo="body"
+        ></p-dropdown>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">{{ getComponentName() + ".statusDate" | translate }}</label>
+
+      <div class="form-control">
+        <p-calendar
+          showButtonBar="true"
+          [monthNavigator]="true"
+          [yearNavigator]="true"
+          [yearRange]="sessionService.calendarYearRange"
+          class="aw-calendar"
+          [dateFormat]="sessionService.dateFormatPrimeNG"
+          [locale]="sessionService.calendarFormat"
+          [(ngModel)]="item.statusDate"
+          [disabled]="true"
+          [showTime]="true"
+          appendTo="body"
+        ></p-calendar>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">{{ getComponentName() + ".statusUser" | translate }}</label>
+
+      <div class="form-control">
+        <input class="aw-input" type="text" [(ngModel)]="item.statusUser" [disabled]="true" />
+      </div>
+    </div>
+  </a-content>
+  <a-footer>
+    <button type="button" mat-raised-button (click)="closeDialog()">{{ "global.close" | translate }}</button>
+  </a-footer>
+</a-modal>

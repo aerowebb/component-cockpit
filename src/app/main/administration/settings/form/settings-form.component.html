@@ -1,0 +1,539 @@
+<div class="page-header">
+  <div class="page-info">
+    <div>
+      <div class="page-title">
+        {{ "transaction." + componentData.componentId | translate }}
+      </div>
+    </div>
+  </div>
+
+  <div class="page-actions">
+    <button *ngIf="isReadOpenMode && hasUpdateAccessRight" type="button" mat-raised-button (click)="editSettings()">
+      {{ "global.edit" | translate }}
+    </button>
+
+    <button
+      *ngIf="!isReadOpenMode && !isCreateOpenMode"
+      type="button"
+      color="warn"
+      mat-raised-button
+      (click)="cancelSettings()"
+    >
+      {{ "global.cancel" | translate }}
+    </button>
+
+    <button
+      *ngIf="!isReadOpenMode"
+      class="btn-with-spinner"
+      color="primary"
+      type="button"
+      mat-raised-button
+      (click)="saveSettings()"
+    >
+      <span class="lds-hourglass" *ngIf="showSaveSpinner"></span>
+      {{ "global.save" | translate }}
+    </button>
+
+    <button
+      mat-icon-button
+      class="mat-elevation-z1"
+      matTooltip="{{ 'global.showAllActionTooltip' | translate }}"
+      matTooltipPosition="above"
+      aria-label="Show all actions"
+      [matMenuTriggerFor]="actions"
+    >
+      <mat-icon>more_horiz</mat-icon>
+    </button>
+    <mat-menu #actions="matMenu">
+      <button mat-menu-item (click)="reloadSettings()">{{ "global.refresh" | translate }}</button>
+      <button mat-menu-item (click)="updateFavoriteState()">
+        {{ (isFavoriteEntry ? "page.removeFromFavorites" : "page.addToFavorites") | translate }}
+      </button>
+    </mat-menu>
+  </div>
+</div>
+
+<div class="page-wrapper">
+  <div class="page-container">
+    <div class="page-content">
+      <mat-tab-group animationDuration="0ms" dynamicHeight>
+        <mat-tab>
+          <ng-template mat-tab-label>
+            {{ componentData.componentId + ".generalConfiguration" | translate }}
+          </ng-template>
+          <div class="grid-row">
+            <div class="grid-cell--12">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ componentData.componentId + ".generalConfiguration" | translate }}
+                      ({{ propertyValuesTableDataSource ? propertyValuesTableDataSource.dataCount : 0 }})
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <a-table [dataSource]="propertyValuesTableDataSource">
+                    <ng-template tableActionsDef>
+                      <button
+                        *ngIf="!isReadOpenMode && !disablePropertyTypeDeleteButton()"
+                        type="button"
+                        mat-raised-button
+                        color="warn"
+                        (click)="deleteSelectedPropertyValue()"
+                      >
+                        {{ "global.delete" | translate }}
+                      </button>
+
+                      <button
+                        *ngIf="!isReadOpenMode && propertyValuesTableDataSource.hasDataSelection"
+                        type="button"
+                        mat-raised-button
+                        (click)="addPropertyValue()"
+                      >
+                        {{ "global.add" | translate }}
+                      </button>
+                    </ng-template>
+
+                    <ng-template columnDef="isStandard" let-rowData="rowData">
+                      <i *ngIf="rowData.isStandard" class="fa fa-fw fa-check" aria-hidden="true"></i>
+                    </ng-template>
+
+                    <ng-template columnDef="propertiesValue" let-rowData="rowData">
+                      <input
+                        type="text"
+                        class="aw-input"
+                        [(ngModel)]="rowData.propertiesValue"
+                        [disabled]="isReadOpenMode"
+                      />
+                    </ng-template>
+
+                    <ng-template columnDef="propertiesKey" let-rowData="rowData">
+                      <input
+                        type="text"
+                        class="aw-input"
+                        [(ngModel)]="rowData.propertiesKey"
+                        [disabled]="rowData['propertiesValueId']"
+                        maxlength="100"
+                      />
+                    </ng-template>
+                  </a-table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+        <mat-tab>
+          <ng-template mat-tab-label>
+            {{ componentData.componentId + ".inspectorWorkbench" | translate }}
+          </ng-template>
+          <div class="grid-row" [ngStyle]="{ display: iwListArr.length > 0 ? '' : 'none' }">
+            <div
+              *ngFor="let item of iwListArr; let i = index"
+              [ngClass]="i < 1 ? 'grid-cell--7' : i < 2 ? 'grid-cell--5' : i < 3 ? 'grid-cell--3' : 'grid-cell--9'"
+            >
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ item.sectionTitle | translate }}
+                    </h3>
+                  </div>
+                </div>
+
+                <!-- DISPLAY CUSTOMIZING PANEL -->
+                <div *ngIf="i == 0" class="grid-cell-content grid-cell-content-with-section">
+                  <div class="section">
+                    <div class="section-content">
+                      <div *ngFor="let element of item.sectionRowData" class="row">
+                        <div class="grid-cell--4" *ngFor="let obj of element" [ngSwitch]="obj.customValueList">
+                          <div class="form-group">
+                            <label class="form-label">
+                              {{ obj.name }}
+                            </label>
+
+                            <div class="form-control">
+                              <span *ngSwitchCase="undefined" class="display--flex-row">
+                                <input
+                                  type="text"
+                                  class="aw-input"
+                                  [(ngModel)]="obj.bsdeAwCustomDTO.propertyCustomValue"
+                                  [disabled]="isReadOpenMode"
+                                />
+                                <span style="width:140px; padding: 8px 0;"
+                                  >{{ obj.bsdeAwCustomDTO.propertyDefaultValue }} (default)</span
+                                >
+                              </span>
+                              <p-dropdown
+                                *ngSwitchDefault
+                                class="aw-dropdown fixed-width"
+                                [options]="obj.customValueList"
+                                [(ngModel)]="obj.bsdeAwCustomDTO.propertyCustomValue"
+                                [disabled]="isReadOpenMode"
+                                appendTo="body"
+                              ></p-dropdown>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- PROJECT CUSTOMIZING PANEL -->
+                <div *ngIf="i == 1" class="grid-cell-content grid-cell-content-with-section">
+                  <div class="section">
+                    <div class="section-content">
+                      <div class="row" *ngFor="let element of item.sectionRowData">
+                        <div class="grid-cell--6" *ngFor="let obj of element" [ngSwitch]="obj.customValueList">
+                          <div class="form-group">
+                            <label class="form-label">
+                              {{ obj.name }}
+                            </label>
+
+                            <div class="form-control">
+                              <span *ngSwitchCase="undefined" class="display--flex-row">
+                                <input
+                                  type="text"
+                                  class="aw-input"
+                                  [(ngModel)]="obj.bsdeAwCustomDTO.propertyCustomValue"
+                                  [disabled]="isReadOpenMode"
+                                />
+                                <span style="width:140px; padding: 8px 0;"
+                                  >{{ obj.bsdeAwCustomDTO.propertyDefaultValue }} (default)</span
+                                >
+                              </span>
+                              <p-dropdown
+                                *ngSwitchDefault
+                                class="aw-dropdown fixed-width"
+                                [options]="obj.customValueList"
+                                [(ngModel)]="obj.bsdeAwCustomDTO.propertyCustomValue"
+                                [disabled]="isReadOpenMode"
+                                appendTo="body"
+                              ></p-dropdown>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- WORKSCOPE CUSTOMIZING PANEL -->
+                <div *ngIf="i == 2" class="grid-cell-content grid-cell-content-with-section">
+                  <div class="section">
+                    <div *ngFor="let element of item.sectionRowData" class="section-content">
+                      <div class="row">
+                        <div class="grid-cell--12" *ngFor="let obj of element" [ngSwitch]="obj.customValueList">
+                          <div class="form-group">
+                            <label class="form-label">
+                              {{ obj.name }}
+                            </label>
+
+                            <div class="form-control">
+                              <span *ngSwitchCase="undefined" class="display--flex-row">
+                                <input
+                                  type="text"
+                                  class="aw-input"
+                                  [(ngModel)]="obj.bsdeAwCustomDTO.propertyCustomValue"
+                                  [disabled]="isReadOpenMode"
+                                />
+                                <span style="width:140px; padding: 8px 0;"
+                                  >{{ obj.bsdeAwCustomDTO.propertyDefaultValue }} (default)</span
+                                >
+                              </span>
+                              <p-dropdown
+                                *ngSwitchDefault
+                                class="aw-dropdown fixed-width"
+                                [options]="obj.customValueList"
+                                [(ngModel)]="obj.bsdeAwCustomDTO.propertyCustomValue"
+                                [disabled]="isReadOpenMode"
+                                appendTo="body"
+                              ></p-dropdown>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- INVENTORY CUSTOMIZING PANEL -->
+                <div *ngIf="i == 3" class="grid-cell-content grid-cell-content-with-section">
+                  <div class="section">
+                    <div class="section-content">
+                      <div class="row" *ngFor="let element of item.sectionRowData">
+                        <div class="grid-cell--3" *ngFor="let obj of element" [ngSwitch]="obj.customValueList">
+                          <div class="form-group">
+                            <label class="form-label">
+                              {{ obj.name }}
+                            </label>
+
+                            <div class="form-control">
+                              <span *ngSwitchCase="undefined" class="display--flex-row">
+                                <input
+                                  type="text"
+                                  class="aw-input"
+                                  [(ngModel)]="obj.bsdeAwCustomDTO.propertyCustomValue"
+                                  [disabled]="isReadOpenMode"
+                                />
+                                <span style="width:140px; padding: 8px 0;"
+                                  >{{ obj.bsdeAwCustomDTO.propertyDefaultValue }} (default)</span
+                                >
+                              </span>
+                              <p-dropdown
+                                *ngSwitchDefault
+                                class="aw-dropdown fixed-width"
+                                [options]="obj.customValueList"
+                                [(ngModel)]="obj.bsdeAwCustomDTO.propertyCustomValue"
+                                [disabled]="isReadOpenMode"
+                                appendTo="body"
+                              ></p-dropdown>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+        <mat-tab>
+          <ng-template mat-tab-label>
+            {{ componentData.componentId + ".engineeringManagement" | translate }}
+          </ng-template>
+          <div
+            class="grid-row"
+            *ngFor="let item of emListArr"
+            [ngStyle]="{ display: emListArr.length > 0 ? '' : 'none' }"
+          >
+            <div class="grid-cell--12">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ item.sectionTitle | translate }}
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content grid-cell-content-with-section">
+                  <div class="section">
+                    <div class="section-content">
+                      <div class="row" *ngFor="let element of item.sectionRowData">
+                        <div class="grid-cell--3" *ngFor="let obj of element" [ngSwitch]="obj.customValueList">
+                          <div class="form-group">
+                            <label class="form-label">
+                              {{ obj.name }}
+                            </label>
+
+                            <div class="form-control">
+                              <span *ngSwitchCase="undefined" class="display--flex-row">
+                                <input
+                                  type="text"
+                                  class="aw-input"
+                                  [(ngModel)]="obj.bsdeAwCustomDTO.propertyCustomValue"
+                                  [disabled]="isReadOpenMode"
+                                />
+                                <span style="width:140px; padding: 8px 0;"
+                                  >{{ obj.bsdeAwCustomDTO.propertyDefaultValue }} (default)</span
+                                >
+                              </span>
+                              <p-dropdown
+                                *ngSwitchDefault
+                                class="aw-dropdown fixed-width"
+                                [options]="obj.customValueList"
+                                [(ngModel)]="obj.bsdeAwCustomDTO.propertyCustomValue"
+                                [disabled]="isReadOpenMode"
+                                appendTo="body"
+                              ></p-dropdown>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+        <mat-tab>
+          <ng-template mat-tab-label>
+            {{ componentData.componentId + ".fleetManagement" | translate }}
+          </ng-template>
+          <div class="grid-row" [ngStyle]="{ display: fmListArr.length > 0 ? '' : 'none' }">
+            <div class="grid-cell--6" *ngFor="let item of fmListArr">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ item.sectionTitle | translate }}
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content grid-cell-content-with-section">
+                  <div class="section">
+                    <div class="section-content">
+                      <div class="row" *ngFor="let element of item.sectionRowData">
+                        <div class="grid-cell--3" *ngFor="let obj of element" [ngSwitch]="obj.customValueList">
+                          <div class="form-group">
+                            <label class="form-label">
+                              {{ obj.name }}
+                            </label>
+
+                            <div class="form-control">
+                              <span *ngSwitchCase="undefined" class="display--flex-row">
+                                <input
+                                  type="text"
+                                  class="aw-input"
+                                  [(ngModel)]="obj.bsdeAwCustomDTO.propertyCustomValue"
+                                  [disabled]="isReadOpenMode"
+                                />
+                                <span style="width:140px; padding: 8px 0;"
+                                  >{{ obj.bsdeAwCustomDTO.propertyDefaultValue }} (default)</span
+                                >
+                              </span>
+                              <p-dropdown
+                                *ngSwitchDefault
+                                class="aw-dropdown fixed-width"
+                                [options]="obj.customValueList"
+                                [(ngModel)]="obj.bsdeAwCustomDTO.propertyCustomValue"
+                                [disabled]="isReadOpenMode"
+                                appendTo="body"
+                              ></p-dropdown>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+        <mat-tab>
+          <ng-template mat-tab-label>
+            {{ componentData.componentId + ".maintenanceOperations" | translate }}
+          </ng-template>
+          <div
+            class="grid-row"
+            *ngFor="let item of meListArr"
+            [ngStyle]="{ display: meListArr.length > 0 ? '' : 'none' }"
+          >
+            <div class="grid-cell--12">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ item.sectionTitle | translate }}
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content grid-cell-content-with-section">
+                  <div class="section">
+                    <div class="section-content">
+                      <div class="row" *ngFor="let element of item.sectionRowData">
+                        <div class="grid-cell--3" *ngFor="let obj of element" [ngSwitch]="obj.customValueList">
+                          <div class="form-group">
+                            <label class="form-label">
+                              {{ obj.name }}
+                            </label>
+
+                            <div class="form-control">
+                              <span *ngSwitchCase="undefined" class="display--flex-row">
+                                <input
+                                  type="text"
+                                  class="aw-input"
+                                  [(ngModel)]="obj.bsdeAwCustomDTO.propertyCustomValue"
+                                  [disabled]="isReadOpenMode"
+                                />
+                                <span style="width:140px; padding: 8px 0;"
+                                  >{{ obj.bsdeAwCustomDTO.propertyDefaultValue }} (default)</span
+                                >
+                              </span>
+                              <p-dropdown
+                                *ngSwitchDefault
+                                class="aw-dropdown fixed-width"
+                                [options]="obj.customValueList"
+                                [(ngModel)]="obj.bsdeAwCustomDTO.propertyCustomValue"
+                                [disabled]="isReadOpenMode"
+                                appendTo="body"
+                              ></p-dropdown>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-row" [ngStyle]="{ display: ipListArr.length > 0 ? '' : 'none' }">
+            <div class="grid-cell--12">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ componentData.componentId + ".installationParameters" | translate }}
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content grid-cell-content-with-section">
+                  <div class="section" *ngFor="let item of ipListArr">
+                    <h4 class="section-title">
+                      {{ item.sectionTitle }}
+                    </h4>
+
+                    <div class="section-content">
+                      <div class="row" *ngFor="let element of item.sectionRowData">
+                        <div class="grid-cell--3" *ngFor="let obj of element" [ngSwitch]="obj.customValueList">
+                          <div class="form-group">
+                            <label class="form-label">
+                              {{ obj.name }}
+                            </label>
+
+                            <div class="form-control">
+                              <span *ngSwitchCase="undefined" class="display--flex-row">
+                                <input
+                                  type="text"
+                                  class="aw-input"
+                                  [(ngModel)]="obj.bsdeAwCustomDTO.propertyCustomValue"
+                                  [disabled]="isReadOpenMode"
+                                />
+                                <span style="width:140px; padding: 8px 0;"
+                                  >{{ obj.bsdeAwCustomDTO.propertyDefaultValue }} (default)</span
+                                >
+                              </span>
+                              <p-dropdown
+                                *ngSwitchDefault
+                                class="aw-dropdown fixed-width"
+                                [options]="obj.customValueList"
+                                [(ngModel)]="obj.bsdeAwCustomDTO.propertyCustomValue"
+                                [disabled]="isReadOpenMode"
+                                appendTo="body"
+                              ></p-dropdown>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+  </div>
+</div>

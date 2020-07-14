@@ -1,0 +1,66 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".titlePopup" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="column">
+      <div class="form-group" [ngClass]="{ required: !isReadOnlyForm }">
+        <label class="form-label">{{ getComponentName() + ".sbNumber" | translate }}</label>
+
+        <div class="form-control form-control-with-modal" [ngClass]="{ disabled: isReadOnlyForm }">
+          <div class="form-control-data" (click)="showDialog()">{{ evolution.sbNumber }}</div>
+
+          <div *ngIf="evolution.sbNumber" class="btn-clear-wrapper">
+            <i
+              class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+              aria-hidden="true"
+              (click)="evolution.sbNumber = undefined"
+            ></i>
+          </div>
+          <div class="btn-search-wrapper">
+            <i class="fa fa-fw fa-search aw-icon btn-search" aria-hidden="true" (click)="showDialog()"></i>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="evolution.sbRevisionNumber" class="form-group general-field">
+        <label class="form-label">{{ getComponentName() + ".sbRevisionNumber" | translate }}</label>
+
+        <div class="form-control">
+          <input type="text" class="aw-input" [(ngModel)]="evolution.sbRevisionNumber" [disabled]="true" />
+        </div>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button *ngIf="isReadOnlyForm" type="button" mat-raised-button (click)="onHide()">
+      <span>{{ "global.close" | translate }}</span>
+    </button>
+
+    <button *ngIf="!isReadOnlyForm" type="button" mat-raised-button (click)="onHide()">
+      <span>{{ "global.cancel" | translate }}</span>
+    </button>
+
+    <button
+      *ngIf="!isReadOnlyForm"
+      type="button"
+      color="primary"
+      mat-raised-button
+      (click)="onValidate()"
+      [disabled]="evolution.sbNumber === undefined || evolution.sbNumber === null"
+    >
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>
+
+<aw-dialog-search-sbad
+  *ngIf="showSbadDialog"
+  [(display)]="showSbadDialog"
+  (onValidated)="setSelectedObject($event)"
+  [revisionNumber]="evolution.sbNumber"
+  [dialogType]=""
+>
+</aw-dialog-search-sbad>

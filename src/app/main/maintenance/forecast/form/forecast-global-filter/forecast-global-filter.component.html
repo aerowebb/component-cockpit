@@ -1,0 +1,13 @@
+<div class="aw-global-filter">
+  <label class="aw-global-filter-label">
+    <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+  </label>
+
+  <input
+    class="aw-global-filter-input"
+    type="text"
+    placeholder="{{ 'typeToFilter' | translate }}"
+    [(ngModel)]="forecastFormService.forecastFiltering.globalSearch"
+    (keyup)="filter(forecastFormService.forecastFiltering.globalSearch)"
+  />
+</div>

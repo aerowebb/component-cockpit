@@ -1,0 +1,70 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div class="modal-title">
+      {{ getComponentName() + (title === "edit" ? ".editPack" : ".addPack") | translate }}
+    </div>
+  </a-header>
+
+  <a-content>
+    <div class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+      <label class="form-label">{{ getComponentName() + ".packCode" | translate }}</label>
+      <div class="form-control">
+        <input
+          type="text"
+          class="aw-input"
+          maxlength="1"
+          [disabled]="title === 'edit'"
+          [(ngModel)]="birePackBaseOptionDTO.packBaseOptionCode"
+        />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">{{ getComponentName() + ".packDescription" | translate }}</label>
+      <div class="form-control">
+        <textarea
+          class="aw-textarea"
+          pInputTextarea
+          [rows]="3"
+          [cols]="40"
+          [(ngModel)]="birePackBaseOptionDTO.packDescription"
+          maxlength="300"
+        ></textarea>
+      </div>
+    </div>
+
+    <div class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+      <label class="form-label">{{ getComponentName() + ".packType" | translate }}</label>
+      <div class="form-control">
+        <p-dropdown
+          class="aw-dropdown fixed-width"
+          [options]="typeList"
+          [(ngModel)]="birePackBaseOptionDTO.packType"
+          [disabled]="isReadOpenMode"
+          appendTo="body"
+        ></p-dropdown>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button *ngIf="isReadOpenMode" type="button" mat-raised-button (click)="onCancel()">
+      <span>{{ "global.close" | translate }}</span>
+    </button>
+
+    <button *ngIf="!isReadOpenMode" type="button" mat-raised-button (click)="onCancel()">
+      <span>{{ "global.cancel" | translate }}</span>
+    </button>
+
+    <button
+      *ngIf="!isReadOpenMode"
+      type="button"
+      mat-raised-button
+      color="primary"
+      [disabled]="!birePackBaseOptionDTO.packType || !birePackBaseOptionDTO.packBaseOptionCode"
+      (click)="onValidate()"
+    >
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>

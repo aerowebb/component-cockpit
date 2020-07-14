@@ -1,0 +1,16 @@
+<div
+  #container
+  *ngIf="visible"
+  class="modal"
+  [ngClass]="{ 'full-screen': fullScreen }"
+  [style.width.vw]="width"
+  [@animation]="'visible'"
+  (@animation.start)="onAnimationStart($event)"
+  (@animation.done)="onAnimationDone($event)"
+>
+  <div #header class="modal__header"><ng-content select="a-header"></ng-content></div>
+
+  <div #content class="modal__content"><ng-content select="a-content"></ng-content></div>
+
+  <div #footer class="modal__footer"><ng-content select="a-footer"></ng-content></div>
+</div>

@@ -1,0 +1,35 @@
+{
+  "XmlDataLoadingFormComponent": {
+    "author": "Author",
+    "changeRecord": "Change Record",
+    "confirmDeleteSelectedReport": "Are you sure you want to remove selected Report?",
+    "confirmDeleteSelectedReports": "Are you sure you want to remove selected Reports?",
+    "data": "Data",
+    "engineManual": "Engine Manual",
+    "errorOnDeleteReport": "Unable to delete the report",
+    "errorOnDeleteReports": "Unable to delete these reports",
+    "familyCode": "Family Code",
+    "fileToImport": "File to Import",
+    "importEngineManual": "Import the Engine Manual data",
+    "importFile": "Import File",
+    "importIPCData": "Import IPC Data",
+    "importReports": "Import Report List",
+    "ipc": "IPC",
+    "reportCode": "Report Code",
+    "reportName": "Report Name",
+    "statusDate": "Date",
+    "successOnDeleteReport": "The report has been successfully removed!",
+    "successOnDeleteReports": "These reports have been successfully removed!",
+    "wbmRevNotFilled": "WBM Rev. No is required",
+    "wbmRevNum": "WBM Rev. No",
+    "errorOccurred": "An error has occurred"
+  },
+  "ChangeRecordFormComponent": {
+    "wbmRevNum": "WBM Rev. No",
+    "taskDesignation": "Task Designation",
+    "taskReference": "Task Reference",
+    "reasons": "Reason for Change",
+    "update": "Update",
+    "nil": "Nil"
+  }
+}

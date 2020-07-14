@@ -1,0 +1,98 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".title" | translate }}</div>
+  </a-header>
+  <a-content>
+    <div class="search-dialog-container">
+      <div class="section search-criteria-section">
+        <div class="grid-row">
+          <div class="grid-cell--12">
+            <div class="grid-row">
+              <div class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+                <label class="form-label"> {{ getComponentName() + ".stockType" | translate }}</label>
+                <div class="form-control">
+                  <p-dropdown
+                    class="aw-dropdown fixed-width"
+                    placeholder="&nbsp;"
+                    [showClear]="true"
+                    [options]="stockValuationlList"
+                    [(ngModel)]="stockData.bsdeStorePnDTO.stockType"
+                    [disabled]="isReadOpenMode || isWriteOpenMode"
+                  ></p-dropdown>
+                </div>
+              </div>
+            </div>
+            <div class="grid-row">
+              <div class="form-group ">
+                <label class="form-label"> {{ getComponentName() + ".stockNumber" | translate }}</label>
+                <div class="form-control ">
+                  <input
+                    type="number"
+                    pKeyFilter="int"
+                    class="aw-input"
+                    [disabled]="isReadOpenMode"
+                    [(ngModel)]="stockData.bsdeStorePnDTO.stockNumber"
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="grid-row">
+              <div class="form-group ">
+                <label class="form-label"> {{ getComponentName() + ".averageValue" | translate }} </label>
+                <div class="form-control form-control-with-btn" [ngClass]="{ disabled: isReadOpenMode }">
+                  <input
+                    type="number"
+                    pKeyFilter="int"
+                    class="aw-input"
+                    [disabled]="isReadOpenMode"
+                    style="width: 66%"
+                    [(ngModel)]="dataInput.value"
+                  />
+                  &nbsp;&nbsp;
+                  <input style="width: 5rem" type="text" class="aw-input" [(ngModel)]="priceCurrency" disabled />
+                </div>
+              </div>
+            </div>
+
+            <div class="grid-row">
+              <div class="form-group ">
+                <label class="form-label">{{ getComponentName() + ".availabilityDate" | translate }}</label>
+                <div class="form-control" style="width: 83%">
+                  <p-calendar
+                    showButtonBar="true"
+                    [monthNavigator]="true"
+                    [yearNavigator]="true"
+                    [yearRange]="sessionService.calendarYearRange"
+                    name="date"
+                    class="aw-calendar"
+                    [dateFormat]="sessionService.dateFormatPrimeNG"
+                    [locale]="sessionService.calendarFormat"
+                    [(ngModel)]="stockData.bsdeStorePnDTO.availabilityDate"
+                    [disabled]="isReadOpenMode"
+                    appendTo="body"
+                  ></p-calendar>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button type="button" mat-raised-button (click)="closeDialog()">
+      <span>{{ "global.cancel" | translate }}</span>
+    </button>
+    <button
+      *ngIf="!isReadOpenMode"
+      color="primary"
+      type="button"
+      mat-raised-button
+      (click)="validate()"
+      [disabled]="checkDisable()"
+    >
+      <span>{{ "global.validate" | translate }}</span>
+    </button>
+  </a-footer>
+</a-modal>

@@ -1,0 +1,214 @@
+<a-modal class="aw-modal" [(visible)]="display" [width]="70">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".title" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="search-dialog-container">
+      <div class="section">
+        <h4 class="section-title">{{ "global.search" | translate }}</h4>
+
+        <div class="section-content">
+          <div class="column">
+            <div class="row">
+              <div class="form-group">
+                <label class="form-label">
+                  {{ getComponentName() + ".familyVariant" | translate }}
+                </label>
+
+                <div class="form-control">
+                  <p-dropdown
+                    class="aw-dropdown fixed-width"
+                    [options]="familyVariantList"
+                    [(ngModel)]="searchFamilyVariant"
+                    [showClear]="true"
+                    placeholder="&nbsp;"
+                    appendTo="body"
+                  ></p-dropdown>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">
+                  {{ getComponentName() + ".designation" | translate }}
+                </label>
+
+                <div class="form-control">
+                  <input type="text" class="aw-input" [(ngModel)]="searchObject.name" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">
+                  {{ getComponentName() + ".functionCode" | translate }}
+                </label>
+
+                <div class="form-control">
+                  <input type="text" class="aw-input" [(ngModel)]="searchObject.functionCode" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">
+                  {{ getComponentName() + ".itemNumber" | translate }}
+                </label>
+
+                <div class="form-control">
+                  <input type="text" class="aw-input" [(ngModel)]="searchObject.itemNumber" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">
+                  {{ getComponentName() + ".itemFamily" | translate }}
+                </label>
+
+                <div class="form-control">
+                  <input type="text" class="aw-input" [(ngModel)]="searchObject.familyCode" />
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="form-group">
+                <label class="form-label">
+                  {{ getComponentName() + ".chapter" | translate }}
+                </label>
+
+                <div class="form-control">
+                  <input type="text" class="aw-input" [(ngModel)]="searchObject.chapter" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">
+                  {{ getComponentName() + ".section" | translate }}
+                </label>
+
+                <div class="form-control">
+                  <input type="text" class="aw-input" [(ngModel)]="searchObject.section" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">
+                  {{ getComponentName() + ".subject" | translate }}
+                </label>
+
+                <div class="form-control">
+                  <input type="text" class="aw-input" [(ngModel)]="searchObject.subject" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">
+                  {{ getComponentName() + ".sheet" | translate }}
+                </label>
+
+                <div class="form-control">
+                  <input type="text" class="aw-input" [(ngModel)]="searchObject.sheet" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">
+                  {{ getComponentName() + ".marks" | translate }}
+                </label>
+
+                <div class="form-control">
+                  <input type="text" class="aw-input" [(ngModel)]="searchObject.marks" />
+                </div>
+              </div>
+            </div>
+
+            <div class="row search-criteria-footer">
+              <div class="search-actions">
+                <button type="button" color="primary" mat-raised-button (click)="search()">
+                  {{ "global.toSearch" | translate }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h4 class="section-title">
+          {{ "global.results" | translate }}
+          ({{ table.list ? table.list.length : 0 }}{{ table.moreResults ? "+" : "" }})
+        </h4>
+
+        <div class="section-content">
+          <p-table
+            [resizableColumns]="true"
+            #ptableItem
+            class="aw-table2"
+            [columns]="tableColList"
+            [value]="table.list"
+            [(selection)]="tableSelection"
+            selectionMode="single"
+            [scrollable]="true"
+          >
+            <ng-template pTemplate="emptymessage">
+              <span *ngIf="!tableLoading"> &nbsp;</span>
+
+              <div *ngIf="tableLoading" class="aw-table-loading-indicator">
+                <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                <div class="lds-hourglass"></div>
+              </div>
+            </ng-template>
+
+            <ng-template pTemplate="caption">
+              <div class="aw-table-header">
+                <div class="aw-table-global-filter">
+                  <label class="aw-table-global-filter-label">
+                    <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                  </label>
+
+                  <input
+                    class="aw-table-global-filter-input"
+                    type="text"
+                    placeholder="{{ 'table.globalFilterText' | translate }}"
+                    (input)="ptableItem.filterGlobal($event.target.value, 'contains')"
+                  />
+                </div>
+              </div>
+            </ng-template>
+
+            <ng-template pTemplate="colgroup" let-columns>
+              <colgroup>
+                <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+              </colgroup>
+            </ng-template>
+
+            <ng-template pTemplate="header" let-columns>
+              <tr>
+                <th pResizableColumn *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                  {{ getComponentName() + "." + col.field | translate }}
+                </th>
+              </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+              <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                <td *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                  {{ rowData[col.field] }}
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button type="button" mat-raised-button (click)="cancel()">
+      {{ "dialog.cancel" | translate }}
+    </button>
+
+    <button type="button" mat-raised-button color="primary" (click)="validate()" [disabled]="!tableSelection">
+      {{ "dialog.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>

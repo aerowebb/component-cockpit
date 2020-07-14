@@ -1,0 +1,65 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".title" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="column">
+      <div class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+        <label class="form-label">{{ getComponentName() + ".unmountCode" | translate }}</label>
+
+        <div class="form-control">
+          <p-dropdown
+            class="aw-dropdown fixed-width"
+            [options]="disassemblyBefore"
+            [disabled]="isReadOpenMode"
+            [(ngModel)]="removalOrder.unmountCode"
+            appendTo="body"
+            placeholder="&nbsp;"
+          ></p-dropdown>
+        </div>
+      </div>
+
+      <div class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+        <label class="form-label">{{ getComponentName() + ".unmUnmountCode" | translate }}</label>
+
+        <div class="form-control">
+          <p-dropdown
+            class="aw-dropdown fixed-width"
+            [options]="disassemblyAfter"
+            [disabled]="isReadOpenMode"
+            [(ngModel)]="removalOrder.unmUnmountCode"
+            appendTo="body"
+            placeholder="&nbsp;"
+          ></p-dropdown>
+        </div>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button *ngIf="isReadOpenMode" type="button" mat-raised-button (click)="cancel()">
+      <span>{{ "global.close" | translate }}</span>
+    </button>
+
+    <button *ngIf="!isReadOpenMode" type="button" mat-raised-button (click)="cancel()">
+      <span>{{ "global.cancel" | translate }}</span>
+    </button>
+
+    <button
+      *ngIf="!isReadOpenMode"
+      type="button"
+      mat-raised-button
+      color="primary"
+      (click)="validate()"
+      [disabled]="
+        removalOrder.unmountCode === undefined ||
+        removalOrder.unmountCode === null ||
+        removalOrder.unmUnmountCode === undefined ||
+        removalOrder.unmUnmountCode === null
+      "
+    >
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>

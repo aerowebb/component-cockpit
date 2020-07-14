@@ -1,0 +1,40 @@
+@import "constants";
+
+.red {
+  background-color: $red-dark1 !important;
+}
+
+.green {
+  background-color: $green-light1 !important;
+}
+
+.yellow {
+  background-color: $orange !important;
+}
+
+.green,
+.red,
+.yellow {
+  padding: 0.5em !important;
+  color: #fff !important;
+}
+
+.custom-padding {
+  padding: 0.5em !important;
+}
+
+.custom-width {
+  width: 100% !important;
+}
+
+.custom-height {
+  height: 17rem !important;
+}
+
+.tsn {
+  color: #d3c632;
+}
+
+.cns {
+  color: #42a5f5;
+}

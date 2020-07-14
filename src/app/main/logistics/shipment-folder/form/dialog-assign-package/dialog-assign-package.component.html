@@ -1,0 +1,219 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".title" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="column">
+      <div class="row">
+        <div class="form-group">
+          <div class="form-control aw-selectbutton-wrapper">
+            <p-selectButton
+              [(ngModel)]="selectedChoice"
+              [options]="choiceList"
+              (onChange)="resetChoice()"
+              [disabled]="selectedPackage"
+            ></p-selectButton>
+          </div>
+        </div>
+
+        <div class="form-group required" *ngIf="selectedChoice === component.ENTER">
+          <label class="form-label">{{ getComponentName() + ".packageNumber" | translate }}</label>
+
+          <div class="form-control">
+            <input type="text" class="aw-input" [(ngModel)]="externalPackageCode" [disabled]="selectedPackage" />
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group required">
+          <label class="form-label">{{ getComponentName() + ".packageType" | translate }}</label>
+
+          <div class="form-control">
+            <p-dropdown
+              class="aw-dropdown fixed-width"
+              [showClear]="true"
+              placeholder="&nbsp;"
+              [(ngModel)]="selectedPackageType"
+              [options]="packagesTypesList"
+              (onChange)="packageTypeChange()"
+              appendTo="body"
+              [disabled]="selectedPackage"
+            ></p-dropdown>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div
+          class="form-group"
+          [ngClass]="{
+            required: selectedPackage && !isEditContext
+          }"
+        >
+          <label class="form-label">
+            {{ getComponentName() + ".weight" | translate }}
+          </label>
+
+          <div class="form-control">
+            <input type="number" class="aw-input" [(ngModel)]="packageInput.weight" />
+          </div>
+        </div>
+        <div
+          class="form-group"
+          [ngClass]="{
+            required: selectedPackage && !isEditContext
+          }"
+        >
+          <label class="form-label">
+            {{ getComponentName() + ".unit" | translate }}
+          </label>
+
+          <div class="form-control">
+            <p-dropdown
+              class="aw-dropdown fixed-width"
+              [showClear]="true"
+              placeholder="&nbsp;"
+              [(ngModel)]="packageInput.weightUnit"
+              [options]="unitWeightList"
+              appendTo="body"
+            ></p-dropdown>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div
+          class="form-group"
+          [ngClass]="{
+            required: selectedPackage && !isEditContext
+          }"
+        >
+          <label class="form-label">
+            {{ getComponentName() + ".length" | translate }}
+          </label>
+
+          <div class="form-control">
+            <input type="number" class="aw-input" [disabled]="disableLength" [(ngModel)]="packageInput.length" />
+          </div>
+        </div>
+        <div
+          class="form-group"
+          [ngClass]="{
+            required: selectedPackage && !isEditContext
+          }"
+        >
+          <label class="form-label">
+            {{ getComponentName() + ".unit" | translate }}
+          </label>
+
+          <div class="form-control">
+            <p-dropdown
+              class="aw-dropdown fixed-width"
+              [showClear]="true"
+              placeholder="&nbsp;"
+              [(ngModel)]="packageInput.lengthUnit"
+              [options]="unitLengthList"
+              [disabled]="disableLength"
+              appendTo="body"
+            ></p-dropdown>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div
+          class="form-group"
+          [ngClass]="{
+            required: selectedPackage && !isEditContext
+          }"
+        >
+          <label class="form-label">
+            {{ getComponentName() + ".width" | translate }}
+          </label>
+
+          <div class="form-control">
+            <input type="number" class="aw-input" [disabled]="disableWidth" [(ngModel)]="packageInput.width" />
+          </div>
+        </div>
+        <div
+          class="form-group"
+          [ngClass]="{
+            required: selectedPackage && !isEditContext
+          }"
+        >
+          <label class="form-label">
+            {{ getComponentName() + ".unit" | translate }}
+          </label>
+
+          <div class="form-control">
+            <p-dropdown
+              class="aw-dropdown fixed-width"
+              [showClear]="true"
+              placeholder="&nbsp;"
+              [(ngModel)]="packageInput.widthUnit"
+              [options]="unitLengthList"
+              [disabled]="disableWidth"
+              appendTo="body"
+            ></p-dropdown>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div
+          class="form-group"
+          [ngClass]="{
+            required: selectedPackage && !isEditContext
+          }"
+        >
+          <label class="form-label">
+            {{ getComponentName() + ".height" | translate }}
+          </label>
+
+          <div class="form-control">
+            <input type="number" class="aw-input" [disabled]="disableHeight" [(ngModel)]="packageInput.height" />
+          </div>
+        </div>
+        <div
+          class="form-group"
+          [ngClass]="{
+            required: selectedPackage && !isEditContext
+          }"
+        >
+          <label class="form-label">
+            {{ getComponentName() + ".unit" | translate }}
+          </label>
+
+          <div class="form-control">
+            <p-dropdown
+              class="aw-dropdown fixed-width"
+              [showClear]="true"
+              placeholder="&nbsp;"
+              [(ngModel)]="packageInput.heightUnit"
+              [options]="unitLengthList"
+              [disabled]="disableHeight"
+              appendTo="body"
+            ></p-dropdown>
+          </div>
+        </div>
+      </div>
+      <div class="section-content" *ngIf="packageInput.lengthUnit && calculateVolume() && showVolume()">
+        <div class="row">
+          <div class="form-group">
+            <h3>
+              <span class="bold italic">
+                {{ getComponentName() + ".volume" | translate }}: {{ calculateVolume() }} {{ getVolumnUnit() }}
+                <sup>{{ component.ROOTS_VALUE }}</sup>
+              </span>
+            </h3>
+          </div>
+        </div>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button type="button" mat-raised-button (click)="onCancelPopup()">{{ "global.cancel" | translate }}</button>
+
+    <button type="button" color="primary" mat-raised-button (click)="validate()" [disabled]="enableAddPackageButton()">
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>

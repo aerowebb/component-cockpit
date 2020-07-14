@@ -1,0 +1,218 @@
+@import "constants";
+@import "mixins";
+@import "modifiers";
+
+:host {
+  .main-block {
+    display: none;
+
+    &.show {
+      display: initial;
+    }
+
+    .action-list {
+      .aw-btn {
+        margin-left: $margin-value;
+
+        &:first-of-type {
+          margin-left: 0;
+        }
+      }
+    }
+  }
+
+  .row-actions {
+    @include flex-row();
+
+    align-items: flex-end;
+    justify-content: flex-end;
+
+    & > .aw-btn {
+      margin-left: $margin-value;
+
+      &:first-of-type {
+        margin-left: 0;
+      }
+    }
+  }
+  .scheduler-wrap {
+    height: 55.5vh;
+    visibility: hidden;
+
+    &.show {
+      visibility: visible;
+    }
+  }
+
+  .scheduler-header-btn {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+  }
+
+  .scheduler-header-dropdown {
+    padding-left: 2rem;
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+  }
+
+  .scheduler-header {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    .scheduler-filters {
+      margin-right: $margin-value;
+    }
+  }
+
+  .flex-row--justify-center {
+    max-width: 100%;
+  }
+
+  .italic-green {
+    font-style: italic;
+    color: green;
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    padding-left: 1rem;
+    padding-top: 1rem;
+    vertical-align: middle;
+  }
+
+  .scheduler-header-btn-legend {
+    align-content: flex-end;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+
+  .table-border-left {
+    border-left: solid 1px #006ea9 !important;
+  }
+
+  .table-border-right {
+    border-right: solid 1px #006ea9 !important;
+  }
+
+  .cell-grey {
+    background-color: #f0f0f0 !important;
+  }
+
+  .grid-cell.in-simulation {
+    border-left-color: $orange;
+    border-left-style: $border-style;
+    border-left-width: $margin-value;
+  }
+
+  .grid-cell-detail {
+    .form-control-potential-unit {
+      width: 4rem;
+    }
+  }
+
+  .grid-cell-scope {
+    .ancestor-actions,
+    .ancestor-data {
+      background-color: $secondary-background-color;
+    }
+
+    .ancestor-actions {
+      justify-content: flex-end;
+      padding: $margin-value;
+    }
+  }
+
+  .grid-cell-state-simulation {
+    background-color: $orange;
+    padding: 0;
+
+    .grid-cell-title {
+      color: $primary-text-color;
+    }
+
+    .simulation-criterion:not(:last-of-type)::after {
+      content: " | ";
+    }
+  }
+
+  .grid-cell-chart {
+    .chart-container {
+      @include flex-row();
+      max-width: 100%;
+      @media screen and (max-width: 1280px) {
+        flex-direction: column;
+      }
+
+      .chart-legend {
+        @include flex-column();
+
+        justify-content: center;
+        margin-left: $margin-value;
+
+        .chart-legend-label {
+          @include flex-row();
+
+          align-items: center;
+
+          .chart-legend-label-color {
+            height: 0.75rem;
+            margin-right: $margin-value;
+            width: 2rem;
+
+            &.quantity {
+              background-color: #006ea9;
+            }
+
+            &.amount {
+              background-color: #d3c632;
+            }
+
+            &.not-airworthy {
+              background-color: $red-light1;
+            }
+          }
+        }
+
+        .chart-value {
+          font-weight: 700;
+          margin-left: $margin-value;
+        }
+      }
+
+      .chart-wrapper {
+        position: relative;
+        height: 10rem;
+        width: 45rem;
+        max-width: 100%;
+      }
+    }
+  }
+
+  .availability-container {
+    display: flex;
+    flex-direction: column;
+
+    & > div {
+      margin-bottom: 0.5rem;
+    }
+
+    .day {
+      width: 100%;
+      font-size: 1.3rem;
+      text-align: center;
+    }
+  }
+
+  .time-resolution {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    margin: 0 calc(2 * #{$margin-value});
+    justify-content: flex-end;
+
+    p-slider {
+      width: 10rem;
+    }
+  }
+}

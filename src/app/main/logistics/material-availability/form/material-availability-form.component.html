@@ -1,0 +1,344 @@
+<div class="page-header-container">
+  <div class="page-context">
+    <div class="page-title-container">
+      <div class="page-title" *ngIf="goodMvtOutput.expectedTitle">
+        {{ "transaction." + goodMvtOutput.expectedTitle | translate }}
+      </div>
+      <div class="page-title" *ngIf="!goodMvtOutput.expectedTitle">
+        {{ "transaction." + componentData.componentId | translate }}
+      </div>
+
+      <div class="page-secondary-actions"></div>
+    </div>
+
+    <div class="page-subtitle-container">
+      <div class="page-subtitle">{{ subTitle }}</div>
+    </div>
+  </div>
+
+  <div class="page-primary-actions">
+    <button
+      type="button"
+      mat-raised-button
+      *ngIf="snBatchTableSelection._select && materialTableSelection.isSn"
+      (click)="openAirworthinessStatus(snBatchTableSelection.stockInformationRow)"
+    >
+      {{ componentData.componentId + ".airworthinessStatus" | translate }}
+    </button>
+
+    <button type="button" mat-raised-button (click)="cancel()">
+      {{ componentData.componentId + ".cancel" | translate }}
+    </button>
+
+    <button
+      type="button"
+      class="btn-with-spinner"
+      color="primary"
+      mat-raised-button
+      *ngIf="materialTableSelection._select"
+      (click)="save()"
+    >
+      <span class="lds-hourglass" *ngIf="isSaving"></span>
+      {{ componentData.componentId + ".save" | translate }}
+    </button>
+
+    <button type="button" mat-raised-button (click)="refresh()">
+      {{ componentData.componentId + ".refresh" | translate }}
+    </button>
+  </div>
+</div>
+
+<div class="page-wrapper">
+  <div class="page-container">
+    <div class="page-content">
+      <div class="grid-row">
+        <div class="grid-cell--12 breadcrumbs">
+          <div class="grid-cell grid-cell--container breadcrumbs-container">
+            <div class="grid-cell-content">
+              <div class="row " *ngIf="!isCreateOpenMode">
+                <div class="breadcrumbs flex-row--justify-center">
+                  <ul class="breadcrumbs-navigation">
+                    <li *ngFor="let state of breadcrumbsList" [class.current]="state.tittle === breadcrumbs.tittle">
+                      <div class="breadcrumbs-labels">
+                        <div class="title">{{ state.tittle }}</div>
+                        <div class="subtitle">{{ state.subtittle }}</div>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-row select-box">
+        <div class="grid-cell--4 arrow">
+          <div class="grid-cell grid-cell--container grid-cell-stock-select">
+            <div class="grid-cell-content">
+              <div class="grid-cell-header materials">
+                <div class="grid-cell-title-container">
+                  <h3 class="grid-cell-title">{{ componentData.componentId + ".materail" | translate }}</h3>
+                </div>
+              </div>
+
+              <div class="table">
+                <div class="table-header material">
+                  <div class="table-row">
+                    <div class="table-cell material-pn">
+                      {{ componentData.componentId + ".materialPn" | translate }}
+                    </div>
+                    <div class="table-cell interchangeability">
+                      {{ componentData.componentId + ".interchangability" | translate }}
+                    </div>
+                    <div class="table-cell material-quantity">
+                      {{ componentData.componentId + ".availableQuantity" | translate }}
+                    </div>
+                  </div>
+                </div>
+
+                <div class="table-body material">
+                  <ng-container *ngFor="let materialRow of materialTable; let i = index">
+                    <div
+                      id="{{ i }}"
+                      class="table-row"
+                      (click)="toggleMaterialVisibility(materialRow, false)"
+                      [ngClass]="{ first: i == 0, selected: materialRow._select }"
+                    >
+                      <div class="table-cell material-pn content">
+                        <a (click)="navigateToMaterial(materialRow.pnCode)">
+                          {{ materialRow.pnCode }}
+                        </a>
+                      </div>
+                      <div class="table-cell interchangeability">
+                        {{ materialRow.interchangeability }}
+                      </div>
+                      <div class="table-cell material-quantity">
+                        {{ materialRow.availableQuantity }}
+                      </div>
+                    </div>
+                  </ng-container>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-cell--4 arrow">
+          <div class="grid-cell grid-cell--container grid-cell-stock-select">
+            <div class="grid-cell-content">
+              <div class="grid-cell-header warehouse">
+                <div class="grid-cell-title-container">
+                  <h3 class="grid-cell-title">{{ componentData.componentId + ".warehouse" | translate }}</h3>
+                </div>
+              </div>
+              <div class="table">
+                <div class="table-header warehouse" *ngIf="!noPnInWarehouse && materialTableSelection._select">
+                  <div class="table-row">
+                    <div class="table-cell warehouse-site">
+                      {{ componentData.componentId + ".warehouseSite" | translate }}
+                    </div>
+                    <div class="table-cell warehouse-name">
+                      {{ componentData.componentId + ".warehouseName" | translate }}
+                    </div>
+                    <div class="table-cell warehouse-quantity">
+                      {{ componentData.componentId + ".availableQuantity" | translate }}
+                    </div>
+                  </div>
+                </div>
+                <div class="table-body warehouse" *ngIf="!noPnInWarehouse && materialTableSelection._select">
+                  <ng-container *ngFor="let warehouseRow of warehouseTable; let i = index">
+                    <div
+                      id="{{ i }}"
+                      class="table-row"
+                      (click)="toggleWarehouseVisibility(warehouseRow)"
+                      [ngClass]="{ first: i == 0, selected: warehouseRow._select }"
+                    >
+                      <div class="table-cell warehouse-site" *ngIf="warehouseRow.site">
+                        {{ warehouseRow.site.siteName }}
+                      </div>
+                      <div class="table-cell warehouse-name">
+                        {{ warehouseRow.bidtWarehouseDTO.whName }}
+                      </div>
+                      <div
+                        class="table-cell warehouse-quantity"
+                        [ngClass]="{
+                          ok: isConfOk(warehouseRow),
+                          warning: isConfWarning(warehouseRow),
+                          nok: isConfNok(warehouseRow)
+                        }"
+                      >
+                        <div class="warehouse-quantity value">
+                          {{ warehouseRow.quantity }}
+                        </div>
+                      </div>
+                    </div>
+                  </ng-container>
+                </div>
+              </div>
+              <div class="message" *ngIf="noPnInWarehouse && materialTableSelection._select">
+                {{ componentData.componentId + ".noPnInWarehouse" | translate }}
+              </div>
+              <div class="message" *ngIf="!materialTableSelection._select">
+                {{ componentData.componentId + ".selectMaterialMessage" | translate }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-cell--4">
+          <div class="grid-cell grid-cell--container grid-cell-stock-select">
+            <div class="grid-cell-content">
+              <div class="grid-cell-header snBatch">
+                <div class="grid-cell-title-container">
+                  <h3 class="grid-cell-title">
+                    <div *ngIf="materialTableSelection.isSn">
+                      {{ componentData.componentId + ".snTitle" | translate }}
+                    </div>
+                    <div *ngIf="!materialTableSelection.isSn">
+                      {{ componentData.componentId + ".batch" | translate }}
+                    </div>
+                  </h3>
+                </div>
+              </div>
+
+              <div class="table">
+                <div
+                  class="table-header snBatch"
+                  *ngIf="warehouseTableSelection._select && !noSnWithPn && !noBatchWithPn"
+                >
+                  <div class="table-row">
+                    <div class="table-cell snBatch-sn" *ngIf="materialTableSelection.isSn">
+                      {{ componentData.componentId + ".sn" | translate }}
+                    </div>
+                    <div class="table-cell snBatch-batch" *ngIf="!materialTableSelection.isSn">
+                      {{ componentData.componentId + ".batch" | translate }}
+                    </div>
+                    <div class="table-cell snBatch-qty" *ngIf="!materialTableSelection.isSn">
+                      {{ componentData.componentId + ".quantity" | translate }}
+                    </div>
+                    <div class="table-cell snBatch-potential">
+                      {{ componentData.componentId + ".potential" | translate }}
+                    </div>
+                    <div class="table-cell snBatch-date">
+                      {{ componentData.componentId + ".storageDate" | translate }}
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  class="table-body snBatch"
+                  *ngIf="warehouseTableSelection._select && !noSnWithPn && !noBatchWithPn"
+                >
+                  <ng-container *ngFor="let snBatchRow of snBatchTable; let i = index">
+                    <div
+                      id="{{ i }}"
+                      class="table-row"
+                      (click)="toggleSnBatchVisibility(snBatchRow)"
+                      [ngClass]="{ first: i == 0, selected: snBatchRow._select }"
+                    >
+                      <div class="snBatch-sn" *ngIf="materialTableSelection.isSn">
+                        <a
+                          (click)="
+                            navigateToEquipment(materialTableSelection.pnCode, snBatchRow.stockInformationRow.sn)
+                          "
+                        >
+                          {{ snBatchRow.stockInformationRow.sn }}
+                        </a>
+                        <i
+                          *ngIf="
+                            snBatchRow.stockInformationRow.isSnAlreadySelected &&
+                            !snBatchRow.stockInformationRow._obj.stockIssueWorkOrderWoCode
+                          "
+                          class="fa fa-exclamation-triangle"
+                          aria-hidden="true"
+                          pTooltip="{{ componentData.componentId + '.tooltipNoSourceSn' | translate }}"
+                          tooltipPosition="top"
+                        >
+                        </i>
+                        <i
+                          *ngIf="
+                            snBatchRow.stockInformationRow.isSnAlreadySelected &&
+                            snBatchRow.stockInformationRow._obj.stockIssueWorkOrderWoCode
+                          "
+                          class="fa fa-exclamation-triangle"
+                          aria-hidden="true"
+                          pTooltip="{{ componentData.componentId + '.tooltipSourceSn' | translate }}{{
+                            snBatchRow.stockInformationRow._obj.stockIssueWorkOrderWoCode
+                          }}"
+                          tooltipPosition="top"
+                        >
+                        </i>
+                      </div>
+                      <div class="snBatch-batch" *ngIf="!materialTableSelection.isSn">
+                        <a>
+                          {{ snBatchRow.stockInformationRow.batch }}
+                        </a>
+                        <i
+                          *ngIf="
+                            snBatchRow.stockInformationRow.isBatchAlreadySelected &&
+                            !snBatchRow.stockInformationRow._obj.stockIssueWorkOrderWoCode
+                          "
+                          class="fa fa-exclamation-triangle"
+                          aria-hidden="true"
+                          pTooltip="{{ componentData.componentId + '.tooltipNoSourceBatch' | translate }}"
+                          tooltipPosition="top"
+                        >
+                        </i>
+                        <i
+                          *ngIf="
+                            snBatchRow.stockInformationRow.isBatchAlreadySelected &&
+                            snBatchRow.stockInformationRow._obj.stockIssueWorkOrderWoCode
+                          "
+                          class="fa fa-exclamation-triangle"
+                          aria-hidden="true"
+                          pTooltip="{{ componentData.componentId + '.tooltipSourceBatch' | translate }}{{
+                            snBatchRow.stockInformationRow._obj.stockIssueWorkOrderWoCode
+                          }}"
+                          tooltipPosition="top"
+                        >
+                        </i>
+                      </div>
+                      <div class="snBatch-qty" *ngIf="!materialTableSelection.isSn">
+                        {{ snBatchRow.stockInformationRow.quantity }}
+                      </div>
+                      <div class="snBatch-potential">
+                        {{ snBatchRow.stockInformationRow.potential }}
+                      </div>
+                      <div class="snBatch-date" *ngIf="snBatchRow.storageDate">
+                        {{ snBatchRow.storageDate }}
+                      </div>
+                    </div>
+                  </ng-container>
+                </div>
+              </div>
+              <div class="message" *ngIf="!warehouseTableSelection._select">
+                <div *ngIf="materialTableSelection.isSn">
+                  {{ componentData.componentId + ".selectWarehouseMessage" | translate
+                  }}{{ componentData.componentId + ".sn" | translate }}
+                </div>
+                <div *ngIf="!materialTableSelection.isSn">
+                  {{ componentData.componentId + ".selectWarehouseMessage" | translate
+                  }}{{ componentData.componentId + ".batch" | translate }}
+                </div>
+              </div>
+              <div
+                *ngIf="
+                  materialTableSelection._select && warehouseTableSelection._select && (noSnWithPn || noBatchWithPn)
+                "
+                class="message"
+              >
+                <div *ngIf="noSnWithPn">
+                  {{ componentData.componentId + ".noSnWithPn" | translate }}
+                </div>
+                <div *ngIf="noBatchWithPn">
+                  {{ componentData.componentId + ".noBatchWithPn" | translate }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,401 @@
+<a-modal class="aw-modal" [(visible)]="display" [width]="80">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".createTransferOrder" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="section">
+      <div class="section-content">
+        <div class="row">
+          <div class="form-group required">
+            <label class="form-label">{{ "type" | translate }}</label>
+
+            <div class="form-control">
+              <p-dropdown
+                appendTo="body"
+                class="aw-dropdown fixed-width"
+                placeholder="&nbsp;"
+                [showClear]="true"
+                [options]="typeList"
+                [(ngModel)]="selectedTransferOrderType"
+                [disabled]="createTransferOrderInput"
+                (onChange)="onSelectTranferType()"
+              ></p-dropdown>
+            </div>
+          </div>
+
+          <div class="form-group"></div>
+        </div>
+
+        <div class="row" *ngIf="!createTransferOrderInput">
+          <div class="form-group">
+            <div class="form-control aw-selectbutton-wrapper">
+              <p-selectButton [options]="articleNumberType" [(ngModel)]="selectedArticleNumber"></p-selectButton>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="form-group" [ngClass]="selectedArticleNumber === MONO_ARTICLE ? 'required' : ''">
+            <label class="form-label">{{ getComponentName() + ".articleCode" | translate }}</label>
+
+            <div
+              class="form-control form-control-with-modal"
+              *ngIf="!createTransferOrderInput"
+              [ngClass]="{ disabled: hasBeenCalculated }"
+            >
+              <div class="form-control-data" (click)="onClickSearchMaterial()">
+                {{ partDTO.pnCode }}
+              </div>
+
+              <div *ngIf="partDTO.pnCode" class="btn-clear-wrapper">
+                <i
+                  class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+                  aria-hidden="true"
+                  (click)="clearPnCodeClass()"
+                ></i>
+              </div>
+              <div class="btn-search-wrapper">
+                <i
+                  class="fa fa-fw fa-search aw-icon btn-search"
+                  aria-hidden="true"
+                  (click)="onClickSearchMaterial()"
+                ></i>
+              </div>
+            </div>
+
+            <div
+              class="form-control form-control-with-modal"
+              *ngIf="createTransferOrderInput"
+              [ngClass]="{ disabled: createTransferOrderInput }"
+            >
+              <div class="form-control-data">
+                {{ partDTO.pnCode }}
+              </div>
+            </div>
+
+            <div
+              style="font-style: italic; padding: 8px 0 0 16px;"
+              *ngIf="partDTO.pnCode && partDTO.articleDesignation"
+            >
+              {{ partDTO.articleDesignation }}
+            </div>
+          </div>
+
+          <div class="display--flex-row flex--1">
+            <div class="form-group" [ngClass]="selectedArticleNumber === MONO_ARTICLE ? 'required' : ''">
+              <label class="form-label">
+                <div style="display: inline;">
+                  {{ getComponentName() + ".quantity" | translate }}
+                </div>
+              </label>
+
+              <div class="form-control">
+                <input
+                  type="number"
+                  name="quantity"
+                  (blur)="changeQuantity()"
+                  class="aw-input"
+                  [(ngModel)]="quantity"
+                />
+              </div>
+            </div>
+
+            <div
+              class="form-group"
+              [ngClass]="{
+                'visibility--hidden': !(partDTO && partDTO.pnCode && partDTO.quantityPerIssue && partDTO.quantityUnit)
+              }"
+            >
+              <label class="form-label">{{ "unit" | translate }}</label>
+
+              <div class="form-control">
+                <div
+                  class="form-control-generic"
+                  *ngIf="partDTO && partDTO.pnCode && partDTO.quantityPerIssue && partDTO.quantityUnit"
+                >
+                  {{ partDTO.quantityUnit }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div
+            class="form-group"
+            [ngClass]="{
+              required: bidtTransferOrderDTOInput.torStatus != awPropertiesConstants.PROCUREMENT_REQUEST_STATUS_DRAFT
+            }"
+          >
+            <label class="form-label">{{ getComponentName() + ".expectedDate" | translate }}</label>
+
+            <div class="form-control">
+              <p-calendar
+                showButtonBar="true"
+                [monthNavigator]="true"
+                [yearNavigator]="true"
+                [yearRange]="sessionService.calendarYearRange"
+                class="aw-calendar"
+                [dateFormat]="sessionService.dateFormatPrimeNG"
+                [locale]="sessionService.calendarFormat"
+                appendTo="body"
+                [(ngModel)]="bidtTransferOrderDTOInput.receiptExpectedDate"
+                [disabled]="createTransferOrderInput"
+              ></p-calendar>
+            </div>
+          </div>
+
+          <div
+            class="form-group"
+            style="height: 47px;"
+            [ngClass]="{
+              required: bidtTransferOrderDTOInput.torStatus != awPropertiesConstants.PROCUREMENT_REQUEST_STATUS_DRAFT
+            }"
+          >
+            <label class="form-label">{{ getComponentName() + ".criticity" | translate }}</label>
+
+            <div class="form-control aw-selectbutton-wrapper">
+              <p-selectButton
+                [disabled]="createTransferOrderInput"
+                [options]="criticityList"
+                [(ngModel)]="bidtTransferOrderDTOInput.criticality"
+              >
+              </p-selectButton>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section" *ngIf="createTransferOrderInput">
+      <h4 class="section-title">{{ getComponentName() + ".procReq" | translate }}</h4>
+
+      <div class="section-content">
+        <div class="row">
+          <div
+            class="form-group"
+            [ngClass]="{
+              'visibility--hidden':
+                createTransferOrderInput.procReqItem?.birePn?.traceability !=
+                  awPropertiesConstants.PN_TRACEABILITY_BY_BATCH &&
+                createTransferOrderInput.procReqItem?.birePn?.traceability !=
+                  awPropertiesConstants.PN_TRACEABILITY_BY_SN &&
+                createTransferOrderInput.procReqItem?.birePn?.traceability !=
+                  awPropertiesConstants.PN_TRACEABILITY_BY_PACKAGING_BATCH_AND_SN
+            }"
+          >
+            <label class="form-label"> {{ getComponentName() + ".expectedSn" | translate }} </label>
+
+            <div class="form-control">
+              <input
+                class="aw-input"
+                name="value"
+                type="text"
+                [disabled]="true"
+                [(ngModel)]="createTransferOrderInput.procurmentRequest.procComment"
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              {{ getComponentName() + ".requestedPotential" | translate }}
+            </label>
+
+            <div class="form-control">
+              <div class="form-control-generic">
+                {{ formattedRequestedPotential }} {{ createTransferOrderInput.procurmentRequest.potentialUnit }}
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              {{ getComponentName() + ".expirationDate" | translate }}
+            </label>
+
+            <div class="form-control">
+              <div class="form-control-generic">
+                {{
+                  createTransferOrderInput.procurmentRequest.calendarPotential
+                    | date: "yyyy/MM/dd":"":translateService.currentLang
+                }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h4 class="section-title">{{ getComponentName() + ".supplier" | translate }}</h4>
+
+      <div class="section-content">
+        <div class="row">
+          <div class="form-group required">
+            <label class="form-label">{{ getComponentName() + ".site" | translate }}</label>
+
+            <div class="form-control">
+              <p-dropdown
+                appendTo="body"
+                class="aw-dropdown fixed-width"
+                placeholder="&nbsp;"
+                [options]="sitesShipment"
+                [showClear]="true"
+                [(ngModel)]="selectedShipperSite"
+                (onChange)="onChangeShipperSite()"
+              ></p-dropdown>
+            </div>
+          </div>
+
+          <div class="form-group required custom-width">
+            <label class="form-label">
+              {{ selectedShipperWarehouseCategory | formatSelectOption: warehouseCategories }}
+            </label>
+
+            <div class="form-control aw-selectbutton-wrapper aw-selectbutton-with-dropdown">
+              <p-selectButton
+                [options]="warehouseCategories"
+                [(ngModel)]="selectedShipperWarehouseCategory"
+                (onChange)="onChangeShipperWarehouseCategory()"
+              ></p-selectButton>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label"> &nbsp;</label>
+
+            <div class="form-control" *ngIf="isMainWarehouse">
+              <p-dropdown
+                class="aw-dropdown fixed-width"
+                placeholder="&nbsp;"
+                [options]="shipperWarehouses"
+                [showClear]="true"
+                [(ngModel)]="selectedShipperWarehouse"
+              ></p-dropdown>
+            </div>
+            <div class="form-control error-context" *ngIf="!isMainWarehouse">
+              {{ getComponentName() + ".noMainWarehouse" | translate }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h4 class="section-title">{{ getComponentName() + ".recipient" | translate }}</h4>
+
+      <div class="section-content">
+        <div class="row" *ngIf="!showPartnerDialogInput">
+          <div class="form-group required">
+            <label class="form-label">{{ getComponentName() + ".site" | translate }}</label>
+
+            <div class="form-control">
+              <p-dropdown
+                appendTo="body"
+                class="aw-dropdown fixed-width"
+                placeholder="&nbsp;"
+                [options]="sitesRecipient"
+                [showClear]="true"
+                [(ngModel)]="selectedRecipientSite"
+                (onChange)="onChangeRecipientSite()"
+                [disabled]="
+                  (selectedTransferOrderType &&
+                    selectedTransferOrderType.transferType === awPropertiesConstants.MM_TRANSFER_TYPE_INTRA_SITE_KEY) ||
+                  createTransferOrderInput
+                "
+              >
+              </p-dropdown>
+            </div>
+          </div>
+
+          <div class="form-group required custom-width">
+            <label class="form-label">
+              {{ selectedRecipientWarehouseCategory | formatSelectOption: warehouseCategories }}
+            </label>
+
+            <div class="form-control aw-selectbutton-wrapper aw-selectbutton-with-dropdown">
+              <p-selectButton
+                [options]="warehouseCategories"
+                [(ngModel)]="selectedRecipientWarehouseCategory"
+                (onChange)="onChangeRecipientWarehouseCategory()"
+                [disabled]="
+                  (selectedTransferOrderType &&
+                    selectedTransferOrderType.transferType === awPropertiesConstants.MM_TRANSFER_TYPE_INTER_SITE_KEY) ||
+                  createTransferOrderInput
+                "
+              ></p-selectButton>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label"> &nbsp;</label>
+
+            <div class="form-control">
+              <p-dropdown
+                appendTo="body"
+                class="aw-dropdown fixed-width"
+                placeholder="&nbsp;"
+                [options]="recipientWarehouses"
+                [showClear]="true"
+                [(ngModel)]="selectedRecipientWarehouse"
+                [disabled]="createTransferOrderInput"
+              >
+              </p-dropdown>
+            </div>
+          </div>
+        </div>
+        <div class="row" *ngIf="showPartnerDialogInput">
+          <div class="form-group required">
+            <label class="form-label">{{ getComponentName() + ".partner" | translate }}</label>
+
+            <div class="form-control form-control-with-modal">
+              <div class="form-control-data" (click)="openRecipientCustomerDialog()">
+                {{ selectedFinalRecipientCustomerCode }}
+              </div>
+
+              <div *ngIf="selectedFinalRecipientCustomerCode" class="btn-clear-wrapper">
+                <i
+                  class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+                  aria-hidden="true"
+                  (click)="unselectFinalRecipientCustomer()"
+                ></i>
+              </div>
+              <div class="btn-search-wrapper">
+                <i
+                  class="fa fa-fw fa-search aw-icon btn-search"
+                  aria-hidden="true"
+                  (click)="openRecipientCustomerDialog()"
+                ></i>
+              </div>
+            </div>
+          </div>
+          <div class="form-group ng-star-inserted"></div>
+        </div>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button type="button" mat-raised-button (click)="closeDialog()">{{ "global.cancel" | translate }}</button>
+
+    <button mat-raised-button type="button" color="primary" [disabled]="!canValidate()" (click)="validate()">
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>
+
+<aw-dialog-search-pn
+  *ngIf="showQuickSearchMaterialPopup"
+  [(display)]="showQuickSearchMaterialPopup"
+  (onSelected)="setSelectedMaterial($event)"
+  [showPartTypeSelection]="true"
+  [checkContainer]="true"
+  [withAllTypes]="true"
+></aw-dialog-search-pn>
+
+<aw-dialog-search-customer
+  *ngIf="recipientCustomerDialogVisible"
+  [(display)]="recipientCustomerDialogVisible"
+  (onSelected)="onSelectRecipientCustomer($event)"
+></aw-dialog-search-customer>

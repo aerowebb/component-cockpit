@@ -1,0 +1,35 @@
+{
+  "UnitConversionMatrixComponent": {
+    "unitConversionMatrix": "Matrice de conversion des unités",
+    "ucmTab": "Matrice de conversion des unités",
+    "importTab": "Importer",
+    "archivedImportTab": "Rapports d'import archivés",
+    "excelExportTemplate": "Exporter la matrice de conversion des unités",
+    "unit": "Unité de mesure",
+    "fhEquivalent": "Equivalent heures de vol",
+    "save": "Sauver",
+    "fileToImport": "Fichier de la matrice de conversion des unités à importer",
+    "importFile": "Importer",
+    "importReportList": "Liste des Rapports d'import",
+    "reportCode": "Code du rapport",
+    "reportName": "Nom du rapport",
+    "statusUser": "Auteur",
+    "statusDate": "Date",
+    "openReport": "Vous avez choisi d'ouvrir le document : {{openReport.reportName}}",
+    "openReport.line1": "qui est : fichier TXT",
+    "confirmDeleteSelectedRows": "Voulez-vous supprimer les lignes sélectionnées ?",
+    "confirmDeleteSelectedRow": "Voulez-vous supprimer la ligne sélectionnée ?",
+    "confirmDeleteSelectedReport": "Voulez-vous supprimer le rapport sélectionné ?",
+    "confirmDeleteSelectedReports": "Voulez-vous supprimer les rapports sélectionnés ?",
+    "successOnDeleteReport": "Le rappport a été supprimé avec succès !",
+    "successOnDeleteReports": "Les rappports ont été supprimés avec succès !",
+    "successOnSaveUnitConversionMatrix": "Sauvé avec succès",
+    "successOnDeleteRow": "La ligne a été supprimée avec succès !",
+    "successOnDeleteRows": "Les lignes ont été supprimées avec succès !"
+  },
+  "DialogUnitConversionMatrixComponent": {
+    "title": "Matrice de conversion des unités",
+    "unit": "Unité de mesure",
+    "fhEquivalent": "Equivalent heures de vol"
+  }
+}

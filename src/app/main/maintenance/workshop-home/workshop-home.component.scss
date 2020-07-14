@@ -1,0 +1,30 @@
+@import "constants";
+@import "mixins";
+:host {
+  .calendar-style {
+    position: absolute;
+    right: 60px;
+  }
+  .grid-cell-style {
+    border: 1px solid black;
+  }
+  .hr-style {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .alert--ok {
+    display: block;
+    background-color: $green-light1;
+  }
+
+  .alert--warning {
+    display: block;
+    background-color: $orange;
+  }
+
+  .alert--nok {
+    display: block;
+    background-color: $red-light1;
+  }
+}

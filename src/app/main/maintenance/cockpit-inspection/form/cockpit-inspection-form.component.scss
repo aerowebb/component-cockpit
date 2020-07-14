@@ -1,0 +1,70 @@
+@import "constants";
+@import "mixins";
+@import "modifiers";
+
+:host {
+  .chart-container {
+    @include flex-row();
+
+    @media screen and (max-width: 1280px) {
+      flex-direction: column;
+    }
+
+    .chart-legend {
+      @include flex-column();
+
+      justify-content: center;
+      margin-left: $margin-value;
+
+      .chart-legend-label {
+        @include flex-row();
+
+        align-items: center;
+
+        .chart-legend-label-color {
+          height: 0.75rem;
+          margin-right: $margin-value;
+          width: 2rem;
+
+          &.completed {
+            background-color: $green-light1;
+          }
+
+          &.not-completed {
+            background-color: $orange;
+          }
+        }
+      }
+
+      .chart-value {
+        font-weight: 700;
+        margin-left: $margin-value;
+      }
+    }
+
+    .chart-wrapper {
+      position: relative;
+      height: 8rem;
+      width: 10rem;
+      margin-top: 2em;
+    }
+
+    width: fit-content;
+    margin-right: auto;
+    margin-left: auto;
+  }
+
+  .padding-class {
+    padding-left: 0.5em;
+  }
+
+  .custom-span {
+    color: #01579b;
+  }
+
+  .inventory-title {
+    padding-left: 0.5em;
+    font-style: italic;
+    font-size: large;
+  }
+}

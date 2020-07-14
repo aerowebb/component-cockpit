@@ -1,0 +1,10 @@
+@import "constants";
+
+:host {
+  .form-label {
+    &.warning {
+      color: $red-dark1 !important;
+      font-style: italic;
+    }
+  }
+}

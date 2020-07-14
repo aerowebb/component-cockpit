@@ -1,0 +1,100 @@
+<div class="page-header-container">
+  <div class="page-context">
+    <div class="page-title-container">
+      <div class="page-title">
+        {{ "transaction." + componentData.componentId | translate }}
+      </div>
+
+      <div class="page-secondary-actions">
+        <i
+          class="fa fa-fw aw-icon aw-icon-with-border"
+          [ngClass]="{ 'fa-star': isFavoriteEntry, 'fa-star-o': !isFavoriteEntry }"
+          aria-hidden="true"
+          (click)="updateFavoriteState()"
+          pTooltip="{{ 'page.' + (isFavoriteEntry ? 'removeFromFavorites' : 'addToFavorites') | translate }}"
+          tooltipPosition="bottom"
+        ></i>
+      </div>
+    </div>
+
+    <div class="page-subtitle-container">
+      <div class="page-subtitle">
+        {{ "page.searchPage" | translate }}
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="page-wrapper">
+  <div class="page-container search-page-container">
+    <div class="page-content">
+      <div class="grid-row">
+        <div class="grid-cell--12">
+          <div class="grid-cell grid-cell--container">
+            <div class="grid-cell-content">
+              <div class="column">
+                <div class="row">
+                  <div class="form-group">
+                    <label class="form-label"></label>
+                    <div class="form-control">
+                      <span
+                        (click)="openTemplate(loadTemplate())"
+                        style="cursor: pointer; text-decoration: underline; color: blue"
+                      >
+                        {{ loadTemplate() }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row  grid-cell--6">
+                  <div class="form-group">
+                    <label class="form-label">{{
+                      componentData.componentId + ".materialFileToImport" | translate
+                    }}</label>
+
+                    <div class="form-control form-control-with-modal" [ngClass]="{ disabled: isReadOpenMode }">
+                      <div class="form-control-data">
+                        {{ fileName }}
+                      </div>
+
+                      <div class="btn-file-upload-wrapper">
+                        <p-fileUpload
+                          #fileUploader
+                          *ngIf="!isReadOpenMode"
+                          class="aw-fileupload"
+                          name="document[]"
+                          customUpload="true"
+                          mode="basic"
+                          auto="true"
+                          chooseLabel=""
+                          (uploadHandler)="uploadDocument($event, fileUploader)"
+                        ></p-fileUpload>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row search-criteria-footer">
+                  <div class="search-actions">
+                    <button type="button" class="btn-with-spinner" mat-raised-button (click)="import()">
+                      <span class="lds-hourglass" *ngIf="showSpinner"></span>
+                      <i class="fa fa-fw fa-plus" aria-hidden="true"></i>
+                      <span>{{ componentData.componentId + ".importFile" | translate }}</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<aw-import-report-popup
+  *ngIf="showImportReportMessage"
+  [importReportMessage]="importReportMessage"
+  [(display)]="showImportReportMessage"
+></aw-import-report-popup>

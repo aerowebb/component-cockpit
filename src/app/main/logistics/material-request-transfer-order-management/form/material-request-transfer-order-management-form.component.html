@@ -1,0 +1,1024 @@
+<div class="page-header">
+  <div class="page-info">
+    <div>
+      <h2 class="page-title">{{ "transaction." + componentData.componentId | translate }}</h2>
+
+      <div class="page-subtitle">
+        <div *ngIf="subtitle" class="page-subtitle">- {{ subtitle }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-actions">
+    <button
+      mat-icon-button
+      class="mat-elevation-z1"
+      matTooltip="Show all actions"
+      matTooltipPosition="above"
+      aria-label="Show all actions"
+      [matMenuTriggerFor]="actions"
+    >
+      <mat-icon>more_horiz</mat-icon>
+    </button>
+    <mat-menu #actions="matMenu">
+      <button mat-menu-item (click)="reload()">
+        {{ "global.refresh" | translate }}
+      </button>
+    </mat-menu>
+  </div>
+</div>
+
+<div class="page-wrapper">
+  <div class="page-container">
+    <div class="page-content">
+      <div class="grid-row">
+        <div class="grid-cell--8">
+          <div class="grid-cell grid-cell--container grid-cell-scope  grid-cell-item-structure">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container loading-indicator">
+                <h3 class="grid-cell-title">
+                  {{ "page.mainData" | translate }}
+                </h3>
+              </div>
+            </div>
+
+            <div class="grid-cell-content grid-cell-content-with-section">
+              <div class="column">
+                <!-- ROW 1 -->
+                <div class="row">
+                  <div class="form-group flex--4">
+                    <label class="form-label">{{ getComponentName() + ".number" | translate }}</label>
+
+                    <div class="form-control custom-anchor">
+                      {{ transferOrder.torCode }}
+                    </div>
+                  </div>
+                  <div class="form-group flex--4">
+                    <label class="form-label">{{ getComponentName() + ".type" | translate }}</label>
+
+                    <div class="form-control custom-anchor">
+                      {{ toNumber(transferOrder.torType) | formatSelectOption: torTypeList | extractTranslation }}
+                    </div>
+                  </div>
+                  <div class="form-group flex--4">
+                    <label class="form-label">{{ getComponentName() + ".criticity" | translate }}</label>
+
+                    <div class="form-control">
+                      <div class="form-control-generic">
+                        <span
+                          *ngIf="transferOrder.criticality === aWPropertiesConstants.LOGISTICAL_CRITICALITY_ROUTINE"
+                          class="ok"
+                        >
+                          {{ getComponentName() + ".routine" | translate }}
+                        </span>
+
+                        <span
+                          *ngIf="transferOrder.criticality === aWPropertiesConstants.LOGISTICAL_CRITICALITY_IMMEDIATE"
+                          class="nok"
+                        >
+                          {{ getComponentName() + ".immediate" | translate }}
+                        </span>
+
+                        <span
+                          *ngIf="transferOrder.criticality === aWPropertiesConstants.LOGISTICAL_CRITICALITY_URGENT"
+                          class="warning"
+                        >
+                          {{ getComponentName() + ".urgent" | translate }}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- ROW 2 -->
+                <div class="row">
+                  <div class="form-group flex--4">
+                    <label class="form-label">{{ getComponentName() + ".applicant" | translate }}</label>
+
+                    <div class="form-control">
+                      <div class="form-control-generic">{{ applicant }} ({{ applicantLogin }})</div>
+                    </div>
+                  </div>
+
+                  <div class="form-group flex--4">
+                    <label class="form-label">{{ getComponentName() + ".created" | translate }}</label>
+
+                    <div class="form-control">
+                      {{ transferOrder.statusDate | date: "yyyy/MM/dd HH:mm" }}
+                    </div>
+                  </div>
+                  <div class="flex--4"></div>
+                </div>
+
+                <!-- ROW 3 -->
+                <div style="display: flex; margin-top: 32px;">
+                  <div class="section" style="flex-grow: 1; margin-top: 0;">
+                    <h4 class="section-title">
+                      {{ getComponentName() + ".shipper" | translate }}
+                    </h4>
+                    <div class="section-content">
+                      <div class="row">
+                        <div class="form-group" *ngIf="transferOrder.bidtSiteIssue">
+                          <label class="form-label">{{ getComponentName() + ".site" | translate }}</label>
+
+                          <div class="form-control">
+                            <div class="form-control-generic">
+                              {{ transferOrder?.bidtSiteIssue?.siteCode }}
+                              <ng-container *ngIf="transferOrder?.bidtSiteIssue?.siteName">
+                                - {{ transferOrder?.bidtSiteIssue?.siteName }}
+                              </ng-container>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="form-group" *ngIf="transferOrder.bidtWarehouseIssue">
+                          <label class="form-label">{{ "warehouse" | translate }}</label>
+
+                          <div class="form-control">
+                            <div class="form-control-generic">
+                              {{ transferOrder.bidtWarehouseIssue.whCode }}
+                              <ng-container *ngIf="transferOrder.bidtWarehouseIssue.whName">
+                                - {{ transferOrder.bidtWarehouseIssue.whName }}
+                              </ng-container>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="section" style="flex-grow: 1; margin-top: 0;">
+                    <h4 class="section-title">
+                      {{ getComponentName() + ".recepient" | translate }}
+                    </h4>
+
+                    <div class="section-content">
+                      <div class="row">
+                        <div class="form-group">
+                          <label class="form-label">
+                            {{ getComponentName() + ".site" | translate }}
+                          </label>
+
+                          <div class="form-control">
+                            <div class="form-control-generic">
+                              {{ transferOrder?.bidtSiteReceipt?.siteCode }}
+                              <ng-container *ngIf="transferOrder?.bidtSiteReceipt?.siteName">
+                                - {{ transferOrder?.bidtSiteReceipt?.siteName }}
+                              </ng-container>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="form-group">
+                          <label class="form-label">
+                            {{ getComponentName() + ".warehouseAndWorkshop" | translate }}
+                          </label>
+
+                          <div class="form-control">
+                            <div class="form-control-generic">
+                              {{ transferOrder?.bidtWarehouseReceipt?.whCode }}
+                              <ng-container *ngIf="transferOrder?.bidtWarehouseReceipt?.whName">
+                                - {{ transferOrder?.bidtWarehouseReceipt?.whName }}
+                              </ng-container>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="form-group" *ngIf="workPackageAsset">
+                          <label class="form-label">
+                            <ng-container
+                              *ngIf="
+                                workPackageAsset.equipmentFunction == aWPropertiesConstants.FAMILY_FUNCTION_AIRCRAFT_KEY
+                              "
+                            >
+                              {{ "aircraft" | translate }}
+                            </ng-container>
+                            <ng-container
+                              *ngIf="
+                                workPackageAsset.equipmentFunction == aWPropertiesConstants.FAMILY_FUNCTION_ENGINE_KEY
+                              "
+                            >
+                              {{ "engine" | translate }}
+                            </ng-container>
+                            <ng-container
+                              *ngIf="
+                                workPackageAsset.equipmentFunction !=
+                                  aWPropertiesConstants.FAMILY_FUNCTION_AIRCRAFT_KEY &&
+                                workPackageAsset.equipmentFunction != aWPropertiesConstants.FAMILY_FUNCTION_ENGINE_KEY
+                              "
+                            >
+                              {{ "equipment" | translate }}
+                            </ng-container>
+                          </label>
+
+                          <div class="form-control">
+                            <div class="form-control-generic">
+                              <a (click)="openWorkPackageAsset()">{{ workPackageAssetName }}</a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-cell--4">
+          <div class="grid-cell grid-cell--container">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">
+                  {{ getComponentName() + ".item" | translate }}
+                </h3>
+              </div>
+            </div>
+
+            <div class="grid-cell-content grid-cell-content-with-section">
+              <div class="column">
+                <div class="row">
+                  <div class="form-group">
+                    <label class="form-label">
+                      {{ getComponentName() + ".partNumber" | translate }}
+                    </label>
+
+                    <div class="form-control">
+                      <div class="form-control-generic">
+                        {{ selectedTorItemBirePn?.pnCode }}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label">
+                      {{ getComponentName() + ".requestedQuantity" | translate }}
+                    </label>
+
+                    <div class="form-control">
+                      <div class="form-control-generic">
+                        {{ formatQuantity(selectedTorItem?.quantity) }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="form-group">
+                    <label class="form-label">
+                      {{ getComponentName() + ".designation" | translate }}
+                    </label>
+
+                    <div class="form-control">
+                      <div class="form-control-generic">
+                        {{ selectedTorItemBirePn?.articleDesignation }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="section">
+                <h4 class="section-title">
+                  {{ componentData.componentId + ".advancement" | translate }}
+                </h4>
+
+                <div class="section-content">
+                  <div class="row" style="margin-bottom: 8px;">
+                    <div
+                      style="padding: 8px; color: #000; border-radius: 4px; margin-left: 16px;"
+                      [ngClass]="{
+                        'served--nok': shippedNb == 0,
+                        'served--ok': shippedNb > 0 && shippedNb === selectedTorItem.quantity,
+                        'served--warning': shippedNb > 0 && shippedNb !== selectedTorItem.quantity
+                      }"
+                    >
+                      <span *ngIf="shippedNb == 0">
+                        {{ componentData.componentId + ".notSelected" | translate }}
+                      </span>
+                      <span *ngIf="shippedNb > 0 && shippedNb !== selectedTorItem.quantity">
+                        {{ componentData.componentId + ".partiallySelected" | translate }}
+                      </span>
+                      <span *ngIf="shippedNb > 0 && shippedNb === selectedTorItem.quantity">
+                        {{ componentData.componentId + ".inTransit" | translate }}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="form-group flex-row--align-center">
+                      <div class="form-control">
+                        <div class="form-control-generic" style="font-size: 3rem; padding-bottom: 1rem;">
+                          {{ notSelectedNb }}
+                        </div>
+                      </div>
+                      <label class="form-label">
+                        <ng-container>
+                          {{ getComponentName() + ".notSelected" | translate }}
+                        </ng-container>
+                      </label>
+                    </div>
+
+                    <div class="form-group flex-row--align-center">
+                      <div class="form-control">
+                        <div class="form-control-generic" style="font-size: 3rem; padding-bottom: 1rem">
+                          {{ selectedNb }}
+                        </div>
+                      </div>
+                      <label class="form-label">
+                        <ng-container>
+                          {{ getComponentName() + ".selected" | translate }}
+                        </ng-container>
+                      </label>
+                    </div>
+                    <div class="form-group flex-row--align-center">
+                      <div class="form-control">
+                        <div class="form-control-generic" style="font-size: 3rem; padding-bottom: 1rem">
+                          {{ shippedNb }}
+                        </div>
+                      </div>
+                      <label class="form-label">{{ getComponentName() + ".inTransit" | translate }}</label>
+                    </div>
+                    <div class="form-group flex-row--align-center">
+                      <div class="form-control">
+                        <div class="form-control-generic" style="font-size: 3rem; padding-bottom: 1rem">
+                          {{ receivedNb }}
+                        </div>
+                      </div>
+                      <label
+                        class="form-label"
+                        *ngIf="transferOrder.torType !== aWPropertiesConstants.TRANSFER_ORDER_TYPE_REVERSE_MVT"
+                        >{{ getComponentName() + ".delivered" | translate }}</label
+                      >
+                      <label
+                        class="form-label"
+                        *ngIf="transferOrder.torType === aWPropertiesConstants.TRANSFER_ORDER_TYPE_REVERSE_MVT"
+                        >{{ getComponentName() + ".reversed" | translate }}</label
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-row">
+        <div class="grid-cell--12">
+          <div class="grid-cell grid-cell--container">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container  loading-indicator">
+                <h3 class="grid-cell-title">
+                  {{ getComponentName() + ".suggestedAssets" | translate }}
+                </h3>
+              </div>
+            </div>
+
+            <div class="grid-cell-content">
+              <div class="column">
+                <div
+                  class="form-group"
+                  *ngIf="
+                    transferOrder.torType != aWPropertiesConstants.TRANSFER_ORDER_TYPE_REVERSE_MVT &&
+                    transferOrder.torType != aWPropertiesConstants.TRANSFER_ORDER_TYPE_INTRA_SITE
+                  "
+                >
+                  <div class="form-control aw-selectbutton-wrapper">
+                    <p-selectButton
+                      [(ngModel)]="selectedcandidateAssetCategory"
+                      [options]="candidateAssetCategoryList"
+                      (onChange)="updateCandidateAssetTableColumns()"
+                    ></p-selectButton>
+                  </div>
+                </div>
+
+                <p-table
+                  [resizableColumns]="true"
+                  #ptableResults
+                  class="aw-table2"
+                  [columns]="materialProposedTableCols"
+                  [value]="candidateAssets"
+                  [scrollable]="true"
+                >
+                  <ng-template pTemplate="emptymessage">
+                    <span *ngIf="!iscandidateAssetsLoading"> &nbsp;</span>
+
+                    <div *ngIf="iscandidateAssetsLoading" class="aw-table-loading-indicator">
+                      <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                      <div class="lds-hourglass"></div>
+                    </div>
+                  </ng-template>
+
+                  <ng-template pTemplate="caption">
+                    <div class="aw-table-header">
+                      <div class="aw-table-global-filter">
+                        <label class="aw-table-global-filter-label">
+                          <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                        </label>
+
+                        <input
+                          #ptableResultsGlobalFilter
+                          class="aw-table-global-filter-input"
+                          type="text"
+                          placeholder="{{ 'table.globalFilterText' | translate }}"
+                          (input)="ptableResults.filterGlobal($event.target.value, 'contains')"
+                        />
+                      </div>
+
+                      <div class="table-actions">
+                        <div class="aw-table-icon-actions" style="margin-left: 0px;">
+                          <i
+                            class="fa fa-fw fa-filter aw-icon aw-icon-with-border aw-icon-with-overlay"
+                            aria-hidden="true"
+                            [ngClass]="{ active: filtersVisible }"
+                            (click)="opFilters.toggle($event)"
+                          ></i>
+                        </div>
+                      </div>
+                    </div>
+                  </ng-template>
+
+                  <ng-template pTemplate="colgroup" let-columns>
+                    <colgroup>
+                      <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                      <col [ngStyle]="{ width: '10%' }" />
+                    </colgroup>
+                  </ng-template>
+
+                  <ng-template pTemplate="header" let-columns>
+                    <tr>
+                      <th
+                        pResizableColumn
+                        *ngFor="let col of columns"
+                        [ngStyle]="{ 'text-align': col.alignment }"
+                        [ngSwitch]="col.field"
+                      >
+                        <ng-container *ngSwitchCase="'sn'">
+                          <ng-container
+                            *ngIf="
+                              selectedTorItemBirePn?.traceability == aWPropertiesConstants.PN_TRACEABILITY_BY_SN ||
+                              selectedTorItemBirePn?.traceability ==
+                                aWPropertiesConstants.PN_TRACEABILITY_BY_PACKAGING_BATCH_AND_SN
+                            "
+                          >
+                            {{ getComponentName() + ".sn" | translate }}
+                          </ng-container>
+                          <ng-container
+                            *ngIf="
+                              selectedTorItemBirePn?.traceability == aWPropertiesConstants.PN_TRACEABILITY_BY_BATCH
+                            "
+                          >
+                            {{ getComponentName() + ".manufacturingBatch" | translate }}
+                          </ng-container>
+                        </ng-container>
+
+                        <ng-container *ngSwitchDefault>
+                          {{ getComponentName() + "." + col.field | translate }}
+                        </ng-container>
+                      </th>
+
+                      <th style="text-align: center;">Action</th>
+                    </tr>
+                  </ng-template>
+
+                  <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                    <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                      <td
+                        *ngFor="let col of columns"
+                        [ngSwitch]="col.field"
+                        [ngStyle]="{ 'text-align': col.alignment }"
+                      >
+                        <div *ngSwitchCase="'msn'">
+                          <div class="row">
+                            <a class="font-bold" (click)="openEquipment(rowData['topEquipment'])">{{
+                              rowData["topEquipment"]?.sn
+                            }}</a>
+                          </div>
+
+                          <div class="row">
+                            {{ formatEquipmentStatus(rowData["topEquipment"]?.equipmentDesignation) }}
+                          </div>
+                        </div>
+
+                        <div *ngSwitchCase="'locationForPicking'">
+                          {{
+                            rowData["currentBidmProject"]
+                              ? formatSite(rowData["currentBidmProject"].bireRepairCenterCode)
+                              : rowData["topEquipmentLocation"]
+                          }}
+                        </div>
+
+                        <div *ngSwitchCase="'material'">
+                          <div class="row">
+                            <a class="font-bold" (click)="openPart(rowData)">{{ rowData["pn"]?.pnCode }}</a>
+                          </div>
+
+                          <div class="row">
+                            <span class="italic">{{ rowData["equipment"]?.equipmentDesignation }}</span>
+                          </div>
+                        </div>
+
+                        <div *ngSwitchCase="'sn'">
+                          <div class="row">
+                            <a
+                              class="font-bold"
+                              (click)="openEquipment(rowData['equipment'])"
+                              *ngIf="rowData['equipment'].sn && !rowData['stockInformation']?.manufacturingBatchNumber"
+                            >
+                              {{ rowData["equipment"]?.sn }}
+                            </a>
+                            <a
+                              class="bold"
+                              (click)="openManufacturingBatch(rowData['stockInformation'].manufacturingBatchNumber)"
+                              *ngIf="!rowData['equipment'].sn && rowData['stockInformation']?.manufacturingBatchNumber"
+                            >
+                              {{ rowData["stockInformation"].manufacturingBatchNumber }}
+                            </a>
+                          </div>
+
+                          <div class="row" *ngIf="!rowData['equipment'].batchNumber">
+                            <span class="italic">{{
+                              formatEquipmentStatus(rowData["equipment"]?.operationalStatus)
+                            }}</span>
+                          </div>
+                        </div>
+
+                        <div *ngSwitchCase="'snBatch'">
+                          <div class="row">
+                            <a
+                              class="font-bold"
+                              (click)="openEquipment(rowData['equipment'])"
+                              *ngIf="rowData['equipment'].sn && !rowData['stockInformation']?.manufacturingBatchNumber"
+                            >
+                              {{ rowData["equipment"]?.sn }}
+                            </a>
+                            <a
+                              class="bold"
+                              (click)="openManufacturingBatch(rowData['stockInformation'].manufacturingBatchNumber)"
+                              *ngIf="!rowData['equipment'].sn && rowData['stockInformation']?.manufacturingBatchNumber"
+                            >
+                              {{ rowData["stockInformation"].manufacturingBatchNumber }}
+                            </a>
+                          </div>
+
+                          <div class="row" *ngIf="!rowData['equipment'].batchNumber">
+                            <span class="italic">{{
+                              formatEquipmentStatus(rowData["equipment"]?.operationalStatus)
+                            }}</span>
+                          </div>
+                        </div>
+
+                        <div *ngSwitchCase="'quantity'">
+                          {{ rowData["equipment"]?.quantity | formatNumber }}
+                          <ng-container *ngIf="rowData['stockInformation'].stockMvtUnit">
+                            {{ rowData["stockInformation"].stockMvtUnit }}
+                          </ng-container>
+                        </div>
+
+                        <div *ngSwitchCase="'batch'">
+                          <div class="row">
+                            <a
+                              class="font-bold"
+                              (click)="
+                                rowData['equipment']?.sn
+                                  ? openEquipment(rowData['equipment'])
+                                  : openBatch(rowData['equipment'].equipmentCode)
+                              "
+                              *ngIf="rowData['equipment']"
+                            >
+                              {{ rowData["equipment"].batchNumber }}
+                            </a>
+                          </div>
+
+                          <div class="row" *ngIf="rowData['equipment'].batchNumber">
+                            <span class="italic">{{
+                              formatEquipmentStatus(rowData["equipment"]?.operationalStatus)
+                            }}</span>
+                          </div>
+                        </div>
+
+                        <div *ngSwitchCase="'location'">
+                          <div class="row" *ngIf="rowData['siteReceipt']?.siteName">
+                            <span class="font-bold">{{ rowData["siteReceipt"]?.siteName }}</span>
+                          </div>
+
+                          <div class="row">
+                            <span class="italic">{{ rowData["warehouseReceipt"]?.whName }}</span>
+                          </div>
+                        </div>
+
+                        <div *ngSwitchCase="'technicalData'">
+                          <div class="row" *ngIf="rowData['potentialValue']">
+                            <span style="width: 5rem;">{{ getComponentName() + ".potential" | translate }}</span>
+                            <span class="font-bold"
+                              >{{ formatPotential(rowData["potentialValue"]) }} {{ rowData["potentialUnit"] }}</span
+                            >
+                          </div>
+
+                          <div class="row" *ngIf="rowData['calendarPotential']">
+                            <span style="width: 5rem;">{{ getComponentName() + ".expiration" | translate }}</span>
+                            <span class="font-bold">{{
+                              rowData["calendarPotential"] | date: "yyyy/MM/dd":"":translateService.currentLang
+                            }}</span>
+                          </div>
+                        </div>
+
+                        <div *ngSwitchCase="'availabilityAtDate'">
+                          <div class="row">
+                            <span *ngIf="isCandidateAssetServed(rowData)" class="font-bold">
+                              {{ getComponentName() + ".served" | translate }}
+                            </span>
+
+                            <span
+                              class="font-bold"
+                              [ngClass]="{
+                                green: !rowData['transferOrder'] || rowData['transferOrder'].id === transferOrder.id,
+                                yellow: rowData['transferOrder'] && rowData['transferOrder'].id !== transferOrder.id
+                              }"
+                              *ngIf="isAvailableAtDate(rowData) && !isCandidateAssetServed(rowData)"
+                            >
+                              {{ "yes" | translate }}
+                              <span *ngIf="rowData['plannedAvailabilityDate']">
+                                ({{
+                                  rowData["plannedAvailabilityDate"]
+                                    | date: "yyyy/MM/dd":"":translateService.currentLang
+                                }})
+                              </span>
+                            </span>
+                            <span class="font-bold red" *ngIf="!isAvailableAtDate(rowData)">
+                              {{ "no" | translate }}
+                              <span *ngIf="rowData['plannedAvailabilityDate']">
+                                ({{
+                                  rowData["plannedAvailabilityDate"]
+                                    | date: "yyyy/MM/dd":"":translateService.currentLang
+                                }})
+                              </span>
+                            </span>
+                          </div>
+
+                          <div class="row">
+                            <span
+                              *ngIf="rowData['transferOrder'] && rowData['transferOrder'].id === transferOrder.id"
+                              style="font-style: italic;"
+                              class="green"
+                            >
+                              <ng-container
+                                *ngIf="
+                                  rowData['transferOrder']?.torStatus ==
+                                  aWPropertiesConstants.TRANSFER_ORDER_STATUS_PLANNED
+                                "
+                              >
+                                {{ getBookedQty(rowData) | formatNumber }}
+                                {{ getComponentName() + ".selectedBy" | translate }}
+                              </ng-container>
+                              <ng-container
+                                *ngIf="
+                                  rowData['transferOrder']?.torStatus !=
+                                  aWPropertiesConstants.TRANSFER_ORDER_STATUS_PLANNED
+                                "
+                              >
+                                {{ getBookedQty(rowData) | formatNumber }}
+                                {{ getComponentName() + ".bookedBy" | translate }}
+                              </ng-container>
+
+                              <a (click)="openTransferOrder(rowData['transferOrder'])">{{
+                                rowData["transferOrder"]?.torCode
+                              }}</a>
+                            </span>
+
+                            <span
+                              *ngIf="
+                                rowData['transferOrder'] &&
+                                rowData['transferOrder'].id !== transferOrder.id &&
+                                (!rowData['warehouseReceipt'] ||
+                                  rowData['warehouseReceipt'] !==
+                                    aWPropertiesConstants.MM_WAREHOUSE_TYPE_DEPLOYEMENT_BATCH)
+                              "
+                              style="font-style: italic;"
+                              class="yellow"
+                            >
+                              <ng-container
+                                *ngIf="
+                                  rowData['transferOrder']?.torStatus ==
+                                  aWPropertiesConstants.TRANSFER_ORDER_STATUS_PLANNED
+                                "
+                              >
+                                {{ getComponentName() + ".selectedFor" | translate }}
+                              </ng-container>
+                              <ng-container
+                                *ngIf="
+                                  rowData['transferOrder']?.torStatus !=
+                                  aWPropertiesConstants.TRANSFER_ORDER_STATUS_PLANNED
+                                "
+                              >
+                                {{ getComponentName() + ".bookedFor" | translate }}
+                              </ng-container>
+
+                              <a (click)="openProcurementRequest(rowData['transferOrder'])">
+                                {{ rowData["transferOrder"]?.torCode }}
+                              </a>
+                            </span>
+
+                            <span
+                              *ngIf="rowData['bookingProcurementRequest']"
+                              style="font-style: italic;"
+                              class="yellow"
+                            >
+                              {{ getComponentName() + ".selectedFor" | translate }}
+
+                              <a (click)="openProcurementRequest(rowData['bookingProcurementRequest'])">
+                                {{ rowData["bookingProcurementRequest"].procCode }}
+                              </a>
+                            </span>
+
+                            <span
+                              *ngIf="
+                                rowData['transferOrder'] &&
+                                rowData['transferOrder'].id !== transferOrder.id &&
+                                rowData['warehouseReceipt'] ===
+                                  aWPropertiesConstants.MM_WAREHOUSE_TYPE_DEPLOYEMENT_BATCH
+                              "
+                              style="font-style: italic;"
+                              class="yellow"
+                            >
+                              {{ getComponentName() + ".bookedForDeploymentBatch" | translate }}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div *ngSwitchCase="'satisfactionRate'">
+                          <div class="row" *ngIf="!isCandidateAssetServed(rowData)">
+                            <div style="width: 100%; cursor: pointer;">
+                              <p-progressBar
+                                [ngClass]="{
+                                  green: calculateSatisfactionRate(rowData) == 100,
+                                  yellow: calculateSatisfactionRate(rowData) < 100,
+                                  red: calculateSatisfactionRate(rowData) < 40
+                                }"
+                                [value]="calculateSatisfactionRate(rowData)"
+                                (click)="openSatisfactionRateDetails(rowData)"
+                              ></p-progressBar>
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+
+                      <td style="text-align: center;">
+                        <button
+                          style="margin: 0 auto"
+                          type="button"
+                          class="btn-with-spinner"
+                          mat-raised-button
+                          (click)="bookCandidateAsset(rowData)"
+                          *ngIf="!rowData['transferOrder'] && isSelectBtnVisible() && !isCandidateAssetServed(rowData)"
+                        >
+                          <span class="lds-hourglass" *ngIf="rowData['_bookCandidateAssetLoading']"></span>
+                          {{ getComponentName() + ".select" | translate }}
+                        </button>
+
+                        <button
+                          style="margin: 0 auto"
+                          type="button"
+                          (click)="cancelBooking(rowData)"
+                          *ngIf="
+                            rowData['transferOrder'] &&
+                            rowData['transferOrder'].id == transferOrder.id &&
+                            isCancelBookingBtnVisible(rowData)
+                          "
+                          mat-raised-button
+                          color="warn"
+                        >
+                          {{ getComponentName() + ".cancel" | translate }}
+                        </button>
+
+                        <button
+                          style="margin: 0 auto"
+                          type="button"
+                          mat-raised-button
+                          color="accent"
+                          *ngIf="
+                            rowData['transferOrder'] &&
+                            rowData['transferOrder'].id != transferOrder.id &&
+                            (rowData['transferOrder'].torStatus ==
+                              aWPropertiesConstants.TRANSFER_ORDER_STATUS_PERFORMED ||
+                              rowData['transferOrder'].torStatus ==
+                                aWPropertiesConstants.TRANSFER_ORDER_STATUS_ON_GOING) &&
+                            rowData['_hasPreemptionRight'] &&
+                            isSelectBtnVisible()
+                          "
+                          (click)="confirmPreemptCandidateAsset(rowData)"
+                        >
+                          {{ getComponentName() + ".select" | translate }}
+                        </button>
+
+                        <button
+                          style="margin: 0 auto"
+                          type="button"
+                          mat-raised-button
+                          *ngIf="
+                            rowData['transferOrder'] &&
+                            rowData['transferOrder'].id != transferOrder.id &&
+                            rowData['transferOrder'].torStatus !=
+                              aWPropertiesConstants.TRANSFER_ORDER_STATUS_PERFORMED &&
+                            rowData['transferOrder'].torStatus !=
+                              aWPropertiesConstants.TRANSFER_ORDER_STATUS_ON_GOING &&
+                            isSelectBtnVisible()
+                          "
+                          (click)="preemptCandidateAsset(rowData)"
+                        >
+                          {{ getComponentName() + ".select" | translate }}
+                        </button>
+                      </td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<p-overlayPanel #opFilters class="aw-overlay" (onShow)="filtersVisible = true" (onHide)="filtersVisible = false">
+  <div class="grid-cell-content grid-cell-content-with-section">
+    <div class="col">
+      <div class="section">
+        <h4 class="section-title">{{ getComponentName() + ".location" | translate }}</h4>
+
+        <div class="section-content">
+          <div class="row">
+            <div class="form-group" style="min-width: 350px;">
+              <label class="form-label"> {{ getComponentName() + ".site" | translate }} </label>
+              <div class="form-control">
+                <p-dropdown
+                  class="aw-dropdown fixed-width"
+                  placeholder="&nbsp;"
+                  [showClear]="true"
+                  [(ngModel)]="searchFilterObject.site"
+                  [options]="siteList"
+                  (onChange)="loadLocationWarehouses()"
+                ></p-dropdown>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label
+                class="form-label"
+                *ngIf="locationWarehouseType === aWPropertiesConstants.WAREHOUSE_CATEGORY_WAREHOUSE"
+              >
+                {{ componentData.componentId + ".warehouse" | translate }}
+              </label>
+              <label
+                class="form-label"
+                *ngIf="locationWarehouseType === aWPropertiesConstants.WAREHOUSE_CATEGORY_WORKSHOP"
+              >
+                {{ componentData.componentId + ".workshop" | translate }}
+              </label>
+
+              <div class="form-control ">
+                <p-selectButton
+                  [options]="logisticsTypeList"
+                  [(ngModel)]="locationWarehouseType"
+                  (onChange)="loadLocationWarehouses()"
+                ></p-selectButton>
+              </div>
+            </div>
+            <div class="form-group" style="min-width: 400px;">
+              <label class="form-label">&nbsp;</label>
+              <div class="form-control">
+                <p-dropdown
+                  class="aw-dropdown fixed-width"
+                  placeholder="&nbsp;"
+                  [showClear]="true"
+                  [(ngModel)]="searchFilterObject.warehouse"
+                  [options]="warehouseList"
+                ></p-dropdown>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-content">
+          <div class="row">
+            <div class="form-group">
+              <label class="form-label"> {{ getComponentName() + ".sn" | translate }} </label>
+              <div class="form-control">
+                <input class="aw-input" name="sn" type="text" [(ngModel)]="searchFilterObject.sn" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label"> {{ getComponentName() + ".status" | translate }} </label>
+              <div class="form-control">
+                <p-dropdown
+                  class="aw-dropdown fixed-width"
+                  [options]="equipmentStatusListFilter"
+                  [showClear]="true"
+                  placeholder="&nbsp;"
+                  [(ngModel)]="searchFilterObject.status"
+                >
+                </p-dropdown>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h4 class="section-title">{{ getComponentName() + ".satisfactionRate" | translate }}</h4>
+        <div class="section-content">
+          <div class="form-group">
+            <div class="row" style="padding-bottom: 5px;">
+              <div class="flex--2">
+                <div class="form-control">
+                  <label class="form-label"> {{ getComponentName() + ".sameSiteFilter" | translate }} </label>
+                </div>
+              </div>
+              <div class="flex--1">
+                <div class="form-control aw-selectbutton-wrapper">
+                  <p-selectButton
+                    [(ngModel)]="searchFilterObject.sameSite"
+                    [options]="satifactionRateStatus"
+                  ></p-selectButton>
+                </div>
+              </div>
+            </div>
+            <div class="row" style="padding-bottom: 5px;">
+              <div class="flex--2">
+                <div class="form-control">
+                  <label class="form-label"> {{ getComponentName() + ".bookingStatusFilter" | translate }} </label>
+                </div>
+              </div>
+              <div class="flex--1">
+                <div class="form-control aw-selectbutton-wrapper">
+                  <p-selectButton
+                    [(ngModel)]="searchFilterObject.bookingStatus"
+                    [options]="satifactionRateStatus"
+                  ></p-selectButton>
+                </div>
+              </div>
+            </div>
+            <div class="row" style="padding-bottom: 5px;">
+              <div class="flex--2">
+                <div class="form-control">
+                  <label class="form-label"> {{ getComponentName() + ".availableAtDateFilter" | translate }} </label>
+                </div>
+              </div>
+              <div class="flex--1">
+                <div class="form-control aw-selectbutton-wrapper">
+                  <p-selectButton
+                    [(ngModel)]="searchFilterObject.availableAtDate"
+                    [options]="satifactionRateStatus"
+                  ></p-selectButton>
+                </div>
+              </div>
+            </div>
+            <div class="row" style="padding-bottom: 5px;">
+              <div class="flex--2">
+                <div class="form-control">
+                  <label class="form-label">
+                    {{ getComponentName() + ".noUnconfirmedFailureFilter" | translate }}
+                  </label>
+                </div>
+              </div>
+              <div class="flex--1">
+                <div class="form-control aw-selectbutton-wrapper">
+                  <p-selectButton
+                    [(ngModel)]="searchFilterObject.noUnconfirmedFailure"
+                    [options]="satifactionRateStatus"
+                  ></p-selectButton>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row action-list" style="justify-content: flex-end;">
+      <button type="button" mat-raised-button (click)="opFilters.hide(); filtersVisible = false; resetFilters()">
+        {{ "global.reset" | translate }}
+      </button>
+
+      <button
+        type="button"
+        mat-raised-button
+        (click)="opFilters.hide(); filtersVisible = false; filterSearchResult()"
+        color="primary"
+        style="margin-left: 8px;"
+      >
+        {{ "global.filter" | translate }}
+      </button>
+    </div>
+  </div>
+</p-overlayPanel>
+
+<aw-dialog-satisfaction-rate-transfer-order
+  [(display)]="showSatisfactionRateDialog"
+  *ngIf="showSatisfactionRateDialog"
+  [transferOrder]="transferOrder"
+  [candidateAsset]="selectedCandidateAsset"
+></aw-dialog-satisfaction-rate-transfer-order>

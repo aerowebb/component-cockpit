@@ -1,0 +1,55 @@
+<div class="grid-row">
+  <div class="grid-cell--12">
+    <div class="grid-cell grid-cell--container">
+      <div class="grid-cell-header">
+        <div class="grid-cell-title-container">
+          <h3 class="grid-cell-title">
+            {{ getComponentName() + ".title" | translate }} ({{ storageBinTypesTableDataSource.dataCount }})
+          </h3>
+        </div>
+      </div>
+      <div class="grid-cell-content">
+        <a-table [dataSource]="storageBinTypesTableDataSource">
+          <ng-template tableActionsDef>
+            <button
+              type="button"
+              *ngIf="!storageBinTypesTableDataSource.hasDataSelection"
+              mat-raised-button
+              (click)="addStorageBinType()"
+            >
+              {{ "global.add" | translate }}
+            </button>
+
+            <button
+              type="button"
+              *ngIf="storageBinTypesTableDataSource.hasDataSelection"
+              mat-raised-button
+              (click)="deleteSelectedStorageBinType()"
+            >
+              {{ "global.delete" | translate }}
+            </button>
+
+            <button
+              type="button"
+              *ngIf="storageBinTypesTableDataSource.dataSelectionCount === 1"
+              mat-raised-button
+              (click)="editSelectedStorageBinType()"
+            >
+              {{ "global.edit" | translate }}
+            </button>
+          </ng-template>
+        </a-table>
+      </div>
+    </div>
+  </div>
+
+  <aw-storage-bin-type-form-popup
+    *ngIf="showStorageBinTypeForm"
+    [(display)]="showStorageBinTypeForm"
+    [storageBinType]="currentStorageBinType"
+    [storageBinType]="currentStorageBinType"
+    [isNewStorageBinType]="isNewStorageBinType"
+    (onCreate)="createStorageBinType($event)"
+    (onUpdate)="updateStorageBinType($event)"
+  ></aw-storage-bin-type-form-popup>
+</div>

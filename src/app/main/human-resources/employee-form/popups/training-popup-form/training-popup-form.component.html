@@ -1,0 +1,207 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div class="modal-title">{{ componentData.componentId + ".title" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="column">
+      <div class="row">
+        <div class="form-group" [ngClass]="{ required: !isReadOnlyForm }">
+          <label class="form-label">{{ componentData.componentId + ".trainingTitle" | translate }}</label>
+
+          <div class="form-control">
+            <input
+              type="text"
+              class="aw-input"
+              [disabled]="isReadOnlyForm"
+              [(ngModel)]="trainingDTO.trainingName"
+              maxlength="100"
+            />
+          </div>
+        </div>
+
+        <div class="form-group"></div>
+      </div>
+
+      <div class="row">
+        <div class="form-group flex--2" [ngClass]="{ required: !isReadOnlyForm }">
+          <label class="form-label">{{ componentData.componentId + ".startTime" | translate }}</label>
+
+          <div class="form-control">
+            <p-calendar
+              showButtonBar="true"
+              [monthNavigator]="true"
+              [yearNavigator]="true"
+              [yearRange]="sessionService.calendarYearRange"
+              class="aw-calendar"
+              [dateFormat]="sessionService.dateFormatPrimeNG"
+              [locale]="sessionService.calendarFormat"
+              [disabled]="isReadOnlyForm"
+              appendTo="body"
+              [(ngModel)]="selectedTrainingStartDate"
+            ></p-calendar>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">AM</label>
+
+          <div class="form-control">
+            <p-radioButton class="aw-radiobutton" value="AM" [(ngModel)]="selectedFromAM"></p-radioButton>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">PM</label>
+
+          <div class="form-control">
+            <p-radioButton class="aw-radiobutton" value="PM" [(ngModel)]="selectedFromAM"></p-radioButton>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group flex--2" [ngClass]="{ required: !isReadOnlyForm }">
+          <label class="form-label">{{ componentData.componentId + ".endTime" | translate }}</label>
+
+          <div class="form-control">
+            <p-calendar
+              showButtonBar="true"
+              [monthNavigator]="true"
+              [yearNavigator]="true"
+              [yearRange]="sessionService.calendarYearRange"
+              class="aw-calendar"
+              [dateFormat]="sessionService.dateFormatPrimeNG"
+              [locale]="sessionService.calendarFormat"
+              [disabled]="isReadOnlyForm"
+              appendTo="body"
+              [(ngModel)]="selectedTrainingEndDate"
+            ></p-calendar>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">AM</label>
+
+          <div class="form-control">
+            <p-radioButton class="aw-radiobutton" value="AM" [(ngModel)]="selectedToAM"></p-radioButton>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">PM</label>
+
+          <div class="form-control">
+            <p-radioButton class="aw-radiobutton" value="PM" [(ngModel)]="selectedToAM"></p-radioButton>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group">
+          <label class="form-label">{{ componentData.componentId + ".performed" | translate }}</label>
+
+          <div class="form-control">
+            <p-checkbox
+              binary="true"
+              class="aw-checkbox"
+              [(ngModel)]="trainingDTO.trainingPerformed"
+              [disabled]="isReadOnlyForm"
+            ></p-checkbox>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group">
+          <label class="form-label">{{ componentData.componentId + ".requestedBy" | translate }}</label>
+
+          <div class="form-control">
+            <p-dropdown
+              class="aw-dropdown fixed-width"
+              [options]="requestedByList"
+              [(ngModel)]="trainingDTO.trainingAskedBy"
+              [showClear]="true"
+              placeholder="&nbsp;"
+              [disabled]="isReadOnlyForm"
+              appendTo="body"
+            ></p-dropdown>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">{{ componentData.componentId + ".instructor" | translate }}</label>
+
+          <div class="form-control">
+            <input
+              type="text"
+              class="aw-input"
+              [disabled]="isReadOnlyForm"
+              [(ngModel)]="trainingDTO.trainingInstructor"
+              maxlength="100"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group">
+          <label class="form-label">{{ componentData.componentId + ".center" | translate }}</label>
+
+          <div class="form-control">
+            <input
+              type="text"
+              class="aw-input"
+              [disabled]="isReadOnlyForm"
+              [(ngModel)]="trainingDTO.trainingCenter"
+              maxlength="100"
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">{{ componentData.componentId + ".comment" | translate }}</label>
+
+          <div class="form-control">
+            <input
+              type="text"
+              class="aw-input"
+              [disabled]="isReadOnlyForm"
+              [(ngModel)]="trainingDTO.trainingComment"
+              maxlength="300"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button *ngIf="isReadOnlyForm" type="button" mat-raised-button (click)="cancel()">
+      <span>{{ "global.close" | translate }}</span>
+    </button>
+
+    <button *ngIf="!isReadOnlyForm" type="button" mat-raised-button (click)="cancel()">
+      <span>{{ "global.cancel" | translate }}</span>
+    </button>
+
+    <button
+      *ngIf="!isReadOnlyForm"
+      type="button"
+      color="primary"
+      mat-raised-button
+      (click)="validate()"
+      [disabled]="
+        trainingDTO.trainingName === undefined ||
+        trainingDTO.trainingName === null ||
+        trainingDTO.trainingName.trim().length === 0 ||
+        selectedTrainingStartDate === undefined ||
+        selectedTrainingStartDate === null ||
+        selectedTrainingEndDate === undefined ||
+        selectedTrainingEndDate === null
+      "
+    >
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>

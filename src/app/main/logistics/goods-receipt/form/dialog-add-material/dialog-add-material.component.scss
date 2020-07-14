@@ -1,0 +1,39 @@
+@import "constants";
+
+:host {
+  .article-designation {
+    font-style: italic;
+    padding: 0px 0 0 16px;
+  }
+
+  .form-label {
+    &.warning {
+      color: $red-dark1 !important;
+      font-style: italic;
+    }
+  }
+
+  td div.form-control-with-modal {
+    display: flex;
+    flex-direction: row;
+    border-bottom-color: #595959;
+    border-left-color: transparent;
+    border-radius: 0;
+    border-right-color: transparent;
+    border-style: solid;
+    border-top-color: transparent;
+    border-width: 1px;
+    padding: 5px;
+    transition: border-bottom-color 0.25s ease-in-out;
+  }
+
+  td div.form-control-data {
+    color: inherit;
+    flex-grow: 1;
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    line-height: 1.42857143;
+    padding: 2px 0 4px 0;
+  }
+}

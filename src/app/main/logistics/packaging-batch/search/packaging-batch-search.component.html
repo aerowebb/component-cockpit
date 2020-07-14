@@ -1,0 +1,244 @@
+<div class="page-header">
+  <div class="page-info">
+    <div>
+      <h2 class="page-title">
+        {{ "transaction." + componentData.componentId | translate }}
+      </h2>
+    </div>
+  </div>
+
+  <div class="page-actions">
+    <button type="button" mat-raised-button (click)="openNewPackaging()" *ngIf="hasUpdateAccessRight">
+      {{ "global.create" | translate }}
+    </button>
+
+    <button
+      mat-icon-button
+      class="mat-elevation-z1"
+      matTooltip="{{ 'global.showAllActionTooltip' | translate }}"
+      matTooltipPosition="above"
+      aria-label="Show all actions"
+      [matMenuTriggerFor]="actions"
+    >
+      <mat-icon>more_horiz</mat-icon>
+    </button>
+    <mat-menu #actions="matMenu">
+      <button mat-menu-item (click)="updateFavoriteState()">{{ "addToFavorite" | translate }}</button>
+    </mat-menu>
+  </div>
+</div>
+
+<div class="page-wrapper">
+  <div class="page-container search-page-container">
+    <div class="page-content">
+      <div class="grid-row">
+        <div class="grid-cell--12">
+          <div class="grid-cell grid-cell--container">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">{{ "global.search" | translate }}</h3>
+              </div>
+            </div>
+
+            <div class="grid-cell-content grid-cell-content-with-section">
+              <div class="row search-criteria-header">
+                <aw-manage-search-criteria
+                  [componentId]="SEARCH_CRITERIA_ID"
+                  (onSelected)="loadSearchCriteria($event)"
+                  (onSavedAsked)="saveSearchCriteriaAsked()"
+                  [objectFromPage]="searchCriteriaToSave"
+                  [canChange]="!searchCriteriaCalculated"
+                ></aw-manage-search-criteria>
+              </div>
+
+              <div class="section">
+                <div class="section-content">
+                  <div class="row">
+                    <div class="form-group ">
+                      <label class="form-label">{{ componentData.componentId + ".pn" | translate }}</label>
+
+                      <div class="form-control">
+                        <input type="text" [(ngModel)]="searchCriteria.pn" class="aw-input" />
+                      </div>
+                    </div>
+                    <div class="form-group ">
+                      <label class="form-label">{{ componentData.componentId + ".batchNumber" | translate }}</label>
+
+                      <div class="form-control">
+                        <input type="text" [(ngModel)]="searchCriteria.batchNumber" class="aw-input" />
+                      </div>
+                    </div>
+                    <div class="form-group ">
+                      <label class="form-label">{{ componentData.componentId + ".designation" | translate }}</label>
+
+                      <div class="form-control">
+                        <input type="text" [(ngModel)]="searchCriteria.designation" class="aw-input" />
+                      </div>
+                    </div>
+                    <div class="form-group"></div>
+                  </div>
+
+                  <div class="row">
+                    <div class="form-group">
+                      <label class="form-label">{{
+                        componentData.componentId + ".operationalStatus" | translate
+                      }}</label>
+
+                      <div class="form-control">
+                        <p-dropdown
+                          class="aw-dropdown fixed-width"
+                          placeholder="&nbsp;"
+                          [showClear]="true"
+                          [(ngModel)]="searchCriteria.operationalStatus"
+                          [options]="statusList"
+                        ></p-dropdown>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">{{ componentData.componentId + ".eisDate" | translate }}</label>
+                      <div class="form-control">
+                        <p-calendar
+                          showButtonBar="true"
+                          [monthNavigator]="true"
+                          [yearNavigator]="true"
+                          [yearRange]="sessionService.calendarYearRange"
+                          class="aw-calendar"
+                          [dateFormat]="sessionService.dateFormatPrimeNG"
+                          [locale]="sessionService.calendarFormat"
+                          [(ngModel)]="searchCriteria.date"
+                          appendTo="body"
+                        ></p-calendar>
+                      </div>
+                    </div>
+                    <div class="form-group"></div>
+                    <div class="form-group"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ACTION -->
+              <div class="section">
+                <div class="section-content">
+                  <div class="row search-criteria-footer">
+                    <div class="search-actions">
+                      <button
+                        type="button"
+                        mat-raised-button
+                        (click)="search()"
+                        color="primary"
+                        appKeyPress
+                        [keyCode]="'Enter'"
+                        (keyPress)="search()"
+                      >
+                        {{ componentData.componentId + ".toSearch" | translate }}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-row">
+        <div class="grid-cell--12">
+          <div #resultsContainerAnchor class="grid-cell grid-cell--container">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">
+                  {{ "global.results" | translate }} ({{ resultsTable ? resultsTable.length : 0 }})
+                </h3>
+              </div>
+            </div>
+
+            <div class="grid-cell-content">
+              <p-table
+                [resizableColumns]="true"
+                #ptableResult
+                class="aw-table2"
+                [columns]="resultTableCols"
+                [value]="resultsTable"
+                [(selection)]="selectedResults"
+                [scrollable]="true"
+              >
+                <ng-template pTemplate="emptymessage">
+                  <span *ngIf="!isLoading"> &nbsp;</span>
+
+                  <div *ngIf="isLoading" class="aw-table-loading-indicator">
+                    <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                    <div class="lds-hourglass"></div>
+                  </div>
+                </ng-template>
+
+                <ng-template pTemplate="caption">
+                  <div class="aw-table-header" [ngClass]="{ 'rows-selected': selectedResults.length > 0 }">
+                    <div class="aw-table-global-filter">
+                      <label class="aw-table-global-filter-label">
+                        <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                      </label>
+
+                      <input
+                        #ptableEquipmentGlobalFilter
+                        class="aw-table-global-filter-input"
+                        type="text"
+                        placeholder="{{ 'table.globalFilterText' | translate }}"
+                        (input)="ptableResult.filterGlobal($event.target.value, 'contains')"
+                      />
+                    </div>
+
+                    <div class="aw-table-actions">
+                      <button
+                        *ngIf="selectedResults.length > 0"
+                        type="button"
+                        mat-raised-button
+                        (click)="openSelectedBatch()"
+                      >
+                        {{ "global.open" | translate }}
+                      </button>
+                    </div>
+                  </div>
+                </ng-template>
+
+                <ng-template pTemplate="colgroup" let-columns>
+                  <colgroup>
+                    <col class="aw-table-checkbox-wrapper" />
+                    <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                  </colgroup>
+                </ng-template>
+
+                <ng-template pTemplate="header" let-columns>
+                  <tr>
+                    <th class="aw-table-checkbox-wrapper">
+                      <p-tableHeaderCheckbox class="aw-table-checkbox"></p-tableHeaderCheckbox>
+                    </th>
+
+                    <th pResizableColumn *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                      {{ componentData.componentId + "." + col.field | translate }}
+                    </th>
+                  </tr>
+                </ng-template>
+
+                <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                  <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                    <td class="aw-table-checkbox-wrapper">
+                      <p-tableCheckbox class="aw-table-checkbox" [value]="rowData"></p-tableCheckbox>
+                    </td>
+
+                    <td *ngFor="let col of columns" [ngSwitch]="col.field" [ngStyle]="{ 'text-align': col.alignment }">
+                      <!-- Part Number -->
+                      <span *ngSwitchCase="'batchNumber'">
+                        <a (click)="openSelectedBatch(rowData)">{{ rowData[col.field] }}</a>
+                      </span>
+                      <span *ngSwitchDefault>{{ rowData[col.field] }}</span>
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,998 @@
+<div class="page-header">
+  <div class="page-info">
+    <div>
+      <h2 class="page-title">
+        {{ "transaction." + componentData.componentId | translate }}
+      </h2>
+
+      <div class="page-subtitle">
+        <div *ngIf="!isCreateOpenMode && deliveryFolder.dfCode" class="page-subtitle">
+          - {{ deliveryFolder.dfCode }}
+        </div>
+      </div>
+    </div>
+
+    <div class="object-status" *ngIf="deliveryFolder.dfStatus" (click)="showStatus()">
+      {{ deliveryFolder.dfStatus | formatSelectOption: deliveryFolderStatuses }}
+    </div>
+  </div>
+
+  <div class="page-actions">
+    <button
+      mat-icon-button
+      class="mat-elevation-z1"
+      matTooltip="{{ 'global.showAllActionTooltip' | translate }}"
+      matTooltipPosition="above"
+      aria-label="Show all actions"
+      [matMenuTriggerFor]="actions"
+    >
+      <mat-icon>more_horiz</mat-icon>
+    </button>
+    <mat-menu #actions="matMenu">
+      <button mat-menu-item (click)="refresh()">
+        {{ "global.refresh" | translate }}
+      </button>
+      <button mat-menu-item (click)="updateFavoriteState()">
+        {{ (isFavoriteEntry ? "page.removeFromFavorites" : "page.addToFavorites") | translate }}
+      </button>
+    </mat-menu>
+  </div>
+</div>
+
+<div class="page-wrapper">
+  <div class="page-container">
+    <mat-tab-group animationDuration="0ms" dynamicHeight>
+      <mat-tab>
+        <ng-template mat-tab-label>
+          {{ "home" | translate }}
+        </ng-template>
+
+        <div class="grid-row">
+          <div class="grid-cell--6">
+            <div class="grid-cell grid-cell--container">
+              <div class="grid-cell-header">
+                <div class="grid-cell-title-container">
+                  <h3 class="grid-cell-title">
+                    {{ "page.mainData" | translate }}
+                  </h3>
+                </div>
+              </div>
+
+              <div class="grid-cell-content grid-cell-content-with-section">
+                <div class="column">
+                  <div class="section">
+                    <div class="row">
+                      <div class="form-group">
+                        <label class="form-label">{{ getComponentName() + ".folderNum" | translate }}</label>
+
+                        <div class="form-control">
+                          <div class="form-control-generic">
+                            {{ deliveryFolder.dfCode }}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="form-group">
+                        <label class="form-label">{{ getComponentName() + ".type" | translate }}</label>
+
+                        <div class="form-control">
+                          <div class="form-control-generic">
+                            {{ deliveryFolder.bidtDfType?.dftDesignation | extractTranslation }}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="form-group">
+                        <label class="form-label">{{ getComponentName() + ".control" | translate }}</label>
+
+                        <div class="form-control">
+                          <div
+                            class="alert alert--nok"
+                            *ngIf="
+                              deliveryFolder.criticality === awPropertiesConstants.LOGISTICAL_CRITICALITY_IMMEDIATE
+                            "
+                          >
+                            {{ componentData.componentId + ".immediate" | translate }}
+                          </div>
+
+                          <div
+                            class="alert alert--warning"
+                            *ngIf="deliveryFolder.criticality === awPropertiesConstants.LOGISTICAL_CRITICALITY_URGENT"
+                          >
+                            {{ componentData.componentId + ".urgent" | translate }}
+                          </div>
+
+                          <div
+                            class="alert alert--ok"
+                            *ngIf="deliveryFolder.criticality === awPropertiesConstants.LOGISTICAL_CRITICALITY_ROUTINE"
+                          >
+                            {{ componentData.componentId + ".routine" | translate }}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="form-group">
+                        <label class="form-label">{{ getComponentName() + ".created" | translate }}</label>
+
+                        <div class="form-control">
+                          <div class="form-control-generic">
+                            {{ deliveryFolder.statusDate | date: "shortDate":"":translateService.currentLang }}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="section">
+                    <h4 class="section-title">
+                      {{ "origin" | translate }}
+                    </h4>
+                  </div>
+
+                  <div class="row">
+                    <div class="form-group">
+                      <label class="form-label">{{ getComponentName() + ".refDocumentNum" | translate }}</label>
+
+                      <div class="form-control">
+                        <div class="form-control-generic">
+                          <a>{{ deliveryFolder.bidtTransferOrder?.torCode }}</a>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-label">{{ getComponentName() + ".refDocType" | translate }}</label>
+
+                      <div class="form-control">
+                        <div class="form-control-generic">
+                          <a>{{ deliveryFolder.bidtTransferOrder?.torType }}</a>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-label">{{ getComponentName() + ".refStatus" | translate }}</label>
+
+                      <div class="form-control">
+                        <div class="form-control-generic">
+                          <a>{{ deliveryFolder.bidtTransferOrder?.torStatus }}</a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-cell--3">
+            <div class="grid-cell grid-cell--container">
+              <div class="grid-cell-header">
+                <div class="grid-cell-title-container">
+                  <h3 class="grid-cell-title">
+                    {{ getComponentName() + ".provider" | translate }}
+                  </h3>
+                </div>
+              </div>
+
+              <div class="grid-cell-content">
+                <div class="column">
+                  <div class="row" *ngIf="deliveryFolder.bidoCustomerSender?.customerCode">
+                    <div class="form-group">
+                      <label class="form-label">{{ getComponentName() + ".partner" | translate }}</label>
+
+                      <div class="form-control">
+                        <div class="form-control-generic">
+                          {{ deliveryFolder.bidoCustomerSender?.customerCode }}
+                          <ng-container *ngIf="deliveryFolder.bidoCustomerSender?.customerName">
+                            <span style="padding: 0 8px">-</span>
+                            {{ deliveryFolder.bidoCustomerSender?.customerName }}
+                          </ng-container>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row" *ngIf="deliveryFolder.bidtSiteSender?.siteCode">
+                    <div class="form-group">
+                      <label class="form-label">{{ getComponentName() + ".site" | translate }}</label>
+
+                      <div class="form-control">
+                        <div class="form-control-generic">
+                          {{ deliveryFolder.bidtSiteSender?.siteCode }}
+                          <ng-container *ngIf="deliveryFolder.bidtSiteSender?.siteName">
+                            <span style="padding: 0 8px">-</span>
+                            {{ deliveryFolder.bidtSiteSender?.siteName }}
+                          </ng-container>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row" *ngIf="deliveryFolder.bidtWarehouseSender?.whCode">
+                    <div class="form-group">
+                      <label class="form-label">{{ getComponentName() + ".shop" | translate }}</label>
+
+                      <div class="form-control">
+                        <div class="form-control-generic">
+                          {{ deliveryFolder.bidtWarehouseSender?.whCode }}
+                          <ng-container *ngIf="deliveryFolder.bidtWarehouseSender?.whName">
+                            <span style="padding: 0 8px">-</span>
+                            {{ deliveryFolder.bidtWarehouseSender?.whName }}
+                          </ng-container>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div #receipentAnchor class="grid-cell--3">
+            <div class="grid-cell grid-cell--container">
+              <div class="grid-cell-header">
+                <div class="grid-cell-title-container">
+                  <h3 class="grid-cell-title">
+                    {{ getComponentName() + ".recipient" | translate }}
+                  </h3>
+                </div>
+              </div>
+
+              <div class="grid-cell-content">
+                <div class="column">
+                  <div class="row" *ngIf="deliveryFolder.bidoCustomerReceiver?.customerCode">
+                    <div class="form-group">
+                      <label class="form-label">{{ getComponentName() + ".partner" | translate }}</label>
+
+                      <div class="form-control">
+                        <div class="form-control-generic">
+                          {{ deliveryFolder.bidoCustomerReceiver?.customerCode }}
+                          <ng-container *ngIf="deliveryFolder.bidoCustomerReceiver?.customerName">
+                            <span style="padding: 0 8px">-</span>
+                            {{ deliveryFolder.bidoCustomerReceiver?.customerName }}
+                          </ng-container>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row" *ngIf="deliveryFolder.bidtSiteReceiver?.siteCode">
+                    <div class="form-group">
+                      <label class="form-label">{{ getComponentName() + ".site" | translate }}</label>
+
+                      <div class="form-control">
+                        <div class="form-control-generic">
+                          {{ deliveryFolder.bidtSiteReceiver?.siteCode }}
+                          <ng-container *ngIf="deliveryFolder.bidtSiteReceiver?.siteName">
+                            <span style="padding: 0 8px">-</span>
+                            {{ deliveryFolder.bidtSiteReceiver?.siteName }}
+                          </ng-container>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row" *ngIf="deliveryFolder.bidtWarehouseReceiver?.whCode">
+                    <div class="form-group">
+                      <label class="form-label">{{ getComponentName() + ".shop" | translate }}</label>
+
+                      <div class="form-control">
+                        <div class="form-control-generic">
+                          {{ deliveryFolder.bidtWarehouseReceiver?.whCode }}
+                          <ng-container *ngIf="deliveryFolder.bidtWarehouseReceiver?.whName">
+                            <span style="padding: 0 8px">-</span>
+                            {{ deliveryFolder.bidtWarehouseReceiver?.whName }}
+                          </ng-container>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="form-group">
+                      <label class="form-label">{{ getComponentName() + ".expectedDate" | translate }}</label>
+
+                      <div class="form-control">
+                        <div class="form-control-generic">
+                          {{ deliveryFolder.plannedDate | date: "shortDate":"":translateService.currentLang }}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-row">
+          <div #parcelAnchor class="grid-cell--12">
+            <div class="grid-cell grid-cell--container">
+              <div class="grid-cell-header">
+                <div class="grid-cell-title-container">
+                  <h3 class="grid-cell-title">
+                    {{ componentData.componentId + ".parcel" | translate }} ({{
+                      parcelTableData ? parcelTableData.length : 0
+                    }})
+                  </h3>
+                </div>
+              </div>
+
+              <div class="grid-cell-content grid-cell-content-with-section">
+                <div class="section">
+                  <div class="section-content">
+                    <!-- Table -->
+                    <p-table
+                      [resizableColumns]="true"
+                      #ptableParcels
+                      class="aw-table2"
+                      [columns]="parcelTableCols"
+                      [value]="parcelTableData"
+                      [(selection)]="selectedParcels"
+                      [scrollable]="true"
+                    >
+                      <ng-template pTemplate="emptymessage">
+                        <span *ngIf="!isLoading"> &nbsp;</span>
+
+                        <div *ngIf="isLoading" class="aw-table-loading-indicator">
+                          <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                          <div class="lds-hourglass"></div>
+                        </div>
+                      </ng-template>
+
+                      <ng-template pTemplate="caption">
+                        <div class="aw-table-header" [ngClass]="{ 'rows-selected': selectedParcels.length > 0 }">
+                          <div class="aw-table-global-filter">
+                            <label class="aw-table-global-filter-label">
+                              <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                            </label>
+
+                            <input
+                              #ptableMeasuresGlobalFilter
+                              class="aw-table-global-filter-input"
+                              type="text"
+                              placeholder="{{ 'table.globalFilterText' | translate }}"
+                              (input)="ptableParcels.filterGlobal($event.target.value, 'contains')"
+                            />
+                          </div>
+                          <div class="aw-table-actions">
+                            <button
+                              *ngIf="
+                                selectedParcels.length > 0 &&
+                                isUserCanAddHaveRightOnDeliveryFolder() &&
+                                !isDeliveryFolderEditable()
+                              "
+                              type="button"
+                              mat-raised-button
+                              color="warn"
+                              (click)="deleteShipmentPackage()"
+                            >
+                              {{ "global.delete" | translate }}
+                            </button>
+
+                            <button
+                              *ngIf="
+                                selectedParcels.length === 1 &&
+                                isUserCanAddHaveRightOnDeliveryFolder() &&
+                                !isDeliveryFolderEditable()
+                              "
+                              type="button"
+                              mat-raised-button
+                              (click)="editPackageDialog()"
+                            >
+                              {{ componentData.componentId + ".edit" | translate }}
+                            </button>
+
+                            <button
+                              *ngIf="
+                                selectedParcels.length === 1 &&
+                                isUserCanAddHaveRightOnDeliveryFolder() &&
+                                !isDeliveryFolderEditable() &&
+                                !isPackageValidated()
+                              "
+                              type="button"
+                              mat-raised-button
+                              (click)="addMaterialDialogToPackage()"
+                            >
+                              {{ componentData.componentId + ".addMaterial" | translate }}
+                            </button>
+
+                            <button
+                              *ngIf="
+                                selectedParcels.length === 0 &&
+                                isUserCanAddHaveRightOnDeliveryFolder() &&
+                                !isDeliveryFolderEditable()
+                              "
+                              type="button"
+                              mat-raised-button
+                              (click)="addPackageDialog()"
+                            >
+                              {{ componentData.componentId + ".addPackage" | translate }}
+                            </button>
+
+                            <button
+                              *ngIf="selectedParcels.length > 0 && isUserCanAddHaveRightOnDeliveryFolder()"
+                              type="button"
+                              mat-raised-button
+                              (click)="openSelectedGoods()"
+                            >
+                              {{ componentData.componentId + ".createLitigation" | translate }}
+                            </button>
+
+                            <button
+                              *ngIf="
+                                selectedParcels.length > 0 &&
+                                isUserCanAddHaveRightOnDeliveryFolder() &&
+                                !isDeliveryFolderEditable()
+                              "
+                              type="button"
+                              mat-raised-button
+                              (click)="validateOperations()"
+                            >
+                              {{ componentData.componentId + ".validateOperations" | translate }}
+                            </button>
+
+                            <div class="aw-table-icon-actions">
+                              <i
+                                class="fa fa-fw fa-filter aw-icon aw-icon-with-border aw-icon-with-overlay"
+                                aria-hidden="true"
+                                tooltipPosition="top"
+                              ></i>
+                            </div>
+                          </div>
+                        </div>
+                      </ng-template>
+
+                      <ng-template pTemplate="colgroup" let-columns>
+                        <colgroup>
+                          <col class="aw-table-checkbox-wrapper" />
+                          <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                        </colgroup>
+                      </ng-template>
+
+                      <ng-template pTemplate="header" let-columns>
+                        <tr>
+                          <th class="aw-table-checkbox-wrapper">
+                            <p-tableHeaderCheckbox class="aw-table-checkbox"></p-tableHeaderCheckbox>
+                          </th>
+                          <th pResizableColumn *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                            <div *ngIf="col.isDynamic">
+                              {{ col.value }}
+                            </div>
+                            <div *ngIf="!col.isDynamic">
+                              {{ componentData.componentId + "." + col.field | translate }}
+                            </div>
+                          </th>
+                        </tr>
+                      </ng-template>
+
+                      <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                        <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                          <td class="aw-table-checkbox-wrapper">
+                            <p-tableCheckbox class="aw-table-checkbox" [value]="rowData"></p-tableCheckbox>
+                          </td>
+                          <td
+                            *ngFor="let col of columns"
+                            [ngSwitch]="col.field"
+                            [ngStyle]="{ 'text-align': col.alignment }"
+                          >
+                            <span *ngSwitchCase="'packageNum'">
+                              {{ rowData["packageCode"] }}
+                            </span>
+
+                            <span *ngSwitchCase="'status'">
+                              {{ rowData["packageStatus"] }}
+                            </span>
+
+                            <span *ngSwitchCase="'progress'">
+                              <p-progressBar
+                                [ngClass]="{ green: rowData[col.field] === component.PROGRESS_MAX }"
+                                [value]="rowData[col.field]"
+                              ></p-progressBar>
+                            </span>
+
+                            <span *ngSwitchCase="awPropertiesConstants.LOGISTICAL_OPERATION_PACKAGING_CONTROL">
+                              <p-checkbox
+                                *ngIf="
+                                  !isDeliveryFolderDraftStatus() &&
+                                  !isDeliveryFolderEditable() &&
+                                  isUserCanAddHaveRightOnDeliveryFolder()
+                                "
+                                [(ngModel)]="rowData['packagingCtrl']"
+                                (onChange)="onChangeReceivedAndCompliance(rowData, col.field)"
+                                binary="true"
+                                [disabled]="rowData['isDisable']"
+                              ></p-checkbox>
+                            </span>
+
+                            <span *ngSwitchDefault>
+                              {{ rowData[col.field] }}
+                            </span>
+                          </td>
+                        </tr>
+                      </ng-template>
+                    </p-table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab>
+        <ng-template mat-tab-label>
+          {{ componentData.componentId + ".posts" | translate }}
+        </ng-template>
+
+        <div class="grid-row">
+          <div #postsAnchor class="grid-cell--12">
+            <div class="grid-cell grid-cell--container">
+              <div class="grid-cell-header">
+                <div class="grid-cell-title-container">
+                  <h3 class="grid-cell-title">
+                    {{ componentData.componentId + ".posts" | translate }} ({{
+                      postsTableData ? postsTableData.length : 0
+                    }})
+                  </h3>
+                </div>
+              </div>
+
+              <div class="grid-cell-content grid-cell-content-with-section">
+                <div class="section">
+                  <div class="section-content">
+                    <p-table
+                      [resizableColumns]="true"
+                      #ptablePosts
+                      class="aw-table2"
+                      [columns]="postsTableCols"
+                      [value]="postsTableData"
+                      [(selection)]="selectedPost"
+                      [scrollable]="true"
+                      [paginator]="false"
+                    >
+                      <ng-template pTemplate="emptymessage">
+                        <span *ngIf="!isLoading"> &nbsp;</span>
+
+                        <div *ngIf="isLoading" class="aw-table-loading-indicator">
+                          <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                          <div class="lds-hourglass"></div>
+                        </div>
+                      </ng-template>
+
+                      <ng-template pTemplate="caption">
+                        <div class="aw-table-header" [ngClass]="{ 'rows-selected': isEmpty(selectedPost) > 0 }">
+                          <div class="aw-table-global-filter">
+                            <label class="aw-table-global-filter-label">
+                              <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                            </label>
+
+                            <input
+                              #ptableMeasuresGlobalFilter
+                              class="aw-table-global-filter-input"
+                              type="text"
+                              placeholder="{{ 'table.globalFilterText' | translate }}"
+                              (input)="ptablePosts.filterGlobal($event.target.value, 'contains')"
+                            />
+                          </div>
+                          <div class="aw-table-actions">
+                            <button
+                              *ngIf="
+                                selectedPost.length > 0 &&
+                                isUserCanAddHaveRightOnDeliveryFolder() &&
+                                !isDeliveryFolderEditable()
+                              "
+                              type="button"
+                              mat-raised-button
+                              color="warn"
+                              (click)="deleteReceiptItem()"
+                            >
+                              {{ "global.delete" | translate }}
+                            </button>
+
+                            <div class="aw-table-icon-actions">
+                              <i
+                                class="fa fa-fw fa-filter aw-icon aw-icon-with-border aw-icon-with-overlay"
+                                aria-hidden="true"
+                                tooltipPosition="top"
+                              ></i>
+                            </div>
+                          </div>
+                        </div>
+                      </ng-template>
+
+                      <ng-template pTemplate="colgroup" let-columns>
+                        <colgroup>
+                          <col class="aw-table-checkbox-wrapper" />
+                          <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                        </colgroup>
+                      </ng-template>
+
+                      <ng-template pTemplate="header" let-columns>
+                        <tr>
+                          <th class="aw-table-checkbox-wrapper">
+                            <p-tableHeaderCheckbox class="aw-table-checkbox"></p-tableHeaderCheckbox>
+                          </th>
+                          <th pResizableColumn *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                            <div *ngIf="col.isDynamic">
+                              {{ col.value }}
+                            </div>
+                            <div *ngIf="!col.isDynamic">
+                              {{ componentData.componentId + "." + col.field | translate }}
+                            </div>
+                          </th>
+                        </tr>
+                      </ng-template>
+
+                      <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                        <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                          <td class="aw-table-checkbox-wrapper">
+                            <p-tableCheckbox class="aw-table-checkbox" [value]="rowData"></p-tableCheckbox>
+                          </td>
+                          <td
+                            *ngFor="let col of columns"
+                            [ngSwitch]="col.field"
+                            [ngStyle]="{ 'text-align': col.alignment }"
+                          >
+                            <span *ngSwitchCase="'refeArticle'">
+                              <div>
+                                <a (click)="openPartNumberLink(rowData)">{{ rowData["birePnPnCode"] }}</a>
+                              </div>
+                              <div>
+                                <i>{{ rowData["articleDesignation"] }}</i>
+                              </div>
+                            </span>
+
+                            <span *ngSwitchCase="'quantity'">
+                              <span>
+                                {{ rowData[col.field] | formatNumber }}
+                              </span>
+                            </span>
+
+                            <span *ngSwitchCase="awPropertiesConstants.LOGISTICAL_OPERATION_QUALITY_CONTROL">
+                              <p-checkbox
+                                *ngIf="
+                                  (!isDeliveryFolderEditable() && !isDeliveryFolderDraftStatus()) ||
+                                  (rowData['isHide'] && isUserCanAddHaveRightOnDeliveryFolder())
+                                "
+                                [(ngModel)]="rowData['controlQuantity']"
+                                (onChange)="onChangeItemControl(rowData, col.field)"
+                                binary="true"
+                                [disabled]="rowData['isDisable']"
+                              ></p-checkbox>
+                            </span>
+                            <span *ngSwitchCase="'progress'">
+                              <p-progressBar
+                                [ngClass]="{ green: rowData[col.field] === component.PROGRESS_MAX }"
+                                [value]="rowData[col.field]"
+                              ></p-progressBar>
+                            </span>
+                            <span *ngSwitchDefault>
+                              {{ rowData[col.field] }}
+                            </span>
+                          </td>
+                        </tr>
+                      </ng-template>
+                    </p-table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab>
+        <ng-template mat-tab-label>
+          {{ getComponentName() + ".materials" | translate }}
+        </ng-template>
+
+        <div class="grid-row">
+          <div #materialsAnchor class="grid-cell--12">
+            <div class="grid-cell grid-cell--container ">
+              <div class="grid-cell-header">
+                <div class="grid-cell-title-container">
+                  <h3 class="grid-cell-title">
+                    {{ getComponentName() + ".materials" | translate }} ({{
+                      materialTableData ? materialTableData.length : 0
+                    }})
+                  </h3>
+                </div>
+              </div>
+
+              <div class="grid-cell-content">
+                <!-- MATERIAL TABLE -->
+                <p-table
+                  [resizableColumns]="true"
+                  #ptableMaterials
+                  class="aw-table2"
+                  [columns]="materialTableCols"
+                  [value]="materialTableData"
+                  [(selection)]="selectedMaterials"
+                  [scrollable]="true"
+                >
+                  <ng-template pTemplate="emptymessage">
+                    <span *ngIf="!isLoading"> &nbsp;</span>
+
+                    <div *ngIf="isLoading" class="aw-table-loading-indicator">
+                      <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                      <div class="lds-hourglass"></div>
+                    </div>
+                  </ng-template>
+
+                  <ng-template pTemplate="caption">
+                    <div class="aw-table-header" [ngClass]="{ 'rows-selected': selectedMaterials.length > 0 }">
+                      <div class="aw-table-global-filter">
+                        <label class="aw-table-global-filter-label">
+                          <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                        </label>
+
+                        <input
+                          #ptableMeasuresGlobalFilter
+                          class="aw-table-global-filter-input"
+                          type="text"
+                          placeholder="{{ 'table.globalFilterText' | translate }}"
+                          (input)="ptableMaterials.filterGlobal($event.target.value, 'contains')"
+                        />
+                      </div>
+                      <div class="aw-table-actions">
+                        <button
+                          *ngIf="
+                            selectedMaterials.length > 0 &&
+                            isUserCanAddHaveRightOnDeliveryFolder() &&
+                            !isDeliveryFolderEditable() &&
+                            isAllPackageInGoodStatus()
+                          "
+                          type="button"
+                          mat-raised-button
+                          color="warn"
+                          (click)="deleteShipmentMaterial()"
+                        >
+                          {{ "global.delete" | translate }}
+                        </button>
+
+                        <button
+                          *ngIf="
+                            selectedMaterials.length === 0 &&
+                            isUserCanAddHaveRightOnDeliveryFolder() &&
+                            !isDeliveryFolderEditable()
+                          "
+                          type="button"
+                          mat-raised-button
+                          (click)="addMaterialDialog()"
+                        >
+                          {{ componentData.componentId + ".addMaterial" | translate }}
+                        </button>
+
+                        <button
+                          *ngIf="
+                            selectedMaterials.length > 0 &&
+                            isUserCanAddHaveRightOnDeliveryFolder() &&
+                            !isDeliveryFolderEditable()
+                          "
+                          type="button"
+                          mat-raised-button
+                          (click)="openLitigationDialog()"
+                        >
+                          {{ componentData.componentId + ".createLitigation" | translate }}
+                        </button>
+
+                        <button
+                          *ngIf="
+                            selectedMaterials.length > 0 &&
+                            isUserCanAddHaveRightOnDeliveryFolder() &&
+                            !isDeliveryFolderEditable()
+                          "
+                          type="button"
+                          mat-raised-button
+                          (click)="validateMaterialOperations()"
+                        >
+                          {{ componentData.componentId + ".validateOperations" | translate }}
+                        </button>
+                      </div>
+                    </div>
+                  </ng-template>
+
+                  <ng-template pTemplate="colgroup" let-columns>
+                    <colgroup>
+                      <col class="aw-table-checkbox-wrapper" />
+                      <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                    </colgroup>
+                  </ng-template>
+
+                  <ng-template pTemplate="header" let-columns>
+                    <tr>
+                      <th class="aw-table-checkbox-wrapper">
+                        <p-tableHeaderCheckbox class="aw-table-checkbox"></p-tableHeaderCheckbox>
+                      </th>
+                      <th pResizableColumn *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                        <div *ngIf="col.isDynamic">
+                          {{ col.value }}
+                        </div>
+                        <div *ngIf="!col.isDynamic">
+                          {{ componentData.componentId + "." + col.field | translate }}
+                        </div>
+                      </th>
+                    </tr>
+                  </ng-template>
+
+                  <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                    <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                      <td class="aw-table-checkbox-wrapper">
+                        <p-tableCheckbox class="aw-table-checkbox" [value]="rowData"></p-tableCheckbox>
+                      </td>
+                      <td
+                        *ngFor="let col of columns"
+                        [ngSwitch]="col.field"
+                        [ngStyle]="{ 'text-align': col.alignment }"
+                      >
+                        <span *ngSwitchCase="'refeArticle'">
+                          <div>
+                            <a (click)="openPartNumberLink(rowData['item'])">{{ rowData["pnCode"] }}</a>
+                          </div>
+                          <div>
+                            <i>{{ rowData["pnDesignation"] }}</i>
+                          </div>
+                        </span>
+                        <span *ngSwitchCase="'batchNumber'">
+                          <div *ngIf="rowData['batchNumber']">
+                            <a (click)="openLink(rowData['bidoEquipment'])">{{ rowData["batchNumber"] }} </a>
+                          </div>
+                          <div *ngIf="rowData['batchNumber']">
+                            <i>{{ rowData["equipmentStatus"] }} </i>
+                          </div>
+                        </span>
+                        <span *ngSwitchCase="'SnAndManufactoring'">
+                          <div
+                            *ngIf="
+                              !rowData['manufacturingBatch'] && rowData['bidoEquipment'] && rowData['bidoEquipment'].sn
+                            "
+                          >
+                            <a (click)="openLinkEquipment(rowData['bidoEquipment'].equipmentCode)"
+                              >{{ rowData["bidoEquipment"].sn }}
+                            </a>
+                          </div>
+                          <div *ngIf="rowData['manufacturingBatch']">
+                            <a (click)="openMfgBatch(rowData['manufacturingBatch'].equipmentCode)"
+                              >{{ rowData["manufacturingBatch"].batchNumber }}
+                            </a>
+                          </div>
+                          <div *ngIf="!rowData['batchNumber']">
+                            <i>{{ rowData["equipmentStatus"] }} </i>
+                          </div>
+                        </span>
+                        <span *ngSwitchCase="'qty'">
+                          {{ rowData["quantity"] | formatNumber }}
+                        </span>
+                        <span *ngSwitchCase="'packageNum'">
+                          <div *ngIf="rowData.isContener">
+                            <a>{{ rowData[col.field] }}</a>
+                          </div>
+                          <div *ngIf="rowData.isContener">
+                            <i> {{ rowData["bidtpackageStatus"] }}</i>
+                          </div>
+
+                          <div *ngIf="!rowData.isContener">{{ rowData[col.field] }}</div>
+                        </span>
+                        <span *ngSwitchCase="awPropertiesConstants.LOGISTICAL_OPERATION_DOCUMENT_CONTROL">
+                          <p-checkbox
+                            *ngIf="
+                              !isDeliveryFolderDraftStatus() &&
+                              !rowData['isDisable'] &&
+                              !isDeliveryFolderEditable() &&
+                              isUserCanAddHaveRightOnDeliveryFolder()
+                            "
+                            [(ngModel)]="rowData['documentary']"
+                            (onChange)="onChangeMaterialControl(rowData, col.field)"
+                            binary="true"
+                          ></p-checkbox>
+                        </span>
+                        <span *ngSwitchCase="awPropertiesConstants.LOGISTICAL_OPERATION_VISUAL_CONTROL">
+                          <p-checkbox
+                            *ngIf="
+                              !isDeliveryFolderDraftStatus() &&
+                              !rowData['isDisable'] &&
+                              !isDeliveryFolderEditable() &&
+                              isUserCanAddHaveRightOnDeliveryFolder()
+                            "
+                            [(ngModel)]="rowData['visual']"
+                            (onChange)="onChangeMaterialControl(rowData, col.field)"
+                            binary="true"
+                          ></p-checkbox>
+                        </span>
+                        <span *ngSwitchCase="'progress'">
+                          <p-progressBar
+                            [ngClass]="{ green: rowData[col.field] === component.PROGRESS_MAX }"
+                            [value]="rowData[col.field]"
+                          ></p-progressBar>
+                        </span>
+                        <span *ngSwitchDefault>
+                          {{ rowData[col.field] }}
+                        </span>
+                      </td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab>
+        <ng-template mat-tab-label>
+          {{ componentData.componentId + ".documents" | translate }}
+        </ng-template>
+
+        <div class="grid-row">
+          <div class="grid-cell--12">
+            <div class="grid-cell grid-cell--container">
+              <div class="grid-cell-header">
+                <div class="grid-cell-title-container">
+                  <h3 class="grid-cell-title">
+                    {{ componentData.componentId + ".documents" | translate }} ({{ documentTableDataSource.dataCount }})
+                  </h3>
+                </div>
+              </div>
+
+              <div class="grid-cell-content grid-cell-content-with-section">
+                <div class="section">
+                  <div class="section-content">
+                    <a-table [dataSource]="documentTableDataSource">
+                      <ng-template tableActionsDef>
+                        <p-fileUpload
+                          #fileUploader
+                          auto="true"
+                          chooseLabel="{{ 'global.upload' | translate }}"
+                          customUpload="true"
+                          mode="basic"
+                          name="document[]"
+                          (uploadHandler)="uploadDocument($event, fileUploader)"
+                          *ngIf="!documentTableDataSource.hasDataSelection && isUserCanAddHaveRightOnDeliveryFolder()"
+                        >
+                        </p-fileUpload>
+
+                        <button
+                          *ngIf="documentTableDataSource.hasDataSelection && isUserCanAddHaveRightOnDeliveryFolder()"
+                          type="button"
+                          mat-raised-button
+                          (click)="downloadFiles()"
+                        >
+                          {{ "global.download" | translate }}
+                        </button>
+
+                        <button
+                          *ngIf="documentTableDataSource.hasDataSelection && isUserCanAddHaveRightOnDeliveryFolder()"
+                          type="button"
+                          mat-raised-button
+                          color="warn"
+                          (click)="deleteDocuments()"
+                        >
+                          {{ "global.delete" | translate }}
+                        </button>
+                      </ng-template>
+
+                      <ng-template columnDef="documentPublicationDate" let-rowData="rowData">
+                        {{ rowData["documentPublicationDate"] | date: "shortDate":"":translateService.currentLang }}
+                      </ng-template>
+                    </a-table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+
+  <aw-dialog-assign-package
+    *ngIf="openAddPackageDialog"
+    [(display)]="openAddPackageDialog"
+    [bidtDeliveryFolder]="deliveryFolder"
+    [isEditContext]="editPackage"
+    [selectedPackage]="selectedRowForComplience && selectedRowForComplience._obj"
+    (onCreateOrUpdate)="addorUpdatePackageShipment($event)"
+    (onCancel)="cancelPackageEdit()"
+  ></aw-dialog-assign-package>
+</div>

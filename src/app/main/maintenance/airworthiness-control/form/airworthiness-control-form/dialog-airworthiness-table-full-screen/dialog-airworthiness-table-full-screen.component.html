@@ -1,0 +1,270 @@
+<a-modal class="aw-table-fullscreen" [(visible)]="display" [fullScreen]="true">
+  <a-header>
+    <div class="modal__title-container">
+      <div *ngIf="!airworthinessTableOnlyAlertsVisible" class="modal__title">
+        {{ getComponentName() + (isAssetViewMode ? ".subAssemblyDetail" : ".detail") | translate }} ({{
+          airworthinessTable ? airworthinessTable.length : 0
+        }})
+      </div>
+      <div *ngIf="airworthinessTableOnlyAlertsVisible" class="modal__title">
+        {{ getComponentName() + (isAssetViewMode ? ".subAssemblyDetail" : ".detail") | translate }} ({{
+          airworthinessTableDisplayedRowNb
+        }}
+        / {{ airworthinessTable ? airworthinessTable.length : 0 }})
+      </div>
+    </div>
+
+    <div class="close"><i class="material-icons" (click)="closeDialog()">close</i></div>
+  </a-header>
+
+  <a-content>
+    <p-table
+      [resizableColumns]="true"
+      #ptableAsset
+      class="aw-table2"
+      [columns]="airworthinessTableCols"
+      [value]="airworthinessTable"
+      [(selection)]="airworthinessTableSelection"
+      dataKey="_id"
+      [scrollable]="true"
+    >
+      <ng-template pTemplate="caption">
+        <div class="aw-table-header" [ngClass]="{ 'rows-selected': airworthinessTableSelection.length > 0 }">
+          <div class="aw-table-global-filter">
+            <label class="aw-table-global-filter-label"> <i class="fa fa-fw fa-search" aria-hidden="true"></i> </label>
+
+            <input
+              #ptableAssetGlobalFilter
+              class="aw-table-global-filter-input"
+              type="text"
+              placeholder="{{ 'table.globalFilterText' | translate }}"
+              (input)="ptableAsset.filterGlobal($event.target.value, 'contains')"
+            />
+          </div>
+
+          <div class="aw-table-actions">
+            <p-splitButton
+              *ngIf="airworthinessTableSelection.length > 0"
+              class="aw-split-btn aw-table-action"
+              label="{{ getComponentName() + '.navigate' | translate }}"
+              [model]="navigationLinkList"
+            ></p-splitButton>
+
+            <p-splitButton
+              *ngIf="airworthinessTableSelection.length === 0"
+              class="aw-split-btn aw-table-action"
+              label="{{ getComponentName() + '.potentialUnit' | translate }} ({{ potentialUnitSelected }})"
+              [model]="potentialUnitList"
+            ></p-splitButton>
+
+            <p-selectButton
+              class="aw-table-action"
+              [(ngModel)]="airworthinessTableVisibilitySelected"
+              [options]="airworthinessTableVisibilityList"
+              (onChange)="onChangeAirworthinessTableVisibility()"
+            ></p-selectButton>
+
+            <button
+              *ngIf="airworthinessTableSelection.length === 0"
+              type="button"
+              mat-raised-button
+              (click)="exportAirwothinessTable()"
+            >
+              {{ "global.export" | translate }}
+            </button>
+          </div>
+        </div>
+      </ng-template>
+
+      <ng-template pTemplate="colgroup" let-columns>
+        <colgroup>
+          <col class="aw-table-checkbox-wrapper" />
+          <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+        </colgroup>
+      </ng-template>
+
+      <ng-template pTemplate="header" let-columns>
+        <tr>
+          <th class="aw-table-checkbox-wrapper">
+            <p-tableHeaderCheckbox class="aw-table-checkbox"></p-tableHeaderCheckbox>
+          </th>
+
+          <th
+            pResizableColumn
+            *ngFor="let col of columns"
+            [ngSwitch]="col.field"
+            [ngStyle]="{ 'text-align': col.alignment }"
+            [pSortableColumn]="col.field"
+          >
+            <span *ngSwitchCase="'csn'">{{ airworthinessTableColCsnLabel }}</span>
+
+            <span *ngSwitchCase="'potential'"> {{ getComponentName() + "." + col.field | translate }} </span>
+
+            <span *ngSwitchCase="'tsn'">{{ airworthinessTableColTsnLabel }}</span>
+
+            <span *ngSwitchDefault> {{ getComponentName() + "." + col.field | translate }} </span>
+
+            <p-sortIcon
+              [field]="col.field"
+              ariaLabel="{{ 'global.activateSort' | translate }}"
+              ariaLabelDesc="{{ 'global.activateSortDesc' | translate }}"
+              ariaLabelAsc="{{ 'global.activateSortAsc' | translate }}"
+            ></p-sortIcon>
+          </th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+        <tr
+          *ngIf="
+            airworthinessTableOnlyAlertsVisible
+              ? rowData['alert'] !== undefined &&
+                rowData['alert'] !== null &&
+                (rowData['alert'] === controlConfigConstants.ICON_RED ||
+                  rowData['alert'] === controlConfigConstants.ICON_YELLOW)
+              : true
+          "
+          [pSelectableRow]="rowData"
+          [pSelectableRowIndex]="rowIndex"
+        >
+          <td class="aw-table-checkbox-wrapper">
+            <p-tableCheckbox class="aw-table-checkbox" [value]="rowData"></p-tableCheckbox>
+          </td>
+
+          <td *ngFor="let col of columns" [ngSwitch]="col.field" [ngStyle]="{ 'text-align': col.alignment }">
+            <span *ngSwitchCase="'alert'">
+              <div
+                *ngIf="rowData['_alertLoading']"
+                class="lds-hourglass display--flex-row"
+                [ngClass]="{
+                  'flex-row--justify-center': col.alignment === 'center',
+                  'flex-row--justify-left': col.alignment === 'left',
+                  'flex-row--justify-right': col.alignment === 'right'
+                }"
+              ></div>
+
+              <span
+                *ngIf="
+                  !rowData['_alertLoading'] &&
+                  rowData[col.field] !== undefined &&
+                  rowData[col.field] !== null &&
+                  rowData[col.field].length > 0 &&
+                  rowData[col.field] === controlConfigConstants.ICON_GREEN
+                "
+                class="alert alert--ok"
+              >
+                {{ getComponentName() + ".alertOk" | translate }}
+              </span>
+
+              <span
+                *ngIf="
+                  !rowData['_alertLoading'] &&
+                  rowData[col.field] !== undefined &&
+                  rowData[col.field] !== null &&
+                  rowData[col.field].length > 0 &&
+                  rowData[col.field] === controlConfigConstants.ICON_RED
+                "
+                class="alert alert--nok"
+              >
+                {{ getComponentName() + ".alertNok" | translate }}
+              </span>
+
+              <span
+                *ngIf="
+                  !rowData['_alertLoading'] &&
+                  rowData[col.field] !== undefined &&
+                  rowData[col.field] !== null &&
+                  rowData[col.field].length > 0 &&
+                  rowData[col.field] === controlConfigConstants.ICON_YELLOW
+                "
+                class="alert alert--warning"
+              >
+                {{ getComponentName() + ".alertWarning" | translate }}
+              </span>
+            </span>
+
+            <span *ngSwitchCase="'asset'" pTooltip="{{ rowData['_obj'].counterAlertTooltip }}" tooltipPosition="top">
+              <i
+                *ngIf="
+                  rowData['_obj'].counterAlertStatus !== undefined &&
+                  rowData['_obj'].counterAlertStatus !== null &&
+                  rowData['_obj'].counterAlertStatus.length > 0 &&
+                  (rowData['_obj'].counterAlertStatus !== controlConfigConstants.ICON_RED ||
+                    rowData['_obj'].counterAlertStatus !== controlConfigConstants.ICON_YELLOW)
+                "
+                class="fa fa-fw fa-exclamation-triangle"
+                aria-hidden="true"
+              ></i>
+              {{ rowData[col.field] }}
+            </span>
+
+            <span *ngSwitchCase="'csn'" pTooltip="{{ rowData['_obj'].counterCsnTooltip }}" tooltipPosition="top">
+              <i
+                *ngIf="rowData['_obj'].counterCsnIcon === controlConfigConstants.ICON_YELLOW"
+                class="fa fa-fw fa-exclamation-triangle"
+                aria-hidden="true"
+              ></i>
+              {{ rowData[col.field] }}
+            </span>
+
+            <span *ngSwitchCase="'mp'" pTooltip="{{ rowData['_obj'].maintenanceProgramTooltip }}" tooltipPosition="top">
+              <i
+                *ngIf="
+                  rowData['_obj'].maintenanceProgramStatus !== undefined &&
+                  rowData['_obj'].maintenanceProgramStatus !== null &&
+                  rowData['_obj'].maintenanceProgramStatus.length > 0 &&
+                  (rowData['_obj'].maintenanceProgramStatus !== controlConfigConstants.ICON_RED ||
+                    rowData['_obj'].maintenanceProgramStatus !== controlConfigConstants.ICON_YELLOW)
+                "
+                class="fa fa-fw fa-exclamation-triangle"
+                aria-hidden="true"
+              ></i>
+              {{ rowData[col.field] }}
+            </span>
+
+            <span
+              *ngSwitchCase="'potential'"
+              pTooltip="{{ rowData['_obj'].remainingEquivalentTooltip }}"
+              tooltipPosition="top"
+            >
+              <div
+                *ngIf="rowData['_potentialLoading']"
+                class="lds-hourglass display--flex-row"
+                [ngClass]="{
+                  'flex-row--justify-center': col.alignment === 'center',
+                  'flex-row--justify-left': col.alignment === 'left',
+                  'flex-row--justify-right': col.alignment === 'right'
+                }"
+              ></div>
+
+              <i
+                *ngIf="
+                  !rowData['_potentialLoading'] &&
+                  rowData['_obj'].remainingEquivalentIcon !== undefined &&
+                  rowData['_obj'].remainingEquivalentIcon !== null &&
+                  rowData['_obj'].remainingEquivalentIcon.length > 0 &&
+                  (rowData['_obj'].remainingEquivalentIcon !== controlConfigConstants.ICON_RED ||
+                    rowData['_obj'].remainingEquivalentIcon !== controlConfigConstants.ICON_YELLOW)
+                "
+                class="fa fa-fw fa-exclamation-triangle"
+                aria-hidden="true"
+              ></i>
+              <span *ngIf="!rowData['_potentialLoading']">{{ rowData[col.field] }}</span>
+            </span>
+
+            <span *ngSwitchCase="'tsn'" pTooltip="{{ rowData['_obj'].counterTsnTooltip }}" tooltipPosition="top">
+              <i
+                *ngIf="rowData['_obj'].counterTsnIcon === controlConfigConstants.ICON_YELLOW"
+                class="fa fa-fw fa-exclamation-triangle"
+                aria-hidden="true"
+              ></i>
+              {{ rowData[col.field] }}
+            </span>
+
+            <span *ngSwitchDefault> {{ rowData[col.field] }} </span>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </a-content>
+</a-modal>

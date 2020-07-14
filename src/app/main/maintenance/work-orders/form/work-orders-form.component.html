@@ -1,0 +1,369 @@
+<div class="page-header-container">
+  <div class="page-context">
+    <div class="page-title-container">
+      <div class="page-title">
+        {{ "transaction." + componentData.componentId | translate }}
+      </div>
+
+      <div class="page-secondary-actions">
+        <i
+          class="fa fa-fw aw-icon aw-icon-with-border"
+          [ngClass]="{ 'fa-star': isFavoriteEntry, 'fa-star-o': !isFavoriteEntry }"
+          aria-hidden="true"
+          (click)="updateFavoriteState()"
+          pTooltip="{{ 'page.' + (isFavoriteEntry ? 'removeFromFavorites' : 'addToFavorites') | translate }}"
+          tooltipPosition="bottom"
+        ></i>
+
+        <i
+          class="fa fa-fw fa-info aw-icon aw-icon-with-border"
+          aria-hidden="true"
+          pTooltip="{{ 'page.info' | translate }}"
+          tooltipPosition="bottom"
+        ></i>
+      </div>
+    </div>
+
+    <div class="page-subtitle-container">
+      <div class="page-subtitle">
+        {{ context }}
+      </div>
+    </div>
+  </div>
+
+  <div class="page-primary-actions">
+    <button type="button" mat-raised-button (click)="goToCalendar()">
+      {{ getComponentName() + ".calendar" | translate }}
+    </button>
+
+    <button type="button" class="btn-with-spinner" mat-raised-button (click)="printAllJobsCards()">
+      <span class="lds-hourglass" *ngIf="showSaveSpinner"></span>
+      {{ getComponentName() + ".printAll" | translate }}
+    </button>
+
+    <button type="button" mat-raised-button (click)="onReload()">
+      {{ "global.refresh" | translate }}
+    </button>
+  </div>
+</div>
+
+<div class="page-wrapper">
+  <div class="page-container" style="max-width: 100%">
+    <div class="page-content">
+      <!-- WORK ORDER -->
+      <div class="grid-row">
+        <div #workOrdersAnchor class="grid-cell--12">
+          <div class="grid-cell grid-cell--container grid-cell-wo-table">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">
+                  {{ getComponentName() + ".workOrders" | translate }} ({{ workOrderTable.length }})
+                </h3>
+              </div>
+            </div>
+
+            <div class="grid-cell-content">
+              <p-treeTable
+                #ptreeTableItemStructure
+                class="aw-tree-table2"
+                [value]="workOrderTable"
+                [columns]="workOrderTableCols"
+                [scrollable]="false"
+                selectionMode="checkbox"
+                [(selection)]="selectedWorkOrders"
+                [resizableColumns]="true"
+              >
+                <ng-template pTemplate="emptymessage">
+                  <span *ngIf="!isLoadingWorkOrderTable"> &nbsp;</span>
+
+                  <div *ngIf="isLoadingWorkOrderTable" class="aw-table-loading-indicator">
+                    <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                    <div class="lds-hourglass"></div>
+                  </div>
+                </ng-template>
+
+                <ng-template pTemplate="caption">
+                  <div class="aw-table-header">
+                    <div class="aw-table-global-filter">
+                      <label class="aw-table-global-filter-label">
+                        <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                      </label>
+
+                      <input
+                        #ptreeTableItemStructureGlobalFilter
+                        class="aw-table-global-filter-input"
+                        type="text"
+                        placeholder="{{ 'table.globalFilterText' | translate }}"
+                        [(ngModel)]="searchGlobalFilter"
+                        (keyup)="searchGlobalFilterChange(searchGlobalFilter)"
+                      />
+                    </div>
+
+                    <div class="aw-table-actions">
+                      <button
+                        *ngIf="selectedWorkOrders.length > 0"
+                        type="button"
+                        mat-raised-button
+                        (click)="openSelectedGoodsMovement()"
+                      >
+                        {{ getComponentName() + ".goodsMovements" | translate }}
+                      </button>
+
+                      <button
+                        *ngIf="selectedWorkOrders.length > 0"
+                        type="button"
+                        mat-raised-button
+                        (click)="openUpdateSchedulingDialog()"
+                      >
+                        {{ getComponentName() + ".updateScheduling" | translate }}
+                      </button>
+
+                      <button
+                        *ngIf="selectedWorkOrders.length > 1"
+                        type="button"
+                        mat-raised-button
+                        (click)="openSelectedWorkOrders()"
+                      >
+                        {{ "global.open" | translate }}
+                      </button>
+
+                      <button
+                        *ngIf="selectedWorkOrders.length === 1"
+                        type="button"
+                        mat-raised-button
+                        (click)="openSelectedWorkOrders()"
+                      >
+                        {{ "global.edit" | translate }}
+                      </button>
+
+                      <button
+                        *ngIf="selectedWorkOrders.length === 0"
+                        type="button"
+                        mat-raised-button
+                        (click)="displayWorkOrderScreenEdit()"
+                      >
+                        {{ "global.add" | translate }}
+                      </button>
+
+                      <button
+                        *ngIf="selectedWorkOrders.length > 0"
+                        type="button"
+                        mat-raised-button
+                        color="warn"
+                        (click)="deleteSelectedWorkOrder()"
+                      >
+                        {{ "global.delete" | translate }}
+                      </button>
+
+                      <div *ngIf="!isLoadingWorkOrderTable" class="aw-table-icon-actions">
+                        <i
+                          class="fa fa-fw fa-filter aw-icon aw-icon-with-border aw-icon-with-overlay"
+                          aria-hidden="true"
+                          pTooltip="{{
+                            getComponentName() + (filtersVisible ? '.hideFilters' : '.showFilters') | translate
+                          }}"
+                          tooltipPosition="left"
+                          [ngClass]="{ active: filtersVisible }"
+                          (click)="woFilters.toggle($event)"
+                        ></i>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div
+                    *ngIf="!isLoadingWorkOrderTable && filterActivatedList !== null && !!filterActivatedList.length > 0"
+                    class="active-filter-list"
+                  >
+                    <div class="aw-chips" *ngFor="let filter of filterActivatedList">
+                      <span class="aw-chips-label">{{ filter.value }}</span>
+                      <i class="fa fa-fw fa-times aw-chips-icon" aria-hidden="true" (click)="filter.action()"></i>
+                    </div>
+                  </div>
+                </ng-template>
+
+                <ng-template pTemplate="colgroup" let-columns>
+                  <colgroup>
+                    <col class="aw-table-checkbox-wrapper" />
+                    <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                  </colgroup>
+                </ng-template>
+
+                <ng-template pTemplate="header" let-columns>
+                  <tr>
+                    <th class="aw-table-checkbox-wrapper">
+                      <p-treeTableHeaderCheckbox class="aw-table-checkbox"></p-treeTableHeaderCheckbox>
+                    </th>
+                    <th ttResizableColumn *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                      {{ componentData.componentId + "." + col.field | translate }}
+                    </th>
+                  </tr>
+                </ng-template>
+
+                <ng-template pTemplate="body" let-rowNode let-rowData="rowData" let-columns="columns">
+                  <tr>
+                    <td class="aw-table-checkbox-wrapper">
+                      <p-treeTableCheckbox class="aw-table-checkbox" [value]="rowNode"></p-treeTableCheckbox>
+                    </td>
+
+                    <td
+                      *ngFor="let col of columns; let i = index"
+                      [ngSwitch]="col.field"
+                      [ngStyle]="{ 'text-align': col.alignment }"
+                      [ngClass]="col.class"
+                    >
+                      <div *ngSwitchCase="'workOrder'" class="row nowrap">
+                        <div>
+                          <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
+                        </div>
+                        <div class="tree-table-cell">
+                          <a class="value" (click)="openWorkOrderLink(rowData.bidmWorkOrder)">{{ rowData.code }}</a>
+                          <div class="designation">{{ rowData.description }}</div>
+                          <div class="additional-data">
+                            <div>
+                              <span class="label">{{ getComponentName() + ".type" | translate }}</span>
+                              <span class="value">{{ rowData.type }}</span>
+                            </div>
+                            <div>
+                              <span class="label"> {{ getComponentName() + ".origin" | translate }}</span>
+                              <a class="value" (click)="consultWorkOrderOrigin(rowData)">{{ rowData.origin }}</a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div *ngSwitchCase="'engineeringData'" class="tree-table-cell">
+                        <div>
+                          <span class="label"> {{ getComponentName() + ".item" | translate }}</span>
+                          <a class="value" (click)="openItem(rowData.bidmWorkOrder)">{{ rowData.relatedItem }}</a>
+                        </div>
+                        <div>
+                          <span class="label">{{ getComponentName() + ".zone" | translate }}</span>
+                          <span class="value">{{ rowData.zone }}</span>
+                        </div>
+                        <div>
+                          <span class="label">{{ getComponentName() + ".standardDuration" | translate }}</span>
+                          <span class="value">{{ rowData.standardDuration }}</span>
+                          <span class="horizontal-separator"></span>
+                          <span class="label">{{ getComponentName() + ".standardCost" | translate }}</span>
+                          <span class="value">{{ rowData.standardCost }}</span>
+                        </div>
+                        <div>
+                          <span class="label">{{ getComponentName() + ".qualifications" | translate }}</span>
+                          <span class="value">{{ rowData.qualification }}</span>
+                        </div>
+                      </div>
+
+                      <div *ngSwitchCase="'fleetData'" class="tree-table-cell">
+                        <div>
+                          <span class="label"> {{ getComponentName() + ".sn" | translate }}</span>
+                          <a
+                            *ngIf="rowData.bidoEquipmentData"
+                            (click)="openSnLink(rowData.bidoEquipmentData.equipmentCode)"
+                            class="value"
+                            >{{ rowData.bidmWorkOrder.assetSn }}</a
+                          >
+                          <span *ngIf="!rowData.bidoEquipmentData" class="value">{{
+                            rowData.bidmWorkOrder.assetSn
+                          }}</span>
+                        </div>
+                        <div>
+                          <span class="label"> {{ getComponentName() + ".pn" | translate }}</span>
+                          <a (click)="openPartNumberLink(rowData.bidmWorkOrder.assetPn)" class="value">{{
+                            rowData.bidmWorkOrder.assetPn
+                          }}</a>
+                        </div>
+                        <div class="designation" *ngIf="rowData.bidoEquipmentData">
+                          {{ rowData.bidoEquipmentData.equipmentDesignation }}
+                        </div>
+                      </div>
+
+                      <div *ngSwitchCase="'schedulingData'" class="tree-table-cell">
+                        <div>
+                          <span class="label">{{ getComponentName() + ".assignedTo" | translate }}</span>
+                          <span class="value">{{ rowData.assignedTo }}</span>
+                        </div>
+                        <div class="additional-data">
+                          <div>
+                            <span class="label">{{ getComponentName() + ".startDate" | translate }}</span>
+                            <span class="value">{{ rowData.startDate }}</span>
+                          </div>
+                          <div>
+                            <span class="label">{{ getComponentName() + ".endDate" | translate }}</span>
+                            <span class="value">{{ rowData.endDate }}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div *ngSwitchCase="'executionData'" class="tree-table-cell">
+                        <div class="row compact">
+                          <div class="grid-cell--3 grid-cell--no-padding">
+                            <p-progressBar [ngClass]="rowData.statusCrititicy" [value]="rowData.statusPercent">
+                            </p-progressBar>
+                          </div>
+                          <div class="grid-cell--9 grid-cell--no-padding">
+                            <span class="horizontal-separator"></span>
+                            <span class="value">{{ this.getStatusLabel(rowData.status) }}</span>
+                          </div>
+                        </div>
+                        <div class="additional-data"></div>
+                        <div>
+                          <span class="label">{{ getComponentName() + ".openingDate" | translate }}</span>
+                          <span class="value">{{ rowData.openingDate }} </span>
+                        </div>
+                        <div>
+                          <span class="label">{{ getComponentName() + ".closingDate" | translate }}</span>
+                          <span class="value">{{ rowData.closingDate }}</span>
+                        </div>
+                        <div class="additional-data" *ngIf="rowData.checkedBy || rowData.checkedOn"></div>
+                        <div *ngIf="rowData.checkedBy">
+                          <span class="label">{{ getComponentName() + ".checkedBy" | translate }}</span>
+                          <span class="value">{{ rowData.checkedBy }}</span>
+                        </div>
+                        <div *ngIf="rowData.checkedOn">
+                          <span class="label">{{ getComponentName() + ".checkedOn" | translate }}</span>
+                          <span class="value">{{ rowData.checkedOn }}</span>
+                        </div>
+                      </div>
+
+                      <div *ngSwitchCase="'illustration'" class="tree-table-cell illustration">
+                        <img *ngIf="rowData.materialIllustration" [src]="rowData.materialIllustration" />
+                      </div>
+
+                      <span *ngSwitchDefault>{{ rowData[col.field] }}</span>
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-treeTable>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p-overlayPanel #woFilters class="aw-overlay" (onShow)="filtersVisible = true" (onHide)="filtersVisible = false">
+  <aw-work-order-table-filters
+    [searchCriteria]="workOrderTableCriteria"
+    (onFilter)="woFilters.hide(); filtersVisible = false; updateWorkOrderTable()"
+    (onReset)="woFilters.hide(); resetWorkOrderTableFilters()"
+  >
+  </aw-work-order-table-filters>
+</p-overlayPanel>
+
+<aw-dialog-work-order-edition
+  *ngIf="displayWorkOrderEdit"
+  [(display)]="displayWorkOrderEdit"
+  [workOrderSelected]="workOrderSelected"
+  [workPackage]="workPackage"
+  [workOrders]="workOrderList"
+  (onValidated)="onAddWorkOrder($event)"
+>
+</aw-dialog-work-order-edition>
+
+<aw-dialog-work-order-scheduling-edition
+  *ngIf="displayWorkOrderSchedulingEdit"
+  [(display)]="displayWorkOrderSchedulingEdit"
+  (onValidated)="onWorkOrderSchedulingEdited($event)"
+>
+</aw-dialog-work-order-scheduling-edition>

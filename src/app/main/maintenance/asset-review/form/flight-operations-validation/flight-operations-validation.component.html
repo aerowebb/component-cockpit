@@ -1,0 +1,386 @@
+<div class="page-header">
+  <div class="page-info">
+    <div>
+      <div class="page-title">
+        {{ "transaction." + componentData.componentId | translate }}
+      </div>
+
+      <div class="page-subtitle">
+        <div *ngIf="!isCreateOpenMode && componentData && componentData.objectId" class="page-subtitle">
+          - {{ flightOperationValidationOutput.chronoNumber }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-actions">
+    <button id="returnToFlight" type="button" mat-raised-button (click)="openFlightForm()">
+      {{ componentData.componentId + ".returnToFlight" | translate }}
+    </button>
+
+    <button
+      id="actions"
+      mat-icon-button
+      class="mat-elevation-z1"
+      matTooltip="{{ 'global.showAllActionTooltip' | translate }}"
+      matTooltipPosition="above"
+      aria-label="Show all actions"
+      [matMenuTriggerFor]="actions"
+    >
+      <mat-icon>more_horiz</mat-icon>
+    </button>
+
+    <mat-menu #actions="matMenu">
+      <button id="favorites" mat-menu-item (click)="updateFavoriteState()">
+        {{ (isFavoriteEntry ? "page.removeFromFavorites" : "page.addToFavorites") | translate }}
+      </button>
+    </mat-menu>
+  </div>
+</div>
+
+<div class="page-wrapper">
+  <div class="page-container search-page-container">
+    <div class="page-content">
+      <div class="grid-row">
+        <div class="grid-cell--6">
+          <div class="grid-cell grid-cell--container">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container loading-indicator">
+                <div class="grid-cell-title">
+                  <span>{{ componentData.componentId + ".flight" | translate }}</span>
+                  <div *ngIf="flightLoading" class="lds-hourglass"></div>
+                </div>
+              </div>
+            </div>
+            <div class="grid-cell-content">
+              <div class="column">
+                <div class="grid-row">
+                  <div class="form-group">
+                    <label class="form-label">{{ componentData.componentId + ".cNumber" | translate }}</label>
+
+                    <div class="form-control" style="margin-top: 12px;">
+                      <a (click)="openFlightForm()" style="cursor: pointer">
+                        {{ flightOperationValidationOutput.chronoNumber }}</a
+                      >
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">{{ componentData.componentId + ".type" | translate }}</label>
+
+                    <div class="form-control">
+                      <input
+                        type="text"
+                        class="aw-input"
+                        [disabled]="true"
+                        [(ngModel)]="flightOperationValidationOutput.type"
+                      />
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">{{ componentData.componentId + ".status" | translate }}</label>
+                    <div class="form-control" *ngIf="flightOperationValidationOutput.status === 'Validated'">
+                      <input
+                        type="text"
+                        style="background-color: #4caf50;text-align: center;
+                          width: 6rem;"
+                        class="aw-input"
+                        [disabled]="true"
+                        [(ngModel)]="flightOperationValidationOutput.status"
+                      />
+                    </div>
+
+                    <div class="form-control" *ngIf="flightOperationValidationOutput.status !== 'Validated'">
+                      <input
+                        type="text"
+                        style="background-color: #FFBF00;text-align: center;
+                            width: 6rem;"
+                        class="aw-input"
+                        [disabled]="true"
+                        [(ngModel)]="flightOperationValidationOutput.status"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div class="grid-row">
+                  <div class="form-group">
+                    <label class="form-label">{{ componentData.componentId + ".customer" | translate }}</label>
+
+                    <div class="form-control">
+                      <input
+                        type="text"
+                        class="aw-input"
+                        [disabled]="true"
+                        [(ngModel)]="flightOperationValidationOutput.flightCustomer"
+                      />
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">{{ componentData.componentId + ".date" | translate }}</label>
+                    <div class="form-control">
+                      <p-calendar
+                        showButtonBar="true"
+                        [monthNavigator]="true"
+                        [yearNavigator]="true"
+                        [yearRange]="sessionService.calendarYearRange"
+                        class="aw-calendar"
+                        [dateFormat]="sessionService.dateFormatPrimeNG"
+                        [locale]="sessionService.calendarFormat"
+                        [showTime]="true"
+                        [(ngModel)]="flightOperationValidationOutput.date"
+                        [disabled]="isReadOpenMode"
+                      ></p-calendar>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">{{ componentData.componentId + ".duration" | translate }}</label>
+
+                    <div class="form-control">
+                      <input
+                        type="text"
+                        class="aw-input"
+                        [disabled]="true"
+                        [(ngModel)]="flightOperationValidationOutput.duration"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="grid-cell--6">
+          <div class="grid-cell grid-cell--container">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container loading-indicator">
+                <div class="grid-cell-title">
+                  <span>{{ componentData.componentId + ".aircraft" | translate }}</span>
+                  <div *ngIf="aircraftLoading" class="lds-hourglass"></div>
+                </div>
+              </div>
+            </div>
+            <div class="grid-cell-content">
+              <div class="column">
+                <div class="grid-row">
+                  <div class="form-group">
+                    <label class="form-label">{{ componentData.componentId + ".msn" | translate }}</label>
+
+                    <div class="form-control" style="margin-top: 12px;">
+                      <a style="cursor: pointer" (click)="openAsset()"> {{ flightOperationValidationOutput.msn }}</a>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">{{ componentData.componentId + ".familyVariant" | translate }}</label>
+                    <div class="form-control">
+                      <input
+                        type="text"
+                        class="aw-input"
+                        [disabled]="true"
+                        [(ngModel)]="flightOperationValidationOutput.familyVariant"
+                      />
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">{{ componentData.componentId + ".registration" | translate }}</label>
+
+                    <div class="form-control">
+                      <input
+                        type="text"
+                        class="aw-input"
+                        [disabled]="true"
+                        [(ngModel)]="flightOperationValidationOutput.assetRegistration"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div class="grid-row">
+                  <div class="form-group">
+                    <label class="form-label">{{ componentData.componentId + ".eisDate" | translate }}</label>
+                    <div class="form-control">
+                      <p-calendar
+                        showButtonBar="true"
+                        [monthNavigator]="true"
+                        [yearNavigator]="true"
+                        [yearRange]="sessionService.calendarYearRange"
+                        class="aw-calendar"
+                        [dateFormat]="sessionService.dateFormatPrimeNG"
+                        [locale]="sessionService.calendarFormat"
+                        [(ngModel)]="flightOperationValidationOutput.eisDate"
+                        [disabled]="isReadOpenMode"
+                      ></p-calendar>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">{{ fligthOperationsTsnLabel }}</label>
+
+                    <div class="form-control">
+                      <input
+                        type="text"
+                        class="aw-input"
+                        [disabled]="true"
+                        [(ngModel)]="flightOperationValidationOutput.tsn"
+                      />
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">{{ fligthOperationsCsnLabel }}</label>
+
+                    <div class="form-control">
+                      <input
+                        type="text"
+                        class="aw-input"
+                        [disabled]="true"
+                        [(ngModel)]="flightOperationValidationOutput.csn"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-row">
+        <div class="grid-cell--12">
+          <div class="grid-cell grid-cell--container">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container loading-indicator">
+                <h3 class="grid-cell-title">
+                  {{ componentData.componentId + ".tableTilte" | translate }}
+                  ({{ resultsTable ? resultsTable.length : 0 }})
+                  <div class="lds-hourglass" *ngIf="isLoadingReport"></div>
+                </h3>
+              </div>
+            </div>
+            <div class="grid-cell-content grid-cell-content-with-section">
+              <div class="section">
+                <div class="section-content">
+                  <div class="row">
+                    <p-table
+                      [resizableColumns]="true"
+                      #ptableCusCustomer
+                      class="aw-table2"
+                      [columns]="resultsTableCols"
+                      [value]="resultsTable"
+                      [scrollable]="true"
+                    >
+                      <ng-template pTemplate="emptymessage">
+                        <span *ngIf="!isLoadingTable"> &nbsp;</span>
+
+                        <div *ngIf="isLoadingTable" class="aw-table-loading-indicator">
+                          <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                          <div class="lds-hourglass"></div>
+                        </div>
+                      </ng-template>
+                      <ng-template pTemplate="caption">
+                        <div class="aw-table-header">
+                          <div class="aw-table-global-filter">
+                            <label class="aw-table-global-filter-label">
+                              <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                            </label>
+
+                            <input
+                              #ptableCusCustomerGlobalFilter
+                              class="aw-table-global-filter-input"
+                              type="text"
+                              placeholder="{{ 'table.globalFilterText' | translate }}"
+                              (input)="ptableCusCustomer.filterGlobal($event.target.value, 'contains')"
+                            />
+                          </div>
+
+                          <div class="aw-table-actions">
+                            <button *ngIf="showReport" type="button" mat-raised-button (click)="generateRport()">
+                              {{ componentData.componentId + ".report" | translate }}
+                            </button>
+                            <button
+                              *ngIf="showSimulateAndRecord()"
+                              type="button"
+                              mat-raised-button
+                              (click)="simulate()"
+                            >
+                              {{ componentData.componentId + ".simulate" | translate }}
+                            </button>
+
+                            <button
+                              *ngIf="showSimulateAndRecord()"
+                              type="button"
+                              mat-raised-button
+                              (click)="recordMeasures()"
+                            >
+                              {{ componentData.componentId + ".recordMeasures" | translate }}
+                            </button>
+                          </div>
+                        </div>
+                      </ng-template>
+
+                      <ng-template pTemplate="colgroup" let-columns>
+                        <colgroup>
+                          <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                        </colgroup>
+                      </ng-template>
+
+                      <ng-template pTemplate="header" let-columns>
+                        <tr>
+                          <th pResizableColumn *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                            {{ componentData.componentId + "." + col.field | translate }}
+                          </th>
+                        </tr>
+                      </ng-template>
+
+                      <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                        <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                          <td
+                            *ngFor="let col of columns"
+                            [ngSwitch]="col.field"
+                            [ngStyle]="{ 'text-align': col.alignment }"
+                          >
+                            <span *ngSwitchCase="'propagate'" class="page-header-links">
+                              <td [pEditableColumn]="rowData[col.field]" [pEditableColumnField]="rowData[col.field]">
+                                <p-cellEditor>
+                                  <ng-template pTemplate="input">
+                                    <p-checkbox
+                                      class="aw-checkbox"
+                                      binary="true"
+                                      [(ngModel)]="rowData.propagate"
+                                    ></p-checkbox>
+                                  </ng-template>
+                                  <ng-template pTemplate="output">
+                                    <p-checkbox
+                                      class="aw-checkbox"
+                                      binary="true"
+                                      [(ngModel)]="rowData.propagate"
+                                    ></p-checkbox>
+                                  </ng-template>
+                                </p-cellEditor>
+                              </td>
+                            </span>
+
+                            <span *ngSwitchDefault>{{ rowData[col.field] }}</span>
+                          </td>
+                        </tr>
+                      </ng-template>
+                    </p-table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <aw-dialog-simulate-record
+    *ngIf="showPopup"
+    [(display)]="showPopup"
+    [isRecord]="isRecord"
+    [isSimulate]="isSimulate"
+    [endDate]="flightOperationValidationOutput.endDate"
+    (onValidated)="onValidatingPopup($event)"
+  >
+  </aw-dialog-simulate-record>
+
+  <aw-dialog-generate-report *ngIf="showReportPopup" [(display)]="showReportPopup" [reportMessage]="reportData.report">
+  </aw-dialog-generate-report>
+</div>

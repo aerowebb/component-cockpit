@@ -1,0 +1,12 @@
+{
+  "DeaDiaSearchComponent": {
+    "articleDesignation": "Désignation de l'article",
+    "errorOnGetPartGuidelineStatus": "Impossible de récupérer la liste des status des demandes",
+    "errorOnGetPartGuidelineTypes": "Impossible de récupérer la liste des types des demandes",
+    "isUrgent": "Demande urgente",
+    "pnCode": "Code de l'article",
+    "pugCode": "Référence de la demande",
+    "pugStatus": "Statut de la demande",
+    "pugType": "Type de demande"
+  }
+}

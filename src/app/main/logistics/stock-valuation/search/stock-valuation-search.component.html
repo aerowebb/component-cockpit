@@ -1,0 +1,151 @@
+<div class="page-header-container">
+  <div class="page-context">
+    <div class="page-title-container">
+      <div class="page-title">
+        {{ "transaction." + componentData.componentId | translate }}
+      </div>
+
+      <div class="page-secondary-actions">
+        <i
+          class="fa fa-fw aw-icon aw-icon-with-border"
+          [ngClass]="{ 'fa-star': isFavoriteEntry, 'fa-star-o': !isFavoriteEntry }"
+          aria-hidden="true"
+          (click)="updateFavoriteState()"
+          pTooltip="{{ 'page.' + (isFavoriteEntry ? 'removeFromFavorites' : 'addToFavorites') | translate }}"
+          tooltipPosition="bottom"
+        ></i>
+      </div>
+    </div>
+
+    <div class="page-subtitle-container">
+      <div class="page-subtitle">
+        {{ "page.searchPage" | translate }}
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="page-wrapper">
+  <div class="page-container search-page-container">
+    <div class="page-content">
+      <div class="grid-row">
+        <div class="grid-cell--12">
+          <div class="grid-cell grid-cell--container">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">{{ "global.search" | translate }}</h3>
+              </div>
+            </div>
+
+            <div class="grid-cell-content">
+              <div class="column">
+                <div class="row search-criteria-header">
+                  <i
+                    class="fa fa-fw fa-undo aw-icon aw-icon-with-border search-criteria-action"
+                    aria-hidden="true"
+                    pTooltip="{{ 'global.reset' | translate }}"
+                    tooltipPosition="top"
+                    (click)="resetSearchCriteria()"
+                  ></i>
+                </div>
+
+                <div class="row">
+                  <div class="form-group">
+                    <label class="form-label"> {{ componentData.componentId + ".materialCode" | translate }} </label>
+
+                    <div class="form-control form-control-with-modal" [ngClass]="{ disabled: isReadOpenMode }">
+                      <div class="form-control-data" (click)="quickSearchMaterial()">
+                        {{ searchObject.materialCode }}
+                      </div>
+
+                      <div *ngIf="searchObject.materialCode" class="btn-clear-wrapper">
+                        <i
+                          class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+                          aria-hidden="true"
+                          (click)="searchObject.materialCode = undefined"
+                        ></i>
+                      </div>
+                      <div class="btn-search-wrapper">
+                        <i
+                          class="fa fa-fw fa-search aw-icon btn-search"
+                          aria-hidden="true"
+                          (click)="quickSearchMaterial()"
+                        ></i>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-group required">
+                    <label class="form-label">{{ "global.date" | translate }}</label>
+
+                    <div class="form-control">
+                      <p-calendar
+                        showButtonBar="true"
+                        [monthNavigator]="true"
+                        [yearNavigator]="true"
+                        [yearRange]="sessionService.calendarYearRange"
+                        class="aw-calendar"
+                        [dateFormat]="sessionService.dateFormatPrimeNG"
+                        [locale]="sessionService.calendarFormat"
+                        [(ngModel)]="searchObject.date"
+                        [disabled]="isReadOpenMode"
+                      ></p-calendar>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label"> {{ componentData.componentId + ".warehouseId" | translate }} </label>
+
+                    <div class="form-control">
+                      <p-dropdown
+                        class="aw-dropdown fixed-width"
+                        [options]="warehouses"
+                        [(ngModel)]="searchObject.warehouseId"
+                        [showClear]="true"
+                        placeholder="&nbsp;"
+                      ></p-dropdown>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="form-group required">
+                    <label class="form-label"> {{ componentData.componentId + ".method" | translate }} </label>
+
+                    <div style="width: 64%" class="form-control">
+                      <p-dropdown
+                        class="aw-dropdown fixed-width"
+                        [options]="methods"
+                        [(ngModel)]="searchObject.flag"
+                        placeholder="&nbsp;"
+                      ></p-dropdown>
+                    </div>
+                  </div>
+
+                  <!-- <div class="form-group"></div> -->
+
+                  <div class="form-group"></div>
+                </div>
+
+                <div class="row search-criteria-footer">
+                  <div class="search-actions">
+                    <button type="button" mat-raised-button (click)="calculate()">
+                      {{ componentData.componentId + ".toCalculate" | translate }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<aw-dialog-search-material
+  *ngIf="showQuickSearchMaterialPopup"
+  [(display)]="showQuickSearchMaterialPopup"
+  [material-code]="searchObject.materialCode"
+  (onSelected)="setSelectedMaterial($event)"
+></aw-dialog-search-material>

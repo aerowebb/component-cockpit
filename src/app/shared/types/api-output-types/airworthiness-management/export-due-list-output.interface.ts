@@ -1,0 +1,33 @@
+export interface ExportDueListOutput {
+  alertText: string;
+  assetText: string;
+  confText: string;
+  designation: string;
+  functionCode: string;
+  item: string;
+  nextTerm: string;
+  nextWorkPackageText: string;
+  periodicity: string;
+  periodicityType: string;
+  pn: string;
+  postponementNotificationText: string;
+  counterCode: string;
+  remaining: string;
+  remainingEquivalent: string;
+  remainingEquivalentUnit: string;
+  remainingUnit: string;
+  sbNumber: string;
+  sbRevisionNumber: string;
+  sn: string;
+  status: string;
+  statusInfo: string;
+  taskCode: string;
+  taskType: string;
+  taskVersion: string;
+  upcomingEventDescription: string;
+  upcomingEventText: string;
+  upcomingEventType: number;
+  visitCode: string;
+  visitDesignation: string;
+  visitVersion: string;
+}

@@ -1,0 +1,705 @@
+<div class="page-header-container">
+  <div class="page-context">
+    <div class="page-title-container">
+      <div class="page-title">
+        {{ "transaction." + componentData.componentId | translate }}
+      </div>
+
+      <div class="page-secondary-actions">
+        <i
+          class="fa fa-fw aw-icon aw-icon-with-border"
+          [ngClass]="{ 'fa-star': isFavoriteEntry, 'fa-star-o': !isFavoriteEntry }"
+          aria-hidden="true"
+          (click)="updateFavoriteState()"
+          pTooltip="{{ 'page.' + (isFavoriteEntry ? 'removeFromFavorites' : 'addToFavorites') | translate }}"
+          tooltipPosition="bottom"
+        ></i>
+      </div>
+    </div>
+
+    <div class="page-subtitle-container">
+      <div class="page-subtitle">
+        {{ componentContext }}
+      </div>
+    </div>
+  </div>
+
+  <div class="page-primary-actions">
+    <p-splitButton
+      class="aw-split-btn aw-table-action"
+      label="{{ getComponentName() + '.navigate' | translate }}"
+      [model]="navigationLinkList"
+    ></p-splitButton>
+
+    <p-splitButton
+      *ngIf="!maintenancePlanTableLoading && !maintenancePlanTableFullScreenVisible"
+      class="aw-split-btn"
+      label="{{ getComponentName() + '.potentialUnit' | translate }} ({{ potentialUnitSelected }})"
+      [model]="potentialUnitList"
+    ></p-splitButton>
+
+    <button *ngIf="!maintenancePlanTableFullScreenVisible" type="button" mat-raised-button (click)="reload()">
+      {{ "global.refresh" | translate }}
+    </button>
+  </div>
+</div>
+
+<div id="schedule-maintenance-form" class="page-wrapper">
+  <div class="page-container">
+    <div class="page-content">
+      <div class="grid-row">
+        <div #aircraftAnchor class="grid-cell--6">
+          <div class="grid-cell grid-cell--container grid-cell-scope">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container loading-indicator">
+                <div class="grid-cell-title">
+                  <span>{{ getComponentName() + ".tool" | translate }}</span>
+                  <div *ngIf="maintenancePlanTableLoading" class="lds-hourglass"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid-cell-content">
+              <div class="column">
+                <div class="row">
+                  <div class="form-group">
+                    <label class="form-label"> {{ getComponentName() + ".designation" | translate }} </label>
+
+                    <div class="form-control">
+                      <input type="text" class="aw-input" [(ngModel)]="asset.equipmentDesignation" [disabled]="true" />
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label"> {{ getComponentName() + ".sn" | translate }} </label>
+
+                    <div class="form-control form-control-with-actions">
+                      <div class="form-control-generic">
+                        <a (click)="openAsset()">{{ asset.sn }}</a>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label"> {{ getComponentName() + ".status" | translate }} </label>
+
+                    <div class="form-control">
+                      <input type="text" class="aw-input" [(ngModel)]="assetStatus" [disabled]="true" />
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="form-group">
+                    <label class="form-label"> {{ getComponentName() + ".familyVariant" | translate }} </label>
+
+                    <div class="form-control">
+                      <input type="text" class="aw-input" [(ngModel)]="asset.familyVariantCode" [disabled]="true" />
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label"> {{ getComponentName() + ".pn" | translate }} </label>
+
+                    <div class="form-control">
+                      <input type="text" class="aw-input" [(ngModel)]="asset.pnCode" [disabled]="true" />
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label"> {{ getComponentName() + ".potential" | translate }} </label>
+
+                    <div class="form-control">
+                      <input type="text" class="aw-input" [(ngModel)]="potentialEquivalent" [disabled]="true" />
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="form-group">
+                    <label class="form-label">
+                      {{ getComponentName() + ".function" | translate }}
+                    </label>
+
+                    <div class="form-control">
+                      <p-dropdown
+                        class="aw-dropdown fixed-width"
+                        [options]="groundEquipmentTypes"
+                        [(ngModel)]="asset.equipmentFunction"
+                        [showClear]="true"
+                        disabled
+                        placeholder="&nbsp;"
+                      >
+                      </p-dropdown>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div #upcomingEventsSummaryAnchor class="grid-cell--6">
+          <div class="grid-cell grid-cell--container grid-cell-summary">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container loading-indicator">
+                <div class="grid-cell-title">
+                  {{ getComponentName() + ".upcomingEventsSummary" | translate }}
+                  <div *ngIf="maintenancePlanTableLoading" class="lds-hourglass"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid-cell-content">
+              <div class="row">
+                <div *ngIf="summaryTableVisible && !maintenancePlanTableLoading" class="table-summary-wrapper">
+                  <p-table
+                    [resizableColumns]="true"
+                    class="aw-table-control-summary"
+                    [columns]="summaryTableColList"
+                    [value]="summaryTable"
+                  >
+                    <ng-template pTemplate="colgroup" let-columns>
+                      <colgroup>
+                        <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                      </colgroup>
+                    </ng-template>
+
+                    <ng-template pTemplate="header" let-columns>
+                      <tr>
+                        <th
+                          pResizableColumn
+                          *ngFor="let col of columns"
+                          [ngSwitch]="col.field"
+                          [ngStyle]="{ 'text-align': col.alignment }"
+                        >
+                          <span *ngSwitchCase="'category'"></span>
+
+                          <span *ngSwitchDefault> {{ "table." + col.field | translate }} </span>
+                        </th>
+                      </tr>
+                    </ng-template>
+
+                    <ng-template pTemplate="body" let-columns="columns" let-rowData>
+                      <tr>
+                        <td
+                          *ngFor="let col of columns"
+                          [ngSwitch]="col.field"
+                          [ngStyle]="{ 'text-align': col.alignment }"
+                        >
+                          <span *ngSwitchCase="'nok'" class="control-result" [ngClass]="{ nok: rowData['nok'] > 0 }">
+                            {{ rowData[col.field] }}
+                          </span>
+
+                          <span
+                            *ngSwitchCase="'warning'"
+                            class="control-result"
+                            [ngClass]="{ warning: rowData['nok'] == 0 && rowData['warning'] > 0 }"
+                          >
+                            {{ rowData[col.field] }}
+                          </span>
+
+                          <span
+                            *ngSwitchCase="'ok'"
+                            class="control-result"
+                            [ngClass]="{ ok: rowData['nok'] == 0 && rowData['warning'] == 0 && rowData['ok'] >= 0 }"
+                          >
+                            {{ rowData[col.field] }}
+                          </span>
+
+                          <span *ngSwitchCase="'category'">
+                            {{ getComponentName() + "." + rowData[col.field] | translate }}
+                          </span>
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-row">
+        <div #upcomingEventsAnchor class="grid-cell--12">
+          <div class="grid-cell grid-cell--container grid-cell-schedule-maintenance">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <div class="grid-cell-title">
+                  {{ getComponentName() + ".upcomingEvents" | translate }}
+                  <span
+                    *ngIf="
+                      !maintenancePlanTableLoading && maintenancePlanTableDisplayedLeafNb === maintenancePlanTableLeafNb
+                    "
+                  >
+                    ({{ maintenancePlanTableDisplayedLeafNb }})
+                  </span>
+                  <span
+                    *ngIf="
+                      !maintenancePlanTableLoading && maintenancePlanTableDisplayedLeafNb !== maintenancePlanTableLeafNb
+                    "
+                  >
+                    ({{ maintenancePlanTableDisplayedLeafNb }} / {{ maintenancePlanTableLeafNb }})
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid-cell-content grid-cell-content-with-section">
+              <div class="section">
+                <div class="section-content">
+                  <div class="row">
+                    <div class="form-group">
+                      <div class="form-control">
+                        <p-dropdown
+                          class="aw-dropdown fixed-width"
+                          [options]="referencesList"
+                          [(ngModel)]="referenceSelected"
+                        ></p-dropdown>
+                      </div>
+                    </div>
+                    <div class="form-group"></div>
+                    <div class="form-group"></div>
+                  </div>
+                  <div class="row">
+                    <p-treeTable
+                      #ptable
+                      class="aw-tree-table2"
+                      [value]="maintenancePlanTableDisplayed"
+                      [columns]="maintenancePlanTableColList"
+                      selectionMode="checkbox"
+                      [(selection)]="maintenancePlanTableSelectedList"
+                      [scrollable]="true"
+                      (onNodeSelect)="setActions()"
+                      (onNodeUnselect)="setActions()"
+                      (onHeaderCheckboxToggle)="setActions()"
+                      [resizableColumns]="true"
+                    >
+                      <ng-template pTemplate="emptymessage">
+                        <span *ngIf="!maintenancePlanTableLoading"> &nbsp;</span>
+
+                        <div *ngIf="maintenancePlanTableLoading" class="aw-table-loading-indicator">
+                          <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                          <div class="lds-hourglass"></div>
+                        </div>
+                      </ng-template>
+
+                      <ng-template pTemplate="caption">
+                        <div
+                          class="aw-table-header"
+                          [ngClass]="{
+                            'rows-selected': maintenancePlanTableSelectedList.length > 0
+                          }"
+                        >
+                          <div class="aw-table-global-filter">
+                            <label class="aw-table-global-filter-label">
+                              <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                            </label>
+
+                            <input
+                              class="aw-table-global-filter-input"
+                              type="text"
+                              placeholder="{{ 'table.globalFilterText' | translate }}"
+                              [(ngModel)]="searchGlobalFilter"
+                              (keyup)="filter(searchGlobalFilter)"
+                            />
+                          </div>
+
+                          <div class="aw-table-actions">
+                            <p-splitButton
+                              *ngIf="navigationActionList.length > 0"
+                              class="aw-split-btn aw-table-action"
+                              label="{{ getComponentName() + '.actionLabel' | translate }}"
+                              [model]="navigationActionList"
+                            ></p-splitButton>
+                            <button
+                              *ngIf="
+                                toolsMaintenancePlanningFormService.workPackageRemoveFromButtonVisible(
+                                  maintenancePlanTableSelectedList
+                                )
+                              "
+                              type="button"
+                              mat-raised-button
+                              (click)="removeFromWorkPackage()"
+                            >
+                              {{ getComponentName() + ".removeFromWP" | translate }}
+                            </button>
+
+                            <button
+                              *ngIf="
+                                maintenancePlanTableSelectedList.length === 1 &&
+                                toolsMaintenancePlanningFormService.workPackageAddToButtonVisible(
+                                  maintenancePlanTableSelectedList
+                                )
+                              "
+                              type="button"
+                              mat-raised-button
+                              [ngClass]="{ active: workPackageListToAddVisible }"
+                              (click)="opWorkPackageToAdd.toggle($event)"
+                            >
+                              {{ getComponentName() + ".addToWP" | translate }} &nbsp;
+                              <i class="fa fa-fw fa-chevron-down" aria-hidden="true"></i>
+                            </button>
+
+                            <button
+                              *ngIf="
+                                maintenancePlanTableSelectedList.length === 1 &&
+                                toolsMaintenancePlanningFormService.workPackageCreateButtonVisible(
+                                  maintenancePlanTableSelectedList
+                                )
+                              "
+                              type="button"
+                              mat-raised-button
+                              (click)="createWorkPackage()"
+                            >
+                              {{ getComponentName() + ".createWP" | translate }}
+                            </button>
+
+                            <button
+                              *ngIf="
+                                !maintenancePlanTableLoading &&
+                                maintenancePlanTableSelectedList.length === 1 &&
+                                isOmp(maintenancePlanTableSelectedList[0])
+                              "
+                              type="button"
+                              mat-raised-button
+                              (click)="showLastTaskApplications()"
+                            >
+                              {{ getComponentName() + ".showLastTaskApplications" | translate }}
+                            </button>
+
+                            <button
+                              *ngIf="
+                                !maintenancePlanTableLoading &&
+                                maintenancePlanTableSelectedList.length === 0 &&
+                                workPackageList.length > 0
+                              "
+                              type="button"
+                              mat-raised-button
+                              [ngClass]="{ active: workPackageListToShowVisible }"
+                              (click)="opWorkPackageToShow.toggle($event)"
+                            >
+                              {{ getComponentName() + ".showWP" | translate }} &nbsp;
+                              <i class="fa fa-fw fa-chevron-down" aria-hidden="true"></i>
+                            </button>
+
+                            <button
+                              *ngIf="!maintenancePlanTableLoading && maintenancePlanTableSelectedList.length === 0"
+                              type="button"
+                              mat-raised-button
+                              (click)="exportDueList()"
+                            >
+                              {{ getComponentName() + ".export" | translate }}
+                            </button>
+                          </div>
+
+                          <div *ngIf="!maintenancePlanTableLoading" class="aw-table-icon-actions">
+                            <i
+                              class="fa fa-fw fa-filter aw-icon aw-icon-with-border aw-icon-with-overlay"
+                              aria-hidden="true"
+                              pTooltip="{{
+                                getComponentName() + (filtersVisible ? '.hideFilters' : '.showFilters') | translate
+                              }}"
+                              tooltipPosition="top"
+                              [ngClass]="{ active: filtersVisible }"
+                              (click)="opFilters.toggle($event)"
+                            ></i>
+
+                            <i
+                              class="fa fa-fw fa-calendar aw-icon aw-icon-with-border"
+                              aria-hidden="true"
+                              pTooltip="{{ getComponentName() + '.showCalendar' | translate }}"
+                              tooltipPosition="top"
+                              (click)="showMaintenancePlanTableCalendar()"
+                            ></i>
+
+                            <i
+                              class="fa fa-fw fa-arrows-alt aw-icon aw-icon-with-border"
+                              aria-hidden="true"
+                              pTooltip="{{ 'global.showTableFullScreen' | translate }}"
+                              tooltipPosition="top"
+                              (click)="showMaintenancePlanTableFullScreen()"
+                            ></i>
+                          </div>
+                        </div>
+
+                        <div
+                          *ngIf="!maintenancePlanTableLoading && filterActivatedList.length > 0"
+                          class="active-filter-list"
+                        >
+                          <div class="aw-chips" *ngFor="let filter of filterActivatedList">
+                            <span *ngIf="filter.label" class="aw-chips-label">{{ filter.label }}</span>
+                            <span class="aw-chips-value">{{ filter.value }}</span>
+                            <i class="fa fa-fw fa-times aw-chips-icon" aria-hidden="true" (click)="filter.action()"></i>
+                          </div>
+                        </div>
+                      </ng-template>
+
+                      <ng-template pTemplate="colgroup" let-columns>
+                        <colgroup>
+                          <col class="aw-table-checkbox-wrapper" />
+                          <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                        </colgroup>
+                      </ng-template>
+
+                      <ng-template pTemplate="header" let-columns>
+                        <tr>
+                          <th class="aw-table-checkbox-wrapper">
+                            <p-treeTableHeaderCheckbox class="aw-table-checkbox"></p-treeTableHeaderCheckbox>
+                          </th>
+
+                          <th ttResizableColumn *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                            {{ getComponentName() + "." + col.field | translate }}
+                          </th>
+                        </tr>
+                      </ng-template>
+
+                      <ng-template pTemplate="body" let-rowNode let-rowData="rowData" let-columns="columns">
+                        <tr>
+                          <td
+                            class="aw-table-checkbox-wrapper"
+                            [className]="getInactiveClass(rowData) ? 'cell-grey' : ''"
+                          >
+                            <p-treeTableCheckbox class="aw-table-checkbox" [value]="rowNode"></p-treeTableCheckbox>
+                          </td>
+
+                          <td
+                            *ngFor="let col of columns; let i = index"
+                            [ngSwitch]="col.field"
+                            [ngStyle]="{ 'text-align': col.alignment }"
+                            [className]="getInactiveClass(rowData) ? 'cell-grey' : ''"
+                          >
+                            <p-treeTableToggler [rowNode]="rowNode" *ngIf="i == 1"></p-treeTableToggler>
+
+                            <span
+                              *ngSwitchCase="'alert'"
+                              pTooltip="{{ rowData['alertTooltip'] }}"
+                              tooltipPosition="top"
+                            >
+                              <span
+                                *ngIf="
+                                  rowData[col.field] !== undefined &&
+                                  rowData[col.field] !== null &&
+                                  rowData[col.field] === controlConfigConstants.ICON_GREEN
+                                "
+                                class="alert alert--ok"
+                              >
+                                {{ getComponentName() + ".alertOk" | translate }}
+                              </span>
+
+                              <span
+                                *ngIf="
+                                  rowData[col.field] !== undefined &&
+                                  rowData[col.field] !== null &&
+                                  rowData[col.field] === controlConfigConstants.ICON_RED
+                                "
+                                class="alert alert--nok"
+                              >
+                                {{ getComponentName() + ".alertNok" | translate }}
+                              </span>
+
+                              <span
+                                *ngIf="
+                                  rowData[col.field] !== undefined &&
+                                  rowData[col.field] !== null &&
+                                  rowData[col.field] === controlConfigConstants.ICON_YELLOW
+                                "
+                                class="alert alert--warning"
+                              >
+                                {{ getComponentName() + ".alertWarning" | translate }}
+                              </span>
+                            </span>
+
+                            <span *ngSwitchCase="'firstColumn'">
+                              <a
+                                pTooltip="{{ rowData['firstColumnTooltip'] }}"
+                                tooltipPosition="top"
+                                (click)="!getInactiveClass(rowData) && openMaintenancePlanRow(rowData)"
+                                >{{ rowData[col.field] }}</a
+                              >
+                              <i
+                                *ngIf="
+                                  rowData['counterAlert'] !== undefined &&
+                                  rowData['counterAlert'] !== null &&
+                                  rowData['counterAlert'].length > 0 &&
+                                  (rowData['counterAlert'] === controlConfigConstants.ICON_RED ||
+                                    rowData['counterAlert'] === controlConfigConstants.ICON_YELLOW)
+                                "
+                                class="fa fa-fw fa-exclamation-triangle"
+                                aria-hidden="true"
+                                pTooltip="{{ rowData['counterAlertTooltip'] }}"
+                                tooltipPosition="top"
+                              ></i>
+                            </span>
+
+                            <span
+                              *ngSwitchCase="'nextTerm'"
+                              pTooltip="{{ rowData['usageCounterExplanation'] }}"
+                              tooltipPosition="top"
+                            >
+                              {{ rowData[col.field] }}
+                            </span>
+
+                            <a
+                              *ngSwitchCase="'nextWorkPackage'"
+                              pTooltip="{{ rowData['nextWorkPackageTooltip'] }}"
+                              tooltipPosition="top"
+                              (click)="!getInactiveClass(rowData) && openWorkPackage(rowData)"
+                            >
+                              {{ rowData[col.field] }}
+                            </a>
+
+                            <span
+                              *ngSwitchCase="'remainingEquivalent'"
+                              pTooltip="{{ rowData['remainingEquivalentTooltip'] }}"
+                              tooltipPosition="top"
+                            >
+                              {{ rowData[col.field] }}
+                            </span>
+
+                            <span *ngSwitchDefault> {{ rowData[col.field] }} </span>
+                          </td>
+                        </tr>
+                      </ng-template>
+                    </p-treeTable>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <aw-dialog-interdependence-data
+    *ngIf="interdependenceDataVisible"
+    [(display)]="interdependenceDataVisible"
+    [interdependenceDataList]="interdependenceDataList"
+    (onAccept)="onAcceptInterdependenceData()"
+    (onReject)="onRejectInterdependenceData()"
+  ></aw-dialog-interdependence-data>
+
+  <aw-dialog-last-task-applications
+    *ngIf="lastTaskApplicationsVisible"
+    [(display)]="lastTaskApplicationsVisible"
+    [selectedRow]="maintenancePlanTableSelectedList[0].data"
+    [topEquipmentCode]="topEquipmentCode"
+    (onClose)="onCloseLastTaskApplications($event)"
+  ></aw-dialog-last-task-applications>
+
+  <aw-dialog-schedule-maintenance-calendar
+    *ngIf="maintenancePlanTableCalendarVisible"
+    [(display)]="maintenancePlanTableCalendarVisible"
+    [(workPackageList)]="workPackageList"
+    [topEquipmentCode]="topEquipmentCode"
+    (onCreateWorkPackge)="onCreateWorkPackage($event)"
+  >
+  </aw-dialog-schedule-maintenance-calendar>
+
+  <aw-dialog-schedule-maintenance-table-full-screen
+    *ngIf="maintenancePlanTableFullScreenVisible"
+    [(display)]="maintenancePlanTableFullScreenVisible"
+    [(filterActivatedList)]="filterActivatedList"
+    [(filtersVisible)]="filtersVisible"
+    [(maintenancePlanTableSelectedList)]="maintenancePlanTableSelectedList"
+    [(potentialUnitSelected)]="potentialUnitSelected"
+    [(searchCriteria)]="searchCriteria"
+    [(searchGlobalFilter)]="searchGlobalFilter"
+    [maintenancePlanTableDisplayedLeafNb]="maintenancePlanTableDisplayedLeafNb"
+    [maintenancePlanTableLeafNb]="maintenancePlanTableLeafNb"
+    [maintenancePlanTableLoading]="maintenancePlanTableLoading"
+    [potentialUnitList]="potentialUnitList"
+    [searchAssetList]="searchAssetList"
+    [searchControlList]="searchControlList"
+    [searchCounterList]="searchCounterList"
+    [searchGlobalFilterChanged]="searchGlobalFilterChanged"
+    [searchTaskGroupList]="searchTaskGroupList"
+    [searchTaskList]="searchTaskList"
+    [searchTypeList]="searchTypeList"
+    [searchWorkPackageList]="searchWorkPackageList"
+    [table]="maintenancePlanTableDisplayed"
+    [workPackageList]="workPackageList"
+    [workPackageStatusList]="workPackageStatusList"
+    (onAddToWorkPackage)="addToWorkPackage($event)"
+    (onCreateWorkPackage)="createWorkPackage()"
+    (onFilter)="filterWithCriteria()"
+    (onOpenWorkPackage)="openWorkPackage($event)"
+    (onRemoveFromWorkPackage)="removeFromWorkPackage()"
+    (onResetFilters)="resetTableFilters()"
+  >
+  </aw-dialog-schedule-maintenance-table-full-screen>
+
+  <aw-dialog-task-counters
+    *ngIf="taskCountersVisible"
+    [(display)]="taskCountersVisible"
+    [selectedRow]="maintenancePlanTableSelectedList[0].data"
+    [topEquipmentCode]="topEquipmentCode"
+    (onClose)="onCloseTaskCounters($event)"
+  ></aw-dialog-task-counters>
+
+  <aw-dialog-work-package
+    *ngIf="workPackageCreationVisible"
+    [(display)]="workPackageCreationVisible"
+    [displayStatus]="false"
+    [displayWorkCenter]="false"
+    [warningMessageList]="interdependenceDataList"
+    (onValidated)="onCreateWorkPackage($event)"
+  ></aw-dialog-work-package>
+
+  <p-overlayPanel #opFilters class="aw-overlay" (onShow)="filtersVisible = true" (onHide)="filtersVisible = false">
+    <aw-maintenance-table-filters
+      [searchAssetList]="searchAssetList"
+      [searchControlList]="searchControlList"
+      [searchCounterList]="searchCounterList"
+      [searchTaskGroupList]="searchTaskGroupList"
+      [searchTaskList]="searchTaskList"
+      [searchTypeList]="searchTypeList"
+      [searchWorkPackageList]="searchWorkPackageList"
+      [searchCriteria]="searchCriteria"
+      (onFilter)="opFilters.hide(); filtersVisible = false; filterWithCriteria()"
+      (onReset)="resetTableFilters()"
+    >
+    </aw-maintenance-table-filters>
+  </p-overlayPanel>
+
+  <p-overlayPanel
+    #opWorkPackageToAdd
+    (onShow)="workPackageListToAddVisible = true"
+    (onHide)="workPackageListToAddVisible = false"
+  >
+    <aw-work-package-list
+      [addToVisible]="true"
+      [workPackageList]="workPackageList"
+      [workPackageStatusList]="workPackageStatusList"
+      (onAddTo)="opWorkPackageToAdd.hide(); workPackageListToAddVisible = false; addToWorkPackage($event)"
+    >
+    </aw-work-package-list>
+  </p-overlayPanel>
+
+  <p-overlayPanel
+    #opWorkPackageToShow
+    (onShow)="workPackageListToShowVisible = true"
+    (onHide)="workPackageListToShowVisible = false"
+  >
+    <aw-work-package-list
+      [removeVisible]="true"
+      [workPackageList]="workPackageList"
+      [workPackageStatusList]="workPackageStatusList"
+      (onRemove)="opWorkPackageToShow.hide(); workPackageListToShowVisible = false; removeWorkPackage($event)"
+    >
+    </aw-work-package-list>
+  </p-overlayPanel>
+
+  <aw-dialog-search-task
+    *ngIf="showItemTaskSearchPopup"
+    [(display)]="showItemTaskSearchPopup"
+    (onSelected)="addTask($event)"
+  ></aw-dialog-search-task>
+
+  <aw-tools-report-popup-form
+    *ngIf="showReportPopup"
+    [reportContent]="reportText"
+    [(display)]="showReportPopup"
+  ></aw-tools-report-popup-form>
+</div>

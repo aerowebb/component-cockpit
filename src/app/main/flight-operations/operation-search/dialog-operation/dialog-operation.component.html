@@ -1,0 +1,113 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".title" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+      <label class="form-label">{{ getComponentName() + ".operationCode" | translate }}</label>
+
+      <div class="form-control">
+        <input
+          type="text"
+          name="operationCode"
+          class="aw-input"
+          maxlength="50"
+          [(ngModel)]="flightOperationOutputDTO.bidoOpearationDTO.operationCode"
+          [disabled]="isReadOpenMode || isWriteOpenMode"
+          required
+        />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">{{ getComponentName() + ".operationName" | translate }}</label>
+
+      <div class="form-control">
+        <input
+          type="text"
+          name="operationName"
+          maxlength="100"
+          class="aw-input"
+          [(ngModel)]="flightOperationOutputDTO.bidoOpearationDTO.operationName"
+          [disabled]="isReadOpenMode"
+        />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">{{ getComponentName() + ".operationDescription" | translate }}</label>
+
+      <div class="form-control">
+        <textarea
+          class="aw-textarea"
+          [rows]="3"
+          pInputTextarea
+          maxlength="300"
+          [(ngModel)]="flightOperationOutputDTO.bidoOpearationDTO.operationDescription"
+          [disabled]="isReadOpenMode"
+        ></textarea>
+      </div>
+    </div>
+
+    <div *ngIf="!isCreateOpenMode" class="form-group">
+      <label class="form-label">{{ getComponentName() + ".startDate" | translate }}</label>
+
+      <div class="form-control">
+        <p-calendar
+          showButtonBar="true"
+          [monthNavigator]="true"
+          [yearNavigator]="true"
+          [yearRange]="sessionService.calendarYearRange"
+          class="aw-calendar"
+          [dateFormat]="sessionService.dateFormatPrimeNG"
+          [locale]="sessionService.calendarFormat"
+          [(ngModel)]="flightOperationOutputDTO.startDate"
+          [disabled]="true"
+        ></p-calendar>
+      </div>
+    </div>
+
+    <div *ngIf="!isCreateOpenMode" class="form-group">
+      <label class="form-label">{{ getComponentName() + ".endDate" | translate }}</label>
+
+      <div class="form-control">
+        <p-calendar
+          showButtonBar="true"
+          [monthNavigator]="true"
+          [yearNavigator]="true"
+          [yearRange]="sessionService.calendarYearRange"
+          class="aw-calendar"
+          [dateFormat]="sessionService.dateFormatPrimeNG"
+          [locale]="sessionService.calendarFormat"
+          [(ngModel)]="flightOperationOutputDTO.endDate"
+          [disabled]="true"
+        ></p-calendar>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button *ngIf="!isReadOpenMode" type="button" mat-raised-button (click)="cancel()">
+      <span>{{ "global.cancel" | translate }}</span>
+    </button>
+
+    <button
+      *ngIf="!isReadOpenMode"
+      type="button"
+      mat-raised-button
+      color="primary"
+      [disabled]="
+        flightOperationOutputDTO.bidoOpearationDTO.operationCode === null ||
+        flightOperationOutputDTO.bidoOpearationDTO.operationCode === undefined ||
+        flightOperationOutputDTO.bidoOpearationDTO.operationCode.trim() === ''
+      "
+      (click)="validate()"
+    >
+      {{ "global.validate" | translate }}
+    </button>
+    <button *ngIf="isReadOpenMode" type="button" mat-raised-button (click)="cancel()">
+      {{ "global.close" | translate }}
+    </button>
+  </a-footer>
+</a-modal>

@@ -1,0 +1,33 @@
+{
+  "InventoryByWarehouseSearchComponent": {
+    "title": "Inventory By WareHouse",
+    "storeCode": "Warehouse Code",
+    "storeName": "Warehouse Name",
+    "stockValue": "Stock Value",
+    "onSuccessDeleteWareHouse": "Selected warehouse successfully deleted.",
+    "confirmDeleteSelectedWarehouses": "Do you want to delete selected data?",
+    "confirmDeleteSelectedWarehouse": "Do you want to delete selected data?",
+    "errorOnMissingstoreID": "Unable to open: missing store code"
+  },
+  "InventoryByWarehouseFormComponent": {
+    "title": "Warehouse Form",
+    "storeCode": "Warehouse Code",
+    "storeName": "Warehouse Name",
+    "selectMaterial": "Select Material",
+    "enterMaterial": "Enter material",
+    "errorOnMissingPncode": "PN : Entry of valid PN is required for proceeding with the requested service",
+    "stockType": "Stock valuation group",
+    "stockNumber": "Quantity",
+    "averageValue": "Average value",
+    "totalValue": "Total Value",
+    "availabilityDate": "Inventory date",
+    "tableTilte": "Stock List",
+    "confirmDeleteSelectedStocks": "Do you want to delete selected stocks?",
+    "confirmDeleteSelectedStock": "Do you want to delete selected stock?",
+    "showStockStatus": "Show Stock Status",
+    "onCreateSave": "The form data was successfully created!",
+    "onUpdateSave": "The form data was successfully updated !",
+    "duplicatesValue": "Stock Valuation group  value already exist",
+    "choiceTooltip": "Choose either Select Material or Enter Material"
+  }
+}

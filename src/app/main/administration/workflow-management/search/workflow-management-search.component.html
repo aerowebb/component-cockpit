@@ -1,0 +1,139 @@
+<div class="page-header">
+  <div class="page-info">
+    <div>
+      <div class="page-title">
+        {{ "transaction." + componentData.componentId | translate }}
+      </div>
+
+      <div class="page-subtitle">
+        <div class="page-subtitle"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-actions">
+    <button
+      id="actions"
+      mat-icon-button
+      class="mat-elevation-z1"
+      matTooltip="{{ 'global.showAllActionTooltip' | translate }}"
+      matTooltipPosition="above"
+      aria-label="Show all actions"
+      [matMenuTriggerFor]="actions"
+    >
+      <mat-icon>more_horiz</mat-icon>
+    </button>
+
+    <mat-menu #actions="matMenu">
+      <button type="button" mat-menu-item class="btn-with-spinner" (click)="exportTable()">
+        <span class="lds-hourglass" *ngIf="showExportSpinner"></span>
+        {{ "global.export" | translate }}
+      </button>
+
+      <button type="button" mat-menu-item (click)="importTable()">
+        {{ "global.import" | translate }}
+      </button>
+
+      <button type="button" mat-menu-item (click)="refresh()">
+        {{ "global.refresh" | translate }}
+      </button>
+
+      <button id="favorites" mat-menu-item (click)="updateFavoriteState()">
+        {{ (isFavoriteEntry ? "page.removeFromFavorites" : "page.addToFavorites") | translate }}
+      </button>
+    </mat-menu>
+  </div>
+</div>
+
+<div class="page-wrapper">
+  <div class="page-container">
+    <div class="page-content">
+      <div class="grid-row">
+        <div class="grid-cell--12">
+          <div #resultsContainerAnchor class="grid-cell grid-cell--container">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">
+                  {{ "global.results" | translate }} ({{ workflowTableDataSource.dataCount }})
+                </h3>
+              </div>
+            </div>
+
+            <div class="grid-cell-content">
+              <a-table [dataSource]="workflowTableDataSource">
+                <ng-template tableActionsDef>
+                  <button
+                    type="button"
+                    mat-raised-button
+                    color="warn"
+                    (click)="deleteSelectedScenario(workflowTableDataSource.dataSelection)"
+                    *ngIf="hasManageAccessRight && workflowTableDataSource.hasDataSelection"
+                  >
+                    {{ "global.delete" | translate }}
+                  </button>
+
+                  <button
+                    type="button"
+                    mat-raised-button
+                    (click)="openSelectedScenario(workflowTableDataSource.dataSelection)"
+                    *ngIf="workflowTableDataSource.hasDataSelection"
+                  >
+                    {{ "global.open" | translate }}
+                  </button>
+
+                  <button
+                    type="button"
+                    mat-raised-button
+                    (click)="duplicateSelectedScenario()"
+                    *ngIf="workflowTableDataSource.hasDataSelection"
+                  >
+                    {{ "global.duplicate" | translate }}
+                  </button>
+
+                  <button
+                    type="button"
+                    mat-raised-button
+                    (click)="openNewScenario()"
+                    *ngIf="!workflowTableDataSource.hasDataSelection"
+                  >
+                    {{ "global.add" | translate }}
+                  </button>
+                </ng-template>
+
+                <ng-template columnDef="bidtFuncObjectLabel" let-rowData="rowData">
+                  <span>{{ "FuncObject." + rowData.bidtFuncObjectLabel | translate }}</span>
+                </ng-template>
+
+                <ng-template columnDef="targetStatusKeyList" let-rowData="rowData">
+                  <span
+                    *ngIf="!!rowData.targetStatusKeyList && rowData.targetStatusKeyList.length > 0"
+                    pTooltip="{{ rowData['targetStatusTooltip'] }}"
+                    tooltipPosition="bottom"
+                  >
+                    {{ rowData.selectedStatusLabel }}
+                  </span>
+                </ng-template>
+
+                <ng-template columnDef="bidtScenarioProfileList" let-rowData="rowData">
+                  <span
+                    *ngIf="!!rowData.bidtScenarioProfileList && rowData.bidtScenarioProfileList.length > 0"
+                    pTooltip="{{ rowData['profileTooltip'] }}"
+                    tooltipPosition="bottom"
+                  >
+                    {{ rowData.selectedProfileVal }}
+                  </span>
+                </ng-template>
+              </a-table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<aw-dialog-import-scenario
+  *ngIf="showImportDialog"
+  [(display)]="showImportDialog"
+  (onValidate)="onImportScenario($event)"
+></aw-dialog-import-scenario>

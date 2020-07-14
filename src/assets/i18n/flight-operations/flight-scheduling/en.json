@@ -1,0 +1,37 @@
+{
+  "FlightSchedulingFormComponent": {
+    "addFlight": "Add Flight",
+    "chronoNumber": "Chrono number",
+    "code": "Code",
+    "confirmDeleteSelectedMissionEquipment": "Do you really want to remove this data?",
+    "date": "Date",
+    "duplicate": "Duplicate",
+    "endDate": "End date",
+    "fleet": "Fleet",
+    "flightType": "Flight type",
+    "missionName": "Aircraft registration",
+    "name": "Name",
+    "nextWeek": "Next two week",
+    "previousWeek": "Previous two week",
+    "removeFlight": "Remove Flight",
+    "resetFlight": "Reset Flight",
+    "schedule": "Schedule",
+    "startDate": "Start date",
+    "status": "Status",
+    "successOnDeleteMissionEquipment": "Flight removed successfully.",
+    "timeZone": "Time Zone"
+  },
+  "FlightSchedulingSearchComponent": {
+    "confirmDeleteSelectedFleet": "Do you want to delete the selected fleet?",
+    "confirmDeleteSelectedFleets": "Do you want to delete the selected fleets?",
+    "consult": "Consult",
+    "customerCode": "Business Partner",
+    "errorOnDeleteFleet": "Could not delete form data.",
+    "errorOnMissingFleetId": "Could not open the selected fleets",
+    "fleet": "Fleet",
+    "fleetCode": "Fleet Code",
+    "fleetName": "Fleet Name",
+    "successOnDeleteFleet": "The form data was successfully removed!",
+    "viewSched": "View Scheduling"
+  }
+}

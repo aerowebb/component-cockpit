@@ -1,0 +1,48 @@
+@import "constants";
+@import "mixins";
+
+$card-width: 8rem;
+
+:host {
+  .content {
+    @include flex-row();
+
+    flex-wrap: wrap;
+    max-width: 50vw;
+
+    .card {
+      border: $border-width $border-style $secondary-background-color;
+      border-radius: $border-radius;
+      cursor: pointer;
+      margin: $margin-value;
+      max-width: $card-width;
+      min-width: $card-width;
+      padding: $margin-value;
+      text-align: center;
+
+      &:hover {
+        border-color: darken($secondary-background-color, 10%);
+      }
+
+      .action-list {
+        margin-top: $margin-value;
+
+        .aw-icon {
+          border-radius: 50%;
+          line-height: 1.5rem;
+          width: 1.5rem;
+
+          transition: background-color 0.3s, box-shadow 0.3s, color 0.3s;
+
+          &:hover,
+          &.active {
+            background-color: $accent-color !important;
+            box-shadow: 0 3px 5px -1px rgba(0, 0, 0, 0.2), 0 6px 10px 0 rgba(0, 0, 0, 0.14),
+              0 1px 18px 0 rgba(0, 0, 0, 0.12);
+            color: $primary-background-color !important;
+          }
+        }
+      }
+    }
+  }
+}

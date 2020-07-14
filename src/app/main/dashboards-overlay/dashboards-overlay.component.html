@@ -1,0 +1,7 @@
+<div class="overlay">
+  <ul>
+    <li *ngFor="let dashboard of dashboards" (click)="menuService.openMenuEntry(dashboard.key)">
+      {{ "transaction." + dashboard.key | translate }}
+    </li>
+  </ul>
+</div>

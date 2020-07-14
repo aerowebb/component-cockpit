@@ -1,0 +1,105 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".title" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="row">
+      <div class="form-group required">
+        <label class="form-label">{{ getComponentName() + ".type" | translate }}</label>
+
+        <div class="form-control">
+          <p-dropdown class="aw-dropdown fixed-width" placeholder="&nbsp;" [showClear]="true"></p-dropdown>
+        </div>
+      </div>
+      <div class="form-group required">
+        <label class="form-label">{{ getComponentName() + ".typeOfItemInDispute" | translate }}</label>
+
+        <div class="form-control">
+          <p-dropdown
+            class="aw-dropdown fixed-width"
+            placeholder="&nbsp;"
+            [showClear]="true"
+            [(ngModel)]="litigationItem"
+          ></p-dropdown>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="form-group required">
+        <label class="form-label">{{ getComponentName() + ".comment" | translate }}</label>
+
+        <div class="form-control">
+          <textarea class="aw-textarea" [rows]="3" maxlength="300" pInputTextarea></textarea>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">{{ getComponentName() + ".isBlockingLitigation" | translate }}</label>
+
+        <div class="form-control">
+          <p-checkbox binary="true"></p-checkbox>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="form-group required">
+        <label class="form-label">{{ getComponentName() + ".observationDate" | translate }}</label>
+
+        <div class="form-control">
+          <p-calendar
+            showButtonBar="true"
+            [monthNavigator]="true"
+            [yearNavigator]="true"
+            [yearRange]="sessionService.calendarYearRange"
+            class="aw-calendar"
+            [dateFormat]="sessionService.dateFormatPrimeNG"
+            [locale]="sessionService.calendarFormat"
+            appendTo="body"
+            disabled
+          ></p-calendar>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">{{ getComponentName() + ".foundBy" | translate }}</label>
+
+        <div class="form-control">
+          <input class="aw-input" type="text" />
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="form-group required">
+        <label class="form-label">{{ getComponentName() + ".responsibleTreatment" | translate }}</label>
+
+        <div class="form-control">
+          <p-dropdown class="aw-dropdown fixed-width" placeholder="&nbsp;" [showClear]="true"></p-dropdown>
+        </div>
+      </div>
+      <div class="form-group required">
+        <label class="form-label">{{ getComponentName() + ".qualityController" | translate }}</label>
+
+        <div class="form-control">
+          <p-dropdown class="aw-dropdown fixed-width" placeholder="&nbsp;" [showClear]="true"></p-dropdown>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="form-group required">
+        <label class="form-label">{{ getComponentName() + ".actionPlan" | translate }}</label>
+
+        <div class="form-control">
+          <p-dropdown class="aw-dropdown fixed-width" placeholder="&nbsp;" [showClear]="true"></p-dropdown>
+        </div>
+      </div>
+      <div class="form-group"></div>
+    </div>
+  </a-content>
+  <a-footer>
+    <button type="button" color="primary" mat-raised-button (click)="validate()">
+      <span>{{ "global.validate" | translate }}</span>
+    </button>
+    <button type="button" mat-raised-button (click)="closeDialog()">
+      <span>{{ "global.cancel" | translate }}</span>
+    </button>
+  </a-footer>
+</a-modal>

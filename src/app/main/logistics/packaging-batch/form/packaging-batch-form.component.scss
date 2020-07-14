@@ -1,0 +1,48 @@
+@import "constants";
+@import "mixins";
+
+:host {
+  .value-red {
+    background-color: $red-light1 !important;
+  }
+
+  .value-yellow {
+    background-color: $orange !important;
+  }
+
+  .value-green {
+    background-color: $green-light1 !important;
+  }
+
+  .value-green,
+  .value-red,
+  .value-yellow {
+    padding: 0.5em;
+  }
+
+  .red {
+    color: $red-light1 !important;
+  }
+
+  .green {
+    color: $green-light1 !important;
+  }
+
+  .custom-anchor {
+    padding: 0.7em 0;
+  }
+
+  .procurement-type--in {
+    color: $green-light1;
+    transform: rotate(320deg);
+  }
+
+  .procurement-type--out {
+    color: $red-light1;
+    transform: rotate(45deg);
+  }
+
+  .procurement-type--transfer {
+    color: $blue-dark1;
+  }
+}

@@ -1,0 +1,15 @@
+@import "constants";
+
+:host {
+  .action-list {
+    justify-content: flex-end;
+
+    .aw-btn {
+      margin-left: $margin-value;
+
+      &:first-of-type {
+        margin-left: 0;
+      }
+    }
+  }
+}

@@ -1,0 +1,66 @@
+<div id="home-component" class="page-wrapper" [@mainContainerState]="mainContainerState">
+  <div class="page-container">
+    <div class="logo-container">
+      <img class="logo-aw" src="assets/img/home_logo.svg" [@imgState]="imgState" />
+
+      <img
+        class="logo-client"
+        src="assets/img/client.svg"
+        *ngIf="sessionService.isSpecificBRASIDAS || sessionService.isSpecificDassault"
+      />
+    </div>
+
+    <div class="page-content">
+      <div class="grid-row">
+        <div class="grid-cell--12">
+          <div class="tiles-container">
+            <div class="tile" *ngFor="let favorite of favorites">
+              <div class="tile-header">
+                <div class="tile-favorite" (click)="toggleDefaultFavorite(favorite)">
+                  <i *ngIf="isFavoriteToOpen(favorite)" class="fa fa-fw fa-star favorite-entry" aria-hidden="true"></i>
+                  <i *ngIf="!isFavoriteToOpen(favorite)" class="fa fa-fw fa-star-o" aria-hidden="true"></i>
+                </div>
+
+                <div class="tile-title" (click)="openFavorite(favorite)">
+                  {{ "transaction." + favorite.componentId | translate }}
+                </div>
+
+                <div class="tile-remove" (click)="removeFavorite(favorite)">
+                  <i class="material-icons">close</i>
+                </div>
+              </div>
+
+              <div class="tile-content" (click)="openFavorite(favorite)">
+                <div class="tile-context">
+                  <span *ngIf="favorite.formattedContext">{{ favorite.formattedContext }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div *ngIf="favorites.length === 0" class="tile-empty">
+              Your favorites <i class="fa fa-fw fa-star favorite-icon" aria-hidden="true"></i> will appear here.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="appVersionService.appVersion" class="release-version">
+      <div>{{ sessionService.userFirstName }} {{ sessionService.userLastName }}</div>
+
+      <div *ngIf="sessionService.client">Client {{ sessionService.client }}</div>
+
+      <div>{{ sessionService.system }}</div>
+
+      <div>{{ sessionService.instance }}</div>
+
+      <div>{{ appVersionService.appVersion.version }}</div>
+
+      <div>{{ appVersionService.appVersion.copyright }}</div>
+
+      <div *ngIf="appVersionService.appVersion.versionDate">
+        {{ dateService.dateWitCustomFormatToString(appVersionService.appVersion.versionDate, "LL") }}
+      </div>
+    </div>
+  </div>
+</div>

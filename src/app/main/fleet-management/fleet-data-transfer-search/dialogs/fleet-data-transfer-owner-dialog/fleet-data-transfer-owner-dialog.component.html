@@ -1,0 +1,322 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div *ngIf="!showReport && operatorSelected" class="modal-title">
+      {{ getComponentName() + ".operatortitle" | translate }}
+    </div>
+    <div *ngIf="!showReport && ownerSelected" class="modal-title">
+      {{ getComponentName() + ".ownertitle" | translate }}
+    </div>
+    <div *ngIf="showReport && operatorSelected" style="width: 100%" class="modal-title">
+      {{ getComponentName() + ".reportOperatorTitle" | translate }}
+    </div>
+    <div *ngIf="showReport && ownerSelected" style="width: 100%" class="modal-title">
+      {{ getComponentName() + ".reportOwnerTitle" | translate }}
+    </div>
+  </a-header>
+
+  <a-content>
+    <div class="search-dialog-container">
+      <div class="section search-criteria-section">
+        <div class="grid-row">
+          <div class="grid-cell--3">
+            <div class="form-group required">
+              <label class="form-label">{{ getComponentName() + ".date" | translate }}</label>
+              <div class="form-control">
+                <p-calendar
+                  showButtonBar="true"
+                  [monthNavigator]="true"
+                  [yearNavigator]="true"
+                  [yearRange]="sessionService.calendarYearRange"
+                  name="date"
+                  class="aw-calendar"
+                  [dateFormat]="sessionService.dateFormatPrimeNG"
+                  [locale]="sessionService.calendarFormat"
+                  [(ngModel)]="fleetDataTransferInput.eventInformationsDTO.eventDate"
+                  (ngModelChange)="reloadProperty()"
+                  [disabled]="showReport"
+                  appendTo="body"
+                  [maxDate]="maxDate"
+                  [showTime]="true"
+                ></p-calendar>
+              </div>
+            </div>
+          </div>
+          <div class="grid-cell--3">
+            <div *ngIf="ownerSelected" class="form-group required">
+              <label class="form-label">{{ getComponentName() + ".newOwner" | translate }}</label>
+
+              <div class="form-control form-control-with-modal" [ngClass]="{ disabled: showReport }">
+                <div class="form-control-data" (click)="!showReport ? openOwnerPopup() : ''">
+                  {{ dataToTransfer.ownerCustomerCode }}
+                </div>
+                <div class="btn-search-wrapper">
+                  <i
+                    *ngIf="!showReport"
+                    class="fa fa-fw fa-search aw-icon aw-icon-with-border"
+                    aria-hidden="true"
+                    pTooltip="{{ 'global.search' | translate }}"
+                    tooltipPosition="top"
+                    (click)="openOwnerPopup()"
+                  ></i>
+                </div>
+              </div>
+            </div>
+
+            <div *ngIf="operatorSelected" class="form-group required">
+              <label class="form-label">{{ getComponentName() + ".newOperator" | translate }}</label>
+
+              <div class="form-control form-control-with-modal" [ngClass]="{ disabled: showReport }">
+                <div class="form-control-data" (click)="!showReport ? openOperatorPopup() : ''">
+                  {{ dataToTransfer.ownerCustomerCode }}
+                </div>
+                <div class="btn-search-wrapper">
+                  <i
+                    *ngIf="!showReport"
+                    class="fa fa-fw fa-search aw-icon aw-icon-with-border"
+                    aria-hidden="true"
+                    pTooltip="{{ 'global.search' | translate }}"
+                    tooltipPosition="top"
+                    (click)="openOperatorPopup()"
+                  ></i>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-cell--3">
+            <div class="form-group required">
+              <label class="form-label"> {{ getComponentName() + ".reason" | translate }} </label>
+              <div class="form-control">
+                <p-dropdown
+                  class="aw-dropdown fixed-width"
+                  [(ngModel)]="fleetDataTransferInput.eventInformationsDTO.reason"
+                  placeholder="&nbsp;"
+                  [showClear]="true"
+                  [options]="reasonList"
+                  [disabled]="showReport"
+                ></p-dropdown>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-cell--3"></div>
+        </div>
+
+        <div class="grid-row" *ngIf="!showReport">
+          <div class="grid-cell--6">
+            <div class="form-group general-field required">
+              <label class="form-label">{{ getComponentName() + ".docDescription" | translate }}</label>
+              <div class="form-control text-area">
+                <textarea
+                  class="aw-textarea"
+                  [rows]="3"
+                  pInputTextarea
+                  [(ngModel)]="fleetDataTransferInput.eventInformationsDTO.description"
+                  [disabled]="isReadOpenMode"
+                ></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-cell--3">
+            <div class="form-group">
+              <label class="form-label"> {{ getComponentName() + ".forcePropagation" | translate }} </label>
+              <div class="form-control">
+                <p-checkbox
+                  binary="true"
+                  class="aw-checkbox"
+                  [(ngModel)]="fleetDataTransferInput.forcePropagation"
+                  [disabled]="sessionService.isSpecificDassault"
+                ></p-checkbox>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-cell--3">
+            <div class="form-group">
+              <label class="form-label"> {{ getComponentName() + ".runBackground" | translate }} </label>
+              <div class="form-control">
+                <p-checkbox
+                  binary="true"
+                  class="aw-checkbox"
+                  [(ngModel)]="fleetDataTransferInput.runBackground"
+                  [disabled]="isReadOpenMode"
+                ></p-checkbox>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="section results-section">
+        <h4 class="section-title">
+          {{ getComponentName() + ".tranferAssetsTitle" | translate }} ({{ resultsTable ? resultsTable.length : 0 }})
+        </h4>
+        <div class="section-content">
+          <p-table
+            [resizableColumns]="true"
+            #tableAssets
+            class="aw-table2"
+            [columns]="resultsTableCols"
+            [value]="resultsTable"
+            [scrollable]="true"
+          >
+            <ng-template pTemplate="emptymessage">
+              <span *ngIf="!isLoading"> &nbsp;</span>
+
+              <div *ngIf="isLoading" class="aw-table-loading-indicator">
+                <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                <div class="lds-hourglass"></div>
+              </div>
+            </ng-template>
+
+            <ng-template pTemplate="colgroup" let-columns>
+              <colgroup>
+                <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+              </colgroup>
+            </ng-template>
+
+            <ng-template pTemplate="header" let-columns>
+              <tr>
+                <th pResizableColumn *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                  {{ getComponentName() + "." + col.field | translate }}
+                </th>
+              </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+              <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                <td *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                  <span [ngSwitch]="col.field">
+                    <div *ngSwitchCase="'report'">
+                      <i
+                        *ngIf="rowData['report'] === false"
+                        class="fa fa-times fa-lg"
+                        aria-hidden="true"
+                        pTooltip="{{ rowData['exceptionMessage'] }}"
+                        tooltipPosition="top"
+                        style="color:red"
+                      ></i>
+                      <i
+                        *ngIf="rowData['report'] === true"
+                        class="fa fa-check fa-lg"
+                        aria-hidden="true"
+                        tooltipPosition="top"
+                        style="color:green"
+                      ></i>
+                    </div>
+                    <div *ngSwitchCase="'alerts'">
+                      <i
+                        *ngIf="ownerSelected && rowData['alerts'] === true"
+                        class="fa fa-exclamation-triangle fa-lg yellow"
+                        style="color:#ff9800"
+                        aria-hidden="true"
+                        pTooltip="{{ getComponentName() + '.alertMessageOwner' | translate }}"
+                        tooltipPosition="top"
+                      ></i>
+                      <i
+                        *ngIf="operatorSelected && rowData['alerts'] === true"
+                        class="fa fa-exclamation-triangle fa-lg yellow"
+                        style="color:#ff9800"
+                        aria-hidden="true"
+                        pTooltip="{{ getComponentName() + '.alertMessageOperator' | translate }}"
+                        tooltipPosition="top"
+                      ></i>
+                    </div>
+                    <div *ngSwitchCase="'registration'" class="page-header-links">
+                      <td
+                        *ngIf="airCraftSelected"
+                        [pEditableColumn]="rowData[col.field]"
+                        [pEditableColumnField]="rowData[col.field]"
+                      >
+                        <p-cellEditor>
+                          <ng-template pTemplate="input">
+                            <input style="width: 50%" type="text" maxlength="100" [(ngModel)]="rowData.registration" />
+                          </ng-template>
+                          <ng-template pTemplate="output"> {{ rowData.registration }} </ng-template>
+                        </p-cellEditor>
+                        <i
+                          class="fa fa-fw fa-pencil "
+                          aria-hidden="true"
+                          pTooltip="{{ 'global.edit' | translate }}"
+                          tooltipPosition="top"
+                        ></i>
+                      </td>
+                    </div>
+                    <div *ngSwitchCase="'newSn'" class="page-header-links">
+                      <td
+                        *ngIf="airCraftSelected"
+                        [pEditableColumn]="rowData[col.field]"
+                        [pEditableColumnField]="rowData[col.field]"
+                      >
+                        <p-cellEditor>
+                          <ng-template pTemplate="input">
+                            <input style="width: 50%" type="text" maxlength="50" [(ngModel)]="rowData.newSn" />
+                          </ng-template>
+                          <ng-template pTemplate="output"> {{ rowData.newSn }} </ng-template>
+                        </p-cellEditor>
+                        <i
+                          class="fa fa-fw fa-pencil "
+                          aria-hidden="true"
+                          pTooltip="{{ 'global.edit' | translate }}"
+                          tooltipPosition="top"
+                        ></i>
+                      </td>
+                    </div>
+                    <div *ngSwitchDefault>{{ rowData[col.field] }}</div>
+                  </span>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </div>
+    </div>
+  </a-content>
+  <a-footer>
+    <button type="button" mat-raised-button (click)="closeDialog()">
+      <span>{{ "global.cancel" | translate }}</span>
+    </button>
+    <button
+      *ngIf="!showReport"
+      type="button"
+      color="primary"
+      mat-raised-button
+      (click)="validate()"
+      [disabled]="
+        !fleetDataTransferInput.eventInformationsDTO.eventDate ||
+        !fleetDataTransferInput.eventInformationsDTO.reason ||
+        !dataToTransfer.ownerCustomerCode ||
+        !fleetDataTransferInput.eventInformationsDTO.description ||
+        checkList()
+      "
+    >
+      {{ "global.save" | translate }}
+    </button>
+    <button
+      *ngIf="showReport"
+      type="button"
+      mat-raised-button
+      (click)="generateReport()"
+      [disabled]="reportText === null || reportText === ''"
+    >
+      <span>{{ getComponentName() + ".report" | translate }}</span>
+    </button>
+  </a-footer>
+</a-modal>
+
+<aw-fleet-data-transfer-report-dialog
+  *ngIf="showReportPopup"
+  [reportContent]="reportText"
+  [iscustomerOwner]="iscustomerOwner"
+  [iscustomerOperator]="iscustomerOperator"
+  [(display)]="showReportPopup"
+></aw-fleet-data-transfer-report-dialog>
+
+<aw-dialog-search-customer
+  *ngIf="showCustomerPopup"
+  [(display)]="showCustomerPopup"
+  [iscustomerOwner]="iscustomerOwner"
+  [iscustomerOperator]="iscustomerOperator"
+  [customer-code]="fleetDataTransferInput.bidoEquipmentDTOList.ownerCustomerCode"
+  (onSelected)="setSelectedCode($event)"
+></aw-dialog-search-customer>

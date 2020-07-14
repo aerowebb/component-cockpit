@@ -1,0 +1,114 @@
+<div class="page-content">
+  <div class="grid-row">
+    <div class="grid-cell grid-cell--container custom-border">
+      <div class="grid-cell-content">
+        <div class="column">
+          <div class="row">
+            <div class="form-group flex--auto">
+              <label class="form-label">{{ getComponentName() + ".material" | translate }} </label>
+
+              <div class="form-control">
+                <p-dropdown
+                  class="aw-dropdown fixed-width"
+                  placeholder="&nbsp;"
+                  [showClear]="true"
+                  [options]="listInterface.pnList"
+                  [(ngModel)]="searchCriteria.pn"
+                ></p-dropdown>
+              </div>
+            </div>
+
+            <div class="form-group flex--auto">
+              <label class="form-label"> {{ getComponentName() + ".site" | translate }} </label>
+
+              <div class="form-control">
+                <p-dropdown
+                  class="aw-dropdown fixed-width"
+                  placeholder="&nbsp;"
+                  [showClear]="true"
+                  [options]="listInterface.siteList"
+                  [(ngModel)]="searchCriteria.siteId"
+                ></p-dropdown>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="form-group flex--auto">
+              <label class="form-label"> {{ getComponentName() + ".warehouse" | translate }} </label>
+
+              <div class="form-control">
+                <p-dropdown
+                  class="aw-dropdown fixed-width"
+                  placeholder="&nbsp;"
+                  [showClear]="true"
+                  [options]="listInterface.woList"
+                  [(ngModel)]="searchCriteria.warehouseId"
+                ></p-dropdown>
+              </div>
+            </div>
+
+            <div class="form-group flex--auto">
+              <label class="form-label"> {{ getComponentName() + ".area" | translate }} </label>
+
+              <div class="form-control">
+                <p-dropdown
+                  class="aw-dropdown fixed-width"
+                  placeholder="&nbsp;"
+                  [showClear]="true"
+                  [options]="listInterface.areaList"
+                  [(ngModel)]="searchCriteria.areaId"
+                ></p-dropdown>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="form-group flex--auto">
+              <label class="form-label"> {{ getComponentName() + ".storage" | translate }} </label>
+
+              <div class="form-control">
+                <p-dropdown
+                  class="aw-dropdown fixed-width"
+                  placeholder="&nbsp;"
+                  [showClear]="true"
+                  [options]="listInterface.storageBinList"
+                  [(ngModel)]="searchCriteria.storageBinId"
+                ></p-dropdown>
+              </div>
+            </div>
+
+            <div class="form-group flex--auto">
+              <label class="form-label"> {{ getComponentName() + ".plannedIssue" | translate }} </label>
+
+              <div class="form-control">
+                <p-calendar
+                  showButtonBar="true"
+                  [monthNavigator]="true"
+                  [yearNavigator]="true"
+                  [yearRange]="sessionService.calendarYearRange"
+                  appendTo="body"
+                  class="aw-calendar"
+                  [dateFormat]="sessionService.dateFormatPrimeNG"
+                  [locale]="sessionService.calendarFormat"
+                  [readonlyInput]="true"
+                  [(ngModel)]="searchCriteria.stockIssueDate"
+                ></p-calendar>
+              </div>
+            </div>
+          </div>
+
+          <div class="row action-list">
+            <button type="button" mat-raised-button (click)="reset()">
+              {{ "global.reset" | translate }}
+            </button>
+
+            <button type="button" mat-raised-button (click)="filter()">
+              {{ "global.filter" | translate }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,22 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "baseUrl": "./",
+    "declaration": false,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "moduleResolution": "node",
+    "outDir": "./dist/out-tsc",
+    "sourceMap": true,
+    "strictNullChecks": true,
+    "target": "es5",
+    "lib": ["es2017", "dom"],
+    "typeRoots": [
+      "node_modules/@types",
+      "node_modules/bryntum-gantt/gantt.d.ts",
+      "node_modules/bryntum-scheduler/scheduler.d.ts",
+      "src/typings.d.ts"
+    ],
+    "downlevelIteration": true
+  }
+}

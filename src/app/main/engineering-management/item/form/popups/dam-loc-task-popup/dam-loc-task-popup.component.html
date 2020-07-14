@@ -1,0 +1,135 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".damageManagement" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+      <label class="form-label">{{ getComponentName() + ".itemVersion" | translate }}</label>
+      <div class="form-control">
+        <p-dropdown
+          class="aw-dropdown fixed-width"
+          placeholder="&nbsp;"
+          [showClear]="true"
+          [options]="itemVersionList"
+          [(ngModel)]="versionNumber"
+          [disabled]="isReadOpenMode"
+          appendTo="body"
+        ></p-dropdown>
+      </div>
+    </div>
+    <div class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+      <label class="form-label">{{ getComponentName() + ".damageCode" | translate }}</label>
+
+      <div class="form-control form-control-with-modal" [ngClass]="{ disabled: isReadOpenMode }">
+        <div class="form-control-data" (click)="showDamageDialog()">{{ bireDamLocTaskCustomOutput.damageCode }}</div>
+
+        <div *ngIf="bireDamLocTaskCustomOutput.damageCode" class="btn-clear-wrapper">
+          <i
+            class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+            aria-hidden="true"
+            (click)="bireDamLocTaskCustomOutput.damageCode = undefined"
+          ></i>
+        </div>
+        <div class="btn-search-wrapper">
+          <i class="fa fa-fw fa-search aw-icon btn-search" aria-hidden="true" (click)="showDamageDialog()"></i>
+        </div>
+      </div>
+    </div>
+    <div class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+      <label class="form-label">{{ getComponentName() + ".localisationCode" | translate }}</label>
+
+      <div class="form-control form-control-with-modal" [ngClass]="{ disabled: isReadOpenMode }">
+        <div class="form-control-data" (click)="showLocalisationDialog()">
+          {{ bireDamLocTaskCustomOutput.localisationCode }}
+        </div>
+
+        <div *ngIf="bireDamLocTaskCustomOutput.localisationCode" class="btn-clear-wrapper">
+          <i
+            class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+            aria-hidden="true"
+            (click)="bireDamLocTaskCustomOutput.localisationCode = undefined"
+          ></i>
+        </div>
+        <div class="btn-search-wrapper">
+          <i class="fa fa-fw fa-search aw-icon btn-search" aria-hidden="true" (click)="showLocalisationDialog()"></i>
+        </div>
+      </div>
+    </div>
+    <div class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+      <label class="form-label">{{ getComponentName() + ".taskCode" | translate }}</label>
+
+      <div class="form-control form-control-with-modal" [ngClass]="{ disabled: isReadOpenMode }">
+        <div class="form-control-data" (click)="taskSearchCode()">{{ bireDamLocTaskCustomOutput.taskCode }}</div>
+
+        <div *ngIf="bireDamLocTaskCustomOutput.taskCode" class="btn-clear-wrapper">
+          <i
+            class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+            aria-hidden="true"
+            (click)="bireDamLocTaskCustomOutput.taskCode = undefined"
+          ></i>
+        </div>
+        <div class="btn-search-wrapper">
+          <i class="fa fa-fw fa-search aw-icon btn-search" aria-hidden="true" (click)="taskSearchCode()"></i>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">{{ getComponentName() + ".taskVersion" | translate }}</label>
+
+      <div class="form-control">
+        <input
+          type="text"
+          class="aw-input"
+          maxlength="50"
+          [(ngModel)]="bireDamLocTaskCustomOutput.taskVersion"
+          [disabled]="isReadOpenMode"
+        />
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button *ngIf="isReadOpenMode" type="button" mat-raised-button (click)="onCancel()">
+      <span>{{ "global.close" | translate }}</span>
+    </button>
+
+    <button *ngIf="!isReadOpenMode" type="button" mat-raised-button (click)="onCancel()">
+      <span>{{ "global.cancel" | translate }}</span>
+    </button>
+
+    <button
+      *ngIf="!isReadOpenMode"
+      type="button"
+      mat-raised-button
+      color="primary"
+      [disabled]="
+        !versionNumber ||
+        !bireDamLocTaskCustomOutput.damageCode ||
+        !bireDamLocTaskCustomOutput.localisationCode ||
+        !bireDamLocTaskCustomOutput.taskCode
+      "
+      (click)="onValidate()"
+    >
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>
+
+<aw-damage-list-popup
+  *ngIf="showDamageListDialog"
+  [(display)]="showDamageListDialog"
+  (onCreate)="setSelectedDamages($event)"
+></aw-damage-list-popup>
+
+<aw-dialog-search-task
+  *ngIf="showItemTaskSearchPopup"
+  [(display)]="showItemTaskSearchPopup"
+  (onSelected)="addTask($event)"
+></aw-dialog-search-task>
+
+<aw-localisation-list-popup
+  *ngIf="showLocalisationListDialog"
+  [(display)]="showLocalisationListDialog"
+  (onCreate)="setSelectedLocalisation($event)"
+></aw-localisation-list-popup>

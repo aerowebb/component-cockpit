@@ -1,0 +1,238 @@
+<div class="grid-cell-header">
+  <div class="grid-cell-title-container">
+    <div id="flightMeasuresTableTitle" class="grid-cell-title">
+      <span>{{ getComponentName() + ".flightMeasures" | translate }} ({{ table ? table.length : 0 }})</span>
+    </div>
+  </div>
+</div>
+
+<div class="grid-cell-content">
+  <p-table
+    id="flightMeasuresTable"
+    [resizableColumns]="true"
+    #ptableFlightMeasure
+    class="aw-table2"
+    [columns]="tableColList"
+    [value]="table"
+    [scrollable]="true"
+    dataKey="_id"
+  >
+    <ng-template pTemplate="emptymessage">
+      <span *ngIf="!tableLoading"> &nbsp;</span>
+
+      <div *ngIf="tableLoading" class="aw-table-loading-indicator">
+        <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+        <div class="lds-hourglass"></div>
+      </div>
+    </ng-template>
+
+    <ng-template pTemplate="caption">
+      <div class="aw-table-header">
+        <div class="aw-table-global-filter">
+          <label class="aw-table-global-filter-label">
+            <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+          </label>
+
+          <input
+            class="aw-table-global-filter-input"
+            type="text"
+            placeholder="{{ 'table.globalFilterText' | translate }}"
+            (input)="ptableFlightMeasure.filterGlobal($event.target.value, 'contains')"
+          />
+        </div>
+
+        <div class="aw-table-actions">
+          <button
+            id="importTable"
+            *ngIf="sessionService.isSpecificDassault && table.length > 0"
+            type="button"
+            mat-raised-button
+            (click)="importPotential()"
+          >
+            {{ "global.import" | translate }}
+          </button>
+
+          <button id="exportTable" *ngIf="table.length > 0" type="button" mat-raised-button (click)="exportTable()">
+            {{ "global.export" | translate }}
+          </button>
+        </div>
+      </div>
+    </ng-template>
+
+    <ng-template pTemplate="colgroup" let-columns>
+      <colgroup>
+        <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+        <col class="row-expand-wrapper" />
+      </colgroup>
+    </ng-template>
+
+    <ng-template pTemplate="header" let-columns>
+      <tr>
+        <th pResizableColumn *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+          {{ getComponentName() + "." + col.field | translate }}
+        </th>
+
+        <th class="row-expand-wrapper"></th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-rowData let-expanded="expanded" let-columns="columns">
+      <tr>
+        <td *ngFor="let col of columns" [ngSwitch]="col.field" [ngStyle]="{ 'text-align': col.alignment }">
+          <span *ngSwitchCase="'delta'">
+            <i
+              *ngIf="rowData['_deltaAlt'] !== undefined && rowData['_deltaAlt'] !== null"
+              class="fa fa-fw fa-exclamation-triangle"
+              aria-hidden="true"
+              pTooltip="{{ rowData['_deltaAlt'] }}"
+              tooltipPosition="top"
+            ></i>
+            <span *ngIf="rowData['_deltaAlt'] === undefined || rowData['_deltaAlt'] === null">
+              {{ rowData[col.field] }}
+            </span>
+          </span>
+
+          <span *ngSwitchDefault>
+            {{ rowData[col.field] }}
+          </span>
+        </td>
+
+        <td class="row-expand-wrapper" [pRowToggler]="rowData">
+          <i
+            class="fa fa-fw aw-icon aw-icon-with-border"
+            [ngClass]="expanded ? 'fa-minus' : 'fa-plus'"
+            aria-hidden="true"
+            pTooltip="{{ 'global.showTableRowDetails' | translate }}"
+            tooltipPosition="top"
+            (click)="toggleTableRowDetailsVisibility(rowData)"
+          ></i>
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="rowexpansion" let-rowData let-columns="columns">
+      <tr class="row-expanded">
+        <td [attr.colspan]="columns.length + 1">
+          <div class="column">
+            <div class="row">
+              <div class="form-group">
+                <label class="form-label">
+                  {{ getComponentName() + ".delta" | translate }}
+                </label>
+
+                <div class="form-control">
+                  <div class="form-control-generic">
+                    {{ rowData["delta"] }}
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">
+                  {{ getComponentName() + ".unit" | translate }}
+                </label>
+
+                <div class="form-control">
+                  <div class="form-control-generic">
+                    {{ rowData["unit"] }}
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group" *ngIf="showMeasureCoefAndComment">
+                <label class="form-label">
+                  {{ getComponentName() + ".coefficient" | translate }}
+                </label>
+
+                <div class="form-control">
+                  <div class="form-control-generic">
+                    {{ rowData["coefficient"] }}
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group" *ngIf="showMeasureCoefAndComment">
+                <label class="form-label">
+                  {{ getComponentName() + ".comment" | translate }}
+                </label>
+
+                <div class="form-control">
+                  <div class="form-control-generic">
+                    {{ rowData["comment"] }}
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">
+                  {{ getComponentName() + ".source" | translate }}
+                </label>
+
+                <div class="form-control">
+                  <div class="form-control-generic">
+                    {{ rowData["source"] }}
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group" *ngIf="!showMeasureCoefAndComment"></div>
+              <div class="form-group" *ngIf="!showMeasureCoefAndComment"></div>
+            </div>
+
+            <div class="row">
+              <div class="form-group">
+                <label class="form-label">
+                  {{ getComponentName() + ".status" | translate }}
+                </label>
+
+                <div class="form-control">
+                  <div class="form-control-generic">
+                    {{ rowData["status"] }}
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">
+                  {{ getComponentName() + ".time" | translate }}
+                </label>
+
+                <div class="form-control">
+                  <div class="form-control-generic">
+                    {{ rowData["time"] }}
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">
+                  {{ getComponentName() + ".author" | translate }}
+                </label>
+
+                <div class="form-control">
+                  <div class="form-control-generic">
+                    {{ rowData["author"] }}
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">
+                  {{ getComponentName() + ".state" | translate }}
+                </label>
+
+                <div class="form-control">
+                  <div class="form-control-generic">
+                    {{ rowData["state"] }}
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group"></div>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>

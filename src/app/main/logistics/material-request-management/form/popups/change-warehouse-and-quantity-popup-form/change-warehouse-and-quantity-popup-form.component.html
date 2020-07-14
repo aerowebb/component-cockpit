@@ -1,0 +1,119 @@
+<a-modal class="aw-modal" [(visible)]="display" [width]="50">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".changeSupplier" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <ng-container>
+      <div class="section">
+        <h4 class="section-title">
+          {{ getComponentName() + ".currentSupplier" | translate }}
+        </h4>
+        <div class="section-content">
+          <div class="row">
+            <div class="form-group">
+              <label class="form-label">
+                {{ getComponentName() + ".site" | translate }}
+              </label>
+              <div class="form-control">
+                <div class="form-control-generic" *ngIf="procurementRequest.bidtSiteIssue">
+                  {{ procurementRequest?.bidtSiteIssue?.siteCode }}
+                  <ng-container *ngIf="procurementRequest?.bidtSiteIssue?.siteName">
+                    - {{ procurementRequest?.bidtSiteIssue?.siteName }}
+                  </ng-container>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">
+                {{ getComponentName() + ".workshop" | translate }}
+              </label>
+              <div class="form-control">
+                <div class="form-control-generic" *ngIf="currentSupplierWarehouse">
+                  {{ currentSupplierWarehouse.whCode }}
+                  <ng-container *ngIf="currentSupplierWarehouse.whName">
+                    - {{ currentSupplierWarehouse.whName }}
+                  </ng-container>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h4 class="section-title">
+          {{ getComponentName() + ".newSupplier" | translate }}
+        </h4>
+        <div class="section-content">
+          <div class="row">
+            <div class="form-group">
+              <label class="form-label">
+                {{ getComponentName() + ".site" | translate }}
+              </label>
+              <div class="form-control">
+                <div class="form-control-generic" *ngIf="procurementRequest.bidtSiteIssue">
+                  {{ procurementRequest?.bidtSiteIssue?.siteCode }}
+                  <ng-container *ngIf="procurementRequest?.bidtSiteIssue?.siteName">
+                    - {{ procurementRequest?.bidtSiteIssue?.siteName }}
+                  </ng-container>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group required">
+              <label class="form-label">
+                {{ getComponentName() + ".workshop" | translate }}
+              </label>
+              <div class="form-control">
+                <p-dropdown
+                  class="aw-dropdown fixed-width"
+                  [options]="warehouses"
+                  [showClear]="true"
+                  placeholder="&nbsp;"
+                  [(ngModel)]="newWarehouse"
+                  appendTo="body"
+                ></p-dropdown>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h4 class="section-title">
+          {{ getComponentName() + ".quantity" | translate }}
+        </h4>
+        <div class="section-content">
+          <div class="row">
+            <div class="form-group required">
+              <div class="form-control">
+                <input type="number" name="quantity" class="aw-input" [(ngModel)]="newQuantity" />
+              </div>
+              <span style="padding-left: 15px; color: red;" *ngIf="newQuantity > oldQuantity">
+                {{ getComponentName() + ".quantityErrorMessage" | translate }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </a-content>
+
+  <a-footer>
+    <button type="button" mat-raised-button (click)="cancel()">
+      <span>{{ "global.cancel" | translate }}</span>
+    </button>
+
+    <button
+      type="button"
+      color="primary"
+      mat-raised-button
+      (click)="validate()"
+      [disabled]="!newQuantity || !(newQuantity > 0) || newQuantity > oldQuantity || !newWarehouse"
+    >
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>

@@ -1,0 +1,298 @@
+<div class="page-header">
+  <div class="page-info">
+    <div>
+      <div class="page-title">
+        {{ "transaction." + componentData.componentId | translate }}
+      </div>
+
+      <div class="page-subtitle">
+        <div class="page-subtitle"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-actions">
+    <button
+      mat-icon-button
+      class="mat-elevation-z1"
+      matTooltip="{{ 'global.showAllActionTooltip' | translate }}"
+      matTooltipPosition="above"
+      aria-label="Show all actions"
+      [matMenuTriggerFor]="actions"
+    >
+      <mat-icon>more_horiz</mat-icon>
+    </button>
+    <mat-menu #actions="matMenu">
+      <button mat-menu-item (click)="refresh()">{{ "global.refresh" | translate }}</button>
+      <button mat-menu-item (click)="updateFavoriteState()">
+        {{ (isFavoriteEntry ? "page.removeFromFavorites" : "page.addToFavorites") | translate }}
+      </button>
+    </mat-menu>
+  </div>
+</div>
+
+<div class="page-wrapper">
+  <div class="page-container">
+    <div class="page-content">
+      <mat-tab-group animationDuration="0ms" dynamicHeight>
+        <mat-tab>
+          <ng-template mat-tab-label>
+            {{ "home" | translate }}
+          </ng-template>
+          <!-- SPRING AND DATABASE -->
+          <div class="grid-row">
+            <div class="grid-cell--6">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container loading-indicator">
+                    <h3 class="grid-cell-title">
+                      {{ componentData.componentId + ".spring" | translate }}
+                      <div *ngIf="panelLoading" class="lds-hourglass"></div>
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <div class="form-group">
+                    <label class="form-label">
+                      {{ componentData.componentId + ".creationDate" | translate }}
+                    </label>
+
+                    <div class="form-control">
+                      <p-calendar
+                        showButtonBar="true"
+                        [monthNavigator]="true"
+                        [yearNavigator]="true"
+                        [yearRange]="sessionService.calendarYearRange"
+                        class="aw-calendar"
+                        [dateFormat]="sessionService.dateFormatPrimeNG"
+                        [locale]="sessionService.calendarFormat"
+                        [(ngModel)]="monitoringData.creationDate"
+                        [showTime]="true"
+                        [disabled]="true"
+                      ></p-calendar>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">
+                      {{ componentData.componentId + ".architectureType" | translate }}
+                    </label>
+
+                    <div class="form-control">
+                      <input
+                        type="text"
+                        class="aw-input"
+                        [disabled]="true"
+                        [(ngModel)]="monitoringData.architecturalType"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid-cell--6">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container loading-indicator">
+                    <h3 class="grid-cell-title">
+                      {{ componentData.componentId + ".database" | translate }}
+                      <div *ngIf="panelLoading" class="lds-hourglass"></div>
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <div class="form-group">
+                    <label class="form-label">
+                      {{ componentData.componentId + ".dbURL" | translate }}
+                    </label>
+
+                    <div class="form-control">
+                      <input
+                        type="text"
+                        class="aw-input"
+                        [disabled]="true"
+                        title="{{ monitoringData.dbUrl }}"
+                        [(ngModel)]="dbURLString"
+                      />
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">
+                      {{ componentData.componentId + ".dbUser" | translate }}
+                    </label>
+
+                    <div class="form-control">
+                      <input type="text" class="aw-input" [disabled]="true" [(ngModel)]="monitoringData.dbUser" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- LIBRAIRIES -->
+          <div class="grid-row">
+            <div class="grid-cell--12">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container loading-indicator">
+                    <h3 class="grid-cell-title">
+                      {{ componentData.componentId + ".libraries" | translate }}
+                      <div *ngIf="panelLoading" class="lds-hourglass"></div>
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <button type="button" mat-raised-button (click)="openReportDialog()">
+                    <span>{{ componentData.componentId + ".refreshLibraries" | translate }}</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+        <mat-tab>
+          <ng-template mat-tab-label>
+            {{ componentData.componentId + ".performances" | translate }}
+          </ng-template>
+          <!-- SERVICE PERFORMANCE -->
+          <div class="grid-row">
+            <div class="grid-cell--12">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container loading-indicator">
+                    <h3 class="grid-cell-title">
+                      {{ componentData.componentId + ".servicePerformance" | translate }}
+                      <div *ngIf="panelLoading" class="lds-hourglass"></div>
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content  grid-cell-content-with-section">
+                  <div *ngIf="!panelLoading" class="grid-cell--12">
+                    <div class="section">
+                      <div class="section-content">
+                        <div class="row">
+                          <div class="form-group">
+                            <label class="form-label">
+                              <b class="fontClass">{{ componentData.componentId + ".note" | translate }}</b>
+                            </label>
+
+                            <div class="form-control">
+                              <ul style="list-style-type:disc;">
+                                <li class="fontClass">
+                                  {{ componentData.componentId + ".statsReportHelp" | translate }}
+                                </li>
+                                <li class="fontClass">
+                                  {{ componentData.componentId + ".detailedStatsHelp" | translate }}
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="form-group">
+                            <label class="form-label">
+                              {{ componentData.componentId + ".report" | translate }}
+                            </label>
+
+                            <div class="form-control">
+                              <textarea
+                                pInputTextarea
+                                [rows]="5"
+                                class="aw-textarea"
+                                [disabled]="true"
+                                style="background: #E5EAF3; font: caption; font-size: small"
+                                [(ngModel)]="monitoringData.serviceReport"
+                                maxlength="300"
+                              ></textarea>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row" style="margin-left: 15px">
+                          <button type="button" class="btn-with-spinner" mat-raised-button (click)="fetchStats(0)">
+                            <span class="lds-hourglass" *ngIf="resetStatLoader"></span>
+                            {{ componentData.componentId + ".resetStats" | translate }}
+                          </button>
+                          &nbsp;&nbsp;
+                          <button type="button" class="btn-with-spinner" mat-raised-button (click)="fetchStats(1)">
+                            <span class="lds-hourglass" *ngIf="refreshStatLoader"></span>
+                            {{ componentData.componentId + ".refreshStats" | translate }}
+                          </button>
+                          &nbsp;&nbsp;
+                          <button type="button" class="btn-with-spinner" mat-raised-button (click)="fetchStats(2)">
+                            <span class="lds-hourglass" *ngIf="detailedStatLoader"></span>
+                            {{ componentData.componentId + ".detailedStats" | translate }}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="grid-cell--8">
+                    <div class="section">
+                      <h4 class="section-title">
+                        {{ componentData.componentId + ".log4jConf" | translate }}
+                      </h4>
+
+                      <div class="section-content">
+                        <div
+                          class="row"
+                          *ngFor="let conf of monitoringData.log4jConfigurationList; let caseIndex = index"
+                        >
+                          <div class="form-group">
+                            <label class="form-label">{{ conf.logText }}</label>
+                          </div>
+
+                          <div class="form-control" style="margin: auto">
+                            <p-selectButton
+                              [options]="levelList"
+                              [(ngModel)]="conf.betweenText"
+                              (click)="changeLogLevel(conf)"
+                            ></p-selectButton>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="grid-cell--12">
+                    <div class="section">
+                      <h4 class="section-title">
+                        {{ componentData.componentId + ".jobsMonitoring" | translate }}
+                      </h4>
+
+                      <div class="section-content">
+                        <div class="form-group">
+                          <div class="form-control">
+                            <textarea
+                              pInputTextarea
+                              [rows]="5"
+                              class="aw-textarea"
+                              [disabled]="true"
+                              style="background: #E5EAF3; font: caption; font-size: small"
+                              [(ngModel)]="monitoringData.jobMonitoring"
+                              maxlength="300"
+                            ></textarea>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+  </div>
+</div>
+
+<!-- LIBRAIRIES REPORT -->
+<aw-dialog-librairies-report
+  *ngIf="showLibrariesReportDialog"
+  [(display)]="showLibrariesReportDialog"
+  [importReportMessage]="monitoringData.libraryReport"
+></aw-dialog-librairies-report>

@@ -1,0 +1,159 @@
+@import "constants";
+@import "mixins";
+
+:host {
+  .grid-cell-configuration-control {
+    .list-with-details {
+      .details,
+      .list {
+        max-height: 50rem;
+      }
+
+      .details {
+        flex-grow: 1;
+
+        .configuration-control-node-action-list {
+          justify-content: flex-end;
+
+          & > button {
+            margin-right: $margin-value;
+
+            &:last-of-type {
+              margin-right: 0;
+            }
+          }
+        }
+
+        .configuration-control-node-image {
+          & > img {
+            max-width: 100%;
+            min-width: 100%;
+          }
+        }
+      }
+
+      .list {
+        max-width: 40%;
+        min-width: 40%;
+      }
+    }
+  }
+
+  .grid-cell-summary {
+    .table-summary-wrapper {
+      margin: 0 auto;
+      max-width: 90%;
+    }
+  }
+
+  .issue-asset,
+  .issue-asset-validated,
+  .receipt-asset,
+  .receipt-asset-validated {
+    padding: 2px;
+  }
+
+  .issue-asset {
+    background-color: lighten($green-light1, 20%);
+  }
+
+  .issue-asset-validated {
+    border: 1px solid lighten($green-light1, 20%);
+  }
+
+  .receipt-asset {
+    background-color: lighten($red-light1, 20%);
+  }
+
+  .receipt-asset-validated {
+    border: 1px solid lighten($red-light1, 20%);
+  }
+
+  .fl-node {
+    font-weight: 600;
+  }
+
+  .function-code-node {
+    font-weight: 600;
+  }
+
+  .item-node {
+    font-weight: 600;
+  }
+
+  .node {
+    margin-left: 2px;
+  }
+
+  .alert {
+    display: inline-block;
+    max-width: 7rem;
+    text-transform: uppercase;
+    width: 100%;
+
+    &.alert--ok {
+      background-color: $green-light1;
+    }
+
+    &.alert--warning {
+      background-color: $orange;
+    }
+
+    &.alert--nok {
+      background-color: $red-light1;
+    }
+
+    &.alert--not-mandatory {
+      font-weight: 600;
+      color: $grey1;
+    }
+
+    &.alert--mandatory {
+      font-weight: 600;
+      color: $red-light1;
+    }
+  }
+}
+
+::ng-deep .grid-cell-configuration-control .list .asset-check-wrapper {
+  max-width: 5rem;
+  min-width: 5rem;
+}
+
+::ng-deep .grid-cell-configuration-control .list .asset-check-wrapper .asset-check {
+  color: initial;
+  font-style: initial;
+}
+
+::ng-deep .grid-cell-configuration-control .list .asset-type {
+  @include flex-row();
+
+  align-items: flex-start;
+  font-size: 1.25rem;
+  margin: 0 $margin-value;
+}
+
+::ng-deep .grid-cell-configuration-control .list .asset-data {
+  @include flex-column();
+}
+
+::ng-deep .grid-cell-configuration-control .list .structure {
+  display: inline-block;
+  font-weight: 600;
+}
+
+::ng-deep .grid-cell-configuration-control .list .asset {
+  font-style: italic;
+}
+
+::ng-deep .aw-overlay .action-list {
+  justify-content: flex-end;
+
+  .aw-btn {
+    margin-left: $margin-value;
+
+    &:first-of-type {
+      margin-left: 0;
+    }
+  }
+}

@@ -1,0 +1,59 @@
+<a-modal class="aw-modal" [(visible)]="display" [width]="25">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".title" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="column">
+      <div class="row">
+        <div class="form-group" [ngClass]="{ required: !isReadOnlyForm }">
+          <label class="form-label">{{ getComponentName() + ".technicalLevel" | translate }}</label>
+
+          <div class="form-control">
+            <p-dropdown
+              class="aw-dropdown fixed-width"
+              [options]="technicalLevels"
+              [(ngModel)]="til.technicalLevel"
+              [disabled]="isReadOnlyForm"
+              [showClear]="true"
+              placeholder="&nbsp;"
+              appendTo="body"
+              (onChange)="onTilSelected($event)"
+            ></p-dropdown>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="til.tilDescription" class="row">
+        <div class="form-group">
+          <label class="form-label">{{ getComponentName() + ".tilDescription" | translate }}</label>
+
+          <div class="form-control">
+            <input type="text" class="aw-input" [(ngModel)]="til.tilDescription" [disabled]="true" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button *ngIf="isReadOnlyForm" type="button" mat-raised-button (click)="cancel()">
+      <span>{{ "global.close" | translate }}</span>
+    </button>
+
+    <button *ngIf="!isReadOnlyForm" type="button" mat-raised-button (click)="cancel()">
+      <span>{{ "global.cancel" | translate }}</span>
+    </button>
+
+    <button
+      *ngIf="!isReadOnlyForm"
+      color="primary"
+      type="button"
+      mat-raised-button
+      (click)="add()"
+      [disabled]="!til.tilName"
+    >
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>

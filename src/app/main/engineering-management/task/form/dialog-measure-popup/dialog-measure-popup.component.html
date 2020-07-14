@@ -1,0 +1,186 @@
+<a-modal class="aw-modal" [(visible)]="display" [width]="50">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".measureTaskLink" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="column">
+      <div class="row">
+        <div class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+          <label class="form-label">{{ getComponentName() + ".measurePoint" | translate }}</label>
+
+          <div class="form-control form-control-with-modal" [ngClass]="{ disabled: isReadOpenMode || isWriteOpenMode }">
+            <div class="form-control-data" (click)="showMeasurementPointDialog()">
+              {{ bireTaskMeasurementDTO.counterCode }}
+            </div>
+
+            <div *ngIf="bireTaskMeasurementDTO.counterCode" class="btn-clear-wrapper">
+              <i
+                class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+                aria-hidden="true"
+                (click)="bireTaskMeasurementDTO.counterCode = undefined"
+              ></i>
+            </div>
+            <div class="btn-search-wrapper">
+              <i
+                class="fa fa-fw fa-search aw-icon btn-search"
+                aria-hidden="true"
+                (click)="showMeasurementPointDialog()"
+              ></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+          <label class="form-label">{{ getComponentName() + ".sequence" | translate }}</label>
+
+          <div class="form-control">
+            <input
+              #sequenceNumber="ngModel"
+              type="text"
+              class="aw-input"
+              [(ngModel)]="bireTaskMeasurementDTO.sequenceNumber"
+              [disabled]="isReadOpenMode"
+              [pKeyFilter]="inputValidationService.validatorOfNumber()"
+              [pValidateOnly]="true"
+            />
+            <p-message
+              *ngIf="sequenceNumber.invalid && (sequenceNumber.dirty || sequenceNumber.touched)"
+              severity="error"
+              [text]="inputValidationService.formatOfNumber()"
+            ></p-message>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">{{ getComponentName() + ".group" | translate }}</label>
+          <div class="form-control">
+            <input
+              type="text"
+              class="aw-input"
+              [(ngModel)]="bireTaskMeasurementDTO.groupCode"
+              [disabled]="
+                isReadOpenMode ||
+                (isWriteOpenMode &&
+                  hasRefMeasurementLinked &&
+                  !!bireTaskMeasurementDTO &&
+                  bireTaskMeasurementDTO.unitCode === component.BOOLEAN)
+              "
+              [ngClass]="{
+                'background-grey':
+                  !isCreateOpenMode &&
+                  hasRefMeasurementLinked &&
+                  !!bireTaskMeasurementDTO &&
+                  bireTaskMeasurementDTO.unitCode === component.BOOLEAN &&
+                  !!bireTaskMeasurementDTO.groupCode
+              }"
+            />
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group">
+          <label class="form-label">{{ getComponentName() + ".description" | translate }}</label>
+
+          <div class="form-control">
+            <textarea
+              pInputTextarea
+              [rows]="2"
+              class="aw-textarea"
+              [(ngModel)]="bireTaskMeasurementDTO.description"
+              [disabled]="isReadOpenMode"
+            ></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group">
+          <label class="form-label">{{ getComponentName() + ".additionalDescription" | translate }}</label>
+
+          <div class="form-control">
+            <textarea
+              pInputTextarea
+              [rows]="2"
+              class="aw-textarea"
+              [(ngModel)]="bireTaskMeasurementDTO.additionalDescription"
+              [disabled]="isReadOpenMode"
+            ></textarea>
+          </div>
+        </div>
+      </div>
+      <div
+        *ngIf="
+          !!bireTaskMeasurementDTO.unitCode &&
+          bireTaskMeasurementDTO.unitCode !== component.BOOLEAN &&
+          bireTaskMeasurementDTO.unitCode !== component.TEXT
+        "
+      >
+        <div class="row">
+          <div class="form-group">
+            <label class="form-label">{{ getComponentName() + ".minValue" | translate }}</label>
+
+            <div class="form-control">
+              <input
+                #min="ngModel"
+                type="text"
+                class="aw-input"
+                [(ngModel)]="bireTaskMeasurementDTO.minValue"
+                [disabled]="isReadOpenMode"
+                [pKeyFilter]="inputValidationService.validatorOfNumber()"
+                [pValidateOnly]="true"
+              />
+              <p-message
+                *ngIf="min.invalid && (min.dirty || min.touched)"
+                severity="error"
+                [text]="inputValidationService.formatOfNumber()"
+              ></p-message>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">{{ getComponentName() + ".maxValue" | translate }}</label>
+
+            <div class="form-control">
+              <input
+                #max="ngModel"
+                type="text"
+                class="aw-input"
+                [(ngModel)]="bireTaskMeasurementDTO.maxValue"
+                [disabled]="isReadOpenMode"
+                [pKeyFilter]="inputValidationService.validatorOfNumber()"
+                [pValidateOnly]="true"
+              />
+              <p-message
+                *ngIf="max.invalid && (max.dirty || max.touched)"
+                severity="error"
+                [text]="inputValidationService.formatOfNumber()"
+              ></p-message>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </a-content>
+  <a-footer>
+    <button *ngIf="isReadOpenMode" mat-raised-button (click)="closeDialog()">{{ "global.close" | translate }}</button>
+
+    <button *ngIf="!isReadOpenMode" mat-raised-button (click)="closeDialog()">{{ "global.cancel" | translate }}</button>
+    <button
+      *ngIf="!isReadOpenMode"
+      mat-raised-button
+      color="primary"
+      type="button"
+      (click)="validate()"
+      [disabled]="disableButton()"
+    >
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>
+<aw-dialog-measure-search-popup
+  *ngIf="showAddMeasurementPointSearchDialog"
+  [(display)]="showAddMeasurementPointSearchDialog"
+  [data]="bireMeasurementRefDTO"
+  [openMode]="measureSearchDialogOpenMode"
+  (onMeasurementRowSelected)="onMeasurementRow($event)"
+>
+</aw-dialog-measure-search-popup>

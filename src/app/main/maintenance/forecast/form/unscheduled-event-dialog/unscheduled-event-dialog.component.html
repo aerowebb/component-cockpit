@@ -1,0 +1,182 @@
+<a-modal class="aw-modal" [(visible)]="display" [width]="30">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".title" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="column">
+      <div class="row">
+        <div class="form-group required">
+          <label class="form-label">
+            {{ "plannedDate" | translate }}
+          </label>
+
+          <div class="form-control">
+            <p-calendar
+              showButtonBar="true"
+              [monthNavigator]="true"
+              [yearNavigator]="true"
+              [yearRange]="sessionService.calendarYearRange"
+              class="aw-calendar"
+              appendTo="body"
+              [dateFormat]="sessionService.dateFormatPrimeNG"
+              [locale]="sessionService.calendarFormat"
+              [showTime]="true"
+              [(ngModel)]="event.plannedDate"
+            ></p-calendar>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group">
+          <label class="form-label">
+            {{ "familyVariant" | translate }}
+          </label>
+
+          <div class="form-control">
+            <p-dropdown
+              class="aw-dropdown fixed-width"
+              [options]="familyVariantList"
+              [(ngModel)]="selectedFamilyVariant"
+              [showClear]="true"
+              placeholder="&nbsp;"
+              appendTo="body"
+              [disabled]="true"
+            ></p-dropdown>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group display--flex-row flex-row--align-center">
+          <label class="form-label">
+            {{ "eventType" | translate }}
+          </label>
+
+          <div class="form-control aw-selectbutton-wrapper">
+            <p-selectButton [(ngModel)]="selectedEventType" [options]="eventTypeList"></p-selectButton>
+          </div>
+        </div>
+      </div>
+
+      <div class="row" *ngIf="selectedEventType === eventType.EVOLUTION">
+        <div class="form-group required">
+          <label class="form-label">
+            {{ "evolutionNumber" | translate }}
+          </label>
+
+          <div class="form-control form-control-with-modal">
+            <div class="form-control-data" (click)="openEvolutionDialog()">
+              {{ event.evolutionNumber }}
+            </div>
+
+            <div *ngIf="event.evolutionNumber" class="btn-clear-wrapper">
+              <i
+                class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+                aria-hidden="true"
+                (click)="clearEvolution()"
+              ></i>
+            </div>
+
+            <div class="btn-search-wrapper">
+              <i class="fa fa-fw fa-search aw-icon btn-search" aria-hidden="true" (click)="openEvolutionDialog()"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row" *ngIf="selectedEventType === eventType.EVOLUTION">
+        <div class="form-group required">
+          <label class="form-label">
+            {{ "evolutionRevisionNumber" | translate }}
+          </label>
+
+          <div class="form-control">
+            <input type="text" class="aw-input" [(ngModel)]="event.evolutionRevisionNumber" />
+          </div>
+        </div>
+      </div>
+
+      <div class="row" *ngIf="selectedEventType === eventType.EVOLUTION && event.evolutionNumber">
+        <div class="form-group">
+          <label class="form-label">
+            {{ "evolutionType" | translate }}
+          </label>
+
+          <div class="form-control">
+            <input type="text" class="aw-input" [disabled]="true" [(ngModel)]="event.evolutionType" />
+          </div>
+        </div>
+      </div>
+
+      <div class="row" *ngIf="selectedEventType === eventType.TASK">
+        <div class="form-group">
+          <label class="form-label">
+            {{ "taskCode" | translate }}
+          </label>
+
+          <div class="form-control form-control-with-modal">
+            <div class="form-control-data" (click)="openTaskDialog()">
+              {{ event.taskCode }}
+            </div>
+
+            <div *ngIf="event.taskCode" class="btn-clear-wrapper">
+              <i
+                class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+                aria-hidden="true"
+                (click)="clearTask()"
+              ></i>
+            </div>
+
+            <div class="btn-search-wrapper">
+              <i class="fa fa-fw fa-search aw-icon btn-search" aria-hidden="true" (click)="openTaskDialog()"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row" *ngIf="selectedEventType === eventType.TASK">
+        <div class="form-group">
+          <label class="form-label">
+            {{ "taskVersion" | translate }}
+          </label>
+
+          <div class="form-control">
+            <input type="text" class="aw-input" [(ngModel)]="event.taskVersion" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button type="button" mat-raised-button (click)="closeDialog()">
+      {{ "cancel" | translate }}
+    </button>
+
+    <button
+      type="button"
+      mat-raised-button
+      (click)="save()"
+      [disabled]="
+        !event.plannedDate ||
+        (selectedEventType === eventType.EVOLUTION && (!event.evolutionNumber || !event.evolutionRevisionNumber))
+      "
+    >
+      {{ "save" | translate }}
+    </button>
+  </a-footer>
+</a-modal>
+
+<aw-dialog-search-evolution
+  *ngIf="showEvolutionDialog"
+  [(display)]="showEvolutionDialog"
+  (onSelected)="onSelectedEvolution($event)"
+></aw-dialog-search-evolution>
+
+<aw-dialog-search-task
+  *ngIf="showTaskDialog"
+  [(display)]="showTaskDialog"
+  (onSelected)="onSelectedTask($event)"
+></aw-dialog-search-task>

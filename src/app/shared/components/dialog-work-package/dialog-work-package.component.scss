@@ -1,0 +1,26 @@
+@import "constants";
+@import "mixins";
+
+:host {
+  .warning-messages {
+    @include flex-column();
+
+    border: $border-width $border-style $border-color;
+    padding: $margin-value;
+    margin-bottom: 1rem;
+
+    .warning-messages__header {
+      color: $critical-value-dark;
+
+      & > i {
+        font-size: 1rem;
+        margin-right: calc(#{$margin-value} / 2);
+      }
+    }
+
+    ul {
+      margin-bottom: 0;
+      padding-left: calc(#{$margin-value} * 3);
+    }
+  }
+}

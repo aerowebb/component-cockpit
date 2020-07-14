@@ -1,0 +1,380 @@
+<a-modal class="aw-modal" [(visible)]="display" [width]="70">
+  <a-header>
+    <h3 class="grid-cell-title">
+      {{ getComponentName() + ".projectHeader" | translate }}
+    </h3>
+  </a-header>
+
+  <a-content>
+    <div class="grid-row">
+      <div class="grid-cell--12 main-block">
+        <div class="grid-cell-content grid-cell-content-with-section">
+          <div class="section">
+            <div class="section-content">
+              <div class="row">
+                <div class="form-group">
+                  <label class="form-label">
+                    {{ "forecastNumber" | translate }}
+                  </label>
+
+                  <div class="form-control">
+                    <input type="text" class="aw-input" [(ngModel)]="forecastProject.projectNumber" [disabled]="true" />
+                  </div>
+                </div>
+
+                <div class="form-group" [class.required]="!isReadOpenMode">
+                  <label class="form-label">
+                    {{ "forecastName" | translate }}
+                  </label>
+
+                  <div class="form-control">
+                    <input type="text" class="aw-input" [(ngModel)]="forecastProject.projectName" />
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">
+                    {{ "mroCenter" | translate }}
+                  </label>
+
+                  <div class="form-control">
+                    <p-dropdown
+                      class="aw-dropdown fixed-width"
+                      [options]="repairCenterList"
+                      [(ngModel)]="selectedRepairCenter"
+                      [showClear]="true"
+                      placeholder="&nbsp;"
+                      (onChange)="updateRepairCenterCode()"
+                      appendTo="body"
+                    ></p-dropdown>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">
+                    {{ "workCenter" | translate }}
+                  </label>
+
+                  <div class="form-control">
+                    <p-dropdown
+                      class="aw-dropdown fixed-width"
+                      [options]="workCenterList"
+                      [(ngModel)]="selectedWorkCenter"
+                      [showClear]="true"
+                      [disabled]="workCenterList.length == 0"
+                      placeholder="&nbsp;"
+                      (onChange)="updateWorkCenter()"
+                      appendTo="body"
+                    ></p-dropdown>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">
+                    {{ "customer" | translate }}
+                  </label>
+
+                  <div class="form-control">
+                    <p-dropdown
+                      class="aw-dropdown fixed-width"
+                      [options]="customerList"
+                      [(ngModel)]="selectedCustomer"
+                      [showClear]="true"
+                      placeholder="&nbsp;"
+                      (onChange)="updateCustomerCode()"
+                      appendTo="body"
+                    ></p-dropdown>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="form-group" [ngClass]="{ 'flex--3': !isCreateOpenMode }">
+                  <label class="form-label">
+                    {{ "description" | translate }}
+                  </label>
+
+                  <div class="form-control text-area">
+                    <textarea
+                      class="aw-textarea"
+                      [rows]="1"
+                      pInputTextarea
+                      autoResize="autoResize"
+                      [(ngModel)]="forecastProject.projectDescription"
+                    ></textarea>
+                  </div>
+                </div>
+
+                <div class="form-group" *ngIf="!isCreateOpenMode">
+                  <label class="form-label">
+                    {{ "status" | translate }}
+                  </label>
+
+                  <div class="form-control">
+                    <input
+                      type="text"
+                      class="aw-input"
+                      [disabled]="true"
+                      [(ngModel)]="forecastProject.statusStateText"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section">
+            <h4 class="section-title">
+              {{ getComponentName() + ".fleetData" | translate }}
+            </h4>
+
+            <div class="section-content">
+              <div class="row">
+                <div class="form-group">
+                  <div class="form-control aw-selectbutton-wrapper">
+                    <p-selectButton
+                      [(ngModel)]="selectedForecastCategory"
+                      [options]="forecastCategoryList"
+                      (onOptionClick)="onChangeForecastCategory($event)"
+                    ></p-selectButton>
+                  </div>
+                </div>
+
+                <div class="form-group" *ngIf="!assetSelected" [class.required]="!isReadOpenMode">
+                  <label class="form-label">{{ "fleetCode" | translate }}</label>
+
+                  <div class="form-control form-control-with-modal">
+                    <div class="form-control-data" (click)="openSearchFleetDialog()">
+                      {{ forecastProject.projectFleetCode }}
+                    </div>
+
+                    <div *ngIf="forecastProject.projectFleetCode" class="btn-clear-wrapper">
+                      <i
+                        class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+                        aria-hidden="true"
+                        (click)="clearForecastProjectFleet()"
+                      ></i>
+                    </div>
+
+                    <div class="btn-search-wrapper">
+                      <i
+                        class="fa fa-fw fa-search aw-icon btn-search"
+                        aria-hidden="true"
+                        (click)="openSearchFleetDialog()"
+                      ></i>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-group" *ngIf="forecastProject.projectFleetCode && !assetSelected">
+                  <label class="form-label">
+                    {{ "fleetName" | translate }}
+                  </label>
+
+                  <div class="form-control">
+                    <input
+                      type="text"
+                      class="aw-input"
+                      [(ngModel)]="forecastProject.projectFleetName"
+                      [disabled]="true"
+                    />
+                  </div>
+                </div>
+
+                <div class="form-group" *ngIf="forecastProject.projectFleetCode && !assetSelected">
+                  <label class="form-label">
+                    {{ "customer" | translate }}
+                  </label>
+
+                  <div class="form-control">
+                    <input type="text" class="aw-input" [(ngModel)]="forecastProject.customerCode" [disabled]="true" />
+                  </div>
+                </div>
+
+                <div class="form-group" *ngIf="assetSelected" [class.required]="!isReadOpenMode">
+                  <label class="form-label">{{ "assetCode" | translate }}</label>
+
+                  <div class="form-control form-control-with-modal">
+                    <div class="form-control-data" (click)="openSearchAssetDialog()">
+                      {{ forecastProjectAsset.equipmentCode }}
+                    </div>
+
+                    <div *ngIf="forecastProjectAsset.equipmentCode" class="btn-clear-wrapper">
+                      <i
+                        class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+                        aria-hidden="true"
+                        (click)="clearForecastProjectAsset()"
+                      ></i>
+                    </div>
+
+                    <div class="btn-search-wrapper">
+                      <i
+                        class="fa fa-fw fa-search aw-icon btn-search"
+                        aria-hidden="true"
+                        (click)="openSearchAssetDialog()"
+                      ></i>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-group" [class.required]="!isReadOpenMode">
+                  <label class="form-label">
+                    {{ getComponentName() + ".unitConversionMatrix" | translate }}
+                  </label>
+
+                  <div class="form-control">
+                    <p-dropdown
+                      class="aw-dropdown fixed-width"
+                      [options]="ucmList"
+                      [(ngModel)]="selectedconversionMatrixDTO"
+                      [showClear]="true"
+                      placeholder="&nbsp;"
+                      (onChange)="onChangeConversionMatrix()"
+                      appendTo="body"
+                    ></p-dropdown>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section">
+            <h4 class="section-title">
+              {{ "settings" | translate }}
+            </h4>
+            <div class="row" style="display: flex; justify-content: flex-end;">
+              <button
+                *ngIf="
+                  !isCreateOpenMode && forecastProject.statusState != bidoFunctionTypeConstants.UC_MFO_FORECAST_CLOSING
+                "
+                type="button"
+                mat-raised-button
+                color="warn"
+                (click)="closeForecastProject()"
+              >
+                {{ getComponentName() + ".closeForecast" | translate }}
+              </button>
+              <button
+                *ngIf="
+                  !isCreateOpenMode &&
+                  forecastProject.statusState != bidoFunctionTypeConstants.UC_MFO_FORECAST_MANAGEMENT
+                "
+                type="button"
+                mat-raised-button
+                (click)="reopenForecastProject()"
+              >
+                {{ getComponentName() + ".reopenForecast" | translate }}
+              </button>
+            </div>
+            <div class="section-content">
+              <div class="row">
+                <div class="form-group">
+                  <label class="form-label">
+                    {{ "startDate" | translate }}
+                  </label>
+
+                  <div class="form-control">
+                    <p-calendar
+                      showButtonBar="true"
+                      [monthNavigator]="true"
+                      [yearNavigator]="true"
+                      [yearRange]="sessionService.calendarYearRange"
+                      class="aw-calendar"
+                      [dateFormat]="sessionService.dateFormatPrimeNG"
+                      [locale]="sessionService.calendarFormat"
+                      [showTime]="true"
+                      [maxDate]="forecastProject.projectEndDate"
+                      [(ngModel)]="forecastProject.projectStartDate"
+                      appendTo="body"
+                    ></p-calendar>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">
+                    {{ "endDate" | translate }}
+                  </label>
+
+                  <div class="form-control">
+                    <p-calendar
+                      showButtonBar="true"
+                      [monthNavigator]="true"
+                      [yearNavigator]="true"
+                      [yearRange]="sessionService.calendarYearRange"
+                      class="aw-calendar"
+                      [dateFormat]="sessionService.dateFormatPrimeNG"
+                      [locale]="sessionService.calendarFormat"
+                      [showTime]="true"
+                      [minDate]="forecastProject.projectStartDate"
+                      [(ngModel)]="forecastProject.projectEndDate"
+                      appendTo="body"
+                    ></p-calendar>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">
+                    {{ "llp" | translate }}
+                  </label>
+
+                  <div class="form-control">
+                    <p-checkbox
+                      binary="true"
+                      class="aw-checkbox"
+                      [(ngModel)]="forecastProjectLlpEventsGeneration"
+                    ></p-checkbox>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">
+                    {{ "occurrence" | translate }}
+                  </label>
+
+                  <div class="form-control">
+                    <p-dropdown
+                      class="aw-dropdown fixed-width"
+                      [options]="occurrenceList"
+                      placeholder="&nbsp;"
+                      [(ngModel)]="forecastProjectOccurrenceNumber"
+                      appendTo="body"
+                    ></p-dropdown>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <div class="section">
+      <div class="section-content">
+        <div class="row">
+          <div class="display--flex-row flex--1 flex-row--justify-end action-list">
+            <button type="button" mat-raised-button (click)="cancelForecastProject()">
+              {{ "cancel" | translate }}
+            </button>
+            <button mat-raised-button color="primary" (click)="saveForecastProject()">
+              {{ "save" | translate }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </a-footer>
+</a-modal>
+
+<aw-dialog-search-equipment
+  *ngIf="showSearchAssetDialog"
+  [(display)]="showSearchAssetDialog"
+  (onSelected)="onSelectedAsset($event)"
+></aw-dialog-search-equipment>
+
+<aw-dialog-search-fleet
+  *ngIf="showSearchFleetDialog"
+  [(display)]="showSearchFleetDialog"
+  (onSelected)="onSelectedFleet($event)"
+></aw-dialog-search-fleet>

@@ -1,0 +1,39 @@
+{
+  "UnitConversionMatrixComponent": {
+    "unitConversionMatrix": "Unit Conversion Matrix",
+    "importTab": "Import",
+    "archivedImportTab": "Archived Import Reports",
+    "create": "Create",
+    "cmCode": "Code",
+    "cmName": "Name",
+    "excelExportTemplate": "Export Unit Conversion Matrix",
+    "unit": "Unit of Measure",
+    "fhEquivalent": "Flight Hours Equivalent",
+    "familyVariant": "Family Variant",
+    "save": "Save",
+    "fileToImport": "Unit conversion matrix file to import",
+    "importFile": "Import",
+    "importReportList": "Import report list",
+    "reportCode": "Report Code",
+    "reportName": "Report Name",
+    "statusUser": "Status User",
+    "statusDate": "Status Date",
+    "openReport": "You have chosen to open the document: {{openReport.reportName}}",
+    "openReport.line1": "which is: TXT file",
+    "confirmDeleteSelectedRows": "Do you want to delete selected rows?",
+    "confirmDeleteSelectedRow": "Do you want to delete selected row?",
+    "confirmDeleteSelectedReport": "Do you really want to remove this report?",
+    "confirmDeleteSelectedReports": "Do you really want to remove these reports?",
+    "results": "Results",
+    "successOnDeleteReport": "The report has been successfully removed!",
+    "successOnDeleteReports": "These reports have been successfully removed!",
+    "successOnSaveUnitConversionMatrix": "Saved Successfully",
+    "successOnDeleteRow": "The row has been successfuly removed.",
+    "successOnDeleteRows": "The rows have been successfuly removed."
+  },
+  "DialogUnitConversionMatrixComponent": {
+    "title": "Unit Conversion Matrix",
+    "unit": "Unit of Measure",
+    "fhEquivalent": "Flight Hours Equivalent"
+  }
+}

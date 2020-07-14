@@ -1,0 +1,295 @@
+<div class="grid-cell grid-cell--container">
+  <div class="grid-cell-header">
+    <div class="grid-cell-title-container">
+      <h3 class="grid-cell-title">
+        {{ requestManagementLabel }} ({{ procReqItemsTableDataSource ? procReqItemsTableDataSource.dataCount : 0 }})
+      </h3>
+    </div>
+  </div>
+  <div class="table-filters">
+    <i
+      class="fa fa-fw fa-filter aw-icon aw-icon-with-border aw-icon-with-overlay"
+      aria-hidden="true"
+      pTooltip="{{ 'global.' + (stockMvtTableFiltersVisible ? 'hideFilters' : 'showFilters') | translate }}"
+      tooltipPosition="top"
+      [ngClass]="{ active: stockMvtTableFiltersVisible }"
+      (click)="setStockMvtTableFiltersVisible()"
+    ></i>
+
+    <div class="grid-cell-content filter-block" *ngIf="stockMvtTableFiltersVisible">
+      <div class="column">
+        <div class="form-group" *ngIf="filtersAvailabilityDefaultList">
+          <div class="form-label">
+            <label>
+              {{ getComponentName() + ".availability" | translate }}
+            </label>
+          </div>
+          <p-selectButton
+            multiple="multiple"
+            [options]="filtersAvailabilityDefaultList"
+            [(ngModel)]="procReqItemFiltersAvailabilityList"
+            (onChange)="filterStockMvtTableByCriteria()"
+          ></p-selectButton>
+        </div>
+      </div>
+
+      <div class="column">
+        <div class="form-group" *ngIf="procReqItemStatusList">
+          <div class="form-label">
+            <label>
+              {{ getComponentName() + ".status" | translate }}
+            </label>
+          </div>
+          <div class="form-control">
+            <p-dropdown
+              class="aw-dropdown fixed-width"
+              placeholder="&nbsp;"
+              [options]="procReqItemStatusList"
+              [showClear]="true"
+              [(ngModel)]="selectedProcReqFilterStatusValue"
+              (onChange)="filterStockMvtTableByCriteria()"
+              appendTo="body"
+            ></p-dropdown>
+          </div>
+        </div>
+      </div>
+      <div class="column">
+        <div class="form-group" *ngIf="wpFiltersList">
+          <div class="form-label">
+            <label>
+              {{ getComponentName() + ".workPackage" | translate }}
+            </label>
+          </div>
+          <div class="form-control">
+            <p-dropdown
+              class="aw-dropdown fixed-width"
+              placeholder="&nbsp;"
+              [options]="wpFiltersList"
+              [showClear]="true"
+              [(ngModel)]="selectedProcReqFilterWPValue"
+              (onChange)="filterStockMvtTableByCriteria()"
+              appendTo="body"
+            ></p-dropdown>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a-table [dataSource]="procReqItemsTableDataSource">
+    <ng-template tableActionsDef>
+      <button
+        id="deleteResultsTable"
+        *ngIf="isDeleteButtonVisible()"
+        type="button"
+        mat-raised-button
+        color="warn"
+        (click)="deleteProcurementRequest()"
+      >
+        {{ "delete" | translate }}
+      </button>
+
+      <button
+        id="cancelResultsTable"
+        *ngIf="isCancelButtonVisible()"
+        type="button"
+        mat-raised-button
+        color="warn"
+        (click)="cancelProcurementRequest()"
+      >
+        {{ "cancel" | translate }}
+      </button>
+
+      <button
+        id="editResultsTable"
+        *ngIf="enableOpenProcurementOnEdit"
+        type="button"
+        mat-raised-button
+        (click)="openProcurementRequestDialog()"
+      >
+        {{ "global.edit" | translate }}
+      </button>
+
+      <button
+        id="addResultsTable"
+        *ngIf="enableOpenProcurementOnAdd"
+        type="button"
+        mat-raised-button
+        (click)="openProcurementRequestDialog()"
+      >
+        {{ "global.add" | translate }}
+      </button>
+      <button
+        *ngIf="
+          procReqItemsTableDataSource.dataSelectionCount == 1 &&
+          procReqItemsTableDataSource.dataSelection[0]._obj.procReqItemsAndQtyIndicatorsDTO?.length == 1
+        "
+        type="button"
+        mat-raised-button
+        (click)="openProcurementManagmentPage()"
+      >
+        {{ getComponentName() + ".manage" | translate }}
+      </button>
+    </ng-template>
+
+    <ng-template columnDef="procurementRequest" let-rowData="rowData">
+      <div>
+        <a (click)="openProcurementDetails(rowData)"> {{ rowData.procurementRequest }} </a>
+      </div>
+      <div>
+        <i>
+          {{ rowData.procurementRequestDescription | formatSelectOption: procurementRequestTypes }}
+        </i>
+      </div>
+    </ng-template>
+
+    <ng-template columnDef="referenceDocument" let-rowData="rowData">
+      <div>{{ rowData.referenceDocument }}</div>
+      <div>{{ rowData.referenceDocumentDesc }}</div>
+    </ng-template>
+
+    <ng-template columnDef="recepient" let-rowData="rowData">
+      <div>{{ rowData.recepient }}</div>
+      <div>{{ rowData.recepientDesc }}</div>
+    </ng-template>
+
+    <ng-template columnDef="materials" let-rowData="rowData">
+      <div>
+        <a style="font-weight: bold;" (click)="openPart(rowData)">{{ rowData.materials }}</a>
+      </div>
+      <div *ngIf="rowData.materialsDesc">
+        <i>{{ rowData.materialsDesc }}</i>
+      </div>
+      <div *ngIf="!rowData.materialsDesc && rowData.numberOfRecords">
+        <i>{{ rowData.numberOfRecords }} {{ getComponentName() + ".items" | translate }}</i>
+      </div>
+    </ng-template>
+
+    <ng-template columnDef="status" let-rowData="rowData">
+      <div>
+        <b>{{ getStatusLabel(rowData.status) }}</b>
+      </div>
+      <div>
+        <i>
+          {{ rowData.statusDesc | date: "yyyy/MM/dd":"":translateService.currentLang }}
+        </i>
+      </div>
+    </ng-template>
+
+    <ng-template columnDef="statusDate" let-rowData="rowData">
+      {{ rowData.statusDate | date: "yyyy/MM/dd":"":translateService.currentLang }}
+    </ng-template>
+
+    <ng-template columnDef="expectedOn" let-rowData="rowData">
+      <span *ngIf="rowData.status !== awPropertiesConstants.PROCUREMENT_REQUEST_STATUS_CANCELED">
+        {{ rowData.expectedOn | date: "yyyy/MM/dd":"":translateService.currentLang }}
+      </span>
+    </ng-template>
+
+    <ng-template columnDef="criticity" let-rowData="rowData">
+      <span *ngIf="rowData.criticity === awPropertiesConstants.LOGISTICAL_CRITICALITY_IMMEDIATE">
+        {{ getComponentName() + ".immediate" | translate }}
+      </span>
+      <span *ngIf="rowData.criticity === awPropertiesConstants.LOGISTICAL_CRITICALITY_URGENT">
+        {{ getComponentName() + ".urgent" | translate }}
+      </span>
+      <span *ngIf="rowData.criticity === awPropertiesConstants.LOGISTICAL_CRITICALITY_ROUTINE">
+        {{ getComponentName() + ".routine" | translate }}
+      </span>
+    </ng-template>
+
+    <ng-template columnDef="progress" let-rowData="rowData">
+      <div>
+        <div>
+          <span style="display: inline-block; min-width: 8rem;">{{
+            getComponentName() + ".procurement" | translate
+          }}</span>
+
+          <span
+            class="bold"
+            [ngClass]="{
+              'served--nok': rowData.servedNb == 0,
+              'served--ok': rowData.servedNb > 0 && rowData.isServed,
+              'served--warning': rowData.servedNb > 0 && !rowData.isServed
+            }"
+          >
+            <ng-container *ngIf="rowData.servedNb == 0">
+              {{ getComponentName() + ".notServed" | translate }}
+            </ng-container>
+            <ng-container *ngIf="rowData.servedNb > 0 && !rowData.isServed">
+              {{ getComponentName() + ".partiallyServed" | translate }}
+            </ng-container>
+            <ng-container *ngIf="rowData.servedNb > 0 && rowData.isServed">
+              {{ getComponentName() + ".served" | translate }}
+            </ng-container>
+          </span>
+        </div>
+
+        <div>{{ rowData.servedNb }} / {{ rowData.requestedQuantity }}</div>
+      </div>
+
+      <div
+        style="margin-top: 8px;"
+        *ngIf="
+          rowData.procurementRequestDescription == awPropertiesConstants.PROCUREMENT_REQUEST_TYPE_MAINTENANCE_ES ||
+          rowData.procurementRequestDescription == awPropertiesConstants.PROCUREMENT_REQUEST_TYPE_STOCK_LEVELING_ES
+        "
+      >
+        <div>
+          <span style="display: inline-block; min-width: 8rem;">{{ getComponentName() + ".reverse" | translate }}</span>
+
+          <span
+            class="bold"
+            [ngClass]="{
+              'served--nok': rowData.notReversedNb > 0 && rowData.reversedNb == 0,
+              'served--ok': rowData.reversedNb > 0 && rowData.notReversedNb == 0,
+              'served--warning': rowData.notReversedNb > 0 && rowData.reversedNb > 0
+            }"
+          >
+            <ng-container *ngIf="rowData.notReversedNb > 0 && rowData.reversedNb == 0">
+              {{ getComponentName() + ".notReversed" | translate }}
+            </ng-container>
+            <ng-container *ngIf="rowData.notReversedNb > 0 && rowData.reversedNb > 0">
+              {{ getComponentName() + ".partiallyReversed" | translate }}
+            </ng-container>
+            <ng-container *ngIf="rowData.reversedNb > 0 && rowData.notReversedNb == 0">
+              {{ getComponentName() + ".reversed" | translate }}
+            </ng-container>
+          </span>
+        </div>
+
+        <div>{{ rowData.reversedNb }} / {{ rowData.notReversedNb + rowData.reversedNb }}</div>
+      </div>
+    </ng-template>
+
+    <ng-template columnDef="availableQuantity" let-rowData="rowData">
+      <div
+        class="base-label availability"
+        [ngClass]="{
+          ok: rowData.ok,
+          warning: rowData.warning,
+          nok: rowData.nok
+        }"
+      >
+        {{ rowData.availableQuantity }}
+      </div>
+    </ng-template>
+  </a-table>
+
+  <aw-procurement-request-popup
+    *ngIf="showProcurementRequestDialog"
+    [(display)]="showProcurementRequestDialog"
+    [workOrder]="bidmWorkOrder"
+    [workOrderStatus]="woStatus"
+    [workPackage]="bidmProjectDTO"
+    [bidtProcReqItem]="
+      procReqItemsTableDataSource.dataSelection[0]
+        ? procReqItemsTableDataSource.dataSelection[0].bidtProcReqItem
+        : undefined
+    "
+    [procurementRequest]="
+      procReqItemsTableDataSource.dataSelection[0] ? procReqItemsTableDataSource.dataSelection[0]._obj : undefined
+    "
+    (onValidate)="onUpdateProcurementRequest($event)"
+  >
+  </aw-procurement-request-popup>
+</div>

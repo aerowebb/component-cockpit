@@ -1,0 +1,52 @@
+<div class="grid-row">
+  <div class="grid-cell--12">
+    <div class="grid-cell grid-cell--container">
+      <div class="grid-cell-header">
+        <div class="grid-cell-title-container">
+          <h3 class="grid-cell-title">
+            {{ getComponentName() + ".rangeList" | translate }} ({{ rangeTableDataSource.dataCount }})
+          </h3>
+        </div>
+      </div>
+
+      <div class="grid-cell-content">
+        <a-table [dataSource]="rangeTableDataSource">
+          <ng-template tableActionsDef>
+            <button
+              *ngIf="rangeTableDataSource.hasDataSelection"
+              type="button"
+              mat-raised-button
+              color="warn"
+              (click)="deleteSelectedRange()"
+            >
+              {{ "global.delete" | translate }}
+            </button>
+
+            <button
+              *ngIf="rangeTableDataSource.dataSelectionCount === 1"
+              type="button"
+              mat-raised-button
+              (click)="editSelectedRange()"
+            >
+              {{ "global.edit" | translate }}
+            </button>
+
+            <button *ngIf="!rangeTableDataSource.hasDataSelection" type="button" mat-raised-button (click)="addRange()">
+              {{ "global.add" | translate }}
+            </button>
+          </ng-template>
+        </a-table>
+      </div>
+    </div>
+  </div>
+
+  <aw-dialog-range
+    *ngIf="showRangeDialog"
+    [(display)]="showRangeDialog"
+    [data]="selectedRangeTableDialogData"
+    [openMode]="rangeDialogOpenMode"
+    (onValidated)="onAddRange($event)"
+    (onUpdate)="updateRange($event)"
+    [rangeList]="rangeTableDataSource.dataSrc"
+  ></aw-dialog-range>
+</div>

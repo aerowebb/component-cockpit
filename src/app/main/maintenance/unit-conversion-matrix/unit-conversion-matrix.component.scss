@@ -1,0 +1,290 @@
+:host {
+  #unit-component {
+    .main-data .form-group {
+      width: 15rem;
+
+      .star {
+        color: red;
+      }
+    }
+
+    .attributes-tab {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .plus-field {
+      margin-right: 20px;
+      max-width: 35rem;
+      min-width: 25rem;
+      width: 20%;
+    }
+
+    .ucmTab {
+      display: flex;
+      flex-direction: column;
+
+      .ucm-tables {
+        display: flex;
+        flex-direction: column;
+        padding-top: 24px;
+
+        .align-right {
+          margin-left: 93%;
+        }
+
+        .row {
+          display: flex;
+          flex-direction: row;
+          flex-wrap: wrap;
+
+          &:first-of-type {
+            margin-bottom: 24px;
+          }
+
+          .table-wrapper {
+            width: 50%;
+
+            &:first-of-type {
+              padding-right: 24px;
+            }
+
+            &:nth-of-type(2) {
+              padding-left: 24px;
+            }
+          }
+        }
+      }
+    }
+
+    .fields-tab {
+      display: flex;
+      flex-direction: column;
+
+      .fields-fields {
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+
+        .fields-field {
+          width: 15rem;
+        }
+
+        .cost-field {
+          width: 6rem;
+        }
+
+        & > div {
+          display: flex;
+          flex-direction: column;
+          width: 50%;
+
+          &:first-of-type {
+            padding-right: 24px;
+          }
+
+          &:nth-of-type(2) {
+            padding-left: 24px;
+          }
+        }
+      }
+
+      .fields-tables {
+        display: flex;
+        flex-direction: column;
+        padding-top: 24px;
+
+        .row {
+          display: flex;
+          flex-direction: row;
+          flex-wrap: wrap;
+
+          &:first-of-type {
+            margin-bottom: 24px;
+          }
+
+          .table-wrapper {
+            width: 50%;
+
+            &:first-of-type {
+              padding-right: 24px;
+            }
+
+            &:nth-of-type(2) {
+              padding-left: 24px;
+            }
+          }
+        }
+      }
+    }
+
+    .import-tab {
+      display: flex;
+      flex-direction: column;
+
+      .import-fields {
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+
+        .import-field {
+          width: 10rem;
+        }
+
+        & > div {
+          display: flex;
+          flex-direction: column;
+          width: 50%;
+
+          &:first-of-type {
+            padding-right: 24px;
+          }
+
+          &:nth-of-type(2) {
+            padding-left: 24px;
+          }
+        }
+      }
+
+      .tasks-tables {
+        display: flex;
+        flex-direction: column;
+        padding-top: 24px;
+
+        .row {
+          display: flex;
+          flex-direction: row;
+          flex-wrap: wrap;
+
+          &:first-of-type {
+            margin-bottom: 24px;
+          }
+
+          .table-wrapper {
+            width: 50%;
+
+            &:first-of-type {
+              padding-right: 24px;
+            }
+
+            &:nth-of-type(2) {
+              padding-left: 24px;
+            }
+          }
+        }
+      }
+    }
+
+    .evolution-form-popup {
+      display: flex;
+      flex-direction: row;
+      transition: width 0.3s;
+      width: 20vw;
+
+      & > div:nth-of-type(2) {
+        flex: 1;
+      }
+
+      &.active-right-panel {
+        width: 70vw;
+
+        .left-panel {
+          .evolution-number {
+            background-color: #e5e5e5;
+          }
+
+          .form-group {
+            padding: 20px;
+          }
+        }
+
+        .right-panel {
+          border-left: 1px solid #bdbdbd;
+          padding: 20px 0 20px 20px;
+        }
+      }
+    }
+
+    .evolution-number-panel {
+      margin-bottom: 1rem;
+      height: 409px;
+      transition: height 0.5s ease-in-out;
+
+      .form-group {
+        margin-bottom: 5px;
+        margin-left: 0;
+        transition: margin-left 0.5s ease-in-out, margin-top 0.25s ease-in-out;
+      }
+
+      .table-container {
+        animation: fade 1s;
+        opacity: 1;
+      }
+
+      &.collapsed {
+        box-shadow: none;
+        height: 56px;
+
+        .panel-content {
+          padding-bottom: 0;
+        }
+
+        .form-group {
+          margin-bottom: 0;
+          margin-left: -24px;
+          margin-top: -24px;
+        }
+
+        .table-container {
+          animation: fade-out 1s;
+        }
+      }
+    }
+  }
+}
+
+::ng-deep .export-methods {
+  list-style-type: none;
+  margin: 0;
+  min-width: 100px;
+  padding: 0;
+
+  .export-method-wrapper {
+    cursor: pointer;
+    font-size: 0.8rem;
+    padding: 5px 0;
+
+    .export-method {
+      padding-left: 5px;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+::ng-deep #visit-form-component .aw-dialog .ui-dialog {
+  max-width: 90%;
+}
+
+@keyframes fade {
+  0% {
+    display: none;
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes fade-out {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}

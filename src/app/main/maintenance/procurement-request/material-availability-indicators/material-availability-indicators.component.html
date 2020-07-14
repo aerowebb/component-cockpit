@@ -1,0 +1,68 @@
+<div class="grid-cell grid-cell--container">
+  <div class="grid-cell-header">
+    <div class="grid-cell-title-container">
+      <h3 class="grid-cell-title">
+        {{ getComponentName() + ".materialAvailability" | translate }}
+      </h3>
+    </div>
+  </div>
+
+  <div class="row" *ngIf="!isCreateOpenMode">
+    <div class="section material-availability grid-cell-content">
+      <div class="section-content">
+        <div class="row">
+          <div class="row material-availability">
+            <div id="ok" class="form-group">
+              <label class="form-label">
+                {{ getComponentName() + ".ok" | translate }}
+              </label>
+              <div class="form-control ready-only-field">
+                <div *ngIf="isLoadingProcurementRequestData" class="outgoing-conf-lds-hourglass lds-hourglass"></div>
+                <input
+                  *ngIf="!isLoadingProcurementRequestData"
+                  type="text"
+                  class="aw-input"
+                  [ngClass]="{ ok: isConfStockOk() }"
+                  [(ngModel)]="materialAvailabilityIndicators.nbProcReqItemsOk"
+                  [disabled]="true"
+                />
+              </div>
+            </div>
+            <div id="warning" class="form-group">
+              <label class="form-label">
+                {{ getComponentName() + ".warning" | translate }}
+              </label>
+              <div class="form-control ready-only-field">
+                <div *ngIf="isLoadingProcurementRequestData" class="outgoing-conf-lds-hourglass lds-hourglass"></div>
+                <input
+                  *ngIf="!isLoadingProcurementRequestData"
+                  type="text"
+                  class="aw-input"
+                  [ngClass]="{ warning: isConStockfWarning() }"
+                  [(ngModel)]="materialAvailabilityIndicators.nbProcReqItemsWarning"
+                  [disabled]="true"
+                />
+              </div>
+            </div>
+            <div id="nok" class="form-group">
+              <label class="form-label">
+                {{ getComponentName() + ".nok" | translate }}
+              </label>
+              <div class="form-control ready-only-field">
+                <div *ngIf="isLoadingProcurementRequestData" class="outgoing-conf-lds-hourglass lds-hourglass"></div>
+                <input
+                  *ngIf="!isLoadingProcurementRequestData"
+                  type="text"
+                  class="aw-input"
+                  [ngClass]="{ nok: isConfStockNok() }"
+                  [(ngModel)]="materialAvailabilityIndicators.nbProcReqItemsNOk"
+                  [disabled]="true"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

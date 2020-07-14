@@ -1,0 +1,12 @@
+@import "constants";
+
+:host {
+  .filter-list {
+    margin-bottom: calc(#{$margin-value} * 2);
+  }
+}
+
+::ng-deep #dialog-schedule-maintenance-table-full-screen .ui-treetable-scrollable-body {
+  max-height: 45rem !important;
+  min-height: 45rem !important;
+}

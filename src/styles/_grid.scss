@@ -1,0 +1,419 @@
+.grid-row {
+  @include flex-row();
+
+  flex-wrap: wrap;
+
+  .grid-cell--equally {
+    flex-basis: 0;
+    flex-grow: 1;
+    max-width: 100%;
+  }
+
+  .grid-cell--grow2 {
+    flex-basis: 0;
+    flex-grow: 2;
+    max-width: 100%;
+  }
+
+  .grid-cell--grow3 {
+    flex-basis: 0;
+    flex-grow: 3;
+    max-width: 100%;
+  }
+
+  .grid-cell--grow4 {
+    flex-basis: 0;
+    flex-grow: 4;
+    max-width: 100%;
+  }
+
+  .grid-cell--grow5 {
+    flex-basis: 0;
+    flex-grow: 5;
+    max-width: 100%;
+  }
+
+  .grid-cell--grow7 {
+    flex-basis: 0;
+    flex-grow: 7;
+    max-width: 100%;
+  }
+
+  .grid-cell--2 {
+    width: 16.6667%;
+  }
+
+  .grid-cell--3 {
+    width: 25%;
+  }
+
+  .grid-cell--4 {
+    width: 33.3333%;
+  }
+
+  .grid-cell--5 {
+    width: 40%;
+  }
+
+  .grid-cell--6 {
+    width: 50%;
+  }
+
+  .grid-cell--7 {
+    width: 60%;
+  }
+
+  .grid-cell--8 {
+    width: 66.6667%;
+  }
+
+  .grid-cell--9 {
+    width: 75%;
+  }
+
+  .grid-cell--10 {
+    width: 83.3333%;
+  }
+
+  .grid-cell--12 {
+    width: 100%;
+  }
+
+  .grid-cell--equally,
+  .grid-cell--grow2,
+  .grid-cell--grow3,
+  .grid-cell--grow4,
+  .grid-cell--grow5,
+  .grid-cell--grow7,
+  .grid-cell--2,
+  .grid-cell--3,
+  .grid-cell--4,
+  .grid-cell--5,
+  .grid-cell--6,
+  .grid-cell--7,
+  .grid-cell--8,
+  .grid-cell--9,
+  .grid-cell--10,
+  .grid-cell--12 {
+    float: left;
+    padding: 16px;
+    position: relative;
+
+    &.grid-cell--no-padding {
+      padding: 0;
+    }
+
+    &.visibility--hidden {
+      padding: 0;
+    }
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////
+  // Grid cell //
+  ///////////////////////////////////////////////////////////////////////////////
+
+  .grid-cell {
+    background-color: $primary-background-color;
+    box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.14), 0 1px 3px 0 rgba(0, 0, 0, 0.12);
+    height: 100%;
+    padding: $margin-value;
+    border-radius: $border-radius;
+    border-top: 4px solid $accent-color;
+
+    &:focus,
+    &:hover {
+      .grid-cell-header .grid-cell-actions {
+        background: linear-gradient(to left, rgb(255, 255, 255) 60%, transparent);
+
+        .grid-cell-action {
+          opacity: 1;
+        }
+      }
+    }
+
+    .grid-cell-header {
+      color: $secondary-text-color;
+      position: relative;
+
+      .grid-cell-actions {
+        @include flex-row();
+
+        align-items: center;
+        height: 100%;
+        justify-content: flex-end;
+        position: absolute;
+        right: 0;
+        top: 0;
+        width: 2.25rem;
+
+        .grid-cell-action {
+          cursor: pointer;
+          opacity: 0;
+
+          transition: opacity 0.5s;
+
+          &:hover {
+            color: #8c8c8c;
+          }
+        }
+      }
+
+      .grid-cell-title {
+        @include text-overflow-hidden();
+
+        cursor: default;
+        font-size: 1.25rem !important;
+
+        &:hover > .header-link {
+          color: $accent-color;
+          opacity: 1;
+        }
+
+        & > .header-link {
+          color: $secondary-text-color;
+          cursor: pointer;
+          display: inline-block;
+          height: 1.5rem;
+          margin: 0 calc(#{$margin-value} / 2);
+          opacity: 0;
+          vertical-align: sub;
+        }
+
+        &.required {
+          @include grid-form-control-required();
+
+          &.alert {
+            color: $red-dark1;
+          }
+        }
+      }
+    }
+
+    .grid-cell-content {
+      @include flex-row();
+
+      .aw-calendar,
+      .aw-dropdown,
+      .aw-input {
+        @include text-overflow-hidden();
+      }
+
+      .aw-calendar {
+        @include grid-calendar();
+      }
+
+      .aw-checkbox {
+        @include grid-checkbox();
+
+        margin-top: calc((#{$form-control-height} - #{$checkbox-height}) / 2);
+      }
+
+      .aw-dropdown {
+        @include grid-dropdown();
+      }
+
+      .aw-fileupload {
+        @include grid-fileupload();
+      }
+
+      .aw-input {
+        @include grid-input();
+      }
+
+      .aw-textarea {
+        @include grid-textarea();
+      }
+
+      .aw-radiobutton {
+        @include grid-radiobutton();
+
+        margin-top: calc((#{$form-control-height} - #{$radiobutton-height}) / 2);
+      }
+
+      .aw-selectbutton-wrapper {
+        @include flex-row();
+
+        align-items: flex-end;
+        height: $form-control-height;
+      }
+    }
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////
+  // Grid cell for several form groups //
+  ///////////////////////////////////////////////////////////////////////////////
+
+  .grid-cell--container {
+    .grid-cell-header {
+      margin-bottom: $margin-value;
+
+      .grid-cell-title-container {
+        @include flex-row();
+
+        min-height: 2rem;
+        padding: 0 1.25rem;
+        position: relative;
+
+        &.loading-indicator {
+          .grid-cell-title {
+            @include flex-row();
+
+            align-items: center;
+          }
+
+          .lds-hourglass {
+            position: absolute;
+            right: 0;
+          }
+        }
+
+        .grid-cell-title {
+          color: $accent-color;
+          font-size: 1.375rem;
+        }
+      }
+    }
+
+    .grid-cell-content {
+      flex-wrap: wrap;
+
+      &.grid-cell-content-with-section {
+        flex-direction: column;
+
+        .section {
+          @include section-container();
+
+          &.hide {
+            display: none;
+          }
+        }
+
+        .row {
+          .section {
+            margin-top: 0;
+          }
+        }
+      }
+
+      .column {
+        @include flex-column();
+
+        flex-grow: 1;
+        flex-wrap: wrap;
+      }
+
+      .row {
+        @include flex-row();
+
+        flex-grow: 1;
+        flex-wrap: wrap;
+      }
+
+      .form-group {
+        @include flex-column();
+
+        flex: 1;
+        margin: 16px 0;
+
+        &.hide {
+          display: none;
+        }
+
+        &.form-group-inline {
+          align-items: center;
+          flex-direction: row;
+        }
+
+        &.form-group-no-margin {
+          margin: 0;
+          max-height: fit-content;
+        }
+
+        &[disabled] {
+          .form-control-with-modal,
+          .form-control-with-btn {
+            border-bottom-color: transparent !important;
+            cursor: default !important;
+          }
+
+          .form-control-with-modal {
+            .aw-icon:not(.read-only-link) {
+              display: none;
+            }
+          }
+        }
+
+        &.required {
+          &.alert {
+            .form-label {
+              color: $red-dark1;
+            }
+
+            .aw-dropdown .ui-dropdown,
+            .aw-calendar .ui-inputtext,
+            .aw-textarea,
+            .aw-input,
+            .form-control-with-btn {
+              border-bottom-color: $red-dark1;
+            }
+          }
+
+          .form-label {
+            @include grid-form-control-required();
+          }
+        }
+
+        .form-control,
+        .form-label {
+          margin: 0 calc(#{$margin-value} * 2);
+        }
+
+        .form-control {
+          @include grid-form-control();
+
+          .form-control-generic {
+            @include grid-form-control-generic();
+          }
+        }
+
+        .form-label {
+          @include grid-form-label();
+          @include text-overflow-hidden();
+
+          color: $secondary-text-color;
+        }
+      }
+    }
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////
+  // Grid cell for one form group //
+  ///////////////////////////////////////////////////////////////////////////////
+
+  .grid-cell--form-group {
+    &.required {
+      &.alert {
+        .grid-cell-title {
+          color: $red-dark1;
+        }
+
+        .aw-textarea,
+        .aw-input {
+          border-bottom-color: $red-dark1;
+        }
+      }
+
+      .grid-cell-title {
+        @include grid-form-control-required();
+      }
+    }
+
+    .grid-cell-content {
+      @include grid-form-control();
+
+      .form-control-generic {
+        @include grid-form-control-generic();
+      }
+    }
+  }
+}

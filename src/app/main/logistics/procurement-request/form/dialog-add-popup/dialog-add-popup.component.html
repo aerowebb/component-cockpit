@@ -1,0 +1,57 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".title" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="column">
+      <div class="row">
+        <div class="form-group required">
+          <label class="form-label">{{ getComponentName() + ".article" | translate }}</label>
+
+          <div class="form-control form-control-with-modal">
+            <div class="form-control-data" (click)="searchPn()">
+              {{ pn?.pnCode }}
+            </div>
+
+            <div *ngIf="pn" class="btn-clear-wrapper">
+              <i
+                class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+                aria-hidden="true"
+                (click)="pn = undefined"
+              ></i>
+            </div>
+            <div class="btn-search-wrapper">
+              <i class="fa fa-fw fa-search aw-icon btn-search" aria-hidden="true" (click)="searchPn()"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group required">
+          <label class="form-label">{{ getComponentName() + ".quantity" | translate }}</label>
+
+          <div class="form-control">
+            <input type="text" class="aw-input" [(ngModel)]="quantity" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button type="button" mat-raised-button (click)="closeDialog()">{{ "global.cancel" | translate }}</button>
+
+    <button type="button" color="primary" mat-raised-button (click)="validate()" [disabled]="!pn || !quantity">
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>
+
+<aw-dialog-search-pn
+  *ngIf="pnDialogVisible"
+  [(display)]="pnDialogVisible"
+  [showPartTypeSelection]="true"
+  (onSelected)="onSelectPn($event)"
+></aw-dialog-search-pn>

@@ -1,0 +1,14 @@
+<div class="overlay">
+  <div class="current-user">{{ sessionService.userFirstName }} {{ sessionService.userLastName }}</div>
+
+  <div class="select-container">
+    <div class="option">
+      <button (click)="changePassword()">{{ "changePassword" | translate }}</button>
+    </div>
+    <div class="option">
+      <button (click)="logOut()">{{ "logOut" | translate }}</button>
+    </div>
+  </div>
+</div>
+
+<aw-dialog-change-password *ngIf="showChangePassword" [(display)]="showChangePassword"></aw-dialog-change-password>

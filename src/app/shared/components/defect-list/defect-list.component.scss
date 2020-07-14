@@ -1,0 +1,102 @@
+@import "constants";
+@import "mixins";
+@import "modifiers";
+
+:host {
+  .table-border-left {
+    border-left: solid 1px #006ea9 !important;
+  }
+
+  .ok {
+    background-color: $green-light1;
+  }
+
+  .warning {
+    background-color: $orange;
+  }
+
+  .nok {
+    background-color: $red-light1;
+  }
+
+  .aw-table-row-details {
+    .label-value-group {
+      & > label {
+        min-width: 10rem;
+      }
+    }
+  }
+
+  .table-summary-wrapper {
+    margin: 0 auto;
+    width: 30rem;
+  }
+
+  .table-control-summary {
+    td,
+    th {
+      background-color: $primary-background-color;
+      border: 0;
+      line-height: $line-height;
+      vertical-align: middle;
+      color: $primary-text-color;
+    }
+
+    th {
+      color: $secondary-text-color;
+      font-weight: 400;
+    }
+
+    td {
+      color: $primary-text-color;
+    }
+  }
+
+  .table-control-summary {
+    col,
+    td,
+    th {
+      padding: 4px;
+    }
+
+    tr {
+      td,
+      th {
+        text-align: center;
+
+        &:first-of-type {
+          padding-right: 5%;
+          text-align: right;
+        }
+      }
+    }
+
+    .ui-table-tbody {
+      tr:nth-of-type(2) td {
+        padding-top: $margin-value;
+      }
+    }
+
+    td > span {
+      background-color: #fff;
+      display: block;
+      padding: calc(#{$margin-value} - 4px);
+
+      &:not(.category) {
+        background-color: #f0f0f0;
+      }
+
+      &.ok {
+        background-color: $green-light1;
+      }
+
+      &.warning {
+        background-color: $orange;
+      }
+
+      &.nok {
+        background-color: $red-light1;
+      }
+    }
+  }
+}

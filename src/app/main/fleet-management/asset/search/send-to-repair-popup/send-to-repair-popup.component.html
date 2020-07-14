@@ -1,0 +1,115 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".title" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="column">
+      <div class="row">
+        <div class="form-group">
+          <label class="form-label"> {{ getComponentName() + ".shippingDate" | translate }} </label>
+
+          <div class="form-control">
+            <p-calendar
+              showButtonBar="true"
+              [monthNavigator]="true"
+              [yearNavigator]="true"
+              [yearRange]="sessionService.calendarYearRange"
+              class="aw-calendar"
+              [dateFormat]="sessionService.dateFormatPrimeNG"
+              [locale]="sessionService.calendarFormat"
+              [(ngModel)]="shippingDate"
+              appendTo="body"
+            ></p-calendar>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group">
+          <div class="form-control">
+            <p-selectButton
+              [options]="repairingZoneList"
+              [(ngModel)]="selectedRepairingZone"
+              (onChange)="displayDropdowns()"
+            ></p-selectButton>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="isInternDropdownsDisplaying" class="row">
+        <div id="siteDropdown" class="form-group">
+          <label class="form-label"> {{ getComponentName() + ".site" | translate }} </label>
+          <div class="form-control">
+            <p-dropdown
+              class="aw-dropdown fixed-width"
+              placeholder="&nbsp;"
+              [showClear]="true"
+              [options]="siteList"
+              [(ngModel)]="sendToRepairDTO.siteReceiver"
+              appendTo="body"
+              (onChange)="loadSupplierWarehouses()"
+            ></p-dropdown>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="isInternDropdownsDisplaying" class="row">
+        <div id="workshopDropdown" class="form-group">
+          <label class="form-label"> {{ getComponentName() + ".workshop" | translate }} </label>
+          <div class="form-control">
+            <p-dropdown
+              class="aw-dropdown fixed-width"
+              placeholder="&nbsp;"
+              [showClear]="true"
+              [(ngModel)]="sendToRepairDTO.warehouseReceiver"
+              [options]="supplierWarehouses"
+              appendTo="body"
+            ></p-dropdown>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="!isInternDropdownsDisplaying" class="row">
+        <div id="partnerDropdown" class="form-group">
+          <label class="form-label"> {{ getComponentName() + ".partner" | translate }} </label>
+          <div class="form-control">
+            <p-dropdown
+              class="aw-dropdown fixed-width"
+              placeholder="&nbsp;"
+              [(ngModel)]="sendToRepairDTO.receiverCustomerCode"
+              [options]="refinedPartnerList"
+              [showClear]="true"
+              appendTo="body"
+            ></p-dropdown>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="!isInternDropdownsDisplaying && isConditioningNeeded" class="row">
+        <span style="padding-bottom: 10px;"
+          ><i>{{ getComponentName() + ".conditioningNeeded" | translate }}</i
+          ><i class="fa fa-exclamation-triangle" style="color: #F4C604" aria-hidden="true"></i
+        ></span>
+      </div>
+      <div *ngIf="!isInternDropdownsDisplaying && isConditioningNeeded" class="row">
+        <div id="conditioningWorkshopDropdown" class="form-group">
+          <label class="form-label"> {{ getComponentName() + ".conditioningWorkshop" | translate }} </label>
+          <div class="form-control">
+            <p-dropdown
+              class="aw-dropdown fixed-width"
+              placeholder="&nbsp;"
+              [showClear]="true"
+              [(ngModel)]="sendToRepairDTO.conditioningWorkshopId"
+              [options]="supplierConditioningWarehouses"
+              appendTo="body"
+            ></p-dropdown>
+          </div>
+        </div>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button type="button" mat-raised-button (click)="closeDialog()">{{ "global.cancel" | translate }}</button>
+
+    <button type="button" color="primary" mat-raised-button (click)="validate()" [disabled]="isValidateDisabled()">
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>

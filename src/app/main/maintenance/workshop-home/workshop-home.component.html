@@ -1,0 +1,171 @@
+<div class="page-header">
+  <div class="page-info">
+    <div>
+      <h2 class="page-title">{{ componentData.componentId + ".workshop" | translate }} {{ bidtWarehouse.whName }}</h2>
+
+      <div class="hr-style">
+        <div class="grid-row">
+          <div class="grid-cell-style">
+            <div class="grid-cell--3">
+              {{ componentData.componentId + ".humanResourceLabel" | translate }}
+            </div>
+          </div>
+          <div class="grid-cell-style">
+            <div class="grid-cell--3">
+              {{ humanResourceOutputDTO.nbPrevisionalDaysEmployeeWorkedOnWO }}
+            </div>
+          </div>
+          <div class="grid-cell-style">
+            <div class="grid-cell--3">
+              {{ humanResourceOutputDTO.nbPrevisionalDaysEmployeeArePresent }}
+            </div>
+          </div>
+          <div class="grid-cell-style">
+            <div class="grid-cell--3">
+              {{ humanResourceOutputDTO.nbEmployee }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group" style="max-width: 25%">
+        <label class="form-label"> {{ componentData.componentId + ".reportingDate" | translate }} </label>
+
+        <div class="form-control">
+          <p-calendar
+            showButtonBar="true"
+            [monthNavigator]="true"
+            [yearNavigator]="true"
+            [yearRange]="sessionService.calendarYearRange"
+            class="aw-calendar"
+            [dateFormat]="sessionService.dateFormatPrimeNG"
+            [locale]="sessionService.calendarFormat"
+            [(ngModel)]="date"
+            (ngModelChange)="onDateValueChange()"
+          ></p-calendar>
+        </div>
+      </div>
+
+      <div class="page-subtitle">
+        <div *ngIf="!isCreateOpenMode && componentData && componentData.objectId" class="page-subtitle">
+          - {{ subtitle }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="page-wrapper">
+  <div class="page-container">
+    <mat-tab-group animationDuration="0ms" dynamicHeight>
+      <mat-tab>
+        <ng-template mat-tab-label>
+          {{ "general" | translate }}
+        </ng-template>
+
+        <div class="grid-row">
+          <div id="workloadPanel" class="grid-cell--6">
+            <div #workloadAnchor class="grid-cell grid-cell--container">
+              <div class="grid-cell-header">
+                <div class="grid-cell-title-container">
+                  <h3 class="grid-cell-title">
+                    {{ componentData.componentId + ".workloadTab" | translate }}
+                  </h3>
+                </div>
+              </div>
+
+              <div class="grid-cell-content">
+                <a-table id="workloadTable" [dataSource]="workloadTableDataSource">
+                  <ng-template columnDef="workloadKey" let-rowData="rowData">
+                    {{ rowData.workloadKey | translate }}
+                  </ng-template>
+                  <ng-template columnDef="validationOk" let-rowData="rowData">
+                    <span [ngClass]="{ 'alert--ok': rowData.isValidationOk }">
+                      {{ rowData.validationOk }}
+                    </span>
+                  </ng-template>
+                  <ng-template columnDef="alert" let-rowData="rowData">
+                    <span [ngClass]="{ 'alert--warning': rowData.isAlert }">
+                      {{ rowData.alert }}
+                    </span>
+                  </ng-template>
+                  <ng-template columnDef="validationNok" let-rowData="rowData">
+                    <span [ngClass]="{ 'alert--nok': rowData.isValidationNok }">
+                      {{ rowData.validationNok }}
+                    </span>
+                  </ng-template>
+                </a-table>
+              </div>
+            </div>
+          </div>
+
+          <div id="qualificationsStatusPanel" class="grid-cell--6">
+            <div #qualificationsStatusAnchor class="grid-cell grid-cell--container">
+              <div class="grid-cell-header">
+                <div class="grid-cell-title-container">
+                  <h3 class="grid-cell-title">
+                    {{ componentData.componentId + ".qualificationsStatusTab" | translate }} ({{
+                      qualificationStatusTableDataSource ? qualificationStatusTableDataSource.dataCount : 0
+                    }})
+                  </h3>
+                </div>
+              </div>
+
+              <div class="grid-cell-content">
+                <a-table id="qualificationsStatusTable" [dataSource]="qualificationStatusTableDataSource">
+                  <ng-template columnDef="qualificationOk" let-rowData="rowData">
+                    <span [ngClass]="{ 'alert--ok': rowData.isQualificationOk }">
+                      {{ rowData.qualificationOk }}
+                    </span>
+                  </ng-template>
+                  <ng-template columnDef="qualificationAlert" let-rowData="rowData">
+                    <span [ngClass]="{ 'alert--warning': rowData.isQualificationAlert }">
+                      {{ rowData.qualificationAlert }}
+                    </span>
+                  </ng-template>
+                  <ng-template columnDef="qualificationNok" let-rowData="rowData">
+                    <span [ngClass]="{ 'alert--nok': rowData.isQualificationNok }">
+                      {{ rowData.qualificationNok }}
+                    </span>
+                  </ng-template>
+                </a-table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-row">
+          <div id="partsPanel" class="grid-cell--12">
+            <aw-procurement-requests-table
+              [procurementRequests]="procurementRequestAndIndicatorsParts"
+              [requestManagementKey]="articleTitleKey"
+            ></aw-procurement-requests-table>
+          </div>
+        </div>
+
+        <div class="grid-row">
+          <div id="toolsPanel" class="grid-cell--12">
+            <aw-procurement-requests-table
+              [procurementRequests]="procurementRequestAndIndicatorsTools"
+              [requestManagementKey]="supportResourcesTitleKey"
+            ></aw-procurement-requests-table>
+          </div>
+        </div>
+      </mat-tab>
+      <mat-tab id="workOrdersTab">
+        <ng-template mat-tab-label>
+          {{ "workOrders" | translate }}
+        </ng-template>
+
+        <div class="grid-row">
+          <div id="workOrdersPanel" class="grid-cell--12">
+            <div class="grid-cell grid-cell--container" *ngIf="!!woDisplayedList">
+              <aw-work-order-list [workOrderInputList]="woDisplayedList" [hideWOTableAction]="true">
+              </aw-work-order-list>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+</div>

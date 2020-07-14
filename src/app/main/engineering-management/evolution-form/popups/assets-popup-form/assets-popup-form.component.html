@@ -1,0 +1,70 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".titlePopup" | translate }}</div>
+
+    <div class="modal-subtitle">{{ getComponentName() + ".informationAsset" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="column">
+      <div class="row">
+        <div class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+          <label class="form-label">{{ getComponentName() + ".pn" | translate }}</label>
+
+          <div class="form-control">
+            <input type="text" class="aw-input" [disabled]="isReadOnlyForm" [(ngModel)]="newEvol.assetPn" />
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+          <label class="form-label">{{ getComponentName() + ".sn" | translate }}</label>
+
+          <div class="form-control">
+            <input type="text" class="aw-input" [disabled]="isReadOnlyForm" [(ngModel)]="newEvol.assetSn" />
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group">
+          <label class="form-label">{{ getComponentName() + ".instruction" | translate }}</label>
+
+          <div class="form-control">
+            <p-dropdown
+              class="aw-dropdown fixed-width"
+              [disabled]="isReadOnlyForm"
+              [showClear]="true"
+              placeholder="&nbsp;"
+              [options]="instruction"
+              [(ngModel)]="newEvol.assetActionType"
+              appendTo="body"
+            ></p-dropdown>
+          </div>
+        </div>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button *ngIf="isReadOnlyForm" type="button" mat-raised-button (click)="onHide()">
+      <span>{{ "global.close" | translate }}</span>
+    </button>
+
+    <button *ngIf="!isReadOnlyForm" type="button" mat-raised-button (click)="onHide()">
+      <span>{{ "global.cancel" | translate }}</span>
+    </button>
+
+    <button
+      *ngIf="!isReadOnlyForm"
+      type="button"
+      color="primary"
+      mat-raised-button
+      (click)="onValidate()"
+      [disabled]="!isScreenValid()"
+    >
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>

@@ -1,0 +1,47 @@
+@import "constants";
+@import "mixins";
+
+:host {
+  .measures-by-step-wrapper {
+    justify-content: center;
+  }
+
+  .measures-by-step {
+    @include flex-row();
+
+    border: $border-width $border-style $border-color;
+    border-radius: $border-radius;
+
+    .measure {
+      @include flex-column();
+
+      height: 6rem;
+      width: 8rem;
+
+      .title {
+        @include flex-row();
+
+        justify-content: center;
+      }
+
+      .value {
+        @include flex-row();
+
+        align-items: center;
+        flex: 1;
+        font-size: 1.25rem;
+        font-weight: 600;
+        justify-content: center;
+      }
+    }
+  }
+  .line-maintenance-validate {
+    display: flex;
+    flex: 1;
+    flex-direction: row;
+    justify-content: flex-end;
+    button {
+      margin-left: 0.5rem;
+    }
+  }
+}

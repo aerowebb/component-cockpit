@@ -1,0 +1,144 @@
+<a-modal class="aw-modal" [(visible)]="display" [width]="20">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".oemPartnerMgmt" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="column">
+      <div class="row">
+        <div class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+          <label class="form-label">{{ getComponentName() + ".partnerCode" | translate }}</label>
+
+          <div class="form-control">
+            <p-dropdown
+              [disabled]="isReadOpenMode"
+              class="aw-dropdown fixed-width"
+              [options]="oemPartnersList"
+              [(ngModel)]="selectedPartner"
+              [showClear]="true"
+              placeholder="&nbsp;"
+              appendTo="body"
+            ></p-dropdown>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+          <label class="form-label">{{ getComponentName() + ".itemMinRange" | translate }}</label>
+
+          <div class="form-control display--flex-row">
+            <input
+              type="text"
+              class="aw-input flex--1"
+              [disabled]="isReadOpenMode"
+              [(ngModel)]="bireItemDTOIdMin.chapter"
+              maxlength="2"
+            />
+            <span class="separator">-</span>
+            <input
+              type="text"
+              class="aw-input flex--1"
+              [disabled]="isReadOpenMode"
+              [(ngModel)]="bireItemDTOIdMin.section"
+              maxlength="2"
+            />
+            <span class="separator">-</span>
+            <input
+              type="text"
+              class="aw-input flex--1"
+              [disabled]="isReadOpenMode"
+              [(ngModel)]="bireItemDTOIdMin.subject"
+              maxlength="2"
+            />
+            <span class="separator">-</span>
+            <input
+              type="text"
+              class="aw-input flex--3"
+              [disabled]="isReadOpenMode"
+              [(ngModel)]="bireItemDTOIdMin.sheet"
+              maxlength="5"
+            />
+            <span class="separator">-</span>
+            <input
+              type="text"
+              class="aw-input flex--3"
+              [disabled]="isReadOpenMode"
+              [(ngModel)]="bireItemDTOIdMin.marks"
+              maxlength="5"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+          <label class="form-label">{{ getComponentName() + ".itemMaxRange" | translate }}</label>
+
+          <div class="form-control display--flex-row">
+            <input
+              type="text"
+              class="aw-input flex--1"
+              [disabled]="isReadOpenMode"
+              [(ngModel)]="bireItemDTOIdMax.chapter"
+              maxlength="2"
+            />
+            <span class="separator">-</span>
+            <input
+              type="text"
+              class="aw-input flex--1"
+              [disabled]="isReadOpenMode"
+              [(ngModel)]="bireItemDTOIdMax.section"
+              maxlength="2"
+            />
+            <span class="separator">-</span>
+            <input
+              type="text"
+              class="aw-input flex--1"
+              [disabled]="isReadOpenMode"
+              [(ngModel)]="bireItemDTOIdMax.subject"
+              maxlength="2"
+            />
+            <span class="separator">-</span>
+            <input
+              type="text"
+              class="aw-input flex--3"
+              [disabled]="isReadOpenMode"
+              [(ngModel)]="bireItemDTOIdMax.sheet"
+              maxlength="5"
+            />
+            <span class="separator">-</span>
+            <input
+              type="text"
+              class="aw-input flex--3"
+              [disabled]="isReadOpenMode"
+              [(ngModel)]="bireItemDTOIdMax.marks"
+              maxlength="5"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button *ngIf="isReadOpenMode" type="button" mat-raised-button (click)="cancel()">
+      <span>{{ "global.close" | translate }}</span>
+    </button>
+
+    <button *ngIf="!isReadOpenMode" type="button" mat-raised-button (click)="cancel()">
+      <span>{{ "global.cancel" | translate }}</span>
+    </button>
+
+    <button
+      *ngIf="!isReadOpenMode"
+      type="button"
+      color="primary"
+      mat-raised-button
+      (click)="validate()"
+      [disabled]="!selectedPartner || !bireItemDTOIdMin.chapter || !bireItemDTOIdMax.chapter"
+    >
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>

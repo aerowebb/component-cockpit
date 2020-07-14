@@ -1,0 +1,225 @@
+<a-modal class="aw-modal" [(visible)]="display" [width]="60">
+  <a-header>
+    <div class="modal-title">{{ title }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="grid-row">
+      <div class="grid-cell--12">
+        <div class="grid-cell-content">
+          <div class="column">
+            <div class="row">
+              <div class="form-group" [ngClass]="{ required: isCreateOpenMode }">
+                <label class="form-label">
+                  {{ getComponentName() + ".code" | translate }}
+                </label>
+
+                <div class="form-control">
+                  <input
+                    type="text"
+                    class="aw-input"
+                    [(ngModel)]="bidtDfTypeDTO.dftCode"
+                    [disabled]="isReadOpenMode"
+                    maxlength="50"
+                  />
+                </div>
+              </div>
+
+              <div class="form-group" [ngClass]="{ required: isCreateOpenMode }">
+                <label class="form-label">
+                  {{ getComponentName() + ".designation" | translate }}
+                </label>
+
+                <div class="form-control">
+                  <input
+                    type="text"
+                    class="aw-input custom-width"
+                    [(ngModel)]="bidtDfTypeDTO.dftDesignation"
+                    [disabled]="isReadOpenMode"
+                    maxlength="100"
+                  />
+                </div>
+              </div>
+              <div class="form-group required">
+                <label class="form-label">
+                  {{ getComponentName() + ".transferType" | translate }}
+                </label>
+
+                <div class="form-control">
+                  <p-dropdown
+                    appendTo="body"
+                    class="aw-dropdown fixed-width"
+                    placeholder="&nbsp;"
+                    [options]="transferTypeList"
+                    [showClear]="true"
+                    [(ngModel)]="bidtDfTypeDTO.transferType"
+                  ></p-dropdown>
+                </div>
+              </div>
+              <div class="form-group"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="grid-row">
+      <div class="grid-cell--12">
+        <div class="grid-cell-header">
+          <div class="grid-cell-title-container">
+            <h3 class="grid-cell-title">
+              {{ getComponentName() + ".operations" | translate }}
+              ({{ operationsTableDataSource ? operationsTableDataSource.dataCount : 0 }})
+            </h3>
+          </div>
+        </div>
+        <div class="grid-cell-content">
+          <div class="column">
+            <div class="list-with-details">
+              <div class="grid-row">
+                <div class="grid-cell--12">
+                  <div class="grid-cell--8">
+                    <div class="list">
+                      <div class="list-header"></div>
+                      <a-table
+                        [dataSource]="operationsTableDataSource"
+                        (onRowSelect)="onOperationsRowSelectUnselect()"
+                        (onRowUnselect)="onOperationsRowSelectUnselect()"
+                      >
+                        <ng-template tableActionsDef>
+                          <button
+                            *ngIf="
+                              !(isReadOpenMode || !isCreateOpenMode) &&
+                              operationsTableDataSource &&
+                              operationsTableDataSource.dataSrc.length > 1 &&
+                              operationsTableDataSource.hasDataSelection &&
+                              operationsTableDataSource.dataSelectionCount === 1
+                            "
+                            type="button"
+                            mat-raised-button
+                            (click)="moveDown()"
+                          >
+                            {{ getComponentName() + ".moveDown" | translate }}
+                          </button>
+                          <button
+                            *ngIf="
+                              !(isReadOpenMode || !isCreateOpenMode) &&
+                              operationsTableDataSource &&
+                              operationsTableDataSource.dataSrc.length > 1 &&
+                              operationsTableDataSource.hasDataSelection &&
+                              operationsTableDataSource.dataSelectionCount === 1
+                            "
+                            type="button"
+                            mat-raised-button
+                            (click)="moveUp()"
+                          >
+                            {{ getComponentName() + ".moveUp" | translate }}
+                          </button>
+                          <button
+                            *ngIf="operationsTableDataSource && !operationsTableDataSource.hasDataSelection"
+                            type="button"
+                            mat-raised-button
+                            (click)="addOperation()"
+                          >
+                            {{ "global.add" | translate }}
+                          </button>
+                          <button
+                            *ngIf="
+                              !(isReadOpenMode || !isCreateOpenMode) &&
+                              operationsTableDataSource &&
+                              operationsTableDataSource.hasDataSelection &&
+                              operationsTableDataSource.dataSelectionCount === 1
+                            "
+                            type="button"
+                            mat-raised-button
+                            (click)="editOperation()"
+                          >
+                            {{ "global.edit" | translate }}
+                          </button>
+                          <button
+                            *ngIf="
+                              !(isReadOpenMode || !isCreateOpenMode) &&
+                              operationsTableDataSource &&
+                              operationsTableDataSource.hasDataSelection
+                            "
+                            type="button"
+                            mat-raised-button
+                            (click)="deleteOperations()"
+                          >
+                            {{ "global.delete" | translate }}
+                          </button>
+                        </ng-template>
+                      </a-table>
+                    </div>
+                  </div>
+                  <div class="grid-cell--4">
+                    <div class="details">
+                      <div class="column">
+                        <div class="section">
+                          <h4 class="section-title">
+                            {{ getComponentName() + ".materialTypes" | translate }}
+                          </h4>
+
+                          <div class="section-content" style="height: 18em; overflow: auto;">
+                            <a-table
+                              [dataSource]="partNumberTableDataSource"
+                              (onRowSelect)="onPartNumberRowSelectUnselect()"
+                              (onRowUnselect)="onPartNumberRowSelectUnselect()"
+                            >
+                            </a-table>
+                          </div>
+                        </div>
+
+                        <div class="section">
+                          <h4 class="section-title">
+                            {{ getComponentName() + ".linkedDocCategories" | translate }}
+                          </h4>
+
+                          <div class="section-content" style="height: 18em; overflow: auto;">
+                            <a-table
+                              [dataSource]="documentCategoriesTableDataSource"
+                              (onRowSelect)="onDocCategoriesRowSelectUnselect()"
+                              (onRowUnselect)="onDocCategoriesRowSelectUnselect()"
+                            >
+                            </a-table>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button *ngIf="isReadOpenMode" type="button" mat-raised-button (click)="closeDialog()">
+      <span>{{ "global.close" | translate }}</span>
+    </button>
+
+    <button *ngIf="!isReadOpenMode" type="button" mat-raised-button (click)="closeDialog()">
+      <span>{{ "global.cancel" | translate }}</span>
+    </button>
+
+    <button
+      *ngIf="!isReadOpenMode"
+      type="button"
+      color="primary"
+      mat-raised-button
+      (click)="validate()"
+      [disabled]="isValidForm()"
+    >
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>
+<aw-dialog-operation-catalog
+  *ngIf="openDialogOperation"
+  [(display)]="openDialogOperation"
+  [data]="selectedOperation"
+  [openMode]="operationDialogOpenMode"
+  (onValidated)="validateOperation($event)"
+></aw-dialog-operation-catalog>

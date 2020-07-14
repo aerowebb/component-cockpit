@@ -1,0 +1,17 @@
+.alert-icon-yellow {
+  background-color: transparent;
+  color: #ff9800;
+  padding: 2px;
+  text-align: center;
+
+  &:hover {
+    background-color: #ff9800;
+    color: #fff;
+    border-radius: 5px;
+  }
+}
+
+.grid-cell--8.column-cell {
+  padding-top: 0px !important;
+  padding-bottom: 0px !important;
+}

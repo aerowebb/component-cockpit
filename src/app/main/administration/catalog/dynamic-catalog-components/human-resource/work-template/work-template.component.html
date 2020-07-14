@@ -1,0 +1,90 @@
+<div class="grid-row">
+  <div class="grid-cell--12">
+    <div class="grid-cell grid-cell--container">
+      <div class="grid-cell-header">
+        <div class="grid-cell-title-container">
+          <h3 class="grid-cell-title">
+            {{ getComponentName() + ".workTemplateList" | translate }} ({{ workTemplateTableDataSource.dataCount }})
+          </h3>
+        </div>
+      </div>
+      <div class="grid-cell-content">
+        <a-table [dataSource]="workTemplateTableDataSource">
+          <ng-template tableActionsDef>
+            <button
+              type="button"
+              *ngIf="workTemplateTableDataSource.hasDataSelection"
+              mat-raised-button
+              (click)="deleteWorkTemplate()"
+            >
+              {{ "global.delete" | translate }}
+            </button>
+            <button
+              type="button"
+              *ngIf="workTemplateTableDataSource.hasDataSelection"
+              mat-raised-button
+              (click)="openWorkTemplate()"
+            >
+              {{ "global.open" | translate }}
+            </button>
+          </ng-template>
+
+          <ng-template columnDef="ltIsMondayBool" let-rowData="rowData">
+            <i
+              *ngIf="rowData.ltIsMondayBool !== null && rowData.ltIsMondayBool"
+              class="fa fa-fw fa-check"
+              aria-hidden="true"
+            ></i>
+          </ng-template>
+
+          <ng-template columnDef="ltIsTuesdayBool" let-rowData="rowData">
+            <i
+              *ngIf="rowData.ltIsTuesdayBool !== null && rowData.ltIsTuesdayBool"
+              class="fa fa-fw fa-check"
+              aria-hidden="true"
+            ></i>
+          </ng-template>
+
+          <ng-template columnDef="ltIsWednesdayBool" let-rowData="rowData">
+            <i
+              *ngIf="rowData.ltIsWednesdayBool !== null && rowData.ltIsWednesdayBool"
+              class="fa fa-fw fa-check"
+              aria-hidden="true"
+            ></i>
+          </ng-template>
+
+          <ng-template columnDef="ltIsThursdayBool" let-rowData="rowData">
+            <i
+              *ngIf="rowData.ltIsThursdayBool !== null && rowData.ltIsThursdayBool"
+              class="fa fa-fw fa-check"
+              aria-hidden="true"
+            ></i>
+          </ng-template>
+
+          <ng-template columnDef="ltIsFridayBool" let-rowData="rowData">
+            <i
+              *ngIf="rowData.ltIsFridayBool !== null && rowData.ltIsFridayBool"
+              class="fa fa-fw fa-check"
+              aria-hidden="true"
+            ></i>
+          </ng-template>
+
+          <ng-template columnDef="ltIsSaturdayBool" let-rowData="rowData">
+            <i
+              *ngIf="rowData.ltIsSaturdayBool !== null && rowData.ltIsSaturdayBool"
+              class="fa fa-fw fa-check"
+              aria-hidden="true"
+            ></i>
+          </ng-template>
+          <ng-template columnDef="ltIsSundayBool" let-rowData="rowData">
+            <i
+              *ngIf="rowData.ltIsSundayBool !== null && rowData.ltIsSundayBool"
+              class="fa fa-fw fa-check"
+              aria-hidden="true"
+            ></i>
+          </ng-template>
+        </a-table>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,203 @@
+<div class="page-header">
+  <div class="page-info">
+    <div>
+      <h2 class="page-title">
+        {{ "transaction." + componentData.componentId | translate }}
+      </h2>
+    </div>
+  </div>
+
+  <div class="page-actions">
+    <button
+      mat-icon-button
+      class="mat-elevation-z1"
+      matTooltip="{{ 'global.showAllActionTooltip' | translate }}"
+      matTooltipPosition="above"
+      aria-label="Show all actions"
+      [matMenuTriggerFor]="actions"
+    >
+      <mat-icon>more_horiz</mat-icon>
+    </button>
+    <mat-menu #actions="matMenu">
+      <button mat-menu-item (click)="updateFavoriteState()">
+        {{ (isFavoriteEntry ? "page.removeFromFavorites" : "page.addToFavorites") | translate }}
+      </button>
+    </mat-menu>
+  </div>
+</div>
+
+<div class="page-wrapper">
+  <div class="page-container">
+    <div class="page-content">
+      <div class="grid-row">
+        <div class="grid-cell--12">
+          <div class="grid-cell grid-cell--container">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">{{ componentData.componentId + ".research" | translate }}</h3>
+              </div>
+            </div>
+
+            <div class="grid-cell-content">
+              <div class="column">
+                <div class="row">
+                  <div class="form-group required">
+                    <label class="form-label">{{ componentData.componentId + ".date" | translate }}</label>
+
+                    <div class="form-control">
+                      <p-calendar
+                        showButtonBar="true"
+                        [monthNavigator]="true"
+                        [yearNavigator]="true"
+                        [yearRange]="sessionService.calendarYearRange"
+                        appendTo="body"
+                        class="aw-calendar"
+                        [dateFormat]="sessionService.dateFormatPrimeNG"
+                        [locale]="sessionService.calendarFormat"
+                        [readonlyInput]="true"
+                        [(ngModel)]="searchCriteria.date"
+                      ></p-calendar>
+                    </div>
+                  </div>
+
+                  <div class="form-group required may-required">
+                    <label class="form-label">{{ componentData.componentId + ".material" | translate }} </label>
+
+                    <div class="form-control form-control-with-modal">
+                      <div class="form-control-data" (click)="openItemPnDialog()">
+                        {{ searchCriteria.pnCode }}
+                      </div>
+
+                      <div *ngIf="searchCriteria.pnCode" class="btn-clear-wrapper">
+                        <i
+                          class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+                          aria-hidden="true"
+                          (click)="clearItemPn()"
+                        ></i>
+                      </div>
+                      <div class="btn-search-wrapper">
+                        <i
+                          class="fa fa-fw fa-search aw-icon btn-search"
+                          aria-hidden="true"
+                          (click)="openItemPnDialog()"
+                        ></i>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label">{{ componentData.componentId + ".itsAlternatives" | translate }}</label>
+
+                    <div class="form-control">
+                      <p-checkbox
+                        binary="true"
+                        class="aw-checkbox"
+                        [(ngModel)]="searchCriteria.withAlternatives"
+                      ></p-checkbox>
+                    </div>
+                  </div>
+
+                  <div class="form-group"></div>
+                </div>
+
+                <div class="row">
+                  <div class="form-group required may-required">
+                    <label class="form-label"> {{ componentData.componentId + ".site" | translate }} </label>
+
+                    <div class="form-control">
+                      <p-dropdown
+                        class="aw-dropdown fixed-width"
+                        placeholder="&nbsp;"
+                        [showClear]="true"
+                        [options]="sites"
+                        [(ngModel)]="searchCriteria.siteId"
+                        (onChange)="onChangeSiteOrWarehouseCategory()"
+                      ></p-dropdown>
+                    </div>
+                  </div>
+
+                  <div class="form-group required may-required flex--2" style="height: 47px;">
+                    <label class="form-label">
+                      {{ selectedWarehouseCategory | formatSelectOption: warehouseCategories }}
+                    </label>
+
+                    <div class="form-control aw-selectbutton-wrapper aw-selectbutton-with-dropdown">
+                      <p-selectButton
+                        [options]="warehouseCategories"
+                        [(ngModel)]="selectedWarehouseCategory"
+                        (onChange)="onChangeSiteOrWarehouseCategory()"
+                      ></p-selectButton>
+
+                      <p-dropdown
+                        appendTo="body"
+                        class="aw-dropdown fixed-width"
+                        placeholder="&nbsp;"
+                        [options]="warehouses"
+                        [showClear]="true"
+                        [(ngModel)]="searchCriteria.warehouseId"
+                        (onChange)="onChangeWarehouse()"
+                      ></p-dropdown>
+                    </div>
+                  </div>
+
+                  <div class="form-group required may-required">
+                    <label class="form-label"> {{ componentData.componentId + ".zone" | translate }} </label>
+
+                    <div class="form-control">
+                      <p-dropdown
+                        class="aw-dropdown fixed-width"
+                        placeholder="&nbsp;"
+                        [options]="areas"
+                        [showClear]="true"
+                        [(ngModel)]="searchCriteria.areaId"
+                      ></p-dropdown>
+                    </div>
+                  </div>
+
+                  <div class="form-group ">
+                    <label class="form-label">
+                      {{ componentData.componentId + ".storageBin" | translate }}
+                    </label>
+
+                    <div class="form-control">
+                      <p-dropdown
+                        class="aw-dropdown fixed-width"
+                        placeholder="&nbsp;"
+                        [options]="storageBins"
+                        [showClear]="true"
+                        [(ngModel)]="searchCriteria.storageBinId"
+                      ></p-dropdown>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row flex-row--justify-end">
+                  <div class="search-actions">
+                    <button
+                      appKeyPress
+                      mat-raised-button
+                      color="primary"
+                      type="button"
+                      [keyCode]="'Enter'"
+                      (click)="calculate()"
+                      (keyPress)="calculate()"
+                    >
+                      {{ componentData.componentId + ".toCalculate" | translate }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <aw-dialog-search-pn
+    [showPartTypeSelection]="true"
+    [(display)]="itemPnDialogVisible"
+    (onSelected)="onSelectItemPn($event)"
+    *ngIf="itemPnDialogVisible"
+  ></aw-dialog-search-pn>
+</div>

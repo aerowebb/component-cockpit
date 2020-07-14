@@ -1,0 +1,42 @@
+<a-modal class="aw-modal" [(visible)]="display" [width]="30">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".title" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="form-group">
+      <label class="form-label"> {{ getComponentName() + ".fileToImport" | translate }}</label>
+
+      <div class="form-control form-control-with-modal" [ngClass]="{ disabled: isReadOpenMode }">
+        <div class="form-control-data control-class" title="{{ fileName }}">
+          {{ fileName }}
+        </div>
+
+        <div class="btn-file-upload-wrapper">
+          <p-fileUpload
+            #fileUploader
+            *ngIf="!isReadOpenMode"
+            class="aw-fileupload"
+            name="document[]"
+            customUpload="true"
+            mode="basic"
+            auto="true"
+            chooseLabel=""
+            (uploadHandler)="uploadDocument($event, fileUploader)"
+          >
+          </p-fileUpload>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <a class="anchor-class" (click)="openTemplate()">{{ getComponentName() + ".templateFile" | translate }}</a>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button type="button" mat-raised-button (click)="import()" [disabled]="!fileName">
+      {{ "global.import" | translate }}
+    </button>
+    <button type="button" mat-raised-button (click)="close()">{{ "global.close" | translate }}</button>
+  </a-footer>
+</a-modal>

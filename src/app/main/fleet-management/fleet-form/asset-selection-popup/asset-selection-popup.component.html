@@ -1,0 +1,89 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".title" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="column">
+      <div class="row">
+        <div class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+          <label class="form-label">{{ getComponentName() + ".equipmentCode" | translate }} </label>
+
+          <div class="form-control form-control-with-modal" [ngClass]="{ disabled: isReadOpenMode }">
+            <div class="form-control-data" (click)="quickSearchEquipment()">
+              {{ equipment.bidoEquipmentDTO.equipmentCode }}
+            </div>
+
+            <div *ngIf="equipment.bidoEquipmentDTO.equipmentCode" class="btn-clear-wrapper">
+              <i
+                class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+                aria-hidden="true"
+                (click)="equipment.bidoEquipmentDTO = {}; name = ''"
+              ></i>
+            </div>
+            <div class="btn-search-wrapper">
+              <i class="fa fa-fw fa-search aw-icon btn-search" aria-hidden="true" (click)="quickSearchEquipment()"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group">
+          <label class="form-label">{{ getComponentName() + ".pnCode" | translate }}</label>
+
+          <div class="form-control">
+            <input type="text" class="aw-input" [(ngModel)]="equipment.bidoEquipmentDTO.pnCode" [disabled]="true" />
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group">
+          <label class="form-label">{{ getComponentName() + ".sn" | translate }}</label>
+
+          <div class="form-control">
+            <input type="text" class="aw-input" [(ngModel)]="equipment.bidoEquipmentDTO.sn" [disabled]="true" />
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group">
+          <label class="form-label">{{ getComponentName() + ".name" | translate }}</label>
+
+          <div class="form-control"><input type="text" class="aw-input" [(ngModel)]="name" [disabled]="true" /></div>
+        </div>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button *ngIf="isReadOpenMode" type="button" mat-raised-button (click)="cancel()">
+      <span>{{ "global.close" | translate }}</span>
+    </button>
+
+    <button *ngIf="!isReadOpenMode" type="button" mat-raised-button (click)="cancel()">
+      <span>{{ "global.cancel" | translate }}</span>
+    </button>
+
+    <button
+      *ngIf="!isReadOpenMode"
+      type="button"
+      mat-raised-button
+      (click)="add()"
+      color="primary"
+      [disabled]="!equipment.bidoEquipmentDTO.equipmentCode"
+    >
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>
+
+<aw-dialog-search-equipment
+  *ngIf="showQuickSearchEquipmentDialog"
+  [(display)]="showQuickSearchEquipmentDialog"
+  [equipment-code]="equipment.bidoEquipmentDTO.equipmentCode"
+  (onSelected)="setSelectedAsset($event)"
+  [selectionMultiple]="false"
+></aw-dialog-search-equipment>

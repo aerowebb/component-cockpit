@@ -1,0 +1,28 @@
+@import "constants";
+
+:host {
+  .grid-cell-content {
+    &.grid-cell-content-with-section {
+      &.description {
+        width: 100%;
+      }
+    }
+  }
+  .section-margin {
+    margin-top: 30px;
+  }
+
+  .highlight {
+    // -webkit-box-shadow: 0 8px 6px -6px yellow;
+    //  -moz-box-shadow: 0 8px 6px -6px yellow;
+    //      box-shadow: 0 8px 6px -6px yellow;
+    border-bottom: solid yellow;
+  }
+
+  .background-grey {
+    background: $secondary-text-color !important;
+  }
+  .measure-code-result {
+    color: dodgerblue !important;
+  }
+}

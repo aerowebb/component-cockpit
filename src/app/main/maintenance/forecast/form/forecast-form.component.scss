@@ -1,0 +1,205 @@
+@import "constants";
+@import "mixins";
+
+$event-width: 21.21px;
+
+:host {
+  .form-control-generic,
+  .upcoming-event {
+    &.in-past {
+      background-color: #000;
+      color: #fff !important;
+    }
+
+    &.nok {
+      background-color: #ab000d !important;
+      color: #fff !important;
+    }
+
+    &.ok {
+      background-color: #7cb342 !important;
+      color: #000 !important;
+    }
+
+    &.warn {
+      background-color: #fbc02d !important;
+      color: #000 !important;
+    }
+
+    &.alert {
+      background-color: #ea9107 !important;
+      color: #000 !important;
+    }
+  }
+
+  .material-availability-block,
+  .upcoming-events-block {
+    .grid-cell-content {
+      & > .column {
+        align-items: center;
+
+        .form-control-generic {
+          flex-direction: row;
+          justify-content: center;
+          min-width: 4rem;
+          padding: 0 $margin-value;
+
+          &.nok {
+            background-color: $red-light1;
+          }
+
+          &.ok {
+            background-color: $green-light1;
+          }
+
+          &.warn {
+            background-color: $orange;
+          }
+        }
+      }
+    }
+  }
+
+  .main-block {
+    display: none;
+
+    &.show {
+      display: initial;
+    }
+
+    .action-list {
+      .aw-btn {
+        margin-left: $margin-value;
+
+        &:first-of-type {
+          margin-left: 0;
+        }
+      }
+    }
+  }
+
+  .main-block-read-only {
+    .grid-cell-content > .column > .row {
+      .form-group-fleet-data,
+      .form-group-start-date {
+        & > label {
+          max-width: 8rem;
+          min-width: 8rem;
+        }
+
+        .form-control {
+          max-width: calc(100% - 8rem);
+        }
+      }
+
+      .form-group-end-date,
+      .form-group-mro-center {
+        & > label {
+          max-width: 8rem;
+          min-width: 8rem;
+        }
+
+        .form-control {
+          max-width: calc(100% - 5rem);
+        }
+      }
+
+      .form-group {
+        width: 50%;
+
+        .form-control {
+          @include text-overflow-hidden();
+
+          .form-control-generic {
+            display: inline !important;
+          }
+        }
+      }
+    }
+  }
+
+  .material-availability-block {
+    .grid-cell-content {
+      label {
+        width: 4rem;
+      }
+
+      .form-group {
+        align-items: center;
+      }
+    }
+  }
+
+  .scheduler-block {
+    .scheduler-header {
+      .actions,
+      .navigation {
+        display: flex;
+        flex-direction: row;
+
+        .aw-btn {
+          margin-right: $margin-value;
+        }
+      }
+
+      .scheduler-filters {
+        margin-right: $margin-value;
+      }
+
+      .time-resolution {
+        align-items: center;
+        display: flex;
+        flex-direction: row;
+        margin: 0 calc(2 * #{$margin-value});
+
+        p-slider {
+          width: 10rem;
+        }
+      }
+
+      .today-btn {
+        align-items: center;
+        display: flex;
+        flex-direction: row;
+      }
+    }
+
+    .scheduler-wrap {
+      height: 59vh;
+      visibility: hidden;
+
+      &.show {
+        visibility: visible;
+      }
+    }
+  }
+
+  .upcoming-events-block {
+    .grid-cell-content {
+      & > .column {
+        overflow: hidden;
+
+        .form-group.form-group-inline {
+          width: 100%;
+
+          label {
+            flex-grow: 1;
+          }
+
+          .upcoming-event {
+            height: $event-width;
+            transform: rotate(45deg);
+            margin-left: 4px;
+            max-width: $event-width;
+            min-width: $event-width;
+          }
+        }
+      }
+    }
+  }
+}
+
+::ng-deep .scheduler-wrap .b-sch-dragcreator-proxy {
+  background-color: #63a4ff !important;
+  opacity: 0.5 !important;
+}

@@ -1,0 +1,258 @@
+<div class="page-header-container">
+  <div class="page-context">
+    <div class="page-title-container">
+      <div class="page-title">
+        {{ "transaction." + componentData.componentId | translate }}
+      </div>
+
+      <div class="page-secondary-actions">
+        <i
+          class="fa fa-fw aw-icon aw-icon-with-border"
+          [ngClass]="{ 'fa-star': isFavoriteEntry, 'fa-star-o': !isFavoriteEntry }"
+          aria-hidden="true"
+          (click)="updateFavoriteState()"
+          pTooltip="{{ 'page.' + (isFavoriteEntry ? 'removeFromFavorites' : 'addToFavorites') | translate }}"
+          tooltipPosition="bottom"
+        ></i>
+      </div>
+    </div>
+
+    <div class="page-subtitle-container">
+      <div class="page-subtitle">
+        {{ "page.searchPage" | translate }}
+      </div>
+    </div>
+  </div>
+
+  <div class="page-primary-actions">
+    <button type="button" mat-raised-button (click)="openNewPurchaseContract()" *ngIf="hasUpdateAccessRight">
+      {{ "global.create" | translate }}
+    </button>
+  </div>
+</div>
+
+<div class="page-wrapper">
+  <div class="page-container search-page-container">
+    <div class="page-content">
+      <div class="grid-row">
+        <div class="grid-cell--12">
+          <div class="grid-cell grid-cell--container">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">{{ "global.search" | translate }}</h3>
+              </div>
+            </div>
+
+            <div class="grid-cell-content">
+              <div class="column">
+                <div class="row search-criteria-header">
+                  <aw-manage-search-criteria
+                    [componentId]="SEARCH_CRITERIA_ID"
+                    (onSelected)="loadSearchCriteria($event)"
+                    (onSavedAsked)="saveSearchCriteriaAsked()"
+                    [objectFromPage]="searchCriteriaToSave"
+                    [canChange]="!searchCriteriaCalculated"
+                  ></aw-manage-search-criteria>
+                </div>
+
+                <div class="row">
+                  <div class="form-group">
+                    <label class="form-label">
+                      {{ componentData.componentId + ".pcNumber" | translate }}
+                    </label>
+                    <div class="form-control">
+                      <input type="text" class="aw-input" [(ngModel)]="searchCriteria.pcNumber" />
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label">
+                      {{ componentData.componentId + ".pcLabel" | translate }}
+                    </label>
+                    <div class="form-control">
+                      <input type="text" class="aw-input" [(ngModel)]="searchCriteria.pcLabel" />
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label">
+                      {{ componentData.componentId + ".statusState" | translate }}
+                    </label>
+                    <div class="form-control">
+                      <p-dropdown
+                        class="aw-dropdown fixed-width"
+                        [options]="statusList"
+                        [(ngModel)]="searchCriteria.statusState"
+                        placeholder="&nbsp;"
+                        [showClear]="true"
+                      ></p-dropdown>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="form-group">
+                    <label class="form-label">
+                      {{ componentData.componentId + ".pcLegalCommitment" | translate }}
+                    </label>
+                    <div class="form-control">
+                      <input type="text" class="aw-input" [(ngModel)]="searchCriteria.pcLegalCommitment" />
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label">
+                      {{ componentData.componentId + ".pcCreationDateStart" | translate }}
+                    </label>
+                    <div class="form-control">
+                      <p-calendar
+                        showButtonBar="true"
+                        [monthNavigator]="true"
+                        [yearNavigator]="true"
+                        [yearRange]="sessionService.calendarYearRange"
+                        class="aw-calendar"
+                        [dateFormat]="sessionService.dateFormatPrimeNG"
+                        [locale]="sessionService.calendarFormat"
+                        [(ngModel)]="searchCriteria.pcCreationDateInterval.minValue"
+                      ></p-calendar>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label">
+                      {{ componentData.componentId + ".pcCreationDateEnd" | translate }}
+                    </label>
+                    <div class="form-control">
+                      <p-calendar
+                        showButtonBar="true"
+                        [monthNavigator]="true"
+                        [yearNavigator]="true"
+                        [yearRange]="sessionService.calendarYearRange"
+                        class="aw-calendar"
+                        [dateFormat]="sessionService.dateFormatPrimeNG"
+                        [locale]="sessionService.calendarFormat"
+                        [(ngModel)]="searchCriteria.pcCreationDateInterval.maxValue"
+                      ></p-calendar>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="advanced-criteria" [ngClass]="{ 'display--none': !showAdvancedSearchCriteria }">
+                  <div class="row">
+                    <div class="form-group flex--1">
+                      <label class="form-label">{{ getComponentName() + ".pnCode" | translate }}</label>
+
+                      <div class="form-control form-control-with-modal">
+                        <div class="form-control-data" (click)="openMaterialDialog()">
+                          {{ searchCriteria.pnCode }}
+                        </div>
+
+                        <div *ngIf="searchCriteria.pnCode" class="btn-clear-wrapper">
+                          <i
+                            class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+                            aria-hidden="true"
+                            (click)="searchCriteria.pnCode = undefined"
+                          ></i>
+                        </div>
+                        <div *ngIf="searchCriteria.pnCode === undefined" class="btn-search-wrapper">
+                          <i
+                            class="fa fa-fw fa-search aw-icon btn-search"
+                            aria-hidden="true"
+                            (click)="openMaterialDialog()"
+                          ></i>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="form-group flex--2"></div>
+                  </div>
+                </div>
+
+                <div class="row search-criteria-footer">
+                  <button mat-button (click)="showAdvancedSearchCriteria = !showAdvancedSearchCriteria">
+                    <ng-container *ngIf="showAdvancedSearchCriteria">
+                      <mat-icon>remove</mat-icon>
+                      {{ "global.collapseCriteria" | translate }}
+                    </ng-container>
+                    <ng-container *ngIf="!showAdvancedSearchCriteria">
+                      <mat-icon>add</mat-icon>
+                      {{ "global.expandCriteria" | translate }}
+                    </ng-container>
+                  </button>
+
+                  <div class="search-actions">
+                    <button
+                      type="button"
+                      mat-raised-button
+                      (click)="search()"
+                      appKeyPress
+                      color="primary"
+                      [keyCode]="'Enter'"
+                      (keyPress)="search()"
+                    >
+                      {{ "global.toSearch" | translate }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-row">
+          <div class="grid-cell--12">
+            <div #resultsContainerAnchor class="grid-cell grid-cell--container">
+              <div class="grid-cell-header">
+                <div class="grid-cell-title-container">
+                  <h3 class="grid-cell-title">
+                    {{ "results" | translate }} ({{ purchaseContractTableDataSource.dataCount
+                    }}{{ moreResults ? "+" : "" }})
+                  </h3>
+                </div>
+              </div>
+
+              <div class="grid-cell-content">
+                <a-table [dataSource]="purchaseContractTableDataSource">
+                  <ng-template tableActionsDef>
+                    <button
+                      type="button"
+                      mat-raised-button
+                      (click)="openPurchaseContracts()"
+                      *ngIf="purchaseContractTableDataSource.hasDataSelection"
+                    >
+                      {{ "global.open" | translate }}
+                    </button>
+                    <button
+                      type="button"
+                      mat-raised-button
+                      (click)="exportPurchaseContractTable()"
+                      *ngIf="
+                        purchaseContractTableDataSource.hasData && !purchaseContractTableDataSource.hasDataSelection
+                      "
+                    >
+                      {{ "global.export" | translate }}
+                    </button>
+                  </ng-template>
+
+                  <ng-template columnDef="pcNumber" let-rowData="rowData">
+                    <a (click)="openPurchaseContract(rowData.id)">{{ rowData.pcNumber }}</a>
+                  </ng-template>
+                  <ng-template columnDef="pcCreationDate" let-rowData="rowData">
+                    {{ rowData.pcCreationDate | date: "yyyy/MM/dd":"":translateService.currentLang }}
+                  </ng-template>
+                </a-table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<aw-dialog-search-material
+  *ngIf="showQuickSearchMaterialPopup"
+  [(display)]="showQuickSearchMaterialPopup"
+  [material-code]="pnCode"
+  (onSelected)="setSelectedMaterial($event)"
+></aw-dialog-search-material>

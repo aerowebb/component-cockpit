@@ -1,0 +1,131 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div class="modal-title">{{ sbTitle }}</div>
+  </a-header>
+  <a-content>
+    <div class="form-group required">
+      <label class="form-label">{{ getComponentName() + ".sbNumber" | translate }}</label>
+      <div class="form-control">
+        <input
+          type="text"
+          name="sbNumber"
+          class="aw-input"
+          [(ngModel)]="document.sbNumber"
+          [disabled]="isReadOpenMode"
+          maxlength="50"
+          required
+        />
+      </div>
+    </div>
+
+    <div class="form-group required">
+      <label class="form-label">{{ getComponentName() + ".sbType" | translate }}</label>
+      <div class="form-control">
+        <p-dropdown
+          name="sbType"
+          class="aw-dropdown fixed-width"
+          [options]="types"
+          [(ngModel)]="document.bidtStorageBinTypeId"
+          [disabled]="isReadOpenMode"
+          [showClear]="true"
+          placeholder="&nbsp;"
+          appendTo="body"
+          [style]="{ width: '100%' }"
+          required
+        ></p-dropdown>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">{{ getComponentName() + ".sbDescription" | translate }}</label>
+      <div class="form-control">
+        <input
+          type="text"
+          name="sbDescription"
+          class="aw-input"
+          [(ngModel)]="document.sbDescription"
+          maxlength="300"
+          [disabled]="isReadOpenMode"
+        />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">{{ getComponentName() + ".sbLocalisation" | translate }}</label>
+      <div class="form-control">
+        <input
+          type="text"
+          name="sbLocalisation"
+          class="aw-input"
+          [(ngModel)]="document.sbLocalisation"
+          maxlength="300"
+          [disabled]="isReadOpenMode"
+        />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">{{ getComponentName() + ".sbSurface" | translate }}</label>
+      <div class="form-control">
+        <input
+          #sbSurface="ngModel"
+          type="text"
+          name="sbSurface"
+          class="aw-input"
+          [(ngModel)]="document.sbSurface"
+          [disabled]="isReadOpenMode"
+          maxlength="20"
+          [pKeyFilter]="inputValidationService.validatorOfPositiveInteger()"
+          [pValidateOnly]="true"
+        />
+        <p-message
+          *ngIf="sbSurface.invalid && (sbSurface.dirty || sbSurface.touched)"
+          severity="error"
+          [text]="inputValidationService.formatOfPositiveInteger()"
+        ></p-message>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">{{ getComponentName() + ".sbVolume" | translate }}</label>
+      <div class="form-control">
+        <input
+          #sbVolume="ngModel"
+          type="text"
+          name="sbVolume"
+          class="aw-input"
+          [(ngModel)]="document.sbVolume"
+          [disabled]="isReadOpenMode"
+          maxlength="20"
+          [pKeyFilter]="inputValidationService.validatorOfPositiveInteger()"
+          [pValidateOnly]="true"
+        />
+        <p-message
+          *ngIf="sbVolume.invalid && (sbVolume.dirty || sbVolume.touched)"
+          severity="error"
+          [text]="inputValidationService.formatOfPositiveInteger()"
+        ></p-message>
+      </div>
+    </div>
+  </a-content>
+  <a-footer>
+    <button *ngIf="!isReadOpenMode" type="button" mat-raised-button (click)="closeDialog()">
+      <span>{{ "global.cancel" | translate }}</span>
+    </button>
+
+    <button
+      *ngIf="!isReadOpenMode"
+      type="button"
+      mat-raised-button
+      color="primary"
+      (click)="validate()"
+      [disabled]="!document.sbNumber || !document.bidtStorageBinTypeId"
+    >
+      <span>{{ "global.validate" | translate }}</span>
+    </button>
+
+    <button *ngIf="isReadOpenMode" type="button" mat-raised-button (click)="closeDialog()">
+      <span>{{ "global.close" | translate }}</span>
+    </button>
+  </a-footer>
+</a-modal>

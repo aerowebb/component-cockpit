@@ -1,0 +1,489 @@
+<div class="page-header">
+  <div class="page-info">
+    <div>
+      <h2 class="page-title">
+        {{ "transaction." + componentData.componentId | translate }}
+      </h2>
+
+      <div class="page-subtitle">
+        <div *ngIf="!isCreateOpenMode && componentData && componentData.objectId" class="page-subtitle">
+          - {{ componentContext }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-actions">
+    <button *ngIf="!isCreateOpenMode" type="button" mat-raised-button (click)="manageForecastProject()">
+      {{ componentData.componentId + ".editProjectHeader" | translate }}
+    </button>
+
+    <button *ngIf="!isCreateOpenMode" type="button" mat-raised-button (click)="launchOptimizer()">
+      {{ componentData.componentId + ".launchOptimizer" | translate }}
+    </button>
+
+    <button
+      mat-icon-button
+      class="mat-elevation-z1"
+      matTooltip="{{ 'global.showAllActionTooltip' | translate }}"
+      matTooltipPosition="above"
+      aria-label="Show all actions"
+      [matMenuTriggerFor]="actions"
+    >
+      <mat-icon>more_horiz</mat-icon>
+    </button>
+    <mat-menu #actions="matMenu">
+      <button mat-menu-item [matMenuTriggerFor]="navigations">{{ "goTo" | translate }}</button>
+      <button mat-menu-item (click)="displayAssetRequiredAvailabilitiesDialog()">
+        {{ getComponentName() + ".configureAssetRequiredAvailabilities" | translate }}
+      </button>
+      <button mat-menu-item (click)="displayResourcesdAvailabilitiesDialog()">
+        {{ getComponentName() + ".configureResourcesAvailabilities" | translate }}
+      </button>
+      <button mat-menu-item (click)="reloadForecast(forecastProjectId)">{{ "global.refresh" | translate }}</button>
+      <button mat-menu-item (click)="updateFavoriteState()">
+        {{ (isFavoriteEntry ? "page.removeFromFavorites" : "page.addToFavorites") | translate }}
+      </button>
+    </mat-menu>
+    <mat-menu #navigations="matMenu">
+      <button mat-menu-item (click)="openMaterialAvailabilityForAllWorkPackage()">
+        {{ "materialAvailability" | translate }}
+      </button>
+      <button mat-menu-item (click)="openStaffPlanning()">
+        {{ "staffPlanning" | translate }}
+      </button>
+    </mat-menu>
+  </div>
+</div>
+
+<div class="page-wrapper">
+  <div class="page-container">
+    <div class="grid-row" *ngIf="!isCreateOpenMode">
+      <div class="grid-cell--6 main-block-read-only">
+        <div class="grid-cell grid-cell--container">
+          <div class="grid-cell-header">
+            <div class="grid-cell-title-container">
+              <h3 class="grid-cell-title">
+                {{ "page.mainData" | translate }}
+              </h3>
+            </div>
+          </div>
+
+          <div class="grid-cell-content">
+            <div class="column">
+              <div class="row">
+                <div class="form-group form-group-inline form-group-no-margin form-group-fleet-data">
+                  <label class="form-label">{{ "fleetData" | translate }}</label>
+
+                  <div class="form-control">
+                    <div class="form-control-generic">
+                      <ng-container *ngIf="forecastProject.projectFleetCode">
+                        {{ forecastProject.projectFleetCode }}
+                        <ng-container *ngIf="forecastProject.projectFleetName">
+                          ({{ forecastProject.projectFleetName }})
+                        </ng-container>
+                      </ng-container>
+
+                      <ng-container *ngIf="forecastProjectAsset.equipmentCode">
+                        {{ forecastProjectAssetDesignation }}
+                      </ng-container>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="form-group form-group-inline form-group-no-margin form-group-mro-center">
+                  <label class="form-label">
+                    {{ "mroCenter" | translate }}
+                  </label>
+
+                  <div class="form-control">
+                    <p-dropdown
+                      class="aw-dropdown fixed-width"
+                      [options]="repairCenterList"
+                      [(ngModel)]="selectedRepairCenter"
+                      [disabled]="true"
+                      placeholder="&nbsp;"
+                    ></p-dropdown>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="form-group form-group-inline form-group-no-margin form-group-start-date">
+                  <label class="form-label">
+                    {{ "startDate" | translate }}
+                  </label>
+
+                  <div class="form-control">
+                    <p-calendar
+                      showButtonBar="true"
+                      [monthNavigator]="true"
+                      [yearNavigator]="true"
+                      [yearRange]="sessionService.calendarYearRange"
+                      class="aw-calendar"
+                      [dateFormat]="sessionService.dateFormatPrimeNG"
+                      [locale]="sessionService.calendarFormat"
+                      [showTime]="true"
+                      [disabled]="true"
+                      [(ngModel)]="forecastProject.projectStartDate"
+                    ></p-calendar>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="form-group form-group-inline form-group-no-margin form-group-end-date">
+                  <label class="form-label">
+                    {{ "endDate" | translate }}
+                  </label>
+
+                  <div class="form-control">
+                    <p-calendar
+                      showButtonBar="true"
+                      [monthNavigator]="true"
+                      [yearNavigator]="true"
+                      [yearRange]="sessionService.calendarYearRange"
+                      class="aw-calendar"
+                      [dateFormat]="sessionService.dateFormatPrimeNG"
+                      [locale]="sessionService.calendarFormat"
+                      [showTime]="true"
+                      [disabled]="true"
+                      [(ngModel)]="forecastProject.projectEndDate"
+                    ></p-calendar>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-cell--3">
+        <div class="grid-cell grid-cell--container upcoming-events-block">
+          <div class="grid-cell-header">
+            <div class="grid-cell-title-container">
+              <h3 class="grid-cell-title">
+                {{ getComponentName() + ".upcomingEventAssignment" | translate }}
+              </h3>
+            </div>
+          </div>
+
+          <div class="grid-cell-content">
+            <div class="column">
+              <div class="form-group form-group-inline form-group-no-margin">
+                <div class="upcoming-event ok"></div>
+                <label class="form-label">
+                  {{ getComponentName() + ".upcomingEventOk" | translate }}
+                </label>
+
+                <div class="form-control">
+                  <div
+                    class="form-control-generic"
+                    [ngClass]="{
+                      ok:
+                        upcomingEventsWithOkStatus > 0 &&
+                        upcomingEventsWithWarnStatus == 0 &&
+                        upcomingEventsWithAlertStatus == 0 &&
+                        upcomingEventsWithNokStatus == 0 &&
+                        upcomingEventsInPastWithWarnStatus == 0 &&
+                        !schedulerLoading
+                    }"
+                  >
+                    {{ upcomingEventsWithOkStatus }}
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group form-group-inline form-group-no-margin">
+                <div class="upcoming-event warn"></div>
+                <label class="form-label">
+                  {{ getComponentName() + ".upcomingEventWarn" | translate }}
+                </label>
+
+                <div class="form-control">
+                  <div
+                    class="form-control-generic"
+                    [ngClass]="{
+                      warn:
+                        upcomingEventsWithWarnStatus > 0 &&
+                        upcomingEventsWithAlertStatus == 0 &&
+                        upcomingEventsWithNokStatus == 0 &&
+                        upcomingEventsInPastWithWarnStatus == 0 &&
+                        !schedulerLoading
+                    }"
+                  >
+                    {{ upcomingEventsWithWarnStatus }}
+                  </div>
+                </div>
+              </div>
+
+              <!-- <div class="form-group form-group-inline form-group-no-margin">
+                <div class="upcoming-event alert"></div>
+                <label class="form-label">
+                  {{ getComponentName() + ".upcomingEventAlert" | translate }}
+                </label>
+
+                <div class="form-control">
+                  <div
+                    class="form-control-generic"
+                    [ngClass]="{
+                      alert:
+                        upcomingEventsWithAlertStatus > 0 &&
+                        upcomingEventsWithNokStatus == 0 &&
+                        upcomingEventsInPastWithWarnStatus == 0 &&
+                        !schedulerLoading
+                    }"
+                  >
+                    {{ upcomingEventsWithAlertStatus }}
+                  </div>
+                </div>
+              </div> -->
+
+              <div class="form-group form-group-inline form-group-no-margin">
+                <div class="upcoming-event nok"></div>
+                <label class="form-label">
+                  {{ getComponentName() + ".upcomingEventNok" | translate }}
+                </label>
+
+                <div class="form-control">
+                  <div
+                    class="form-control-generic"
+                    [ngClass]="{
+                      nok:
+                        upcomingEventsWithNokStatus > 0 && upcomingEventsInPastWithWarnStatus == 0 && !schedulerLoading
+                    }"
+                  >
+                    {{ upcomingEventsWithNokStatus }}
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group form-group-inline form-group-no-margin">
+                <div class="upcoming-event in-past"></div>
+                <label class="form-label">
+                  {{ getComponentName() + ".upcomingEventInPast" | translate }}
+                </label>
+
+                <div class="form-control">
+                  <div
+                    class="form-control-generic"
+                    [ngClass]="{
+                      'in-past': upcomingEventsInPastWithWarnStatus > 0 && !schedulerLoading
+                    }"
+                  >
+                    {{ upcomingEventsInPastWithWarnStatus }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-cell--3">
+        <aw-material-availability-indicators [workPackages]="workPackageList">
+          >
+        </aw-material-availability-indicators>
+      </div>
+    </div>
+
+    <div class="grid-row" [ngClass]="{ 'display--none': isCreateOpenMode }">
+      <div class="grid-cell--12">
+        <div class="grid-cell grid-cell--container scheduler-block">
+          <div class="grid-cell-header">
+            <div class="grid-cell-title-container loading-indicator">
+              <h3 class="grid-cell-title">
+                {{ "planning" | translate }}
+                <div *ngIf="schedulerLoading" class="lds-hourglass"></div>
+              </h3>
+            </div>
+          </div>
+
+          <div class="grid-cell-content position--relative">
+            <div class="scheduler-header" [ngClass]="{ show: !schedulerLoading }">
+              <div class="scheduler-filters">
+                <aw-forecast-form-filter-list
+                  [topAssetList]="topAssetList"
+                  [upcomingEventTypeList]="upcomingEventTypeList"
+                  [workPackageStatusList]="workPackageStatusList"
+                ></aw-forecast-form-filter-list>
+                <p-multiSelect
+                  [options]="assetList"
+                  [(ngModel)]="assetListSelected"
+                  optionLabel="_displayableField"
+                  (onChange)="onFilterAsset()"
+                  [defaultLabel]="filterAssetLabel"
+                  [selectedItemsLabel]="filterAssetLabel"
+                  maxSelectedLabels="0"
+                  [panelStyle]="{ minWidth: '12rem' }"
+                ></p-multiSelect>
+              </div>
+
+              <div class="navigation">
+                <button mat-raised-button (click)="openAirworthinessStatus()" *ngIf="selectedAssets.length > 0">
+                  {{ "airworthinessStatus" | translate }}
+                </button>
+
+                <button mat-raised-button (click)="openMaintenancePlanning()" *ngIf="selectedAssets.length === 1">
+                  {{ "maintenancePlanning" | translate }}
+                </button>
+              </div>
+
+              <div class="actions">
+                <button mat-raised-button (click)="addUnscheduledEvent()" *ngIf="selectedAssets.length === 1">
+                  {{ getComponentName() + ".addUnscheduledEvent" | translate }}
+                </button>
+              </div>
+
+              <div class="today-btn">
+                <button mat-raised-button (click)="showToday()">
+                  {{ "today" | translate }}
+                </button>
+              </div>
+
+              <div class="time-resolution">
+                <p-slider
+                  [max]="component.TIME_RESOLUTION_MAX_ZOOM"
+                  [min]="component.TIME_RESOLUTION_MIN_ZOOM"
+                  [(ngModel)]="schedulerZoomLevel"
+                  (onChange)="onChangeTimeResolution($event)"
+                ></p-slider>
+              </div>
+
+              <div class="scheduler-legend">
+                <i
+                  class="fa fa-fw fa-info aw-icon aw-icon-with-border aw-icon-with-overlay"
+                  aria-hidden="true"
+                  pTooltip="{{ 'legend' | translate }}"
+                  tooltipPosition="top"
+                  (click)="openForecastLegendDialog()"
+                ></i>
+              </div>
+            </div>
+
+            <div class="scheduler-wrap" [ngClass]="{ show: !schedulerLoading }">
+              <bry-scheduler
+                #scheduler
+                [columns]="columnList"
+                [emptyText]="schedulerConfig['emptyText']"
+                [eventRenderer]="schedulerConfig['eventRenderer']"
+                [events]="filteredEventList"
+                [resources]="filteredResourceList"
+                [cellEditFeature]="schedulerConfig['cellEditFeature']"
+                [eventContextMenuFeature]="schedulerConfig['eventContextMenuFeature']"
+                [eventDragFeature]="schedulerConfig['eventDragFeature']"
+                [eventTooltipFeature]="schedulerConfig['eventTooltipFeature']"
+                [rowHeight]="schedulerConfig['rowHeight']"
+                [scheduleContextMenuFeature]="schedulerConfig['scheduleContextMenuFeature']"
+                [scheduleTooltipFeature]="schedulerConfig['scheduleTooltipFeature']"
+                [timeRangesFeature]="schedulerConfig['timeRangesFeature']"
+                [treeFeature]="schedulerConfig['treeFeature']"
+                [zoomKeepsOriginalTimespan]="schedulerConfig['zoomKeepsOriginalTimespan']"
+                [zoomOnMouseWheel]="schedulerConfig['zoomOnMouseWheel']"
+                [zoomOnTimeAxisDoubleClick]="schedulerConfig['zoomOnTimeAxisDoubleClick']"
+              ></bry-scheduler>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <aw-dialog-forecast-form-assets-required-availabilities
+    *ngIf="showAssetRequiredAvailabilitiesDialog"
+    [(display)]="showAssetRequiredAvailabilitiesDialog"
+    [projectId]="forecastProject.projectId"
+    [topAssetList]="topAssetList"
+  >
+  </aw-dialog-forecast-form-assets-required-availabilities>
+
+  <aw-dialog-forecast-form-resources-availabilities
+    *ngIf="showResourcesdAvailabilitiesDialog"
+    [(display)]="showResourcesdAvailabilitiesDialog"
+    [projectId]="forecastProject.projectId"
+  >
+  </aw-dialog-forecast-form-resources-availabilities>
+
+  <aw-dialog-forecast-form-defect
+    *ngIf="showDefectDialog"
+    [(display)]="showDefectDialog"
+    [eventModel]="selectedEventModel"
+  ></aw-dialog-forecast-form-defect>
+
+  <aw-dialog-forecast-form-scheduled-event
+    *ngIf="showScheduledEventDialog"
+    [(display)]="showScheduledEventDialog"
+    [eventModel]="selectedEventModel"
+  ></aw-dialog-forecast-form-scheduled-event>
+
+  <aw-dialog-forecast-form-event-group
+    *ngIf="showEventGroupDialog && selectedEventModel"
+    [(display)]="showEventGroupDialog"
+    [eventCategoryList]="eventCategoryList"
+    [eventModel]="selectedEventModel"
+    [eventList]="eventList"
+    [taskTypeList]="taskTypeList"
+  ></aw-dialog-forecast-form-event-group>
+
+  <aw-dialog-forecast-form-legend
+    *ngIf="showForecastLegendDialog"
+    [(display)]="showForecastLegendDialog"
+  ></aw-dialog-forecast-form-legend>
+
+  <aw-dialog-forecast-form-unscheduled-event
+    *ngIf="showUnscheduledEventDialog"
+    [(display)]="showUnscheduledEventDialog"
+    [asset]="selectedAsset"
+    [eventModel]="selectedEventModel"
+  ></aw-dialog-forecast-form-unscheduled-event>
+
+  <aw-dialog-forecast-form-work-package
+    *ngIf="showWorkPackageCreateDialog"
+    [(display)]="showWorkPackageCreateDialog"
+    [endtDate]="selectedEndDate"
+    [forecastMroCenter]="forecastProject.repairCenterCode"
+    [siteList]="workPackageSiteList"
+    [startDate]="selectedStartDate"
+    [workPackageAssignedToList]="workPackageAssignedToList"
+    [workPackageStatusList]="workPackageStatusList"
+    [workPackageTypeList]="workPackageTypeList"
+    (onCreated)="onCreatedWorkPackage($event)"
+  ></aw-dialog-forecast-form-work-package>
+
+  <aw-dialog-forecast-form-work-package
+    *ngIf="showWorkPackageUpdateDialog"
+    [(display)]="showWorkPackageUpdateDialog"
+    [endtDate]="selectedEndDate"
+    [eventModel]="selectedEventModel"
+    [forecastMroCenter]="forecastProject.repairCenterCode"
+    [siteList]="workPackageSiteList"
+    [startDate]="selectedStartDate"
+    [workPackageAssignedToList]="workPackageAssignedToList"
+    [workPackageStatusList]="workPackageStatusList"
+    [workPackageTypeList]="workPackageTypeList"
+    (onUpdated)="onUpdatedWorkPackage($event)"
+  ></aw-dialog-forecast-form-work-package>
+
+  <aw-dialog-forecast-form-project-header
+    *ngIf="showForecastManagementBlock"
+    [(display)]="showForecastManagementBlock"
+    [forecastProject]="forecastProject"
+    [forecastProjectAsset]="forecastProjectAsset"
+    [selectedRepairCenter]="selectedRepairCenter"
+    [selectedWorkCenter]="selectedWorkCenter"
+    [repairCenterList]="repairCenterList"
+    [occurrenceList]="occurrenceList"
+    [selectedCustomer]="selectedCustomer"
+    [customerList]="customerList"
+    [selectedForecastCategory]="selectedForecastCategory"
+    [forecastCategoryList]="forecastCategoryList"
+    [forecastProjectSrc]="forecastProjectSrc"
+    [forecastProjectId]="forecastProjectId"
+    [forecastProjectLlpEventsGeneration]="forecastProjectLlpEventsGeneration"
+    [forecastProjectOccurrenceNumber]="forecastProjectOccurrenceNumber"
+    (onSave)="reloadForecast($event, undefined)"
+  >
+  </aw-dialog-forecast-form-project-header>
+</div>

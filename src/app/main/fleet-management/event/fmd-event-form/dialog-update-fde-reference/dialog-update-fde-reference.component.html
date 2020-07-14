@@ -1,0 +1,51 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".title" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="row">
+      <div class="form-group flex--1">
+        <label class="form-label"> {{ getComponentName() + ".reference" | translate }} </label>
+
+        <div class="form-control display--flex-row">
+          <input type="text" class="aw-input" [disabled]="true" [(ngModel)]="fMDReferenceOutputDTO.reference" />
+          <span class="separator">-</span>
+          <input
+            type="text"
+            class="aw-input"
+            [disabled]="isReadOpenMode"
+            [(ngModel)]="fMDReferenceOutputDTO.referenceFDELetter"
+            style="width: 5em"
+          />
+          <span class="separator">-</span>
+          <input
+            type="text"
+            class="aw-input"
+            [disabled]="isReadOpenMode"
+            [(ngModel)]="fMDReferenceOutputDTO.referenceFDEYear"
+            style="width: 5em"
+          />
+          <span class="separator">-</span>
+          <input
+            type="text"
+            class="aw-input"
+            [disabled]="isReadOpenMode"
+            [(ngModel)]="fMDReferenceOutputDTO.referenceFDENumber"
+            style="width: 5em"
+          />
+        </div>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button type="button" mat-raised-button (click)="closeDialog()">
+      <span>{{ "global.cancel" | translate }}</span>
+    </button>
+
+    <button *ngIf="!isReadOpenMode" color="primary" type="button" mat-raised-button (click)="validate()">
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>

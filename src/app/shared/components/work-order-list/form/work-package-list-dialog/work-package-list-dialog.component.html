@@ -1,0 +1,111 @@
+<a-modal class="aw-modal" [(visible)]="display" [width]="20">
+  <a-header>
+    <h3 class="grid-cell-title">
+      {{ getComponentName() + ".projectHeader" | translate }}
+    </h3>
+  </a-header>
+
+  <a-content>
+    <div class="grid-row">
+      <div class="grid-cell--12 main-block">
+        <div class="grid-cell-content grid-cell-content-with-section">
+          <div class="section">
+            <div class="section-content">
+              <div class="row">
+                <div class="form-group">
+                  <label class="form-label">
+                    {{ getComponentName() + ".selectWorkPackage" | translate }}
+                  </label>
+
+                  <div class="form-control">
+                    <p-dropdown
+                      class="aw-dropdown fixed-width"
+                      [options]="workPackagesList"
+                      [(ngModel)]="selectedWorkPackage"
+                      [showClear]="true"
+                      placeholder="&nbsp;"
+                      appendTo="body"
+                    ></p-dropdown>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row" *ngIf="selectedWorkPackage">
+                <div class="form-group">
+                  <label class="form-label">
+                    {{ getComponentName() + ".name" | translate }}
+                  </label>
+                  <div class="form-control">
+                    <input
+                      type="text"
+                      class="aw-input"
+                      [(ngModel)]="selectedWorkPackage.projectName"
+                      [disabled]="true"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div class="row" *ngIf="selectedWorkPackage">
+                <div class="form-group">
+                  <label class="form-label">
+                    {{ getComponentName() + ".startDate" | translate }}
+                  </label>
+                  <div class="form-control">
+                    <p-calendar
+                      showButtonBar="true"
+                      [monthNavigator]="true"
+                      [yearNavigator]="true"
+                      [yearRange]="sessionService.calendarYearRange"
+                      class="aw-calendar"
+                      [dateFormat]="sessionService.dateFormatPrimeNG"
+                      [locale]="sessionService.calendarFormat"
+                      [(ngModel)]="selectedWorkPackage.projectStartDate"
+                      [disabled]="true"
+                    ></p-calendar>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">
+                    {{ getComponentName() + ".dueDate" | translate }}
+                  </label>
+                  <div class="form-control">
+                    <p-calendar
+                      showButtonBar="true"
+                      [monthNavigator]="true"
+                      [yearNavigator]="true"
+                      [yearRange]="sessionService.calendarYearRange"
+                      class="aw-calendar"
+                      [dateFormat]="sessionService.dateFormatPrimeNG"
+                      [locale]="sessionService.calendarFormat"
+                      [(ngModel)]="selectedWorkPackage.projectDueDate"
+                      [disabled]="true"
+                    ></p-calendar>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <div class="section">
+      <div class="section-content">
+        <div class="row">
+          <div class="display--flex-row flex--1 flex-row--justify-end action-list">
+            <button type="button" mat-raised-button (click)="cancel()">
+              {{ "cancel" | translate }}
+            </button>
+            <button mat-raised-button color="primary" (click)="transferWorkOrder()" [disabled]="!isValidateEnabled()">
+              {{ "validate" | translate }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </a-footer>
+</a-modal>

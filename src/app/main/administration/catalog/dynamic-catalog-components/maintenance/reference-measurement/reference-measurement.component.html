@@ -1,0 +1,68 @@
+<div class="grid-row">
+  <div class="grid-cell--12">
+    <div class="grid-cell grid-cell--container">
+      <div class="grid-cell-header">
+        <div class="grid-cell-title-container">
+          <h3 class="grid-cell-title">
+            {{ getComponentName() + ".refMeasurementList" | translate }} ({{ refMeasurementTableDataSource.dataCount }})
+          </h3>
+        </div>
+      </div>
+
+      <div class="grid-cell-content">
+        <a-table [dataSource]="refMeasurementTableDataSource">
+          <ng-template tableActionsDef>
+            <button
+              *ngIf="refMeasurementTableDataSource.hasDataSelection"
+              type="button"
+              mat-raised-button
+              color="warn"
+              (click)="deleteSelectedRefMeasurement()"
+            >
+              {{ "global.delete" | translate }}
+            </button>
+
+            <button
+              *ngIf="refMeasurementTableDataSource.dataSelectionCount === 1"
+              type="button"
+              mat-raised-button
+              (click)="editSelectedRefMeasurement()"
+            >
+              {{ "global.edit" | translate }}
+            </button>
+
+            <button
+              *ngIf="!refMeasurementTableDataSource.hasDataSelection"
+              type="button"
+              mat-raised-button
+              (click)="addReferenceMeasurement()"
+            >
+              {{ "global.add" | translate }}
+            </button>
+          </ng-template>
+          <ng-template columnDef="isCounter" let-rowData="rowData">
+            <i *ngIf="rowData.isCounter !== null && rowData.isCounter" class="fa fa-fw fa-check" aria-hidden="true"></i>
+          </ng-template>
+
+          <ng-template columnDef="propagationAllowed" let-rowData="rowData">
+            <i
+              *ngIf="rowData.propagationAllowed !== null && rowData.propagationAllowed"
+              class="fa fa-fw fa-check"
+              aria-hidden="true"
+            ></i>
+          </ng-template>
+        </a-table>
+      </div>
+    </div>
+  </div>
+
+  <aw-dialog-reference-measurement
+    *ngIf="showRefMgmtDialog"
+    [(display)]="showRefMgmtDialog"
+    [data]="selectedRefMgmtDialogData"
+    [openMode]="refMeasurementDialogOpenMode"
+    (onValidated)="onAddReferenceMeasurement($event)"
+    (onUpdate)="onUpdateRefMeasurement($event)"
+    [refMeasurementList]="refMeasurementTableDataSource.dataSrc"
+  ></aw-dialog-reference-measurement>
+</div>

@@ -1,0 +1,342 @@
+<div class="grid-cell-header">
+  <div class="grid-cell-title-container">
+    <h3 class="grid-cell-title">
+      {{ getComponentName() + ".defects" | translate }} ({{ defectsTable ? defectsTable.length : 0 }})
+    </h3>
+  </div>
+</div>
+
+<div class="grid-cell-content">
+  <div *ngIf="!isDefectTableLoading && _equipmentCode" class="table-summary-wrapper" style="width: 25%">
+    <p-table
+      id="defectTableSummary"
+      [resizableColumns]="true"
+      class="table-control-summary"
+      [columns]="defectSummaryTableCols"
+      [value]="defectTableSummary"
+    >
+      <ng-template pTemplate="colgroup" let-columns>
+        <colgroup>
+          <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+        </colgroup>
+      </ng-template>
+
+      <ng-template pTemplate="header" let-columns>
+        <tr>
+          <th
+            pResizableColumn
+            *ngFor="let col of columns"
+            [ngSwitch]="col.field"
+            [ngStyle]="{ 'text-align': col.alignment }"
+          >
+            <span *ngSwitchDefault> {{ getComponentName() + "." + col.field | translate }} </span>
+          </th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-columns="columns" let-rowData>
+        <tr>
+          <td
+            *ngFor="let col of columns"
+            [ngSwitch]="col.field"
+            [ngStyle]="{ 'text-align': col.alignment }"
+            style="padding-right: 1%; width: 60%"
+          >
+            <span *ngSwitchCase="'nok'" [ngClass]="{ nok: rowData['nok'] > 0 }">
+              {{ rowData[col.field] }}
+            </span>
+
+            <span *ngSwitchCase="'warning'" [ngClass]="{ warning: rowData['nok'] == 0 && rowData['warning'] > 0 }">
+              {{ rowData[col.field] }}
+            </span>
+
+            <span
+              *ngSwitchCase="'ok'"
+              [ngClass]="{ ok: rowData['nok'] == 0 && rowData['warning'] == 0 && rowData['ok'] >= 0 }"
+            >
+              {{ rowData[col.field] }}
+            </span>
+
+            <span *ngSwitchDefault>
+              <span>{{ rowData[col.field] }}</span>
+            </span>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+  <div class="table-wrapper">
+    <p-table
+      id="defectsTableForDisplay"
+      [resizableColumns]="true"
+      #ptableDefects
+      class="aw-table2"
+      [columns]="defectsTableCols"
+      [value]="defectsTableForDisplay"
+      [(selection)]="selectedDefects"
+      [scrollable]="true"
+      dataKey="rowId"
+    >
+      <ng-template pTemplate="emptymessage">
+        <span *ngIf="!isDefectTableLoading"> &nbsp;</span>
+
+        <div *ngIf="isDefectTableLoading" class="aw-table-loading-indicator">
+          <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+          <div class="lds-hourglass"></div>
+        </div>
+      </ng-template>
+
+      <ng-template pTemplate="caption">
+        <div class="aw-table-header" [ngClass]="{ 'rows-selected': selectedDefects.length > 0 }">
+          <div class="aw-table-global-filter">
+            <label class="aw-table-global-filter-label">
+              <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+            </label>
+
+            <input
+              #ptableGlobalFilter
+              class="aw-table-global-filter-input"
+              type="text"
+              placeholder="{{ 'table.globalFilterText' | translate }}"
+              (input)="ptableDefects.filterGlobal($event.target.value, 'contains')"
+            />
+          </div>
+
+          <div class="aw-table-actions">
+            <p-selectButton
+              *ngIf="selectedDefects.length === 0"
+              class="aw-table-btn"
+              [(ngModel)]="selectedFilterAlert"
+              [options]="filterAlertList"
+              (onChange)="onChangeFilterAlert($event)"
+            ></p-selectButton>
+
+            <button
+              id="addToAcrsEventDefectsTableForDisplay"
+              *ngIf="selectedDefects.length > 0 && acrsEventCodeList.length > 0 && enableDefectACRSButton()"
+              type="button"
+              mat-raised-button
+              (click)="addToAcrsEvent()"
+            >
+              {{ getComponentName() + ".addToAcrsEvent" | translate }}
+            </button>
+
+            <button
+              id="addDefectsTableForDisplay"
+              *ngIf="!statusState && selectedDefects.length === 0 && isAddAvailable"
+              type="button"
+              mat-raised-button
+              (click)="addDefect()"
+            >
+              {{ "global.add" | translate }}
+            </button>
+
+            <button
+              id="deleteDefectsTableForDisplay"
+              *ngIf="!statusState && selectedDefects.length > 0"
+              type="button"
+              mat-raised-button
+              color="warn"
+              (click)="deleteDfects()"
+            >
+              {{ "global.delete" | translate }}
+            </button>
+
+            <button
+              id="closeDefectsTableForDisplay"
+              *ngIf="selectedDefects.length === 1 && !_workDataDefect"
+              type="button"
+              mat-raised-button
+              (click)="closeDefect()"
+            >
+              {{ "global.close" | translate }}
+            </button>
+
+            <button
+              id="refreshDefectsTableForDisplay"
+              *ngIf="selectedDefects.length === 0"
+              type="button"
+              mat-raised-button
+              (click)="refreshDefectList()"
+            >
+              {{ "global.refresh" | translate }}
+            </button>
+
+            <button
+              id="exportDefectsTableForDisplay"
+              *ngIf="selectedDefects.length === 0"
+              type="button"
+              mat-raised-button
+              (click)="exportDefects()"
+            >
+              {{ "global.export" | translate }}
+            </button>
+          </div>
+        </div>
+      </ng-template>
+
+      <ng-template pTemplate="colgroup" let-columns>
+        <colgroup>
+          <col class="aw-table-checkbox-wrapper" />
+          <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+          <col class="row-expand-wrapper" />
+          <col class="row-action-wrapper" />
+        </colgroup>
+      </ng-template>
+
+      <ng-template pTemplate="header" let-columns>
+        <tr>
+          <th class="aw-table-checkbox-wrapper">
+            <p-tableHeaderCheckbox class="aw-table-checkbox"></p-tableHeaderCheckbox>
+          </th>
+
+          <th pResizableColumn *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+            {{ getComponentName() + "." + col.field | translate }}
+          </th>
+
+          <th class="row-expand-wrapper"></th>
+          <th class="row-action-wrapper"></th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+        <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+          <td class="aw-table-checkbox-wrapper">
+            <p-tableCheckbox class="aw-table-checkbox" [value]="rowData"></p-tableCheckbox>
+          </td>
+
+          <td *ngFor="let col of columns" [ngSwitch]="col.field" [ngStyle]="{ 'text-align': col.alignment }">
+            <span *ngSwitchCase="'control'">
+              <span *ngIf="rowData.controlResultIcon === '9'" class="airworthiness-alert airworthiness-alert--ok"
+                ><span
+                  *ngIf="rowData.controlResultAlt !== null && rowData.controlResultAlt !== undefined"
+                  title="{{ rowData.controlResultAlt }}"
+                  >{{ rowData[col.field] }}</span
+                ><span *ngIf="rowData.controlResultAlt === null || rowData.controlResultAlt === undefined">
+                  {{ rowData[col.field] }}
+                </span></span
+              >
+              <span *ngIf="rowData.controlResultIcon === '10'" class="airworthiness-alert airworthiness-alert--nok"
+                ><span
+                  *ngIf="rowData.controlResultAlt !== null && rowData.controlResultAlt !== undefined"
+                  title="{{ rowData.controlResultAlt }}"
+                  >{{ rowData[col.field] }}</span
+                ><span *ngIf="rowData.controlResultAlt === null || rowData.controlResultAlt === undefined">
+                  {{ rowData[col.field] }}
+                </span></span
+              >
+              <span *ngIf="rowData.controlResultIcon === '11'" class="airworthiness-alert airworthiness-alert--warning"
+                ><span
+                  *ngIf="rowData.controlResultAlt !== null && rowData.controlResultAlt !== undefined"
+                  title="{{ rowData.controlResultAlt }}"
+                  >{{ rowData[col.field] }}</span
+                ><span *ngIf="rowData.controlResultAlt === null || rowData.controlResultAlt === undefined">
+                  {{ rowData[col.field] }}
+                </span></span
+              >
+            </span>
+
+            <span *ngSwitchCase="'notificationLinkedEventCode'"
+              ><a (click)="openLinkedEvent(rowData)">{{ rowData[col.field] }}</a></span
+            >
+
+            <span *ngSwitchCase="'defectTitle'"
+              ><a *ngIf="rowData[col.field]" (click)="openDefect(rowData)">{{ rowData[col.field] }}</a>
+              <a *ngIf="!rowData[col.field] && _workDataDefect" (click)="openDefect(rowData)">{{
+                rowData.bidoNotificationDTO.notificationCode
+              }}</a>
+            </span>
+
+            <span *ngSwitchCase="'isCriticalText'">
+              <i
+                *ngIf="!!rowData[col.field] && rowData[col.field] === 'true'"
+                class="fa fa-fw fa-check"
+                aria-hidden="true"
+              ></i>
+            </span>
+
+            <span *ngSwitchDefault> {{ rowData[col.field] }} </span>
+          </td>
+
+          <td class="row-expand-wrapper" [pRowToggler]="rowData">
+            <i
+              class="fa fa-fw aw-icon aw-icon-with-border"
+              [ngClass]="rowData._expand ? 'fa-minus' : 'fa-plus'"
+              aria-hidden="true"
+              pTooltip="{{ 'global.showTableRowDetails' | translate }}"
+              tooltipPosition="top"
+              (click)="toggleDefectsExpand(rowData)"
+            ></i>
+          </td>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="rowexpansion" let-rowData let-columns="columns">
+        <tr class="row-expanded" *ngIf="rowData._expand">
+          <td [attr.colspan]="columns.length + 2">
+            <div class="row">
+              <div id="defectName" class="form-group">
+                <label class="form-label"> {{ getComponentName() + ".defectName" | translate }} </label>
+
+                <div class="form-control">
+                  <input class="aw-input" type="text" [(ngModel)]="rowData.defectName" [disabled]="true" />
+                </div>
+              </div>
+
+              <div id="defectLastAuthor" class="form-group">
+                <label class="form-label">
+                  {{ getComponentName() + ".defectLastAuthor" | translate }}
+                </label>
+
+                <div class="form-control">
+                  <input class="aw-input" type="text" [(ngModel)]="rowData.defectLastAuthor" [disabled]="true" />
+                </div>
+              </div>
+
+              <div id="defectCALastAuthor" class="form-group">
+                <label class="form-label">
+                  {{ getComponentName() + ".defectCALastAuthor" | translate }}
+                </label>
+
+                <div class="form-control">
+                  <input class="aw-input" type="text" [(ngModel)]="rowData.defectCALastAuthor" [disabled]="true" />
+                </div>
+              </div>
+
+              <div id="deferralLastAuthor" class="form-group">
+                <label class="form-label">
+                  {{ getComponentName() + ".deferralLastAuthor" | translate }}
+                </label>
+
+                <div class="form-control">
+                  <input class="aw-input" type="text" [(ngModel)]="rowData.deferralLastAuthor" [disabled]="true" />
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
+
+<!--******************************-->
+<!--Defect > Add ACRS event dialig-->
+<!--******************************-->
+<aw-dialog-table
+  *ngIf="showAddACRSEventDialog"
+  [data]="eventTableData"
+  [(display)]="showAddACRSEventDialog"
+  (onSelected)="onSelectedEvent($event)"
+></aw-dialog-table>
+
+<aw-create-event-form
+  *ngIf="showDefectPopup"
+  [(display)]="showDefectPopup"
+  [event]="currentDefect"
+  [assetTitle]="assetTitle"
+  [openMode]="defectPopupOpenMode"
+  [defaultCategory]="defaultCategory"
+  (onValidated)="onAddDefect($event)"
+></aw-create-event-form>

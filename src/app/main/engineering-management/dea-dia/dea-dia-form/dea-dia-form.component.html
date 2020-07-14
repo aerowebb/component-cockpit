@@ -1,0 +1,278 @@
+<div class="page-header">
+  <div class="page-info">
+    <div>
+      <h2 class="page-title">
+        {{ "transaction." + componentData.componentId | translate }}
+      </h2>
+
+      <div class="page-subtitle">
+        <div *ngIf="!isCreateOpenMode && componentData && componentData.objectId" class="page-subtitle">
+          - {{ guideline.pugCode }}
+        </div>
+      </div>
+    </div>
+    <div class="object-status disabled" *ngIf="guideline.pugStatus">
+      {{ guideline.pugStatus | formatSelectOption: partGuidelineStatus }}
+    </div>
+  </div>
+
+  <div class="page-actions">
+    <button mat-raised-button (click)="edit()" *ngIf="isReadOpenMode && enableSave">
+      {{ "global.edit" | translate }}
+    </button>
+
+    <button
+      mat-raised-button
+      color="primary"
+      class="btn-with-spinner"
+      color="primary"
+      (click)="save()"
+      *ngIf="!isReadOpenMode && enableSave"
+    >
+      {{ "global.save" | translate }}
+    </button>
+
+    <button
+      *ngIf="!isReadOpenMode && !isCreateOpenMode"
+      type="button"
+      color="warn"
+      mat-raised-button
+      (click)="cancel()"
+    >
+      {{ "global.cancel" | translate }}
+    </button>
+
+    <button
+      mat-icon-button
+      class="mat-elevation-z1"
+      matTooltip="{{ 'global.showAllActionTooltip' | translate }}"
+      matTooltipPosition="above"
+      aria-label="Show all actions"
+      [matMenuTriggerFor]="actions"
+    >
+      <mat-icon>more_horiz</mat-icon>
+    </button>
+    <mat-menu #actions="matMenu">
+      <button *ngIf="!isCreateOpenMode" mat-menu-item [matMenuTriggerFor]="navigations">
+        {{ "global.goTo" | translate }}
+      </button>
+      <button mat-menu-item (click)="refresh()">{{ "global.refresh" | translate }}</button>
+      <button mat-menu-item (click)="updateFavoriteState()">{{ "addToFavorite" | translate }}</button>
+      <button mat-menu-item (click)="transmitToContol()" *ngIf="enableTransmitToControl">
+        {{ getComponentName() + ".transmitToContol" | translate }}
+      </button>
+      <button mat-menu-item (click)="transmitToCentral()" *ngIf="enableTransmitToCentral">
+        {{ getComponentName() + ".transmitToCentral" | translate }}
+      </button>
+      <button mat-menu-item (click)="transmitToCentralOnWaitinForInfo()" *ngIf="enableTransmitToCentralOnWaitinForInfo">
+        {{ getComponentName() + ".transmitToCentral" | translate }}
+      </button>
+      <button mat-menu-item (click)="refuse()" *ngIf="enableRefuse">
+        {{ getComponentName() + ".refuse" | translate }}
+      </button>
+      <button mat-menu-item (click)="close()" *ngIf="enableClose">
+        {{ getComponentName() + ".close" | translate }}
+      </button>
+    </mat-menu>
+    <mat-menu #navigations="matMenu">
+      <button *ngIf="!isCreateOpenMode" type="button" mat-menu-item (click)="navigationLinkList[0].command()">
+        {{ navigationLinkList[0].label | translate }}
+      </button>
+    </mat-menu>
+  </div>
+</div>
+
+<div class="page-wrapper">
+  <div class="page-container">
+    <mat-tab-group animationDuration="0ms" dynamicHeight>
+      <mat-tab>
+        <ng-template mat-tab-label>
+          {{ "home" | translate }}
+        </ng-template>
+
+        <div class="grid-row">
+          <div id="mainPanel" class="grid-cell--12">
+            <div class="grid-cell grid-cell--container">
+              <div class="grid-cell-header">
+                <div class="grid-cell-title-container">
+                  <h3 class="grid-cell-title">
+                    {{ "page.mainData" | translate }}
+                  </h3>
+                </div>
+              </div>
+
+              <div class="grid-cell-content">
+                <div class="column">
+                  <div class="row">
+                    <div class="form-group">
+                      <label class="form-label">{{ componentData.componentId + ".reference" | translate }}</label>
+
+                      <div class="form-control">
+                        <input type="text" class="aw-input" [(ngModel)]="guideline.pugCode" disabled />
+                      </div>
+                    </div>
+
+                    <div class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+                      <label class="form-label">{{ componentData.componentId + ".type" | translate }}</label>
+                      <div class="form-control">
+                        <p-dropdown
+                          class="aw-dropdown fixed-width"
+                          [options]="partGuidelineTypes"
+                          [(ngModel)]="guideline.pugType"
+                          [showClear]="true"
+                          placeholder="&nbsp;"
+                          [disabled]="isReadOpenMode || !enablePugTypeSelection"
+                        ></p-dropdown>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">{{ componentData.componentId + ".urgent" | translate }}</label>
+
+                      <div class="form-control">
+                        <p-checkbox
+                          class="aw-checkbox"
+                          binary="true"
+                          [(ngModel)]="guideline.isUrgent"
+                          [disabled]="isReadOpenMode"
+                        >
+                        </p-checkbox>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="form-group">
+                      <label class="form-label">{{
+                        componentData.componentId + ".requesterComment" | translate
+                      }}</label>
+
+                      <div class="form-control">
+                        <textarea
+                          class="aw-textarea"
+                          [rows]="3"
+                          [(ngModel)]="guideline.requesterComments"
+                          pInputTextarea
+                          [disabled]="isReadOpenMode || !enableRequesterComment"
+                          maxlength="2000"
+                        ></textarea>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="form-group">
+                      <label class="form-label">{{
+                        componentData.componentId + ".controllerComment" | translate
+                      }}</label>
+
+                      <div class="form-control">
+                        <textarea
+                          class="aw-textarea"
+                          [rows]="3"
+                          [(ngModel)]="guideline.controllerComments"
+                          pInputTextarea
+                          [disabled]="isReadOpenMode || !enableControllerComment"
+                          maxlength="2000"
+                        ></textarea>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="form-group">
+                      <label class="form-label">{{ componentData.componentId + ".pugComment" | translate }}</label>
+
+                      <div class="form-control">
+                        <textarea
+                          class="aw-textarea"
+                          [rows]="3"
+                          [(ngModel)]="guideline.pugComments"
+                          pInputTextarea
+                          [disabled]="true"
+                          maxlength="2000"
+                        ></textarea>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+      <mat-tab [disabled]="!guideline.pugId">
+        <ng-template mat-tab-label>
+          {{ "documents" | translate }}
+        </ng-template>
+
+        <div class="grid-row">
+          <div id="documentsPanel" class="grid-cell--12">
+            <div class="grid-cell grid-cell--container">
+              <div class="grid-cell-header">
+                <div class="grid-cell-title-container">
+                  <h3 class="grid-cell-title">
+                    {{ getComponentName() + ".documents" | translate }} ({{
+                      documentsTableDataSource.hasData ? documentsTableDataSource.dataCount : 0
+                    }})
+                  </h3>
+                </div>
+              </div>
+
+              <div class="grid-cell-content">
+                <a-table [dataSource]="documentsTableDataSource">
+                  <ng-template tableActionsDef>
+                    <button
+                      *ngIf="!isReadOpenMode && documentsTableDataSource.hasDataSelection"
+                      type="button"
+                      mat-raised-button
+                      color="warn"
+                      (click)="deleteDocuments()"
+                    >
+                      {{ "global.delete" | translate }}
+                    </button>
+
+                    <button
+                      *ngIf="!isReadOpenMode && documentsTableDataSource.dataSelectionCount === 1"
+                      type="button"
+                      mat-raised-button
+                      (click)="editDocument()"
+                    >
+                      {{ "global.edit" | translate }}
+                    </button>
+
+                    <button
+                      *ngIf="documentsTableDataSource.dataSelectionCount === 1"
+                      type="button"
+                      mat-raised-button
+                      (click)="openDocument()"
+                    >
+                      {{ "global.open" | translate }}
+                    </button>
+
+                    <button
+                      *ngIf="!isReadOpenMode && !documentsTableDataSource.hasDataSelection"
+                      type="button"
+                      mat-raised-button
+                      (click)="addDocument()"
+                    >
+                      {{ "global.add" | translate }}
+                    </button>
+                  </ng-template>
+                  <ng-template columnDef="docName" let-rowData="rowData">
+                    <a (click)="downloadFile(rowData)">{{ rowData.docName }}</a>
+                  </ng-template>
+                </a-table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+  <aw-dialog-bire-doc-pug
+    *ngIf="showAddDocumentDialog"
+    [document]="
+      documentsTableDataSource.dataSelectionCount === 1 ? documentsTableDataSource.dataSelection[0]._obj : undefined
+    "
+    [(display)]="showAddDocumentDialog"
+    [isReadOnlyForm]="isReadOnlyDocumentDialog"
+    (onValidated)="onAddDocument($event)"
+  ></aw-dialog-bire-doc-pug>
+</div>

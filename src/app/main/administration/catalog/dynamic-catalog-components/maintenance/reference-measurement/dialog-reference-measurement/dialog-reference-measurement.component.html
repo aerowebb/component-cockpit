@@ -1,0 +1,130 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".title" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="form-group required">
+      <label class="form-label">{{ getComponentName() + ".counterCode" | translate }}</label>
+      <div class="form-control">
+        <input
+          type="text"
+          name="returnReasonCode"
+          [(ngModel)]="bireReturnReasonDTO.counterCode"
+          class="aw-input"
+          maxlength="50"
+          [disabled]="isReadOpenMode || !isCreateOpenMode"
+          required
+        />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">{{ getComponentName() + ".unitCode" | translate }}</label>
+      <div class="form-control">
+        <p-dropdown
+          class="aw-dropdown fixed-width"
+          appendTo="body"
+          [showClear]="true"
+          placeholder="&nbsp;"
+          [options]="unitCodeList"
+          [disabled]="isReadOpenMode"
+          [(ngModel)]="bireReturnReasonDTO.unitCode"
+        ></p-dropdown>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">{{ getComponentName() + ".mrCategory" | translate }}</label>
+      <div class="form-control">
+        <p-dropdown
+          class="aw-dropdown fixed-width"
+          appendTo="body"
+          [options]="mrCategoryList"
+          [disabled]="isReadOpenMode"
+          [(ngModel)]="bireReturnReasonDTO.mrCategory"
+        ></p-dropdown>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">{{ getComponentName() + ".isCounter" | translate }}</label>
+      <div class="form-control">
+        <p-checkbox
+          binary="true"
+          class="aw-checkbox general-type-checkbox"
+          [(ngModel)]="bireReturnReasonDTO.isCounter"
+          [disabled]="isReadOpenMode"
+        ></p-checkbox>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">{{ getComponentName() + ".propagationAllowed" | translate }}</label>
+      <div class="form-control">
+        <p-checkbox
+          binary="true"
+          class="aw-checkbox general-type-checkbox"
+          [(ngModel)]="bireReturnReasonDTO.propagationAllowed"
+          [disabled]="isReadOpenMode"
+        ></p-checkbox>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">{{ getComponentName() + ".counterRemarks" | translate }}</label>
+      <div class="form-control">
+        <textarea
+          class="aw-textarea"
+          [rows]="3"
+          pInputTextarea
+          [(ngModel)]="bireReturnReasonDTO.counterRemarks"
+          [disabled]="isReadOpenMode"
+          maxlength="300"
+        ></textarea>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">{{ getComponentName() + ".minRemainPercent" | translate }}</label>
+      <div class="form-control">
+        <input
+          #minRemainPercent="ngModel"
+          type="number"
+          [pKeyFilter]="inputValidationService.validatorOfInteger()"
+          [pValidateOnly]="true"
+          name="returnReasonCode"
+          [(ngModel)]="bireReturnReasonDTO.minRemainPercent"
+          class="aw-input"
+          [max]="2147483648"
+          [min]="-2147483648"
+          maxlength="10"
+          [disabled]="isReadOpenMode"
+          required
+          (keypress)="maxLengthCheck($event, bireReturnReasonDTO.minRemainPercent)"
+        />
+        <p-message
+          *ngIf="minRemainPercent.invalid && (minRemainPercent.dirty || minRemainPercent.touched)"
+          severity="error"
+          [text]="inputValidationService.formatOfInteger()"
+        ></p-message>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button *ngIf="isReadOpenMode" type="button" mat-raised-button (click)="closeDialog()">
+      {{ "global.close" | translate }}
+    </button>
+    <button type="button" mat-raised-button (click)="closeDialog()">{{ "global.cancel" | translate }}</button>
+    <button
+      type="button"
+      mat-raised-button
+      color="primary"
+      (click)="validate()"
+      [disabled]="!bireReturnReasonDTO.counterCode"
+    >
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>

@@ -1,0 +1,22 @@
+:host {
+  display: flex;
+
+  $modal-width: 30rem;
+  .fixed-size-modal {
+    min-width: $modal-width;
+    max-width: $modal-width;
+  }
+
+  .col-center {
+    text-align: center;
+    vertical-align: middle;
+
+    .aw-checkbox {
+      margin-top: 0 !important;
+    }
+  }
+
+  .disabled {
+    visibility: hidden;
+  }
+}

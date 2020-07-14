@@ -1,0 +1,145 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".title" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+      <label class="form-label">{{ getComponentName() + ".partNumber" | translate }}</label>
+      <div class="form-control form-control-with-modal" [ngClass]="{ disabled: isReadOpenMode || !isCreateOpenMode }">
+        <div class="form-control-data" (click)="openPartNumberDialog()">{{ capability.pnCode }}</div>
+
+        <div *ngIf="capability.pnCode" class="btn-clear-wrapper">
+          <i
+            class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+            aria-hidden="true"
+            (click)="capability.pnCode = undefined"
+          ></i>
+        </div>
+        <div class="btn-search-wrapper">
+          <i class="fa fa-fw fa-search aw-icon btn-search" aria-hidden="true" (click)="openPartNumberDialog()"></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+      <label class="form-label">{{ getComponentName() + ".technicalLevel" | translate }}</label>
+
+      <div class="form-control">
+        <p-dropdown
+          name="bidtTechnicalLevels"
+          class="aw-dropdown fixed-width"
+          placeholder="&nbsp;"
+          [options]="technicalLevels"
+          [(ngModel)]="capability.technicalLevel"
+          placeholder="&nbsp;"
+          [showClear]="true"
+          [disabled]="isReadOpenMode || !isCreateOpenMode"
+          required
+        ></p-dropdown>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">{{ getComponentName() + ".cost" | translate }}</label>
+
+      <div class="form-control">
+        <input
+          #cost="ngModel"
+          name="cost"
+          type="text"
+          [pKeyFilter]="inputValidationService.validatorOfMoney()"
+          [pValidateOnly]="true"
+          maxlength="37"
+          [(ngModel)]="capability.cost"
+          class="aw-input "
+          [disabled]="isReadOpenMode"
+          [pKeyFilter]="inputValidationService.validatorOfPositiveNumber()"
+          [pValidateOnly]="true"
+        />
+        <p-message
+          *ngIf="cost.invalid && (cost.dirty || cost.touched)"
+          severity="error"
+          [text]="inputValidationService.formatOfMoney()"
+        ></p-message>
+      </div>
+      <label class="form-label">{{ getComponentName() + ".euro" | translate }}</label>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">{{ getComponentName() + ".validityDate" | translate }}</label>
+
+      <div class="form-control">
+        <p-calendar
+          showButtonBar="true"
+          [monthNavigator]="true"
+          [yearNavigator]="true"
+          [yearRange]="sessionService.calendarYearRange"
+          class="aw-calendar "
+          [dateFormat]="sessionService.dateFormatPrimeNG"
+          [locale]="sessionService.calendarFormat"
+          [ngClass]="{ inactive: isReadOpenMode }"
+          [(ngModel)]="capability.availabilityDate"
+          [disabled]="isReadOpenMode"
+          appendTo="body"
+        ></p-calendar>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">{{ getComponentName() + ".tat" | translate }}</label>
+
+      <div class="form-control">
+        <input
+          #tat="ngModel"
+          type="number"
+          name="tat"
+          [pKeyFilter]="inputValidationService.validatorOfInteger()"
+          [pValidateOnly]="true"
+          onKeyPress="if(this.value.length==10) return false;"
+          [(ngModel)]="capability.tat"
+          class="aw-input "
+          [disabled]="isReadOpenMode"
+        />
+        <p-message
+          *ngIf="tat.invalid && (tat.dirty || tat.touched)"
+          severity="error"
+          [text]="inputValidationService.formatOfInteger()"
+        ></p-message>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button *ngIf="!isReadOpenMode" type="button" mat-raised-button (click)="closeDialog()">
+      <span>{{ "global.cancel" | translate }}</span>
+    </button>
+
+    <button
+      *ngIf="!isReadOpenMode"
+      type="button"
+      color="primary"
+      mat-raised-button
+      (click)="validate()"
+      [disabled]="
+        (cost.invalid && (cost.dirty || cost.touched)) ||
+        !capability.pnCode ||
+        capability.pnCode.length === 0 ||
+        !capability.technicalLevel ||
+        capability.technicalLevel.length === 0
+      "
+    >
+      {{ "global.validate" | translate }}
+    </button>
+    <button *ngIf="isReadOpenMode" type="button" mat-raised-button (click)="closeDialog()">
+      {{ "global.close" | translate }}
+    </button>
+  </a-footer>
+</a-modal>
+
+<aw-dialog-table
+  *ngIf="showPartNumberDialog"
+  [data]="partNumberTableData"
+  [keyMap]="keyMap"
+  [(display)]="showPartNumberDialog"
+  (onSelected)="onSelectedPartNumber($event)"
+></aw-dialog-table>

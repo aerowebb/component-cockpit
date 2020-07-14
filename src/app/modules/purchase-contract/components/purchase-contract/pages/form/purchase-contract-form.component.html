@@ -1,0 +1,1001 @@
+<div class="page-header">
+  <div class="page-info">
+    <div>
+      <h2 class="page-title">
+        {{ "transaction." + componentData.componentId | translate }}
+      </h2>
+      <div class="page-subtitle">
+        <div *ngIf="!isCreateOpenMode && purchaseContract" class="page-subtitle">- {{ purchaseContract.pcNumber }}</div>
+      </div>
+    </div>
+    <div class="object-status" *ngIf="purchaseContract.statusState" (click)="showStatus()">
+      {{ purchaseContract.statusState | formatSelectOption: statusList }}
+    </div>
+  </div>
+
+  <div class="page-actions">
+    <button *ngIf="isReadOpenMode && hasUpdateAccessRight" type="button" mat-raised-button (click)="edit()">
+      {{ "global.edit" | translate }}
+    </button>
+
+    <button
+      *ngIf="!isReadOpenMode && !isCreateOpenMode"
+      color="warn"
+      type="button"
+      mat-raised-button
+      (click)="cancel()"
+    >
+      {{ "global.cancel" | translate }}
+    </button>
+
+    <button
+      *ngIf="!isReadOpenMode"
+      class="btn-with-spinner"
+      color="primary"
+      type="button"
+      mat-raised-button
+      (click)="save()"
+    >
+      <span class="lds-hourglass" *ngIf="showSaveSpinner"></span>
+      {{ "global.save" | translate }}
+    </button>
+
+    <mat-menu #actions="matMenu">
+      <button
+        mat-menu-item
+        id="favorite"
+        *ngIf="isReadOpenMode && hasUpdateAccessRight"
+        (click)="updateFavoriteState()"
+      >
+        {{ (isFavoriteEntry ? "page.removeFromFavorites" : "page.addToFavorites") | translate }}
+      </button>
+      <button *ngIf="isReadOpenMode && !isCreateOpenMode" type="button" mat-menu-item (click)="reload()">
+        {{ "global.refresh" | translate }}
+      </button>
+      <button mat-menu-item (click)="openStatusUpdatesPopup()">{{ "updates" | translate }}</button>
+    </mat-menu>
+    <button
+      mat-icon-button
+      class="mat-elevation-z1"
+      matTooltip="Show all actions"
+      matTooltipPosition="above"
+      aria-label="Show all actions"
+      [matMenuTriggerFor]="actions"
+    >
+      <mat-icon>more_horiz</mat-icon>
+    </button>
+  </div>
+</div>
+
+<div #page class="page-wrapper">
+  <div class="page-container">
+    <div class="page-content">
+      <mat-tab-group animationDuration="0ms" dynamicHeight>
+        <mat-tab>
+          <ng-template mat-tab-label>
+            {{ "home" | translate }}
+          </ng-template>
+          <div class="grid-row">
+            <!-- HEADER DATA -->
+            <div #headerDataAnchor class="grid-cell--8" (click)="selectPageTocEntry(component.HEADER_DATA_ANCHOR_ID)">
+              <div
+                class="grid-cell grid-cell--container"
+                [ngClass]="{ active: isPageTocEntrySelected(component.HEADER_DATA_ANCHOR_ID) }"
+              >
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">{{ componentData.componentId + ".headerDataAnchor" | translate }}</h3>
+                  </div>
+                </div>
+                <div class="grid-cell-content">
+                  <div class="row">
+                    <div id="pcNumber" class="form-group flex--6" [ngClass]="{ required: !isReadOpenMode }">
+                      <label class="form-label">
+                        {{ componentData.componentId + ".pcNumber" | translate }}
+                      </label>
+
+                      <div class="form-control">
+                        <input
+                          type="text"
+                          class="aw-input"
+                          [(ngModel)]="purchaseContract.pcNumber"
+                          [disabled]="isReadOpenMode"
+                        />
+                      </div>
+                    </div>
+
+                    <div id="pcLabel" class="form-group flex--6" [ngClass]="{ required: !isReadOpenMode }">
+                      <label class="form-label">
+                        {{ componentData.componentId + ".pcLabel" | translate }}
+                      </label>
+                      <div class="form-control">
+                        <input
+                          type="text"
+                          class="aw-input"
+                          [(ngModel)]="purchaseContract.pcLabel"
+                          [disabled]="isReadOpenMode"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div id="pcType" class="form-group flex--6">
+                      <label class="form-label">
+                        {{ componentData.componentId + ".pcType" | translate }}
+                      </label>
+                      <div class="form-control">
+                        <p-dropdown
+                          class="aw-dropdown fixed-width"
+                          placeholder="&nbsp;"
+                          [showClear]="true"
+                          [disabled]="isReadOpenMode"
+                          [options]="pcTypeList"
+                          [(ngModel)]="purchaseContract.pcType"
+                        ></p-dropdown>
+                      </div>
+                    </div>
+
+                    <div id="pcCommitmentAuthorization" class="form-group flex--6">
+                      <label class="form-label">
+                        {{ componentData.componentId + ".pcCommitmentAuthorization" | translate }}
+                      </label>
+                      <div class="form-control">
+                        <input
+                          type="text"
+                          class="aw-input"
+                          [(ngModel)]="purchaseContract.pcCommitmentAuthorization"
+                          [disabled]="isReadOpenMode"
+                        />
+                      </div>
+                    </div>
+
+                    <div id="pcLegalCommitment" class="form-group flex--6" [ngClass]="{ required: !isReadOpenMode }">
+                      <label class="form-label">
+                        {{ componentData.componentId + ".pcLegalCommitment" | translate }}
+                      </label>
+                      <div class="form-control">
+                        <input
+                          type="text"
+                          class="aw-input"
+                          [(ngModel)]="purchaseContract.pcLegalCommitment"
+                          [disabled]="isReadOpenMode"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div id="pcBusinessCode" class="form-group flex--6">
+                      <label class="form-label">
+                        {{ componentData.componentId + ".pcBusinessCode" | translate }}
+                      </label>
+                      <div class="form-control">
+                        <input
+                          type="text"
+                          class="aw-input"
+                          [(ngModel)]="purchaseContract.pcBusinessCode"
+                          [disabled]="isReadOpenMode"
+                        />
+                      </div>
+                    </div>
+
+                    <div id="pcValidityStartDate" class="form-group flex--6">
+                      <label class="form-label">
+                        {{ componentData.componentId + ".pcValidityStartDate" | translate }}
+                      </label>
+                      <div class="form-control">
+                        <p-calendar
+                          showButtonBar="true"
+                          [monthNavigator]="true"
+                          [yearNavigator]="true"
+                          [yearRange]="sessionService.calendarYearRange"
+                          class="aw-calendar"
+                          [dateFormat]="sessionService.dateFormatPrimeNG"
+                          [locale]="sessionService.calendarFormat"
+                          [disabled]="isReadOpenMode"
+                          [(ngModel)]="purchaseContract.pcValidityStartDate"
+                        ></p-calendar>
+                      </div>
+                    </div>
+
+                    <div id="pcValidityEndDate" class="form-group flex--6">
+                      <label class="form-label">
+                        {{ componentData.componentId + ".pcValidityEndDate" | translate }}
+                      </label>
+                      <div class="form-control">
+                        <p-calendar
+                          showButtonBar="true"
+                          [monthNavigator]="true"
+                          [yearNavigator]="true"
+                          [yearRange]="sessionService.calendarYearRange"
+                          class="aw-calendar"
+                          [dateFormat]="sessionService.dateFormatPrimeNG"
+                          [locale]="sessionService.calendarFormat"
+                          [disabled]="isReadOpenMode"
+                          [(ngModel)]="purchaseContract.pcValidityEndDate"
+                        ></p-calendar>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div id="pcMinimumAmount" class="form-group flex--6">
+                      <label class="form-label">
+                        {{ componentData.componentId + ".pcMinimumAmount" | translate }}
+                      </label>
+                      <div class="form-control">
+                        <input
+                          type="number"
+                          class="aw-input"
+                          [(ngModel)]="purchaseContract.pcMinimumAmount"
+                          [disabled]="isReadOpenMode"
+                        />
+                      </div>
+                    </div>
+
+                    <div id="pcMaximumAmount" class="form-group flex--6">
+                      <label class="form-label">
+                        {{ componentData.componentId + ".pcMaximumAmount" | translate }}
+                      </label>
+                      <div class="form-control">
+                        <input
+                          type="number"
+                          class="aw-input"
+                          [(ngModel)]="purchaseContract.pcMaximumAmount"
+                          [disabled]="isReadOpenMode"
+                        />
+                      </div>
+                    </div>
+
+                    <div id="pcCurrency" class="form-group flex--6">
+                      <label class="form-label">{{ getComponentName() + ".pcCurrency" | translate }}</label>
+                      <div class="form-control">
+                        <p-dropdown
+                          class="aw-dropdown fixed-width"
+                          [options]="pcCurrencyList"
+                          [showClear]="true"
+                          [(ngModel)]="purchaseContract.pcCurrency"
+                          placeholder="&nbsp;"
+                          [disabled]="isReadOpenMode"
+                        ></p-dropdown>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div id="bidtSiteId" class="form-group flex--6">
+                      <label class="form-label">{{ getComponentName() + ".pcSite" | translate }}</label>
+                      <div class="form-control">
+                        <p-dropdown
+                          class="aw-dropdown fixed-width"
+                          placeholder="&nbsp;"
+                          [options]="pcSiteList"
+                          [(ngModel)]="purchaseContract.bidtSiteId"
+                          [showClear]="true"
+                          [disabled]="isReadOpenMode"
+                        ></p-dropdown>
+                      </div>
+                    </div>
+
+                    <div id="bidtEmployeeId" class="form-group flex--6">
+                      <label class="form-label">
+                        {{ componentData.componentId + ".pcEmployeeId" | translate }}
+                      </label>
+                      <div
+                        class="form-control form-control-with-modal"
+                        [ngClass]="{ disabled: isReadOpenMode && !isCreateOpenMode }"
+                      >
+                        <div
+                          class="form-control-data"
+                          (click)="(!isReadOpenMode || isCreateOpenMode) && quickSearchEmployee()"
+                        >
+                          {{ contractManagerName }}
+                        </div>
+                        <div *ngIf="contractManagerName" class="btn-clear-wrapper">
+                          <i
+                            class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+                            aria-hidden="true"
+                            (click)="contractManagerName = undefined"
+                          ></i>
+                        </div>
+                        <div class="btn-search-wrapper">
+                          <i
+                            class="fa fa-fw fa-search aw-icon btn-search"
+                            aria-hidden="true"
+                            (click)="!isReadOpenMode && quickSearchEmployee()"
+                          ></i>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div id="bidtPurchaseContractId" class="form-group flex--6">
+                      <label class="form-label">
+                        {{ componentData.componentId + ".pcParentLabel" | translate }}
+                      </label>
+                      <div
+                        class="form-control form-control-with-modal"
+                        [ngClass]="{ disabled: isReadOpenMode && !isCreateOpenMode }"
+                      >
+                        <div
+                          class="form-control-data"
+                          (click)="(!isReadOpenMode || isCreateOpenMode) && selectParentId()"
+                        >
+                          {{ parentContractLabel }}
+                        </div>
+                        <div *ngIf="purchaseContract.bidtPurchaseContractId" class="btn-clear-wrapper">
+                          <i
+                            class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+                            aria-hidden="true"
+                            (click)="purchaseContract.bidtPurchaseContractId = undefined"
+                          ></i>
+                        </div>
+                        <div class="btn-search-wrapper">
+                          <i
+                            class="fa fa-fw fa-search aw-icon btn-search"
+                            aria-hidden="true"
+                            (click)="!isReadOpenMode && selectParentId()"
+                          ></i>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- PARTNER -->
+            <div #partnernAnchor class="grid-cell--4" (click)="selectPageTocEntry(component.PARTNER_ANCHOR_ID)">
+              <div
+                class="grid-cell grid-cell--container"
+                [ngClass]="{ active: isPageTocEntrySelected(component.PARTNER_ANCHOR_ID) }"
+              >
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ getComponentName() + ".partnerList" | translate }} ({{ partnerTableDataSource.dataCount }})
+                    </h3>
+                  </div>
+                </div>
+                <div class="grid-cell-content">
+                  <a-table [dataSource]="partnerTableDataSource">
+                    <ng-template tableActionsDef>
+                      <button
+                        *ngIf="!isReadOpenMode && partnerTableDataSource.hasDataSelection"
+                        type="button"
+                        mat-raised-button
+                        color="warn"
+                        (click)="deletePartner()"
+                      >
+                        {{ "global.delete" | translate }}
+                      </button>
+
+                      <button
+                        *ngIf="!isReadOpenMode && partnerTableDataSource.dataSelectionCount === 1"
+                        type="button"
+                        mat-raised-button
+                        (click)="editPartner()"
+                      >
+                        {{ "global.edit" | translate }}
+                      </button>
+
+                      <button
+                        *ngIf="!isReadOpenMode && !partnerTableDataSource.hasDataSelection"
+                        type="button"
+                        mat-raised-button
+                        (click)="addPartner()"
+                      >
+                        {{ "global.add" | translate }}
+                      </button>
+                    </ng-template>
+                  </a-table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+
+        <!-- SLICES -->
+        <mat-tab>
+          <ng-template mat-tab-label>
+            {{ "PurchaseContractFormComponent.slices" | translate }}
+          </ng-template>
+          <div class="grid-row">
+            <div #sliceAnchor class="grid-cell--12" (click)="selectPageTocEntry(component.SLICE_ANCHOR_ID)">
+              <div
+                class="grid-cell grid-cell--container"
+                [ngClass]="{ active: isPageTocEntrySelected(component.SLICE_ANCHOR_ID) }"
+              >
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ "PurchaseContractFormComponent.slices" | translate }} ({{ slicesTableDataSource.dataCount }})
+                    </h3>
+                  </div>
+                </div>
+                <div class="section-content">
+                  <a-table
+                    [dataSource]="slicesTableDataSource"
+                    (onRowSelect)="onSliceSelected($event)"
+                    (onRowUnselect)="onSliceUnselected($event)"
+                  >
+                    <ng-template tableActionsDef>
+                      <button
+                        *ngIf="!isReadOpenMode && slicesTableDataSource.hasDataSelection"
+                        type="button"
+                        mat-raised-button
+                        color="warn"
+                        (click)="deleteSlices()"
+                      >
+                        {{ "global.delete" | translate }}
+                      </button>
+
+                      <button
+                        *ngIf="isReadOpenMode && slicesTableDataSource.dataSelectionCount === 1"
+                        type="button"
+                        mat-raised-button
+                        (click)="openSlices()"
+                      >
+                        {{ "global.open" | translate }}
+                      </button>
+
+                      <button
+                        *ngIf="!isReadOpenMode && !slicesTableDataSource.hasDataSelection"
+                        type="button"
+                        mat-raised-button
+                        (click)="addSlices()"
+                      >
+                        {{ "global.add" | translate }}
+                      </button>
+                      <button
+                        *ngIf="!isReadOpenMode && slicesTableDataSource.dataSelectionCount === 1"
+                        type="button"
+                        mat-raised-button
+                        (click)="editSlices()"
+                      >
+                        {{ "global.edit" | translate }}
+                      </button>
+                    </ng-template>
+                    <ng-template columnDef="pcsOrder" let-rowData="rowData">
+                      {{ rowData.bidtPurchaseContractSliceDTO.pcsOrder }}
+                    </ng-template>
+                    <ng-template columnDef="pcsDescription" let-rowData="rowData">
+                      {{ rowData.bidtPurchaseContractSliceDTO.pcsDescription }}
+                    </ng-template>
+                    <ng-template columnDef="statusState" let-rowData="rowData">
+                      {{ rowData.sliceStatusLabel }}
+                    </ng-template>
+                    <ng-template columnDef="pcsConsolidationDate" let-rowData="rowData">
+                      {{
+                        rowData.bidtPurchaseContractSliceDTO.pcsConsolidationDate
+                          | date: "yyyy/MM/dd":"":translateService.currentLang
+                      }}
+                    </ng-template>
+                    <ng-template columnDef="pcsDuration" let-rowData="rowData">
+                      {{ rowData.bidtPurchaseContractSliceDTO.pcsDuration }}
+                    </ng-template>
+                    <ng-template columnDef="pcsStartDate" let-rowData="rowData">
+                      {{
+                        rowData.bidtPurchaseContractSliceDTO.pcsStartDate
+                          | date: "yyyy/MM/dd":"":translateService.currentLang
+                      }}
+                    </ng-template>
+                    <ng-template columnDef="pcsEndDate" let-rowData="rowData">
+                      {{
+                        rowData.bidtPurchaseContractSliceDTO.pcsEndDate
+                          | date: "yyyy/MM/dd":"":translateService.currentLang
+                      }}
+                    </ng-template>
+                  </a-table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+
+        <!-- (OFFICE)/(PROVISION) -->
+        <mat-tab>
+          <ng-template mat-tab-label>
+            {{ componentData.componentId + ".officeProvisionTitle" | translate }}
+          </ng-template>
+          <div class="grid-row">
+            <div
+              #officeProvisionAnchor
+              class="grid-cell--12"
+              (click)="selectPageTocEntry(component.OFFICE_PROVISION_ANCHOR_ID)"
+            >
+              <div
+                class="grid-cell grid-cell--container"
+                [ngClass]="{ active: isPageTocEntrySelected(component.OFFICE_PROVISION_ANCHOR_ID) }"
+              >
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ componentData.componentId + ".officeProvisionTitle" | translate }}
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content" *ngIf="!itemsTreeTable">
+                  {{ componentData.componentId + ".itemAccessDescription" | translate }}
+                </div>
+
+                <div class="grid-cell-content grid-cell-item-structure" *ngIf="itemsTreeTable">
+                  <!-- Item structure treetable -->
+                  <div class="column">
+                    <div class="list-with-details">
+                      <div class="list grid-cell--6">
+                        <p-treeTable
+                          class="aw-tree-table2"
+                          [value]="itemsTreeTable.tree"
+                          [columns]="itemsTreeTableColList"
+                          selectionMode="single"
+                          [selection]="itemNodeSelected"
+                          (selectionChange)="onItemSelection($event)"
+                        >
+                          <ng-template pTemplate="colgroup" let-columns>
+                            <colgroup>
+                              <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                            </colgroup>
+                          </ng-template>
+                          <ng-template pTemplate="body" let-rowNode let-rowData="rowData" let-columns="columns">
+                            <tr [ttRow]="rowNode" [ttSelectableRow]="rowNode">
+                              <td
+                                style="overflow: hidden; text-overflow: ellipsis;"
+                                *ngFor="let col of columns; let i = index"
+                                [ngSwitch]="col.field"
+                              >
+                                <p-treeTableToggler [rowNode]="rowNode" *ngIf="i == 0"></p-treeTableToggler>
+                                <span *ngSwitchDefault> {{ rowData.bidtPurchaseContractItemDTO[col.field] }}</span>
+                              </td>
+                            </tr>
+                          </ng-template>
+                        </p-treeTable>
+                      </div>
+
+                      <!-- Item structure form -->
+                      <div class="details grid-cell--9" [ngClass]="{ 'visibility--hidden': !itemsTreeTable.tree }">
+                        <div class="column">
+                          <div class="section">
+                            <div class="section-content">
+                              <div class="row structure-node-action-list">
+                                <button *ngIf="!isReadOpenMode" type="button" mat-raised-button (click)="onAddItem()">
+                                  {{ "global.add" | translate }}
+                                </button>
+                                <button
+                                  *ngIf="!isReadOpenMode && itemNodeSelected"
+                                  type="button"
+                                  mat-raised-button
+                                  (click)="onEditItem()"
+                                >
+                                  {{ "global.edit" | translate }}
+                                </button>
+                                <button
+                                  *ngIf="!isReadOpenMode && itemNodeSelected"
+                                  type="button"
+                                  mat-raised-button
+                                  (click)="deleteItems()"
+                                >
+                                  {{ "global.delete" | translate }}
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div *ngIf="itemSelected" class="section">
+                            <div class="section-content">
+                              <div class="row">
+                                <div id="pciCode" class="form-group flex--4" [ngClass]="{ required: !isReadOpenMode }">
+                                  <label class="form-label">
+                                    {{ componentData.componentId + ".pciCode" | translate }}
+                                  </label>
+                                  <div class="form-control">
+                                    <input
+                                      type="number"
+                                      class="aw-input"
+                                      [(ngModel)]="itemSelected.bidtPurchaseContractItemDTO.pciCode"
+                                      [disabled]="true"
+                                    />
+                                  </div>
+                                </div>
+                                <div id="pciLabel" class="form-group flex--4" [ngClass]="{ required: !isReadOpenMode }">
+                                  <label class="form-label">
+                                    {{ componentData.componentId + ".pciLabel" | translate }}
+                                  </label>
+                                  <div class="form-control">
+                                    <input
+                                      type="text"
+                                      class="aw-input"
+                                      [(ngModel)]="itemSelected.bidtPurchaseContractItemDTO.pciLabel"
+                                      [disabled]="true"
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div class="row">
+                                <div id="pciType" class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+                                  <label class="form-label">
+                                    {{ componentData.componentId + ".pciType" | translate }}
+                                  </label>
+                                  <div class="form-control">
+                                    <p-dropdown
+                                      class="aw-dropdown fixed-width"
+                                      placeholder="&nbsp;"
+                                      [showClear]="true"
+                                      [disabled]="true"
+                                      [options]="typeList"
+                                      [(ngModel)]="itemSelected.bidtPurchaseContractItemDTO.pciType"
+                                    ></p-dropdown>
+                                  </div>
+                                </div>
+                                <div id="pciStatus" class="form-group">
+                                  <label class="form-label">
+                                    {{ componentData.componentId + ".pciStatus" | translate }}
+                                  </label>
+                                  <div class="form-control">
+                                    <p-dropdown
+                                      class="aw-dropdown fixed-width"
+                                      placeholder="&nbsp;"
+                                      [showClear]="true"
+                                      [disabled]="true"
+                                      [options]="itemStatusStateList"
+                                      [(ngModel)]="itemSelected.bidtPurchaseContractItemDTO.statusState"
+                                    ></p-dropdown>
+                                  </div>
+                                </div>
+                                <div id="pciCommitmentAuthorization" class="form-group">
+                                  <label class="form-label">
+                                    {{ componentData.componentId + ".pciCommitmentAuthorization" | translate }}
+                                  </label>
+                                  <div class="form-control">
+                                    <input
+                                      type="text"
+                                      class="aw-input"
+                                      [(ngModel)]="itemSelected.bidtPurchaseContractItemDTO.pciCommitmentAuthorization"
+                                      [disabled]="true"
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div class="row">
+                                <div id="pciFlagPackage" class="form-group flex--3">
+                                  <label class="form-label">
+                                    {{ componentData.componentId + ".pciFlagPackage" | translate }}
+                                  </label>
+                                  <div class="form-control">
+                                    <p-checkbox
+                                      binary="true"
+                                      class="aw-checkbox"
+                                      [(ngModel)]="itemSelected.bidtPurchaseContractItemDTO.pciFlagPackage"
+                                      [disabled]="true"
+                                    ></p-checkbox>
+                                  </div>
+                                </div>
+                                <div id="pciPackagePrice" class="form-group flex--3">
+                                  <label class="form-label">
+                                    {{ componentData.componentId + ".pciPackagePrice" | translate }}
+                                  </label>
+                                  <div class="form-control">
+                                    <input
+                                      type="number"
+                                      class="aw-input"
+                                      [(ngModel)]="itemSelected.bidtPurchaseContractItemDTO.pciPackagePrice"
+                                      [disabled]="true"
+                                    />
+                                  </div>
+                                </div>
+                                <div id="pcLegalCommitment" class="form-group flex--3">
+                                  <label class="form-label">
+                                    {{ componentData.componentId + ".pciLegalCommitment" | translate }}
+                                  </label>
+                                  <div class="form-control">
+                                    <input
+                                      type="text"
+                                      class="aw-input"
+                                      [(ngModel)]="itemSelected.bidtPurchaseContractItemDTO.pciLegalCommitment"
+                                      [disabled]="true"
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div class="row">
+                                <div id="pciStartDate" class="form-group flex--4">
+                                  <label class="form-label">
+                                    {{ componentData.componentId + ".pciStartDate" | translate }}
+                                  </label>
+                                  <div class="form-control">
+                                    <p-calendar
+                                      showButtonBar="true"
+                                      [monthNavigator]="true"
+                                      [yearNavigator]="true"
+                                      [yearRange]="sessionService.calendarYearRange"
+                                      class="aw-calendar"
+                                      [dateFormat]="sessionService.dateFormatPrimeNG"
+                                      [locale]="sessionService.calendarFormat"
+                                      [(ngModel)]="itemSelected.bidtPurchaseContractItemDTO.pciStartDate"
+                                      [disabled]="true"
+                                    ></p-calendar>
+                                  </div>
+                                </div>
+                                <div id="pciEndDate" class="form-group flex--4">
+                                  <label class="form-label">
+                                    {{ componentData.componentId + ".pciEndDate" | translate }}
+                                  </label>
+                                  <div class="form-control">
+                                    <p-calendar
+                                      showButtonBar="true"
+                                      [monthNavigator]="true"
+                                      [yearNavigator]="true"
+                                      [yearRange]="sessionService.calendarYearRange"
+                                      class="aw-calendar"
+                                      [dateFormat]="sessionService.dateFormatPrimeNG"
+                                      [locale]="sessionService.calendarFormat"
+                                      [(ngModel)]="itemSelected.bidtPurchaseContractItemDTO.pciEndDate"
+                                      [disabled]="true"
+                                    ></p-calendar>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div class="row">
+                                <div id="pciCommitedAmount" class="form-group flex--4">
+                                  <label class="form-label">
+                                    {{ componentData.componentId + ".pciCommitedAmount" | translate }}
+                                  </label>
+                                  <div class="form-control">
+                                    <input
+                                      type="number"
+                                      class="aw-input"
+                                      [(ngModel)]="itemSelected.bidtPurchaseContractItemDTO.pciCommittedAmount"
+                                      [disabled]="true"
+                                    />
+                                  </div>
+                                </div>
+                                <div id="pciCurrency" class="form-group flex--4">
+                                  <label class="form-label">{{
+                                    getComponentName() + ".pciCurrency" | translate
+                                  }}</label>
+                                  <div class="form-control">
+                                    <p-dropdown
+                                      class="aw-dropdown fixed-width"
+                                      [options]="pcCurrencyList"
+                                      [showClear]="true"
+                                      [(ngModel)]="purchaseContract.pcCurrency"
+                                      placeholder="&nbsp;"
+                                      [disabled]="true"
+                                    ></p-dropdown>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div class="row">
+                                <div id="pciFlagPartialReceipt" class="form-group flex--3">
+                                  <label class="form-label">
+                                    {{ componentData.componentId + ".pciFlagPartialReceipt" | translate }}
+                                  </label>
+                                  <div class="form-control">
+                                    <p-checkbox
+                                      binary="true"
+                                      class="aw-checkbox"
+                                      [(ngModel)]="itemSelected.bidtPurchaseContractItemDTO.pciFlagPartialReceipt"
+                                      [disabled]="true"
+                                    ></p-checkbox>
+                                  </div>
+                                </div>
+                                <div id="pciPriceRevision" class="form-group flex--3">
+                                  <label class="form-label">
+                                    {{ componentData.componentId + ".pciPriceRevision" | translate }}
+                                  </label>
+                                  <div class="form-control">
+                                    <p-checkbox
+                                      binary="true"
+                                      class="aw-checkbox"
+                                      [(ngModel)]="itemSelected.bidtPurchaseContractItemDTO.pciPriceRevision"
+                                      [disabled]="true"
+                                    ></p-checkbox>
+                                  </div>
+                                </div>
+                                <div id="pciPenalties" class="form-group flex--3">
+                                  <label class="form-label">
+                                    {{ componentData.componentId + ".pciPenalties" | translate }}
+                                  </label>
+                                  <div class="form-control">
+                                    <p-checkbox
+                                      binary="true"
+                                      class="aw-checkbox"
+                                      [(ngModel)]="itemSelected.bidtPurchaseContractItemDTO.pciPenalties"
+                                      [disabled]="true"
+                                    ></p-checkbox>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+        <!-- PRICE TABLE -->
+        <mat-tab>
+          <ng-template mat-tab-label>
+            {{ componentData.componentId + ".priceTableAnchor" | translate }}
+          </ng-template>
+          <div class="grid-row">
+            <div #priceTableAnchor class="grid-cell--12" (click)="selectPageTocEntry(component.PRICE_TABLE_ANCHOR_ID)">
+              <div
+                class="grid-cell grid-cell--container"
+                [ngClass]="{ active: isPageTocEntrySelected(component.PRICE_TABLE_ANCHOR_ID) }"
+              >
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ getComponentName() + ".priceTableAnchor" | translate }}
+                      {{ itemNodeSelected && "(" + elementAndServicesTableDataSource.dataCount + ")" }}
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content" *ngIf="!itemNodeSelected">
+                  {{ componentData.componentId + ".elementAccessDescription" | translate }}
+                </div>
+
+                <div class="grid-cell-content" *ngIf="itemNodeSelected">
+                  <a-table [dataSource]="elementAndServicesTableDataSource">
+                    <ng-template tableActionsDef>
+                      <button
+                        *ngIf="!isReadOpenMode && elementAndServicesTableDataSource.hasDataSelection"
+                        type="button"
+                        mat-raised-button
+                        color="warn"
+                        (click)="deleteElementAndService()"
+                      >
+                        {{ "global.delete" | translate }}
+                      </button>
+
+                      <button
+                        *ngIf="!isReadOpenMode && elementAndServicesTableDataSource.dataSelectionCount === 1"
+                        type="button"
+                        mat-raised-button
+                        (click)="editElementAndServices()"
+                      >
+                        {{ "global.edit" | translate }}
+                      </button>
+
+                      <button
+                        *ngIf="!isReadOpenMode && !elementAndServicesTableDataSource.hasDataSelection"
+                        type="button"
+                        mat-raised-button
+                        (click)="addElementAndServices()"
+                      >
+                        {{ "global.add" | translate }}
+                      </button>
+                    </ng-template>
+                    <ng-template columnDef="birePnPnCode" let-rowData="rowData">
+                      {{ rowData.bidtPurchaseContractElementDTO.birePnPnCode }}
+                    </ng-template>
+                    <ng-template columnDef="pceQuantity" let-rowData="rowData">
+                      {{ rowData.bidtPurchaseContractElementDTO.pceQuantity }}
+                    </ng-template>
+                    <ng-template columnDef="pceCurrency" let-rowData="rowData">
+                      {{ rowData.bidtPurchaseContractElementDTO.pceCurrency }}
+                    </ng-template>
+                    <ng-template columnDef="pcePriceExclTax" let-rowData="rowData">
+                      {{ rowData.bidtPurchaseContractElementDTO.pcePriceExclTax }}
+                    </ng-template>
+                    <ng-template columnDef="pceVat" let-rowData="rowData">
+                      {{ rowData.bidtPurchaseContractElementDTO.pceVat }}
+                    </ng-template>
+                    <ng-template columnDef="pcePrice" let-rowData="rowData">
+                      {{ rowData.bidtPurchaseContractElementDTO.pcePrice }}
+                    </ng-template>
+                    <ng-template columnDef="pceTimeLimit" let-rowData="rowData">
+                      {{ rowData.bidtPurchaseContractElementDTO.pceTimeLimit }}
+                    </ng-template>
+                  </a-table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+
+        <!-- Document section -->
+        <mat-tab>
+          <ng-template mat-tab-label>
+            {{ componentData.componentId + ".documentsAnchor" | translate }}
+          </ng-template>
+          <div class="section" #documentsAnchor>
+            <aw-document-section
+              [isReadOnlyForm]="isReadOpenMode"
+              [documentSectionSelected]="isPageTocEntrySelected(component.DOCUMENTS_ANCHOR_ID)"
+              (onChangeDocumentSectionSelected)="selectDocumentSection($event)"
+              [documentsList]="documentsList"
+            >
+            </aw-document-section>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+
+    <!-- POPUP ZONE -->
+    <aw-dialog-status
+      *ngIf="showStatusUpdatesPopup"
+      [isStatusEditable]="false"
+      [item]="purchaseContract"
+      [itemId]="purchaseContract.pcNumber"
+      [(display)]="showStatusUpdatesPopup"
+    >
+    </aw-dialog-status>
+
+    <aw-dialog-purchase-contract-slice
+      *ngIf="showSliceEditPopup"
+      [(display)]="showSliceEditPopup"
+      [data]="slicePopupData"
+      [newSlice]="isNewSlice"
+      [openMode]="slicesDialogOpenMode"
+      [sliceStatusListDisplay]="sliceStatusList"
+      [sliceTypeListDisplay]="sliceTypeList"
+      [sliceUnitList]="sliceUnitList"
+      [currency]="getCurrencyLabel()"
+      (onAddSlice)="onAddSlice($event)"
+      (onUpdateSlice)="onUpdateSlice($event)"
+    >
+    </aw-dialog-purchase-contract-slice>
+
+    <aw-dialog-status
+      *ngIf="showStatusUpdatesPopup"
+      [isStatusEditable]="false"
+      [item]="purchaseContract"
+      [itemId]="purchaseContract.purchaseContractNumber"
+      [(display)]="showStatusUpdatesPopup"
+    >
+    </aw-dialog-status>
+
+    <aw-dialog-purchase-contract-partner
+      *ngIf="showPartnerDialog"
+      [(display)]="showPartnerDialog"
+      [data]="currentPartner"
+      [partnerRoleList]="partnerRoleList"
+      [openMode]="partnerDialogOpenMode"
+      (onAddPartner)="onAddPartner($event)"
+      (onUpdatePartner)="onUpdatePartner($event)"
+    ></aw-dialog-purchase-contract-partner>
+
+    <aw-dialog-purchase-contract-element
+      *ngIf="showElementAndServicesDialog"
+      [(display)]="showElementAndServicesDialog"
+      [data]="elementAndServicesPopupData"
+      [openMode]="elementAndServicesDialogOpenMode"
+      (onAddElementAndServices)="onAddElementAndServices($event)"
+      (onUpdateElementAndServices)="onUpdateElementAndServices($event)"
+    ></aw-dialog-purchase-contract-element>
+    <!-- Item dialog popup -->
+    <aw-dialog-purchase-contract-item
+      *ngIf="showItemPopup"
+      [(display)]="showItemPopup"
+      [item]="currentItem"
+      [newItem]="isNewItem"
+      [itemStatusListDisplay]="itemStatusStateList"
+      [itemTypeListDisplay]="typeList"
+      (onValidated)="addNewItem($event)"
+      (onUpdate)="editSelectedItem($event)"
+    ></aw-dialog-purchase-contract-item>
+    <!-- Framework contract popup -->
+    <aw-dialog-purchase-contract-parent-id
+      *ngIf="showParentIdDialog"
+      [(display)]="showParentIdDialog"
+      (onSelected)="onSelectedParentId($event)"
+    ></aw-dialog-purchase-contract-parent-id>
+    <aw-dialog-search-employee
+      *ngIf="showEmployeePopup"
+      [(display)]="showEmployeePopup"
+      (onSelected)="setSelectedEmployee($event)"
+    ></aw-dialog-search-employee>
+  </div>
+</div>

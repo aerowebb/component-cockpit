@@ -1,0 +1,64 @@
+<div class="grid-row">
+  <div class="grid-cell--12">
+    <div #resultsContainerAnchor class="grid-cell grid-cell--container">
+      <div class="grid-cell-header">
+        <div class="grid-cell-title-container">
+          <h3 class="grid-cell-title">
+            {{ getComponentName() + ".eventTypesList" | translate }} ({{ eventTypesTableDataSource.dataCount }})
+          </h3>
+        </div>
+      </div>
+
+      <div class="grid-cell-content">
+        <a-table [dataSource]="eventTypesTableDataSource">
+          <ng-template tableActionsDef>
+            <button
+              type="button"
+              *ngIf="!eventTypesTableDataSource.hasDataSelection"
+              mat-raised-button
+              (click)="addEventType()"
+            >
+              {{ "global.add" | translate }}
+            </button>
+
+            <button
+              type="button"
+              *ngIf="eventTypesTableDataSource.hasDataSelection"
+              mat-raised-button
+              (click)="deleteSelectedEventType()"
+            >
+              {{ "global.delete" | translate }}
+            </button>
+
+            <button
+              type="button"
+              *ngIf="eventTypesTableDataSource.dataSelectionCount === 1"
+              mat-raised-button
+              (click)="editSelectedEventType()"
+            >
+              {{ "global.edit" | translate }}
+            </button>
+          </ng-template>
+
+          <ng-template columnDef="criticality" let-rowData="rowData">
+            <i
+              *ngIf="rowData.criticality !== null && rowData.criticality"
+              class="fa fa-fw fa-check"
+              aria-hidden="true"
+            ></i>
+          </ng-template>
+        </a-table>
+      </div>
+    </div>
+  </div>
+  <!-- FORM POPUP -->
+
+  <aw-event-type-form-popup
+    *ngIf="showEventTypeForm"
+    [(display)]="showEventTypeForm"
+    [eventType]="currentEventType"
+    [isNewEventType]="isNewEventType"
+    (onCreate)="createEventType($event)"
+    (onUpdate)="updateEventType($event)"
+  ></aw-event-type-form-popup>
+</div>

@@ -1,0 +1,1841 @@
+<div class="page-header">
+  <div class="page-info">
+    <div>
+      <div class="page-title">
+        {{ "transaction." + componentData.componentId | translate }}
+      </div>
+
+      <div class="page-subtitle">
+        <div *ngIf="isAssetAircraft" class="page-subtitle">
+          - {{ getComponentName() + ".aircraft" | translate }} {{ asset.registration }}
+        </div>
+        <div *ngIf="isAssetEngine || isAssetEquipment" class="page-subtitle">
+          - {{ asset.equipmentDesignation }} / {{ asset.sn }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-actions">
+    <button
+      mat-icon-button
+      class="mat-elevation-z1"
+      matTooltip="{{ 'global.showAllActionTooltip' | translate }}"
+      matTooltipPosition="above"
+      aria-label="Show all actions"
+      [matMenuTriggerFor]="actions"
+    >
+      <mat-icon>more_horiz</mat-icon>
+    </button>
+    <mat-menu #actions="matMenu">
+      <button mat-menu-item [matMenuTriggerFor]="navigations">
+        {{ "global.goTo" | translate }}
+      </button>
+
+      <button mat-menu-item [matMenuTriggerFor]="potentialUnitSelection">
+        {{ getComponentName() + ".potentialUnit" | translate }}({{ potentialUnitSelected }})
+      </button>
+
+      <button mat-menu-item (click)="reloadAssetReview()">{{ "global.refresh" | translate }}</button>
+      <button mat-menu-item (click)="updateFavoriteState()">
+        {{ (isFavoriteEntry ? "page.removeFromFavorites" : "page.addToFavorites") | translate }}
+      </button>
+    </mat-menu>
+    <mat-menu #navigations="matMenu">
+      <button *ngIf="!isCreateOpenMode" type="button" mat-menu-item (click)="navigationLinkList[0].command()">
+        {{ navigationLinkList[0].label | translate }}
+      </button>
+      <button *ngIf="!isCreateOpenMode" type="button" mat-menu-item (click)="navigationLinkList[1].command()">
+        {{ navigationLinkList[1].label | translate }}
+      </button>
+      <button *ngIf="!isCreateOpenMode" type="button" mat-menu-item (click)="navigationLinkList[2].command()">
+        {{ navigationLinkList[2].label | translate }}
+      </button>
+      <button *ngIf="!isCreateOpenMode" type="button" mat-menu-item (click)="navigationLinkList[3].command()">
+        {{ navigationLinkList[3].label | translate }}
+      </button>
+    </mat-menu>
+    <mat-menu #potentialUnitSelection="matMenu">
+      <button *ngIf="!isCreateOpenMode" type="button" mat-menu-item (click)="potentialUnitList[0].command()">
+        {{ potentialUnitList[0].label | translate }}
+      </button>
+      <button *ngIf="!isCreateOpenMode" type="button" mat-menu-item (click)="potentialUnitList[1].command()">
+        {{ potentialUnitList[1].label | translate }}
+      </button>
+      <button *ngIf="!isCreateOpenMode" type="button" mat-menu-item (click)="potentialUnitList[2].command()">
+        {{ potentialUnitList[2].label | translate }}
+      </button>
+    </mat-menu>
+  </div>
+</div>
+
+<div id="airworthiness-control-form" class="page-wrapper">
+  <div class="page-container search-page-container">
+    <div class="page-content">
+      <mat-tab-group animationDuration="0ms" dynamicHeight [(selectedIndex)]="tabIndex">
+        <!-- Home -->
+        <mat-tab id="homeTab">
+          <ng-template mat-tab-label>
+            {{ "home" | translate }}
+          </ng-template>
+          <div class="grid-row">
+            <div class="grid-cell--6">
+              <div class="grid-cell grid-cell--container grid-cell-scope">
+                <aw-airworthiness-table-asset-view-scope
+                  [airworthinessTableColCsnLabel]="airworthinessTableColCsnLabel"
+                  [airworthinessTableColTsnLabel]="airworthinessTableColTsnLabel"
+                  [asset]="asset"
+                  [assetAirworthiness]="assetAirworthiness"
+                  [globalAlertListLoading]="globalAlertListLoading"
+                  [isAssetAircraft]="isAssetAircraft"
+                  [isAssetEngine]="isAssetEngine"
+                  [isAssetEquipment]="isAssetEquipment"
+                  (onNavigate)="openTopAsset()"
+                ></aw-airworthiness-table-asset-view-scope>
+              </div>
+            </div>
+
+            <div class="grid-cell--6">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container loading-indicator">
+                    <div class="grid-cell-title">
+                      <span>{{ getComponentName() + ".acrsStatus" | translate }}</span>
+                      <div *ngIf="isSummaryTableLoading" class="lds-hourglass"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <div class="table-summary-wrapper">
+                    <p-table
+                      [resizableColumns]="true"
+                      class="aw-table-control-summary"
+                      [columns]="acrsStatusTableCols"
+                      [value]="acrsStatusTable"
+                    >
+                      <ng-template pTemplate="colgroup" let-columns>
+                        <colgroup>
+                          <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                        </colgroup>
+                      </ng-template>
+
+                      <ng-template pTemplate="header" let-columns>
+                        <tr>
+                          <th
+                            pResizableColumn
+                            *ngFor="let col of columns"
+                            [ngSwitch]="col.field"
+                            [ngStyle]="{ 'text-align': col.alignment }"
+                          >
+                            <span *ngSwitchCase="'category'"> </span>
+
+                            <span *ngSwitchDefault> {{ getComponentName() + "." + col.field | translate }} </span>
+                          </th>
+                        </tr>
+                      </ng-template>
+
+                      <ng-template pTemplate="body" let-columns="columns" let-rowData>
+                        <tr>
+                          <td
+                            *ngFor="let col of columns"
+                            [ngSwitch]="col.field"
+                            [ngStyle]="{ 'text-align': col.alignment, width: col.width }"
+                          >
+                            <span *ngSwitchCase="'nok'" class="control-result" [ngClass]="{ nok: rowData['nok'] > 0 }">
+                              {{ rowData[col.field] }}
+                            </span>
+
+                            <span
+                              *ngSwitchCase="'warning'"
+                              class="control-result"
+                              [ngClass]="{ warning: rowData['nok'] == 0 && rowData['warning'] > 0 }"
+                            >
+                              {{ rowData[col.field] }}
+                            </span>
+
+                            <span
+                              *ngSwitchCase="'ok'"
+                              class="control-result"
+                              [ngClass]="{ ok: rowData['nok'] == 0 && rowData['warning'] == 0 && rowData['ok'] >= 0 }"
+                            >
+                              {{ rowData[col.field] }}
+                            </span>
+
+                            <span *ngSwitchCase="'category'" class="category">
+                              <a
+                                *ngIf="
+                                  rowData.label !== component.SUMMARY_TABLE_CONFIGURATION_LABEL &&
+                                  rowData.label !== component.SUMMARY_TABLE_TOTAL_LABEL
+                                "
+                                (click)="navigateToRowTabIndex(rowData)"
+                              >
+                                {{ rowData[col.field] }}
+                              </a>
+
+                              <a
+                                *ngIf="rowData.label === component.SUMMARY_TABLE_CONFIGURATION_LABEL"
+                                (click)="openConfigurationControlScreen()"
+                              >
+                                {{ rowData[col.field] }}
+                              </a>
+
+                              <span *ngIf="rowData.label === component.SUMMARY_TABLE_TOTAL_LABEL">
+                                {{ rowData[col.field] }}
+                              </span>
+                            </span>
+
+                            <span *ngSwitchDefault> {{ rowData[col.field] }} </span>
+                          </td>
+                        </tr>
+                      </ng-template>
+                    </p-table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+        <mat-tab id="workTab">
+          <ng-template mat-tab-label>
+            {{ getComponentName() + ".work" | translate }}
+          </ng-template>
+          <!--Work Packages-->
+          <div class="grid-row">
+            <div class="grid-cell--12">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ getComponentName() + ".workPackages" | translate }} ({{
+                        workPackageTable1 ? workPackageTable1.length : 0
+                      }})
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <div *ngIf="!isWorkPackageLoading" class="table-summary-wrapper">
+                    <p-table
+                      [resizableColumns]="true"
+                      class="table-control-summary"
+                      [columns]="acrsStatusTableCols"
+                      [value]="workPackageTableSummary"
+                    >
+                      <ng-template pTemplate="colgroup" let-columns>
+                        <colgroup>
+                          <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                        </colgroup>
+                      </ng-template>
+
+                      <ng-template pTemplate="header" let-columns>
+                        <tr>
+                          <th
+                            pResizableColumn
+                            *ngFor="let col of columns"
+                            [ngSwitch]="col.field"
+                            [ngStyle]="{ 'text-align': col.alignment }"
+                          >
+                            <span *ngSwitchCase="'category'"></span>
+
+                            <span *ngSwitchDefault> {{ getComponentName() + "." + col.field | translate }} </span>
+                          </th>
+                        </tr>
+                      </ng-template>
+
+                      <ng-template pTemplate="body" let-columns="columns" let-rowData>
+                        <tr>
+                          <td
+                            *ngFor="let col of columns"
+                            [ngSwitch]="col.field"
+                            [ngStyle]="{ 'text-align': col.alignment }"
+                          >
+                            <span *ngSwitchCase="'nok'" [ngClass]="{ nok: rowData['nok'] > 0 }">
+                              <span *ngIf="!!rowData.category">{{ rowData[col.field] }}</span>
+                            </span>
+
+                            <span
+                              *ngSwitchCase="'warning'"
+                              [ngClass]="{ warning: rowData['nok'] == 0 && rowData['warning'] > 0 }"
+                            >
+                              <span *ngIf="!!rowData.category">{{ rowData[col.field] }}</span>
+                            </span>
+
+                            <span
+                              *ngSwitchCase="'ok'"
+                              [ngClass]="{ ok: rowData['nok'] == 0 && rowData['warning'] == 0 && rowData['ok'] >= 0 }"
+                            >
+                              <span *ngIf="!!rowData.category">{{ rowData[col.field] }}</span>
+                            </span>
+
+                            <span *ngSwitchCase="'category'" class="category"
+                              ><span *ngIf="!!rowData.category">{{ rowData[col.field] }}</span></span
+                            >
+
+                            <span *ngSwitchDefault>
+                              <span *ngIf="!!rowData.category">{{ rowData[col.field] }}</span>
+                            </span>
+                          </td>
+                        </tr>
+                      </ng-template>
+                    </p-table>
+                  </div>
+
+                  <div class="table-wrapper">
+                    <p-table
+                      [resizableColumns]="true"
+                      #ptable
+                      class="aw-table2"
+                      [columns]="workPackageTableCols"
+                      [value]="workPackageTableForDisplay"
+                      [(selection)]="selectedWorkPackages"
+                      [scrollable]="true"
+                      dataKey="wpId"
+                    >
+                      <ng-template pTemplate="emptymessage">
+                        <span *ngIf="!isWorkPackageLoading"> &nbsp;</span>
+
+                        <div *ngIf="isWorkPackageLoading" class="aw-table-loading-indicator">
+                          <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                          <div class="lds-hourglass"></div>
+                        </div>
+                      </ng-template>
+
+                      <ng-template pTemplate="caption">
+                        <div class="aw-table-header" [ngClass]="{ 'rows-selected': selectedWorkPackages.length > 0 }">
+                          <div class="aw-table-global-filter">
+                            <label class="aw-table-global-filter-label">
+                              <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                            </label>
+
+                            <input
+                              #ptableGlobalFilter
+                              class="aw-table-global-filter-input"
+                              type="text"
+                              placeholder="{{ 'table.globalFilterText' | translate }}"
+                              (input)="ptable.filterGlobal($event.target.value, 'contains')"
+                            />
+                          </div>
+
+                          <div class="aw-table-actions">
+                            <button
+                              *ngIf="selectedWorkPackages.length > 0 && enableACRSbutton() && enableACRSIfWPClosed()"
+                              type="button"
+                              mat-raised-button
+                              (click)="createAcrsEvent()"
+                            >
+                              <span *ngIf="!showForm1()">{{
+                                getComponentName() + ".createAcrsEvent" | translate
+                              }}</span>
+                              <span *ngIf="showForm1()">{{
+                                getComponentName() + ".createForm1Event" | translate
+                              }}</span>
+                            </button>
+
+                            <button
+                              *ngIf="selectedWorkPackages.length === 1"
+                              type="button"
+                              mat-raised-button
+                              (click)="updateConfiguration()"
+                            >
+                              {{ "updateAssetBreakdown" | translate }}
+                            </button>
+
+                            <button
+                              *ngIf="selectedWorkPackages.length === 1"
+                              type="button"
+                              mat-raised-button
+                              (click)="updateLogbook()"
+                            >
+                              {{ getComponentName() + ".updateLogbook" | translate }}
+                            </button>
+
+                            <button
+                              *ngIf="selectedWorkPackages.length === 0"
+                              type="button"
+                              mat-raised-button
+                              (click)="refreshWorkPackage()"
+                            >
+                              {{ "global.refresh" | translate }}
+                            </button>
+                          </div>
+                        </div>
+                      </ng-template>
+
+                      <ng-template pTemplate="colgroup" let-columns>
+                        <colgroup>
+                          <col class="aw-table-checkbox-wrapper" />
+                          <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                          <col class="row-expand-wrapper" />
+                          <col class="row-action-wrapper" />
+                        </colgroup>
+                      </ng-template>
+
+                      <ng-template pTemplate="header" let-columns>
+                        <tr>
+                          <th class="aw-table-checkbox-wrapper">
+                            <p-tableHeaderCheckbox class="aw-table-checkbox"></p-tableHeaderCheckbox>
+                          </th>
+
+                          <th
+                            pResizableColumn
+                            *ngFor="let col of columns"
+                            [ngSwitch]="col.field"
+                            [ngStyle]="{ 'text-align': col.alignment }"
+                          >
+                            <span *ngSwitchCase="'acrs'">
+                              <span *ngIf="!showForm1()">{{ componentData.componentId + ".acrs" | translate }}</span>
+                              <span *ngIf="showForm1()">{{ componentData.componentId + ".form1" | translate }}</span>
+                            </span>
+                            <span *ngSwitchCase="'acrsEventCode'">
+                              <span *ngIf="!showForm1()">{{
+                                componentData.componentId + ".acrsEventCode" | translate
+                              }}</span>
+                              <span *ngIf="showForm1()">{{
+                                componentData.componentId + ".form1EventCode" | translate
+                              }}</span>
+                            </span>
+                            <span *ngSwitchDefault>{{ componentData.componentId + "." + col.field | translate }}</span>
+                          </th>
+
+                          <th class="row-expand-wrapper"></th>
+                          <th class="row-action-wrapper"></th>
+                        </tr>
+                      </ng-template>
+
+                      <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                        <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                          <td class="aw-table-checkbox-wrapper">
+                            <p-tableCheckbox class="aw-table-checkbox" [value]="rowData"></p-tableCheckbox>
+                          </td>
+
+                          <td
+                            *ngFor="let col of columns"
+                            [ngSwitch]="col.field"
+                            [ngStyle]="{ 'text-align': col.alignment }"
+                          >
+                            <span *ngSwitchCase="'number'"
+                              ><a (click)="openWorkPackage(rowData)">{{ rowData[col.field] }}</a></span
+                            >
+
+                            <span *ngSwitchCase="'acrs'">
+                              <span
+                                *ngIf="rowData.checkResultIcon === '9'"
+                                class="airworthiness-alert airworthiness-alert--ok"
+                                ><span
+                                  *ngIf="
+                                    rowData.checkResultTooltip !== null && rowData.checkResultTooltip !== undefined
+                                  "
+                                  title="{{ rowData.checkResultTooltip }}"
+                                  >{{ rowData[col.field] }}</span
+                                ><span
+                                  *ngIf="
+                                    rowData.checkResultTooltip === null || rowData.checkResultTooltip === undefined
+                                  "
+                                >
+                                  {{ rowData[col.field] }}
+                                </span></span
+                              >
+                              <span
+                                *ngIf="rowData.checkResultIcon === '10'"
+                                class="airworthiness-alert airworthiness-alert--nok"
+                                ><span
+                                  *ngIf="
+                                    rowData.checkResultTooltip !== null && rowData.checkResultTooltip !== undefined
+                                  "
+                                  title="{{ rowData.checkResultTooltip }}"
+                                  >{{ rowData[col.field] }}</span
+                                ><span
+                                  *ngIf="
+                                    rowData.checkResultTooltip === null || rowData.checkResultTooltip === undefined
+                                  "
+                                >
+                                  {{ rowData[col.field] }}
+                                </span></span
+                              >
+                              <span
+                                *ngIf="rowData.checkResultIcon === '11'"
+                                class="airworthiness-alert airworthiness-alert--warning"
+                                ><span
+                                  *ngIf="
+                                    rowData.checkResultTooltip !== null && rowData.checkResultTooltip !== undefined
+                                  "
+                                  title="{{ rowData.checkResultTooltip }}"
+                                  >{{ rowData[col.field] }}</span
+                                ><span
+                                  *ngIf="
+                                    rowData.checkResultTooltip === null || rowData.checkResultTooltip === undefined
+                                  "
+                                >
+                                  {{ rowData[col.field] }}
+                                </span></span
+                              >
+                            </span>
+
+                            <span *ngSwitchCase="'name'">
+                              <span title="{{ rowData[col.field] }}">{{ rowData[col.field] }}</span>
+                            </span>
+
+                            <span *ngSwitchCase="'logbookUpdate'">
+                              <span
+                                *ngIf="rowData.logbookCheckResultIcon === '9'"
+                                class="airworthiness-alert airworthiness-alert--ok"
+                                ><span
+                                  *ngIf="
+                                    rowData.logbookCheckResultTooltip !== null &&
+                                    rowData.logbookCheckResultTooltip !== undefined
+                                  "
+                                  title="{{ rowData.logbookCheckResultTooltip }}"
+                                  >{{ rowData[col.field] }}</span
+                                ><span
+                                  *ngIf="
+                                    rowData.logbookCheckResultTooltip === null ||
+                                    rowData.logbookCheckResultTooltip === undefined
+                                  "
+                                >
+                                  {{ rowData[col.field] }}
+                                </span></span
+                              >
+                              <span
+                                *ngIf="rowData.logbookCheckResultIcon === '10'"
+                                class="airworthiness-alert airworthiness-alert--nok"
+                                ><span
+                                  *ngIf="
+                                    rowData.logbookCheckResultTooltip !== null &&
+                                    rowData.logbookCheckResultTooltip !== undefined
+                                  "
+                                  title="{{ rowData.logbookCheckResultTooltip }}"
+                                  >{{ rowData[col.field] }}</span
+                                ><span
+                                  *ngIf="
+                                    rowData.logbookCheckResultTooltip === null ||
+                                    rowData.logbookCheckResultTooltip === undefined
+                                  "
+                                >
+                                  {{ rowData[col.field] }}
+                                </span></span
+                              >
+                              <span
+                                *ngIf="rowData.logbookCheckResultIcon === '11'"
+                                class="airworthiness-alert airworthiness-alert--warning"
+                                ><span
+                                  *ngIf="
+                                    rowData.logbookCheckResultTooltip !== null &&
+                                    rowData.logbookCheckResultTooltip !== undefined
+                                  "
+                                  title="{{ rowData.logbookCheckResultTooltip }}"
+                                  >{{ rowData[col.field] }}</span
+                                ><span
+                                  *ngIf="
+                                    rowData.logbookCheckResultTooltip === null ||
+                                    rowData.logbookCheckResultTooltip === undefined
+                                  "
+                                >
+                                  {{ rowData[col.field] }}
+                                </span></span
+                              >
+                            </span>
+
+                            <span *ngSwitchCase="'appliedConfiguration'">
+                              <span
+                                *ngIf="rowData.configurationCheckResultIcon === '9'"
+                                class="airworthiness-alert airworthiness-alert--ok"
+                                ><span
+                                  *ngIf="
+                                    rowData.configurationCheckResultTooltip !== null &&
+                                    rowData.configurationCheckResultTooltip !== undefined
+                                  "
+                                  title="{{ rowData.configurationCheckResultTooltip }}"
+                                  >{{ rowData[col.field] }}</span
+                                ><span
+                                  *ngIf="
+                                    rowData.configurationCheckResultTooltip === null ||
+                                    rowData.configurationCheckResultTooltip === undefined
+                                  "
+                                >
+                                  {{ rowData[col.field] }}
+                                </span></span
+                              >
+                              <span
+                                *ngIf="rowData.configurationCheckResultIcon === '10'"
+                                class="airworthiness-alert airworthiness-alert--nok"
+                                ><span
+                                  *ngIf="
+                                    rowData.configurationCheckResultTooltip !== null &&
+                                    rowData.configurationCheckResultTooltip !== undefined
+                                  "
+                                  title="{{ rowData.configurationCheckResultTooltip }}"
+                                  >{{ rowData[col.field] }}</span
+                                ><span
+                                  *ngIf="
+                                    rowData.configurationCheckResultTooltip === null ||
+                                    rowData.configurationCheckResultTooltip === undefined
+                                  "
+                                >
+                                  {{ rowData[col.field] }}
+                                </span></span
+                              >
+                              <span
+                                *ngIf="rowData.configurationCheckResultIcon === '11'"
+                                class="airworthiness-alert airworthiness-alert--warning"
+                                ><span
+                                  *ngIf="
+                                    rowData.configurationCheckResultTooltip !== null &&
+                                    rowData.configurationCheckResultTooltip !== undefined
+                                  "
+                                  title="{{ rowData.configurationCheckResultTooltip }}"
+                                  >{{ rowData[col.field] }}</span
+                                ><span
+                                  *ngIf="
+                                    rowData.configurationCheckResultTooltip === null ||
+                                    rowData.configurationCheckResultTooltip === undefined
+                                  "
+                                >
+                                  {{ rowData[col.field] }}
+                                </span></span
+                              >
+                            </span>
+
+                            <span *ngSwitchCase="'acrsEventCode'"
+                              ><a (click)="openEvent(rowData)">{{ rowData[col.field] }}</a></span
+                            >
+
+                            <span *ngSwitchDefault> {{ rowData[col.field] }} </span>
+                          </td>
+
+                          <td class="row-expand-wrapper" [pRowToggler]="rowData">
+                            <i
+                              class="fa fa-fw aw-icon aw-icon-with-border"
+                              [ngClass]="rowData._expand ? 'fa-minus' : 'fa-plus'"
+                              aria-hidden="true"
+                              pTooltip="{{ 'global.showTableRowDetails' | translate }}"
+                              tooltipPosition="top"
+                              (click)="toggleWorkPackageExpand(rowData)"
+                            ></i>
+                          </td>
+                        </tr>
+                      </ng-template>
+
+                      <ng-template pTemplate="rowexpansion" let-rowData let-columns="columns">
+                        <tr class="row-expanded" *ngIf="rowData._expand">
+                          <td [attr.colspan]="columns.length + 2">
+                            <div class="row">
+                              <div class="form-group">
+                                <label class="form-label"> {{ getComponentName() + ".mroCenter" | translate }} </label>
+
+                                <div class="form-control">
+                                  <input
+                                    class="aw-input"
+                                    type="text"
+                                    [(ngModel)]="rowData.mroCenter"
+                                    [disabled]="true"
+                                  />
+                                </div>
+                              </div>
+
+                              <div class="form-group">
+                                <label class="form-label">
+                                  {{ getComponentName() + ".customer" | translate }}
+                                </label>
+
+                                <div class="form-control">
+                                  <input
+                                    class="aw-input"
+                                    type="text"
+                                    [(ngModel)]="rowData.customer"
+                                    [disabled]="true"
+                                  />
+                                </div>
+                              </div>
+
+                              <div class="form-group">
+                                <label class="form-label">
+                                  {{ getComponentName() + ".assignedTo" | translate }}
+                                </label>
+
+                                <div class="form-control">
+                                  <input
+                                    class="aw-input"
+                                    type="text"
+                                    [(ngModel)]="rowData.assignedTo"
+                                    [disabled]="true"
+                                  />
+                                </div>
+                              </div>
+
+                              <div class="form-group">
+                                <label class="form-label">
+                                  {{ getComponentName() + ".dueDate" | translate }}
+                                </label>
+
+                                <div class="form-control">
+                                  <input class="aw-input" type="text" [(ngModel)]="rowData.dueDate" [disabled]="true" />
+                                </div>
+                              </div>
+                              <div class="form-group">
+                                <label class="form-label">
+                                  {{ getComponentName() + ".wpClosedBy" | translate }}
+                                </label>
+
+                                <div class="form-control">
+                                  <input
+                                    class="aw-input"
+                                    type="text"
+                                    [(ngModel)]="rowData.closedBy"
+                                    [disabled]="true"
+                                  />
+                                </div>
+                              </div>
+                              <div class="form-group">
+                                <label class="form-label">
+                                  {{ getComponentName() + ".acrsValidatedBy" | translate }}
+                                </label>
+
+                                <div class="form-control">
+                                  <input
+                                    class="aw-input"
+                                    type="text"
+                                    [(ngModel)]="rowData.acrsValidatedBy"
+                                    [disabled]="true"
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      </ng-template>
+                    </p-table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+        <mat-tab id="defectsTab">
+          <ng-template mat-tab-label>
+            {{ getComponentName() + ".defects" | translate }}
+          </ng-template>
+          <!--Defects-->
+          <div class="grid-row">
+            <div class="grid-cell--12">
+              <div class="grid-cell grid-cell--container">
+                <aw-defect-list
+                  [acrsEventCodeList]="acrsEventCodeList"
+                  [equipmentCode]="scope.equipmentCodeList[0]"
+                  (updateDefectSummary)="updateDefectSummary($event)"
+                ></aw-defect-list>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+        <mat-tab id="flightsTab">
+          <ng-template mat-tab-label>
+            {{ getComponentName() + ".flights" | translate }}
+          </ng-template>
+          <!--Flights-->
+          <div class="grid-row">
+            <div class="grid-cell--12">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ getComponentName() + ".flights" | translate }}
+                      ({{ flightsTableDataSource ? flightsTableDataSource.dataCount : 0 }})
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <div *ngIf="!flightsTableDataSource.isLoading" class="table-summary-wrapper" style="width: 25%">
+                    <p-table
+                      [resizableColumns]="true"
+                      class="table-control-summary"
+                      [columns]="flightSummaryTableCols"
+                      [value]="flightTableSummary"
+                    >
+                      <ng-template pTemplate="colgroup" let-columns>
+                        <colgroup>
+                          <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                        </colgroup>
+                      </ng-template>
+
+                      <ng-template pTemplate="header" let-columns>
+                        <tr>
+                          <th
+                            pResizableColumn
+                            *ngFor="let col of columns"
+                            [ngSwitch]="col.field"
+                            [ngStyle]="{ 'text-align': col.alignment }"
+                          >
+                            <span *ngSwitchDefault> {{ getComponentName() + "." + col.field | translate }} </span>
+                          </th>
+                        </tr>
+                      </ng-template>
+
+                      <ng-template pTemplate="body" let-columns="columns" let-rowData>
+                        <tr>
+                          <td
+                            *ngFor="let col of columns"
+                            [ngSwitch]="col.field"
+                            [ngStyle]="{ 'text-align': col.alignment }"
+                            style="padding-right: 1%; width: 60%"
+                          >
+                            <span *ngSwitchCase="'nok'" [ngClass]="{ nok: rowData['nok'] > 0 }">
+                              {{ rowData[col.field] }}
+                            </span>
+
+                            <span
+                              *ngSwitchCase="'warning'"
+                              [ngClass]="{ warning: rowData['nok'] == 0 && rowData['warning'] > 0 }"
+                            >
+                              {{ rowData[col.field] }}
+                            </span>
+
+                            <span
+                              *ngSwitchCase="'ok'"
+                              [ngClass]="{ ok: rowData['nok'] == 0 && rowData['warning'] == 0 && rowData['ok'] >= 0 }"
+                            >
+                              {{ rowData[col.field] }}
+                            </span>
+
+                            <span *ngSwitchDefault>
+                              <span>{{ rowData[col.field] }}</span>
+                            </span>
+                          </td>
+                        </tr>
+                      </ng-template>
+                    </p-table>
+                  </div>
+
+                  <div class="table-wrapper">
+                    <a-table
+                      id="tableFlights"
+                      [dataSource]="flightsTableDataSource"
+                      (onRowTogglerClick)="toggleFlightExpand($event)"
+                      class="flight-table"
+                    >
+                      <ng-template tableActionsDef>
+                        <button
+                          *ngIf="flightsTableDataSource.dataSelectionCount === 1 && showValidateFlightButton()"
+                          type="button"
+                          mat-raised-button
+                          (click)="validateFlight(flightsTableDataSource.dataSelection)"
+                        >
+                          {{ getComponentName() + ".validateFlight" | translate }}
+                        </button>
+
+                        <button
+                          *ngIf="!flightsTableDataSource.hasDataSelection"
+                          type="button"
+                          mat-raised-button
+                          (click)="refreshFlightTable()"
+                        >
+                          {{ "global.refresh" | translate }}
+                        </button>
+                      </ng-template>
+
+                      <ng-template columnDef="control" let-rowData="rowData">
+                        <span
+                          *ngIf="rowData._obj.checkResultIcon === '9'"
+                          class="airworthiness-alert airworthiness-alert--ok"
+                          ><span
+                            *ngIf="rowData._obj.checkResultAlt !== null && rowData._obj.checkResultAlt !== undefined"
+                            title="{{ rowData._obj.checkResultAlt }}"
+                            >{{ rowData.control }}</span
+                          ><span
+                            *ngIf="rowData._obj.checkResultAlt === null || rowData._obj.checkResultAlt === undefined"
+                          >
+                            {{ rowData.control }}
+                          </span></span
+                        >
+                        <span
+                          *ngIf="rowData._obj.checkResultIcon === '10'"
+                          class="airworthiness-alert airworthiness-alert--nok"
+                          ><span
+                            *ngIf="rowData._obj.checkResultAlt !== null && rowData._obj.checkResultAlt !== undefined"
+                            title="{{ rowData._obj.checkResultAlt }}"
+                            >{{ rowData.control }}</span
+                          ><span
+                            *ngIf="rowData._obj.checkResultAlt === null || rowData._obj.checkResultAlt === undefined"
+                          >
+                            {{ rowData.control }}
+                          </span></span
+                        >
+                        <span
+                          *ngIf="rowData._obj.checkResultIcon === '11'"
+                          class="airworthiness-alert airworthiness-alert--warning"
+                          ><span
+                            *ngIf="rowData._obj.checkResultAlt !== null && rowData._obj.checkResultAlt !== undefined"
+                            title="{{ rowData._obj.checkResultAlt }}"
+                            >{{ rowData.control }}</span
+                          ><span
+                            *ngIf="rowData._obj.checkResultAlt === null || rowData._obj.checkResultAlt === undefined"
+                          >
+                            {{ rowData.control }}
+                          </span></span
+                        >
+                      </ng-template>
+
+                      <ng-template columnDef="chronoNumber" let-rowData="rowData">
+                        <a (click)="openFlight(rowData)">{{ rowData.chronoNumber }}</a>
+                      </ng-template>
+
+                      <ng-template columnDef="missionCode" let-rowData="rowData">
+                        <a (click)="openMission(rowData)">{{ rowData.missionCode }}</a>
+                      </ng-template>
+
+                      <ng-template rowExpansionDef let-rowData="rowData">
+                        <aw-airworthiness-table-remaining-values
+                          [row]="rowData"
+                          [remainingTable]="remainingTable"
+                          [remainingTableCols]="remainingTableCols"
+                        ></aw-airworthiness-table-remaining-values>
+                        <aw-airworthiness-table-remaining-values
+                          [row]="rowData"
+                          [remainingTable]="remainingTable"
+                          [remainingTableCols]="remainingTableCols2"
+                        ></aw-airworthiness-table-remaining-values>
+                      </ng-template>
+                    </a-table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+        <mat-tab id="postponedWorkOrdersTab">
+          <ng-template mat-tab-label>
+            {{ getComponentName() + ".postponement" | translate }}
+          </ng-template>
+          <!--Postponed work orders-->
+          <div class="grid-row">
+            <div class="grid-cell--12">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ getComponentName() + ".postponement" | translate }}
+                      ({{ postponementTable ? postponementTable.length : 0 }})
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <div *ngIf="!isPostponementTableLoading" class="table-summary-wrapper" style="width: 25%">
+                    <p-table
+                      [resizableColumns]="true"
+                      class="table-control-summary"
+                      [columns]="postponementSummaryTableCols"
+                      [value]="postponementTableSummary"
+                    >
+                      <ng-template pTemplate="colgroup" let-columns>
+                        <colgroup>
+                          <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                        </colgroup>
+                      </ng-template>
+
+                      <ng-template pTemplate="header" let-columns>
+                        <tr>
+                          <th
+                            pResizableColumn
+                            *ngFor="let col of columns"
+                            [ngSwitch]="col.field"
+                            [ngStyle]="{ 'text-align': col.alignment }"
+                          >
+                            <span *ngSwitchDefault> {{ getComponentName() + "." + col.field | translate }} </span>
+                          </th>
+                        </tr>
+                      </ng-template>
+
+                      <ng-template pTemplate="body" let-columns="columns" let-rowData>
+                        <tr>
+                          <td
+                            *ngFor="let col of columns"
+                            [ngSwitch]="col.field"
+                            [ngStyle]="{ 'text-align': col.alignment }"
+                            style="padding-right: 1%; width: 60%"
+                          >
+                            <span *ngSwitchCase="'nok'" [ngClass]="{ nok: rowData['nok'] > 0 }">
+                              {{ rowData[col.field] }}
+                            </span>
+
+                            <span
+                              *ngSwitchCase="'warning'"
+                              [ngClass]="{ warning: rowData['nok'] == 0 && rowData['warning'] > 0 }"
+                            >
+                              {{ rowData[col.field] }}
+                            </span>
+
+                            <span
+                              *ngSwitchCase="'ok'"
+                              [ngClass]="{ ok: rowData['nok'] == 0 && rowData['warning'] == 0 && rowData['ok'] >= 0 }"
+                            >
+                              {{ rowData[col.field] }}
+                            </span>
+
+                            <span *ngSwitchDefault>
+                              <span>{{ rowData[col.field] }}</span>
+                            </span>
+                          </td>
+                        </tr>
+                      </ng-template>
+                    </p-table>
+                  </div>
+
+                  <div class="table-wrapper">
+                    <p-table
+                      [resizableColumns]="true"
+                      #ptablePostponedWorkOrders
+                      class="aw-table2"
+                      [columns]="postponementTableCols"
+                      [value]="postponementTable"
+                      [scrollable]="true"
+                      dataKey="rowId"
+                    >
+                      <ng-template pTemplate="emptymessage">
+                        <span *ngIf="!isPostponementTableLoading"> &nbsp;</span>
+
+                        <div *ngIf="isPostponementTableLoading" class="aw-table-loading-indicator">
+                          <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                          <div class="lds-hourglass"></div>
+                        </div>
+                      </ng-template>
+
+                      <ng-template pTemplate="caption">
+                        <div class="aw-table-header">
+                          <div class="aw-table-global-filter">
+                            <label class="aw-table-global-filter-label">
+                              <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                            </label>
+
+                            <input
+                              #ptableGlobalFilter
+                              class="aw-table-global-filter-input"
+                              type="text"
+                              placeholder="{{ 'table.globalFilterText' | translate }}"
+                              (input)="ptablePostponedWorkOrders.filterGlobal($event.target.value, 'contains')"
+                            />
+                          </div>
+                        </div>
+                      </ng-template>
+
+                      <ng-template pTemplate="colgroup" let-columns>
+                        <colgroup>
+                          <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                          <col class="row-expand-wrapper" />
+                          <col class="row-action-wrapper" />
+                        </colgroup>
+                      </ng-template>
+
+                      <ng-template pTemplate="header" let-columns>
+                        <tr>
+                          <th colspan="6">{{ getComponentName() + ".workOrder" | translate }}</th>
+                          <th colspan="4" class="table-border-left" style="text-align: center">
+                            {{ getComponentName() + ".postponement" | translate }}
+                          </th>
+                        </tr>
+
+                        <tr>
+                          <th
+                            pResizableColumn
+                            *ngFor="let col of columns"
+                            [ngStyle]="{ 'text-align': col.alignment }"
+                            [ngClass]="{ 'table-border-left': col.field === 'postponementEventCode' }"
+                          >
+                            {{ componentData.componentId + "." + col.field | translate }}
+                          </th>
+
+                          <th class="row-expand-wrapper"></th>
+                          <th class="row-action-wrapper"></th>
+                        </tr>
+                      </ng-template>
+
+                      <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                        <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                          <td
+                            *ngFor="let col of columns"
+                            [ngSwitch]="col.field"
+                            [ngStyle]="{ 'text-align': col.alignment }"
+                            [ngClass]="{ 'table-border-left': col.field === 'postponementEventCode' }"
+                          >
+                            <span *ngSwitchCase="'control'">
+                              <span
+                                *ngIf="rowData.checkResultIcon === '9'"
+                                class="airworthiness-alert airworthiness-alert--ok"
+                                >{{ rowData[col.field] }}</span
+                              >
+                              <span
+                                *ngIf="rowData.checkResultIcon === '10'"
+                                class="airworthiness-alert airworthiness-alert--nok"
+                                >{{ rowData[col.field] }}</span
+                              >
+                              <span
+                                *ngIf="rowData.checkResultIcon === '11'"
+                                class="airworthiness-alert airworthiness-alert--warning"
+                              >
+                                {{ rowData[col.field] }}
+                              </span>
+                            </span>
+
+                            <span *ngSwitchCase="'workOrderStatus'">
+                              <span title="{{ rowData[col.field] }}">{{ rowData[col.field] }}</span>
+                            </span>
+
+                            <span *ngSwitchCase="'workOrderCode'"
+                              ><a (click)="openJobCard(rowData)">{{ rowData[col.field] }}</a></span
+                            >
+
+                            <span *ngSwitchCase="'workOrderOrigin'"
+                              ><a (click)="consultWorkOrderOrigin(rowData)"
+                                ><span title="{{ rowData[col.field] }}">{{ rowData[col.field] }}</span></a
+                              ></span
+                            >
+
+                            <span *ngSwitchCase="'postponementEventCode'"
+                              ><a (click)="openEventCode(rowData)">{{ rowData[col.field] }}</a></span
+                            >
+
+                            <span *ngSwitchDefault> {{ rowData[col.field] }} </span>
+                          </td>
+
+                          <td class="row-expand-wrapper" [pRowToggler]="rowData">
+                            <i
+                              class="fa fa-fw aw-icon aw-icon-with-border"
+                              [ngClass]="rowData._expand ? 'fa-minus' : 'fa-plus'"
+                              aria-hidden="true"
+                              pTooltip="{{ 'global.showTableRowDetails' | translate }}"
+                              tooltipPosition="top"
+                              (click)="togglePostponementExpand(rowData)"
+                            ></i>
+                          </td>
+                        </tr>
+                      </ng-template>
+
+                      <ng-template pTemplate="rowexpansion" let-rowData let-columns="columns">
+                        <tr class="row-expanded" *ngIf="rowData._expand">
+                          <td [attr.colspan]="columns.length + 2">
+                            <div class="row">
+                              <div class="form-group">
+                                <label class="form-label">
+                                  {{ getComponentName() + ".postponementDescription" | translate }}
+                                </label>
+
+                                <div class="form-control">
+                                  <input
+                                    class="aw-input"
+                                    type="text"
+                                    [(ngModel)]="rowData.postponementDescription"
+                                    [disabled]="true"
+                                  />
+                                </div>
+                              </div>
+
+                              <div class="form-group">
+                                <label class="form-label">
+                                  {{ getComponentName() + ".postponementRefusalReason" | translate }}
+                                </label>
+
+                                <div class="form-control">
+                                  <input
+                                    class="aw-input"
+                                    type="text"
+                                    [(ngModel)]="rowData.postponementRefusalReason"
+                                    [disabled]="true"
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      </ng-template>
+                    </p-table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+        <mat-tab id="upcomingTasksAndLLPTab">
+          <ng-template mat-tab-label>
+            {{ getComponentName() + ".upcomingEvents" | translate }}
+          </ng-template>
+          <!--Upcoming events-->
+          <div class="grid-row">
+            <div
+              #upcomingEventsAnchor
+              class="grid-cell--12"
+              (click)="selectPageTocEntry(component.UPCOMING_EVENTS_ANCHOR_ID)"
+            >
+              <div
+                class="grid-cell grid-cell--container"
+                [ngClass]="{ active: isPageTocEntrySelected(component.UPCOMING_EVENTS_ANCHOR_ID) }"
+              >
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ getComponentName() + ".upcomingEvents" | translate }}
+                      ({{ upcomingEventsTable ? upcomingEventsTable.length : 0 }})
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <div *ngIf="!isUpcomingEventsTableLoading" class="table-summary-wrapper" style="width: 25%">
+                    <p-table
+                      [resizableColumns]="true"
+                      class="table-control-summary"
+                      [columns]="upcomingEventsSummaryTableCols"
+                      [value]="upcomingEventsTableSummary"
+                    >
+                      <ng-template pTemplate="colgroup" let-columns>
+                        <colgroup>
+                          <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                        </colgroup>
+                      </ng-template>
+
+                      <ng-template pTemplate="header" let-columns>
+                        <tr>
+                          <th
+                            pResizableColumn
+                            *ngFor="let col of columns"
+                            [ngSwitch]="col.field"
+                            [ngStyle]="{ 'text-align': col.alignment }"
+                          >
+                            <span *ngSwitchDefault> {{ getComponentName() + "." + col.field | translate }} </span>
+                          </th>
+                        </tr>
+                      </ng-template>
+
+                      <ng-template pTemplate="body" let-columns="columns" let-rowData>
+                        <tr>
+                          <td
+                            *ngFor="let col of columns"
+                            [ngSwitch]="col.field"
+                            [ngStyle]="{ 'text-align': col.alignment }"
+                            style="padding-right: 1%; width: 60%"
+                          >
+                            <span *ngSwitchCase="'nok'" [ngClass]="{ nok: rowData['nok'] > 0 }">
+                              {{ rowData[col.field] }}
+                            </span>
+
+                            <span
+                              *ngSwitchCase="'warning'"
+                              [ngClass]="{ warning: rowData['nok'] == 0 && rowData['warning'] > 0 }"
+                            >
+                              {{ rowData[col.field] }}
+                            </span>
+
+                            <span
+                              *ngSwitchCase="'ok'"
+                              [ngClass]="{ ok: rowData['nok'] == 0 && rowData['warning'] == 0 && rowData['ok'] >= 0 }"
+                            >
+                              {{ rowData[col.field] }}
+                            </span>
+
+                            <span *ngSwitchDefault>
+                              <span>{{ rowData[col.field] }}</span>
+                            </span>
+                          </td>
+                        </tr>
+                      </ng-template>
+                    </p-table>
+                  </div>
+
+                  <div class="table-wrapper">
+                    <p-table
+                      [resizableColumns]="true"
+                      #ptableUpcomingEventsWorkOrders
+                      class="aw-table2"
+                      [columns]="upcomingEventsTableCols"
+                      [value]="upcomingEventsTable"
+                      [scrollable]="true"
+                      dataKey="rowId"
+                      (sortFunction)="customSort($event)"
+                      [customSort]="true"
+                    >
+                      <ng-template pTemplate="emptymessage">
+                        <span *ngIf="!isUpcomingEventsTableLoading"> &nbsp;</span>
+
+                        <div *ngIf="isUpcomingEventsTableLoading" class="aw-table-loading-indicator">
+                          <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                          <div class="lds-hourglass"></div>
+                        </div>
+                      </ng-template>
+
+                      <ng-template pTemplate="caption">
+                        <div class="aw-table-header">
+                          <div class="aw-table-global-filter">
+                            <label class="aw-table-global-filter-label">
+                              <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                            </label>
+
+                            <input
+                              #ptableGlobalFilter
+                              class="aw-table-global-filter-input"
+                              type="text"
+                              placeholder="{{ 'table.globalFilterText' | translate }}"
+                              (input)="ptableUpcomingEventsWorkOrders.filterGlobal($event.target.value, 'contains')"
+                            />
+                          </div>
+                          <div class="aw-table-icon-actions">
+                            <i
+                              class="fa fa-fw fa-filter aw-icon aw-icon-with-border aw-icon-with-overlay"
+                              aria-hidden="true"
+                              pTooltip="{{
+                                getComponentName() + (utlFiltersVisible ? '.hideFilters' : '.showFilters') | translate
+                              }}"
+                              [ngClass]="{ active: utlFiltersVisible }"
+                              (click)="utlFilters.toggle($event)"
+                            ></i>
+                          </div>
+                        </div>
+                      </ng-template>
+
+                      <ng-template pTemplate="colgroup" let-columns>
+                        <colgroup>
+                          <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                          <col class="row-expand-wrapper" />
+                          <col class="row-action-wrapper" />
+                        </colgroup>
+                      </ng-template>
+
+                      <ng-template pTemplate="header" let-columns>
+                        <tr>
+                          <th
+                            pResizableColumn
+                            *ngFor="let col of columns"
+                            [ngStyle]="{ 'text-align': col.alignment }"
+                            [pSortableColumn]="col.field"
+                            [pSortableColumnDisabled]="col.field !== 'remainingEquivalentPotential'"
+                          >
+                            {{ componentData.componentId + "." + col.field | translate }}
+                            <p-sortIcon
+                              *ngIf="col.field === 'remainingEquivalentPotential'"
+                              [field]="col.field"
+                            ></p-sortIcon>
+                          </th>
+                        </tr>
+                      </ng-template>
+
+                      <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                        <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                          <td
+                            *ngFor="let col of columns"
+                            [ngSwitch]="col.field"
+                            [ngStyle]="{ 'text-align': col.alignment }"
+                          >
+                            <span *ngSwitchCase="'control'">
+                              <span
+                                *ngIf="rowData.checkResultIcon === '9'"
+                                class="airworthiness-alert airworthiness-alert--ok"
+                                ><span
+                                  *ngIf="
+                                    rowData.checkResultTooltip !== null && rowData.checkResultTooltip !== undefined
+                                  "
+                                  title="{{ rowData.checkResultTooltip }}"
+                                  >{{ rowData[col.field] }}</span
+                                ><span
+                                  *ngIf="
+                                    rowData.checkResultTooltip === null || rowData.checkResultTooltip === undefined
+                                  "
+                                >
+                                  {{ rowData[col.field] }}
+                                </span></span
+                              >
+                              <span
+                                *ngIf="!rowData.checkResultIcon"
+                                class="airworthiness-alert airworthiness-alert--ok"
+                              >
+                                {{ rowData[col.field] }}
+                              </span>
+                              <span
+                                *ngIf="rowData.checkResultIcon === '10'"
+                                class="airworthiness-alert airworthiness-alert--nok"
+                                ><span
+                                  *ngIf="
+                                    rowData.checkResultTooltip !== null && rowData.checkResultTooltip !== undefined
+                                  "
+                                  title="{{ rowData.checkResultTooltip }}"
+                                  >{{ rowData[col.field] }}</span
+                                ><span
+                                  *ngIf="
+                                    rowData.checkResultTooltip === null || rowData.checkResultTooltip === undefined
+                                  "
+                                >
+                                  {{ rowData[col.field] }}
+                                </span></span
+                              >
+                              <span
+                                *ngIf="rowData.checkResultIcon === '11'"
+                                class="airworthiness-alert airworthiness-alert--warning"
+                                ><span
+                                  *ngIf="
+                                    rowData.checkResultTooltip !== null && rowData.checkResultTooltip !== undefined
+                                  "
+                                  title="{{ rowData.checkResultTooltip }}"
+                                  >{{ rowData[col.field] }}</span
+                                ><span
+                                  *ngIf="
+                                    rowData.checkResultTooltip === null || rowData.checkResultTooltip === undefined
+                                  "
+                                >
+                                  {{ rowData[col.field] }}
+                                </span></span
+                              >
+                            </span>
+
+                            <span *ngSwitchCase="'designation'"
+                              ><a (click)="openEquipmentDesignation(rowData)"
+                                ><span title="{{ rowData[col.field] }}">{{ rowData[col.field] }}</span></a
+                              ></span
+                            >
+
+                            <span *ngSwitchCase="'code'"
+                              ><a (click)="openEventDetailCode(rowData)"
+                                ><span title="{{ rowData[col.field] }}">{{ rowData[col.field] }}</span></a
+                              ></span
+                            >
+
+                            <span *ngSwitchCase="'remainingEquivalentPotential'">
+                              <div *ngIf="isEquivalentPotentialLoading" class="lds-hourglass"></div>
+                              <span *ngIf="!isEquivalentPotentialLoading">{{ rowData[col.field] }}</span>
+                            </span>
+
+                            <span *ngSwitchDefault> {{ rowData[col.field] }} </span>
+                          </td>
+                        </tr>
+                      </ng-template>
+                    </p-table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+        <mat-tab id="airworthinessDocumentsTab">
+          <ng-template mat-tab-label>
+            {{ getComponentName() + ".airworthinessDocuments" | translate }}
+          </ng-template>
+          <!--Airworthiness Documents-->
+          <div class="grid-row">
+            <div
+              #awDocumentsAnchor
+              class="grid-cell--12"
+              (click)="selectPageTocEntry(component.AW_DOCUMENTS_ANCHOR_ID)"
+            >
+              <div
+                class="grid-cell grid-cell--container"
+                [ngClass]="{ active: isPageTocEntrySelected(component.AW_DOCUMENTS_ANCHOR_ID) }"
+              >
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ getComponentName() + ".airworthinessDocuments" | translate }}
+                      ({{ airworthinessDocumentsTable ? airworthinessDocumentsTable.length : 0 }})
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <div *ngIf="!isAirworthinessDocumentsTableLoading" class="table-summary-wrapper" style="width: 25%">
+                    <p-table
+                      [resizableColumns]="true"
+                      class="table-control-summary"
+                      [columns]="airworthinessDocumentsSummaryTableCols"
+                      [value]="airworthinessDocumentsTableSummary"
+                    >
+                      <ng-template pTemplate="colgroup" let-columns>
+                        <colgroup>
+                          <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                        </colgroup>
+                      </ng-template>
+
+                      <ng-template pTemplate="header" let-columns>
+                        <tr>
+                          <th
+                            pResizableColumn
+                            *ngFor="let col of columns"
+                            [ngSwitch]="col.field"
+                            [ngStyle]="{ 'text-align': col.alignment }"
+                          >
+                            <span *ngSwitchDefault> {{ getComponentName() + "." + col.field | translate }} </span>
+                          </th>
+                        </tr>
+                      </ng-template>
+
+                      <ng-template pTemplate="body" let-columns="columns" let-rowData>
+                        <tr>
+                          <td
+                            *ngFor="let col of columns"
+                            [ngSwitch]="col.field"
+                            [ngStyle]="{ 'text-align': col.alignment }"
+                            style="padding-right: 1%; width: 60%"
+                          >
+                            <span *ngSwitchCase="'nok'" [ngClass]="{ nok: rowData['nok'] > 0 }">
+                              {{ rowData[col.field] }}
+                            </span>
+
+                            <span
+                              *ngSwitchCase="'warning'"
+                              [ngClass]="{ warning: rowData['nok'] == 0 && rowData['warning'] > 0 }"
+                            >
+                              {{ rowData[col.field] }}
+                            </span>
+
+                            <span
+                              *ngSwitchCase="'ok'"
+                              [ngClass]="{ ok: rowData['nok'] == 0 && rowData['warning'] == 0 && rowData['ok'] >= 0 }"
+                            >
+                              {{ rowData[col.field] }}
+                            </span>
+
+                            <span *ngSwitchDefault>
+                              <span>{{ rowData[col.field] }}</span>
+                            </span>
+                          </td>
+                        </tr>
+                      </ng-template>
+                    </p-table>
+                  </div>
+
+                  <div class="table-wrapper">
+                    <p-table
+                      [resizableColumns]="true"
+                      #ptableDocs
+                      class="aw-table2"
+                      [columns]="airworthinessDocumentsTableCols"
+                      [value]="airworthinessDocumentsTable"
+                      [scrollable]="true"
+                      dataKey="rowId"
+                    >
+                      <ng-template pTemplate="emptymessage">
+                        <span *ngIf="!isAirworthinessDocumentsTableLoading"> &nbsp;</span>
+
+                        <div *ngIf="isAirworthinessDocumentsTableLoading" class="aw-table-loading-indicator">
+                          <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                          <div class="lds-hourglass"></div>
+                        </div>
+                      </ng-template>
+
+                      <ng-template pTemplate="caption">
+                        <div class="aw-table-header">
+                          <div class="aw-table-global-filter">
+                            <label class="aw-table-global-filter-label">
+                              <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                            </label>
+
+                            <input
+                              #ptableGlobalFilter
+                              class="aw-table-global-filter-input"
+                              type="text"
+                              placeholder="{{ 'table.globalFilterText' | translate }}"
+                              (input)="ptableDocs.filterGlobal($event.target.value, 'contains')"
+                            />
+                          </div>
+
+                          <div class="aw-table-icon-actions">
+                            <i
+                              class="fa fa-fw fa-filter aw-icon aw-icon-with-border aw-icon-with-overlay"
+                              aria-hidden="true"
+                              pTooltip="{{
+                                getComponentName() + (adFiltersVisible ? '.hideFilters' : '.showFilters') | translate
+                              }}"
+                              [ngClass]="{ active: adFiltersVisible }"
+                              (click)="adFilters.toggle($event)"
+                            ></i>
+                          </div>
+                        </div>
+                      </ng-template>
+                      <ng-template pTemplate="colgroup" let-columns>
+                        <colgroup>
+                          <col class="aw-table-checkbox-wrapper" />
+                          <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                          <col class="row-expand-wrapper" />
+                          <col class="row-action-wrapper" />
+                        </colgroup>
+                      </ng-template>
+
+                      <ng-template pTemplate="header" let-columns>
+                        <tr>
+                          <th class="aw-table-checkbox-wrapper">
+                            <p-tableHeaderCheckbox class="aw-table-checkbox"></p-tableHeaderCheckbox>
+                          </th>
+
+                          <th pResizableColumn *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                            {{ componentData.componentId + "." + col.field | translate }}
+                          </th>
+
+                          <th class="row-expand-wrapper"></th>
+                          <th class="row-action-wrapper"></th>
+                        </tr>
+                      </ng-template>
+
+                      <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                        <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                          <td class="aw-table-checkbox-wrapper">
+                            <p-tableCheckbox class="aw-table-checkbox" [value]="rowData"></p-tableCheckbox>
+                          </td>
+
+                          <td
+                            *ngFor="let col of columns"
+                            [ngSwitch]="col.field"
+                            [ngStyle]="{ 'text-align': col.alignment }"
+                          >
+                            <span *ngSwitchCase="'control'">
+                              <span
+                                *ngIf="rowData.checkResultIcon === '9'"
+                                class="airworthiness-alert airworthiness-alert--ok"
+                                ><span
+                                  *ngIf="
+                                    rowData.checkResultTooltip !== null && rowData.checkResultTooltip !== undefined
+                                  "
+                                  title="{{ rowData.checkResultTooltip }}"
+                                  >{{ rowData[col.field] }}</span
+                                ><span
+                                  *ngIf="
+                                    rowData.checkResultTooltip === null || rowData.checkResultTooltip === undefined
+                                  "
+                                >
+                                  {{ rowData[col.field] }}
+                                </span></span
+                              >
+                              <span
+                                *ngIf="rowData.checkResultIcon === '10'"
+                                class="airworthiness-alert airworthiness-alert--nok"
+                                ><span
+                                  *ngIf="
+                                    rowData.checkResultTooltip !== null && rowData.checkResultTooltip !== undefined
+                                  "
+                                  title="{{ rowData.checkResultTooltip }}"
+                                  >{{ rowData[col.field] }}</span
+                                ><span
+                                  *ngIf="
+                                    rowData.checkResultTooltip === null || rowData.checkResultTooltip === undefined
+                                  "
+                                >
+                                  {{ rowData[col.field] }}
+                                </span></span
+                              >
+                              <span
+                                *ngIf="rowData.checkResultIcon === '11'"
+                                class="airworthiness-alert airworthiness-alert--warning"
+                                ><span
+                                  *ngIf="
+                                    rowData.checkResultTooltip !== null && rowData.checkResultTooltip !== undefined
+                                  "
+                                  title="{{ rowData.checkResultTooltip }}"
+                                  >{{ rowData[col.field] }}</span
+                                ><span
+                                  *ngIf="
+                                    rowData.checkResultTooltip === null || rowData.checkResultTooltip === undefined
+                                  "
+                                >
+                                  {{ rowData[col.field] }}
+                                </span></span
+                              >
+                            </span>
+
+                            <span *ngSwitchCase="'id'"
+                              ><a (click)="openID(rowData)"
+                                ><span title="{{ rowData[col.field] }}">{{ rowData[col.field] }}</span></a
+                              ></span
+                            >
+
+                            <span *ngSwitchCase="'asset'" title="{{ rowData[col.field] }}">{{
+                              rowData[col.field]
+                            }}</span>
+
+                            <span *ngSwitchCase="'description'" title="{{ rowData[col.field] }}">{{
+                              rowData[col.field]
+                            }}</span>
+
+                            <span *ngSwitchDefault> {{ rowData[col.field] }} </span>
+                          </td>
+
+                          <td class="row-expand-wrapper" [pRowToggler]="rowData">
+                            <i
+                              class="fa fa-fw aw-icon aw-icon-with-border"
+                              [ngClass]="rowData._expand ? 'fa-minus' : 'fa-plus'"
+                              aria-hidden="true"
+                              pTooltip="{{ 'global.showTableRowDetails' | translate }}"
+                              tooltipPosition="top"
+                              (click)="toggleAirworthinessDocumentsExpand(rowData)"
+                            ></i>
+                          </td>
+                        </tr>
+                      </ng-template>
+
+                      <ng-template pTemplate="rowexpansion" let-rowData let-columns="columns">
+                        <tr class="row-expanded" *ngIf="rowData._expand">
+                          <td [attr.colspan]="columns.length + 2">
+                            <div class="row">
+                              <div class="form-group">
+                                <label class="form-label"> {{ getComponentName() + ".comment" | translate }} </label>
+
+                                <div class="form-control">
+                                  <input class="aw-input" type="text" [(ngModel)]="rowData.comment" [disabled]="true" />
+                                </div>
+                              </div>
+
+                              <div class="form-group">
+                                <label class="form-label">
+                                  {{ getComponentName() + ".executionDetails" | translate }}
+                                </label>
+
+                                <div class="form-control">
+                                  <input
+                                    class="aw-input"
+                                    type="text"
+                                    [(ngModel)]="rowData.executionDetails"
+                                    [disabled]="true"
+                                  />
+                                </div>
+                              </div>
+
+                              <div class="form-group">
+                                <label class="form-label">
+                                  {{ getComponentName() + ".lastApplicationDate" | translate }}
+                                </label>
+
+                                <div class="form-control">
+                                  <input
+                                    class="aw-input"
+                                    type="text"
+                                    [(ngModel)]="rowData.lastApplicationDate"
+                                    [disabled]="true"
+                                  />
+                                </div>
+                              </div>
+
+                              <div class="form-group">
+                                <label class="form-label">
+                                  {{ getComponentName() + ".lastApplicationHours" | translate }}
+                                </label>
+
+                                <div class="form-control">
+                                  {{ rowData.lastApplicationHours }}
+                                  <label *ngIf="rowData.lastApplicationHours"> H</label>
+                                </div>
+                              </div>
+                              <div class="form-group">
+                                <label class="form-label">
+                                  {{ getComponentName() + ".lastApplicationCycles" | translate }}
+                                </label>
+
+                                <div class="form-control">
+                                  {{ rowData.lastApplicationCycles }}
+                                  <span *ngIf="rowData.lastApplicationCycles"> C</span>
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      </ng-template>
+                    </p-table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+  </div>
+  <!--Filter panel for upcoming tasks and LLP-->
+  <p-overlayPanel
+    #utlFilters
+    class="aw-overlay"
+    (onShow)="utlFiltersVisible = true"
+    (onHide)="utlFiltersVisible = false"
+  >
+    <div class="row">
+      <div class="form-group flex--auto">
+        <label class="form-label"> &nbsp; </label>
+        <div class="form-control aw-selectbutton-wrapper">
+          <p-selectButton
+            [options]="utlFilterList"
+            multiple="multiple"
+            [(ngModel)]="selectedUtlFilterList"
+          ></p-selectButton>
+        </div>
+      </div>
+      <div class="form-group flex--auto">
+        <label class="form-label"> &nbsp; </label>
+        <div class="form-control aw-selectbutton-wrapper">
+          <p-selectButton
+            [options]="eventTypeFilterList"
+            multiple="multiple"
+            [(ngModel)]="selectedEventTypeFilterList"
+          ></p-selectButton>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="form-group flex--auto">
+        <label class="form-label"> {{ componentData.componentId + ".asset" | translate }} </label>
+        <div class="form-control">
+          <p-dropdown
+            class="aw-dropdown fixed-width"
+            [options]="utlAssetList"
+            [(ngModel)]="selectedUtlAsset"
+            [showClear]="true"
+            placeholder="&nbsp;"
+          >
+          </p-dropdown>
+        </div>
+      </div>
+      <div class="form-group"></div>
+    </div>
+
+    <div class="row action-list">
+      <button type="button" mat-raised-button (click)="resetUtlFilter()">
+        {{ getComponentName() + ".reset" | translate }}
+      </button>
+      <button
+        type="button"
+        mat-raised-button
+        (click)="utlFilters.hide(); utlFiltersVisible = false; filterUpcomingTasksAndLLP()"
+      >
+        {{ getComponentName() + ".filter" | translate }}
+      </button>
+    </div>
+  </p-overlayPanel>
+
+  <!--Filter panel for airworthiness document-->
+  <p-overlayPanel #adFilters class="aw-overlay" (onShow)="adFiltersVisible = true" (onHide)="adFiltersVisible = false">
+    <div class="row">
+      <div class="form-group flex--auto">
+        <label class="form-label"> &nbsp; </label>
+        <div class="form-control aw-selectbutton-wrapper">
+          <p-selectButton
+            [options]="adFilterList"
+            multiple="multiple"
+            [(ngModel)]="selectedADFilterList"
+          ></p-selectButton>
+        </div>
+      </div>
+
+      <div class="form-group flex--auto">
+        <label class="form-label"> {{ componentData.componentId + ".asset" | translate }} </label>
+        <div class="form-control">
+          <p-dropdown
+            class="aw-dropdown fixed-width"
+            [options]="assetList"
+            [(ngModel)]="selectedAdAsset"
+            [showClear]="true"
+            placeholder="&nbsp;"
+          >
+          </p-dropdown>
+        </div>
+      </div>
+    </div>
+    <div class="row action-list">
+      <button type="button" mat-raised-button (click)="resetADFilter()">
+        {{ getComponentName() + ".reset" | translate }}
+      </button>
+      <button type="button" mat-raised-button (click)="adFilters.hide(); adFiltersVisible = false; filterAdDocuments()">
+        {{ getComponentName() + ".filter" | translate }}
+      </button>
+    </div>
+  </p-overlayPanel>
+</div>

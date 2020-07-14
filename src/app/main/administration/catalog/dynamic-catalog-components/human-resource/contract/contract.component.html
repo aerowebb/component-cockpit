@@ -1,0 +1,55 @@
+<div class="grid-row">
+  <div class="grid-cell--12">
+    <div class="grid-cell grid-cell--container">
+      <div class="grid-cell-header">
+        <div class="grid-cell-title-container">
+          <h3 class="grid-cell-title">
+            {{ getComponentName() + ".contractList" | translate }} ({{ contractTableDataSource.dataCount }})
+          </h3>
+        </div>
+      </div>
+      <div class="grid-cell-content">
+        <a-table [dataSource]="contractTableDataSource">
+          <ng-template tableActionsDef>
+            <button
+              type="button"
+              *ngIf="!contractTableDataSource.hasDataSelection"
+              mat-raised-button
+              (click)="addContract()"
+            >
+              {{ "global.add" | translate }}
+            </button>
+
+            <button
+              type="button"
+              *ngIf="contractTableDataSource.hasDataSelection"
+              mat-raised-button
+              (click)="deleteContract()"
+            >
+              {{ "global.delete" | translate }}
+            </button>
+
+            <button
+              type="button"
+              *ngIf="contractTableDataSource.dataSelectionCount === 1"
+              mat-raised-button
+              (click)="editContract()"
+            >
+              {{ "global.edit" | translate }}
+            </button>
+          </ng-template>
+        </a-table>
+      </div>
+    </div>
+  </div>
+
+  <aw-dialog-contract
+    *ngIf="showContractDialog"
+    [(display)]="showContractDialog"
+    [data]="selectedContractDialogData"
+    [openMode]="contractDialogOpenMode"
+    (onValidated)="onAddContract($event)"
+    (onUpdate)="onUpdateContract($event)"
+    [contractList]="contractTableDataSource.dataSrc"
+  ></aw-dialog-contract>
+</div>

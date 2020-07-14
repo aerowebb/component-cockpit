@@ -1,0 +1,84 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div class="modal-title">{{ componentData.componentId + ".titlePopup" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="column">
+      <div class="row">
+        <div class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+          <label class="form-label"> {{ componentData.componentId + ".counterCode" | translate }} </label>
+
+          <div class="form-control">
+            <p-dropdown
+              class="aw-dropdown fixed-width"
+              [options]="propertyMeasureCode"
+              (onChange)="getUnitCode()"
+              appendTo="body"
+              [(ngModel)]="measure.counterCode"
+            ></p-dropdown>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="measure.counterUnit" class="row">
+        <div class="form-group general-field">
+          <label class="form-label">{{ componentData.componentId + ".unitCode" | translate }}</label>
+
+          <div class="form-control">
+            <input type="text" class="aw-input" [disabled]="true" [(ngModel)]="measure.counterUnit" />
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="ratingVisibility" class="row">
+        <div class="form-group" [ngClass]="{ required: isRatingRequired }">
+          <label class="form-label"> {{ componentData.componentId + ".ratingCode" | translate }} </label>
+
+          <div class="form-control form-control-with-modal">
+            <div class="form-control-data" (click)="showDialog()">
+              {{ measure.ratingCode }}
+            </div>
+            <div class="btn-search-wrapper">
+              <i class="fa fa-fw fa-search aw-icon btn-search" aria-hidden="true" (click)="showDialog()"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button *ngIf="isReadOpenMode" type="button" mat-raised-button (click)="onHide()">
+      <span>{{ "global.close" | translate }}</span>
+    </button>
+
+    <button *ngIf="!isReadOpenMode" type="button" mat-raised-button (click)="onHide()">
+      <span>{{ "global.cancel" | translate }}</span>
+    </button>
+
+    <button
+      *ngIf="!isReadOpenMode"
+      type="button"
+      mat-raised-button
+      (click)="onValidate()"
+      color="primary"
+      [disabled]="
+        measure.counterCode === undefined || measure.counterCode === null || (isRatingRequired && !measure.ratingCode)
+      "
+    >
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>
+
+<aw-dialog-search-rating
+  [rating-code]=""
+  [structure-type]="structureType"
+  [family-code]="familyCode"
+  [variant-code]="variantCode"
+  *ngIf="showRatingDialog"
+  [(display)]="showRatingDialog"
+  (onSelected)="onValidateRating($event)"
+>
+</aw-dialog-search-rating>

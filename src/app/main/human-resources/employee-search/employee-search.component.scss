@@ -1,0 +1,16 @@
+:host {
+  .form-group {
+    margin-right: 20px;
+    max-width: 15rem;
+    min-width: 10rem;
+    width: 20%;
+
+    &:last-of-type {
+      margin-right: 0;
+    }
+  }
+
+  .search-criteria-primary {
+    justify-content: flex-start;
+  }
+}

@@ -1,0 +1,58 @@
+<div class="column">
+  <div class="row">
+    <p-table [resizableColumns]="true" #ptable class="aw-table2" [columns]="tableCols" [value]="table" [scrollable]="true">
+      <ng-template pTemplate="emptymessage">
+        <span *ngIf="!remainingTableLoading"> &nbsp;</span>
+
+        <div *ngIf="remainingTableLoading" class="aw-table-loading-indicator">
+          <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+          <div class="lds-hourglass"></div>
+        </div>
+      </ng-template>
+
+      <ng-template pTemplate="colgroup" let-columns>
+        <colgroup>
+          <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+        </colgroup>
+      </ng-template>
+
+      <ng-template pTemplate="header" let-columns>
+        <tr>
+          <th pResizableColumn *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment, width: col.width }">
+            {{ getComponentName() + "." + col.field | translate }}
+          </th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+        <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+          <td
+            *ngFor="let col of columns"
+            [ngSwitch]="col.field"
+            [ngStyle]="{ 'text-align': col.alignment, width: col.width }"
+          >
+            <span *ngSwitchCase="'engineStartDate'"> {{ rowData[col.field] | date: "yyyy/MM/dd" }} </span>
+
+            <span *ngSwitchCase="'engineStopDate'"> {{ rowData[col.field] | date: "yyyy/MM/dd" }} </span>
+            <span *ngSwitchCase="'dayMission'">
+              <i
+                *ngIf="rowData[col.field] !== null && rowData[col.field]"
+                class="fa fa-fw fa-check"
+                aria-hidden="true"
+              ></i>
+            </span>
+
+            <span *ngSwitchCase="'nightMission'">
+              <i
+                *ngIf="rowData[col.field] !== null && rowData[col.field]"
+                class="fa fa-fw fa-check"
+                aria-hidden="true"
+              ></i>
+            </span>
+            <span *ngSwitchDefault> {{ rowData[col.field] }} </span>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>

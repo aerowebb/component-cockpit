@@ -1,0 +1,155 @@
+<a-modal class="aw-modal" [(visible)]="display" [width]="70">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".title" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="search-dialog-container">
+      <div class="section search-criteria-section">
+        <h4 class="section-title">{{ "global.search" | translate }}</h4>
+
+        <div class="section-content">
+          <div class="column">
+            <div class="row">
+              <div class="form-group">
+                <label class="form-label"> {{ getComponentName() + ".familyCode" | translate }} </label>
+
+                <div class="form-control">
+                  <p-dropdown
+                    class="aw-dropdown fixed-width"
+                    [options]="familyCodeList"
+                    [(ngModel)]="selectedFamily"
+                    placeholder="&nbsp;"
+                    [showClear]="true"
+                    (onChange)="onChange($event.value)"
+                  ></p-dropdown>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">
+                  {{ getComponentName() + ".modificationType" | translate }}
+                </label>
+
+                <div class="form-control">
+                  <input type="text" class="aw-input" [(ngModel)]="searchObject.modificationType" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">
+                  {{ getComponentName() + ".modificationNumber" | translate }}
+                </label>
+
+                <div class="form-control">
+                  <input type="text" class="aw-input" [(ngModel)]="searchObject.modificationNumber" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">
+                  {{ getComponentName() + ".modificationRevisionNumber" | translate }}
+                </label>
+                <div class="form-control">
+                  <input type="text" class="aw-input" [(ngModel)]="searchObject.modificationRevisionNumber" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">
+                  {{ getComponentName() + ".modificationTitle" | translate }}
+                </label>
+                <div class="form-control">
+                  <input type="text" class="aw-input" [(ngModel)]="searchObject.modificationTitle" />
+                </div>
+              </div>
+            </div>
+
+            <div class="row search-criteria-footer">
+              <div class="search-actions">
+                <button type="button" color="primary" mat-raised-button (click)="search()">
+                  <span>{{ "global.toSearch" | translate }}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h4 class="section-title">
+          {{ "global.results" | translate }} ({{ resultsTable.list ? resultsTable.list.length : 0 }})
+        </h4>
+
+        <div class="section-content">
+          <p-table
+            [resizableColumns]="true"
+            #ptableResults
+            class="aw-table2"
+            [columns]="resultsTableCols"
+            [value]="resultsTable.list"
+            [(selection)]="selectedModification"
+            selectionMode="single"
+            [scrollable]="true"
+          >
+            <ng-template pTemplate="emptymessage">
+              <span *ngIf="!isLoading"> &nbsp;</span>
+
+              <div *ngIf="isLoading" class="aw-table-loading-indicator">
+                <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                <div class="lds-hourglass"></div>
+              </div>
+            </ng-template>
+            <ng-template pTemplate="caption">
+              <div class="aw-table-header">
+                <div class="aw-table-global-filter">
+                  <label class="aw-table-global-filter-label">
+                    <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                  </label>
+
+                  <input
+                    #ptableResultsGlobalFilter
+                    class="aw-table-global-filter-input"
+                    type="text"
+                    placeholder="{{ 'table.globalFilterText' | translate }}"
+                    (input)="ptableResults.filterGlobal($event.target.value, 'contains')"
+                  />
+                </div>
+              </div>
+            </ng-template>
+            <ng-template pTemplate="colgroup" let-columns>
+              <colgroup>
+                <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+              </colgroup>
+            </ng-template>
+
+            <ng-template pTemplate="header" let-columns>
+              <tr>
+                <th pResizableColumn *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                  {{ getComponentName() + "." + col.field | translate }}
+                </th>
+              </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+              <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                <td *ngFor="let col of columns" [ngSwitch]="col.field">
+                  <span *ngSwitchDefault> {{ rowData[col.field] }} </span>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button type="button" mat-raised-button (click)="cancel()">
+      {{ "global.cancel" | translate }}
+    </button>
+
+    <button type="button" mat-raised-button color="primary" (click)="validate()" [disabled]="!selectedModification">
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>

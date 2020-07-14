@@ -1,0 +1,405 @@
+<div class="page-header">
+  <div class="page-info">
+    <div>
+      <div class="page-title">
+        {{ "transaction." + componentData.componentId | translate }}
+      </div>
+
+      <div class="page-subtitle">
+        <div class="page-subtitle">- {{ pageSubtitle }}</div>
+      </div>
+    </div>
+  </div>
+  <div class="page-actions">
+    <button
+      *ngIf="isReadOpenMode && hasUpdateAccessRight && isSaveRequired"
+      type="button"
+      mat-raised-button
+      (click)="edit()"
+    >
+      {{ "global.edit" | translate }}
+    </button>
+
+    <button
+      *ngIf="!isReadOpenMode && !isCreateOpenMode"
+      type="button"
+      color="warn"
+      mat-raised-button
+      (click)="cancel()"
+    >
+      {{ "global.cancel" | translate }}
+    </button>
+
+    <button
+      *ngIf="!isReadOpenMode"
+      class="btn-with-spinner"
+      color="primary"
+      type="button"
+      mat-raised-button
+      (click)="validate()"
+    >
+      <span class="lds-hourglass" *ngIf="saving"></span>
+      {{ "global.save" | translate }}
+    </button>
+
+    <button
+      mat-icon-button
+      class="mat-elevation-z1"
+      matTooltip="{{ 'global.showAllActionTooltip' | translate }}"
+      matTooltipPosition="above"
+      aria-label="Show all actions"
+      [matMenuTriggerFor]="actions"
+    >
+      <mat-icon>more_horiz</mat-icon>
+    </button>
+    <mat-menu #actions="matMenu">
+      <button mat-menu-item (click)="refresh()">{{ "global.refresh" | translate }}</button>
+      <button mat-menu-item (click)="updateFavoriteState()">
+        {{ (isFavoriteEntry ? "page.removeFromFavorites" : "page.addToFavorites") | translate }}
+      </button>
+    </mat-menu>
+  </div>
+</div>
+
+<div class="page-wrapper">
+  <div class="page-container search-page-container">
+    <div class="page-content">
+      <mat-tab-group animationDuration="0ms" dynamicHeight>
+        <mat-tab>
+          <ng-template mat-tab-label>
+            {{ "home" | translate }}
+          </ng-template>
+          <div class="grid-row">
+            <div class="grid-cell--12">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">{{ componentName + ".mainInformation" | translate }}</h3>
+                  </div>
+                </div>
+                <div class="grid-cell-content grid-cell-content-with-section">
+                  <div class="column">
+                    <div class="section">
+                      <div class="section-content">
+                        <div class="row">
+                          <div class="row flex--2">
+                            <div class="form-group form-group-type">
+                              <label class="form-label"> &nbsp; </label>
+
+                              <div class="form-control aw-selectbutton-wrapper">
+                                <p-selectButton
+                                  [(ngModel)]="selectedAttributeCategory"
+                                  [options]="searchCategoryList"
+                                  (onChange)="checkAttributeCategory()"
+                                  [disabled]="!enableSelectButton"
+                                ></p-selectButton>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="form-group flex--2">
+                            <label class="form-label"> &nbsp; </label>
+
+                            <div class="form-control aw-selectbutton-wrapper">
+                              <p-selectButton
+                                [(ngModel)]="selectedValueType"
+                                [options]="valueTypeList"
+                                [disabled]="isReadOpenMode || attributesFormsInput.isStandard"
+                              ></p-selectButton>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="section">
+                      <div class="section-content">
+                        <div class="column">
+                          <div class="row">
+                            <div class="form-group form-group-category">
+                              <label class="form-label">
+                                {{ componentData.componentId + ".category" | translate }}</label
+                              >
+                              <div class="form-control">
+                                <p-dropdown
+                                  class="aw-dropdown fixed-width"
+                                  [(ngModel)]="attributesFormsInput.attributeCategory"
+                                  placeholder="&nbsp;"
+                                  [options]="isEngineering ? engineeringCategoryList : fleetCategoryList"
+                                  [disabled]="isReadOpenMode || isWriteOpenMode"
+                                ></p-dropdown>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="form-group " [ngClass]="{ required: isCreateOpenMode }">
+                              <label class="form-label">
+                                {{ componentData.componentId + ".nameEn" | translate }}
+                              </label>
+                              <div class="form-control">
+                                <input
+                                  type="text"
+                                  class="aw-input"
+                                  [disabled]="isReadOpenMode || isWriteOpenMode"
+                                  [(ngModel)]="attributesFormsInput.attributeNameEn"
+                                />
+                              </div>
+                            </div>
+
+                            <div class="form-group " [ngClass]="{ required: isCreateOpenMode }">
+                              <label class="form-label">
+                                {{ componentData.componentId + ".nameFr" | translate }}
+                              </label>
+                              <div class="form-control">
+                                <input
+                                  type="text"
+                                  class="aw-input"
+                                  [disabled]="isReadOpenMode || isWriteOpenMode"
+                                  [(ngModel)]="attributesFormsInput.attributeNameFr"
+                                />
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="row">
+                            <div class="form-group">
+                              <label class="form-label">
+                                {{ componentData.componentId + ".descriptionEn" | translate }}
+                              </label>
+                              <div class="form-control text-area">
+                                <textarea
+                                  class="aw-textarea"
+                                  [rows]="3"
+                                  pInputTextarea
+                                  autoResize="autoResize"
+                                  [(ngModel)]="attributesFormsInput.attributeDescriptionEn"
+                                  [disabled]="isReadOpenMode || attributesFormsInput.isStandard"
+                                ></textarea>
+                              </div>
+                            </div>
+
+                            <div class="form-group">
+                              <label class="form-label">
+                                {{ componentData.componentId + ".descriptionFr" | translate }}
+                              </label>
+                              <div class="form-control text-area">
+                                <textarea
+                                  class="aw-textarea"
+                                  [rows]="3"
+                                  pInputTextarea
+                                  autoResize="autoResize"
+                                  [(ngModel)]="attributesFormsInput.attributeDescriptionFr"
+                                  [disabled]="isReadOpenMode || attributesFormsInput.isStandard"
+                                ></textarea>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="section">
+                      <div class="section-content">
+                        <div class="row"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+        <mat-tab *ngIf="showValuesManagement()">
+          <ng-template mat-tab-label>
+            {{ componentData.componentId + ".valueTitle" | translate }}
+          </ng-template>
+          <div class="grid-row">
+            <div class="grid-cell--12">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ componentData.componentId + ".importTitle" | translate }}
+                    </h3>
+                  </div>
+                </div>
+                <div class="grid-cell-content grid-cell-content-with-section">
+                  <div class="section" *ngIf="!isCreateOpenMode">
+                    <div class="section-content">
+                      <div class="row">
+                        <div class="form-group">
+                          <label class="form-label"></label>
+                          <div class="form-control">
+                            <span
+                              (click)="openTemplate(loadTemplate())"
+                              style="cursor: pointer; text-decoration: underline; color: blue"
+                            >
+                              {{ loadTemplate() }}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="form-group">
+                          <label class="form-label">
+                            {{ componentData.componentId + ".fileToImport" | translate }}
+                          </label>
+
+                          <div class="form-control">
+                            <label class="form-label"> </label>
+                            <input
+                              type="text"
+                              class="aw-input"
+                              [(ngModel)]="fileName"
+                              disabled
+                              style="border-bottom-color: #000"
+                            />
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="form-label"> </label>
+                          <div class="form-control ">
+                            <label class="form-label"> </label>
+                            <div class="grid-cell--2" style="padding-top: 2.7em; width: 17%">
+                              <p-fileUpload
+                                #fileUploader
+                                *ngIf="!isReadOpenMode"
+                                chooseLabel=""
+                                title="Upload"
+                                ngClass="defaultUpload"
+                                name="document[]"
+                                customUpload="true"
+                                mode="basic"
+                                auto="true"
+                                (uploadHandler)="uploadDocument($event, fileUploader)"
+                              ></p-fileUpload>
+                            </div>
+                          </div>
+                        </div>
+                        <button
+                          *ngIf="!isReadOpenMode"
+                          [disabled]="checkImport()"
+                          type="button"
+                          mat-raised-button
+                          (click)="import()"
+                        >
+                          <i class="fa fa-fw fa-plus" aria-hidden="true"></i>
+                          <span>{{ getComponentName() + ".importFile" | translate }}</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Attributes values management : engineering table -->
+          <div class="grid-row">
+            <div class="grid-cell--12">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 *ngIf="isEngineering" class="grid-cell-title">
+                      {{ "global.results" | translate }}
+                      ({{ engineeringTableDataSource ? engineeringTableDataSource.dataCount : 0 }})
+                    </h3>
+                  </div>
+                </div>
+                <div class="grid-cell-content grid-cell-content-with-section">
+                  <div class="section">
+                    <div class="section-content">
+                      <div class="row">
+                        <a-table [dataSource]="engineeringTableDataSource" *ngIf="isEngineering">
+                          <ng-template tableActionsDef>
+                            <button
+                              *ngIf="!isReadOpenMode && engineeringTableDataSource.hasDataSelection"
+                              type="button"
+                              mat-raised-button
+                              color="warn"
+                              (click)="deleteEngineeringList()"
+                            >
+                              {{ "global.delete" | translate }}
+                            </button>
+
+                            <button
+                              *ngIf="!isReadOpenMode && engineeringTableDataSource.dataSelectionCount === 1"
+                              type="button"
+                              mat-raised-button
+                              (click)="editEngineeringList()"
+                            >
+                              {{ "global.edit" | translate }}
+                            </button>
+
+                            <button
+                              *ngIf="!isReadOpenMode && !engineeringTableDataSource.hasDataSelection"
+                              type="button"
+                              mat-raised-button
+                              (click)="createEngineeringList()"
+                            >
+                              {{ "global.add" | translate }}
+                            </button>
+                          </ng-template>
+                        </a-table>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Attributes values management : fleet table -->
+
+                  <div class="section">
+                    <h4 *ngIf="!isEngineering" class="section-title">
+                      {{ "global.results" | translate }}
+                      ({{ fleetTableDataSource ? fleetTableDataSource.dataCount : 0 }})
+                    </h4>
+                    <div class="section-content">
+                      <div class="row">
+                        <a-table [dataSource]="fleetTableDataSource" *ngIf="!isEngineering">
+                          <ng-template tableActionsDef>
+                            <button
+                              *ngIf="!isReadOpenMode && fleetTableDataSource.hasDataSelection"
+                              type="button"
+                              mat-raised-button
+                              color="warn"
+                              (click)="deleteFleetList()"
+                            >
+                              {{ "global.delete" | translate }}
+                            </button>
+
+                            <button
+                              *ngIf="!isReadOpenMode && fleetTableDataSource.dataSelectionCount === 1"
+                              type="button"
+                              mat-raised-button
+                              (click)="editFleetList()"
+                            >
+                              {{ "global.edit" | translate }}
+                            </button>
+
+                            <button
+                              *ngIf="!isReadOpenMode && !fleetTableDataSource.hasDataSelection"
+                              type="button"
+                              mat-raised-button
+                              (click)="createFleetList()"
+                            >
+                              {{ "global.add" | translate }}
+                            </button>
+                          </ng-template>
+                        </a-table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+  </div>
+  <aw-attribute-form-list-popup
+    *ngIf="showListPopup"
+    [(display)]="showListPopup"
+    [openMode]="dialogOpenMode"
+    [attributeValue]="attributePopupDataInput"
+    (onValidated)="onAddEngineeringdata($event)"
+  >
+  </aw-attribute-form-list-popup>
+</div>

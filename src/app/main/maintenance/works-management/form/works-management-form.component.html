@@ -1,0 +1,378 @@
+<div class="page-header-container">
+  <div class="page-context">
+    <div class="page-title-container">
+      <div class="page-title">
+        {{ "transaction." + componentData.componentId | translate }}
+      </div>
+
+      <div class="page-secondary-actions">
+        <i
+          class="fa fa-fw aw-icon aw-icon-with-border"
+          [ngClass]="{ 'fa-star': isFavoriteEntry, 'fa-star-o': !isFavoriteEntry }"
+          aria-hidden="true"
+          (click)="updateFavoriteState()"
+          pTooltip="{{ 'page.' + (isFavoriteEntry ? 'removeFromFavorites' : 'addToFavorites') | translate }}"
+          tooltipPosition="bottom"
+        ></i>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-primary-actions">
+    <button type="button" class="btn-with-spinner" mat-raised-button *ngIf="showControlWoBtn">
+      {{ getComponentName() + ".controlWorkOrder" | translate }}
+    </button>
+
+    <button type="button" class="btn-with-spinner" mat-raised-button *ngIf="showCloseWoBtn">
+      {{ getComponentName() + ".closeWorkOrder" | translate }}
+    </button>
+
+    <button type="button" class="btn-with-spinner" mat-raised-button *ngIf="showCloseWpBtn">
+      {{ getComponentName() + ".closeWorkPackage" | translate }}
+    </button>
+
+    <button
+      type="button"
+      mat-icon-button
+      class="mat-elevation-z1 fa aw-icon aw-icon-with-overlay"
+      aria-hidden="true"
+      pTooltip="{{ getComponentName() + (filtersVisible ? '.hideFilters' : '.showFilters') | translate }}"
+      tooltipPosition="top"
+      [ngClass]="{ active: filtersVisible }"
+      (click)="opFilters.toggle($event)"
+    >
+      <mat-icon fontSet="fa" fontIcon="fa-filter" style="height: 15px;"></mat-icon>
+    </button>
+    <button
+      id="actions"
+      mat-icon-button
+      class="mat-elevation-z1"
+      matTooltip="{{ 'global.showAllActionTooltip' | translate }}"
+      matTooltipPosition="above"
+      aria-label="Show all actions"
+      [matMenuTriggerFor]="actions"
+    >
+      <mat-icon>more_horiz</mat-icon>
+    </button>
+    <mat-menu #actions="matMenu">
+      <button mat-menu-item (click)="onReload()">{{ "global.refresh" | translate }}</button>
+    </mat-menu>
+  </div>
+</div>
+
+<div class="page-wrapper">
+  <div class="page-container" style="max-width: 100%">
+    <div class="page-content">
+      <div class="grid-row">
+        <div id="worksManagementTable" class="grid-cell--12">
+          <div class="grid-cell-content">
+            <p-table
+              id="worksManagementTable"
+              #ptableWorksMangement
+              class="aw-table2"
+              [columns]="worksManagementTableCols"
+              [value]="worksManagementTable"
+              [scrollable]="false"
+              selectionMode="checkbox"
+              [(selection)]="selectedWorkOrders"
+              (onRowSelect)="manageButtonDisplay()"
+              (onRowUnselect)="manageButtonDisplay()"
+            >
+              <ng-template pTemplate="emptymessage">
+                <span *ngIf="!isLoadingWorksManagementTable"> &nbsp;</span>
+
+                <div *ngIf="isLoadingWorksManagementTable" class="aw-table-loading-indicator">
+                  <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                  <div class="lds-hourglass"></div>
+                </div>
+              </ng-template>
+
+              <ng-template pTemplate="loadingbody" let-columns="columns">
+                <tr style="height:34px">
+                  <td *ngFor="let col of columns">
+                    <div class="loading-text"></div>
+                  </td>
+                </tr>
+              </ng-template>
+
+              <ng-template pTemplate="caption">
+                <div class="aw-table-header" [ngClass]="{ 'rows-selected': selectedWorkOrders.length > 0 }">
+                  <div class="aw-table-actions"></div>
+                </div>
+              </ng-template>
+
+              <ng-template pTemplate="colgroup" let-columns>
+                <colgroup>
+                  <col class="aw-table-checkbox-wrapper" />
+                  <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                </colgroup>
+              </ng-template>
+
+              <ng-template pTemplate="header" let-columns>
+                <tr>
+                  <th class="aw-table-checkbox-wrapper">
+                    <p-tableHeaderCheckbox class="aw-table-checkbox"></p-tableHeaderCheckbox>
+                  </th>
+                  <th pResizableColumn *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                    {{ componentData.componentId + "." + col.field | translate }}
+                  </th>
+                </tr>
+              </ng-template>
+
+              <ng-template pTemplate="body" let-jobCardRow let-columns="columns" let-rowIndex="rowIndex">
+                <tr [pSelectableRow]="jobCardRow" [pSelectableRowIndex]="rowIndex">
+                  <td class="aw-table-checkbox-wrapper">
+                    <p-tableCheckbox
+                      *ngIf="!jobCardRow.isLoading"
+                      class="aw-table-checkbox"
+                      [value]="jobCardRow"
+                    ></p-tableCheckbox>
+                  </td>
+
+                  <td *ngFor="let col of columns" [ngSwitch]="col.field" [ngStyle]="{ width: col.width }">
+                    <span *ngSwitchCase="'workPackage'" class="tree-table-cell">
+                      <div>
+                        <a class="value" (click)="openWorkPackageLink(jobCardRow.projectDTO.projectId)">
+                          {{ jobCardRow.projectDTO.projectNumber }}</a
+                        >
+                      </div>
+
+                      <div class="additional-data compact">
+                        <div class="grid-cell--9 grid-cell--no-padding">
+                          <p-progressBar
+                            [ngClass]="jobCardRow.wpProgressStatus"
+                            [showValue]="false"
+                            [value]="jobCardRow.wpProgressPercent"
+                          >
+                          </p-progressBar>
+                        </div>
+                        <div
+                          class="grid-cell--3 grid-cell--no-padding"
+                          style="position: absolute; padding-top: 4px; padding-left: 1%;"
+                        >
+                          <span class="horizontal-separator"></span>
+                          <span class="value">
+                            {{ jobCardRow.worksManagementDTO.nbCloseWorkOrders }} /
+                            {{ jobCardRow.worksManagementDTO.nbTotalWorkOrders }}</span
+                          >
+                        </div>
+                      </div>
+                    </span>
+
+                    <span *ngSwitchCase="'workOrder'" class="tree-table-cell">
+                      <div>
+                        <a class="value" (click)="openWorkOrderLink(jobCardRow.workOrderDTO)">
+                          {{ jobCardRow.workOrderDTO.woCode }}
+                        </a>
+                      </div>
+                      <div class="additional-data">
+                        <span>
+                          <p-progressBar
+                            [ngClass]="jobCardRow.progressStatus"
+                            [value]="jobCardRow.bidmWorkOrderDataDTO.statusPercent"
+                            *ngIf="jobCardRow.bidmWorkOrderDataDTO"
+                          >
+                          </p-progressBar>
+                        </span>
+                      </div>
+                    </span>
+
+                    <span *ngSwitchCase="'origin'" class="tree-table-cell">
+                      <div>
+                        <span
+                          *ngIf="jobCardRow.workOrderDTO.woType === awPropertiesConstants.AIRM_WORK_ORDER_TYPE_TASK"
+                          class="value"
+                        >
+                          {{ getComponentName() + ".task" | translate }}
+                        </span>
+                        <span
+                          *ngIf="jobCardRow.workOrderDTO.woType === awPropertiesConstants.AIRM_WORK_ORDER_TYPE_DEFECT"
+                          class="value"
+                        >
+                          {{ getComponentName() + ".defect" | translate }}
+                        </span>
+                        <span
+                          *ngIf="
+                            jobCardRow.workOrderDTO.woType === awPropertiesConstants.AIRM_WORK_ORDER_TYPE_EVOLUTION
+                          "
+                          class="value"
+                        >
+                          {{ getComponentName() + ".evolution" | translate }}
+                        </span>
+                        <span
+                          *ngIf="jobCardRow.workOrderDTO.woType === awPropertiesConstants.AIRM_WORK_ORDER_TYPE_MANUAL"
+                          class="value"
+                        >
+                          {{ getComponentName() + ".manual" | translate }}
+                        </span>
+                        <span
+                          *ngIf="
+                            jobCardRow.workOrderDTO.woType === awPropertiesConstants.AIRM_WORK_ORDER_TYPE_SN_CHANGE
+                          "
+                          class="value"
+                        >
+                          {{ getComponentName() + ".snChange" | translate }}
+                        </span>
+                        <span
+                          *ngIf="
+                            jobCardRow.workOrderDTO.woType === awPropertiesConstants.AIRM_WORK_ORDER_TYPE_SUBCONTRACTING
+                          "
+                          class="value"
+                        >
+                          {{ getComponentName() + ".subcontracting" | translate }}
+                        </span>
+                        <a class="value" (click)="consultWorkOrderOrigin(jobCardRow)"> {{ jobCardRow.originText }}</a>
+                      </div>
+                      <div style="white-space: normal; min-height: 2rem;">
+                        {{ jobCardRow.workOrderDTO.woDescription }}
+                      </div>
+                    </span>
+
+                    <span *ngSwitchCase="'scheduling'" class="tree-table-cell">
+                      <div>
+                        <span class="label"> {{ getComponentName() + ".assignedTo" | translate }}</span>
+                        <span class="value"> {{ jobCardRow.assignedTo }}</span>
+                      </div>
+                      <div class="additional-data">
+                        <span class="grid-cell--6 grid-cell--no-padding">
+                          <span class="label"> {{ getComponentName() + ".startDate" | translate }}</span>
+                          <span class="value">
+                            {{ jobCardRow.workOrderDTO.woScheduledStartDate | date: "dd/MM/yyyy" }}</span
+                          >
+                        </span>
+                        <span class="grid-cell--6 grid-cell--no-padding">
+                          <span class="label"> {{ getComponentName() + ".endDate" | translate }}</span>
+                          <span class="value">
+                            {{ jobCardRow.workOrderDTO.woScheduledEndDate | date: "dd/MM/yyyy" }}
+                          </span>
+                        </span>
+                      </div>
+                    </span>
+
+                    <span *ngSwitchCase="'execution'" class="tree-table-cell">
+                      <div class="exec" *ngIf="jobCardRow.workOrderStatusDetailDTO">
+                        <div>
+                          <span class="label"> {{ getComponentName() + ".status" | translate }} </span>
+                          <span
+                            class="value"
+                            *ngIf="
+                              jobCardRow.workOrderStatusDetailDTO.status ===
+                              awPropertiesConstants.AIRM_OPERATION_STATUS_RELEASED
+                            "
+                          >
+                            {{ getComponentName() + ".released" | translate }}</span
+                          >
+                          <span
+                            class="value"
+                            *ngIf="
+                              jobCardRow.workOrderStatusDetailDTO.status ===
+                              awPropertiesConstants.AIRM_OPERATION_STATUS_PLANNED
+                            "
+                          >
+                            {{ getComponentName() + ".planned" | translate }}</span
+                          >
+
+                          <span
+                            class="value"
+                            *ngIf="
+                              jobCardRow.workOrderStatusDetailDTO.status ===
+                              awPropertiesConstants.AIRM_OPERATION_STATUS_ONGOING
+                            "
+                          >
+                            {{ getComponentName() + ".onGoing" | translate }}</span
+                          >
+                          <span
+                            class="value"
+                            *ngIf="
+                              jobCardRow.workOrderStatusDetailDTO.status ===
+                              awPropertiesConstants.AIRM_OPERATION_STATUS_PERFORMED
+                            "
+                          >
+                            {{ getComponentName() + ".performed" | translate }}</span
+                          >
+                          <span
+                            class="value"
+                            *ngIf="
+                              jobCardRow.workOrderStatusDetailDTO.status ===
+                              awPropertiesConstants.AIRM_OPERATION_STATUS_TO_BE_CONFIRMED
+                            "
+                          >
+                            {{ getComponentName() + ".toBeConfirm" | translate }}</span
+                          >
+                          <span
+                            class="value"
+                            *ngIf="
+                              jobCardRow.workOrderStatusDetailDTO.status ===
+                              awPropertiesConstants.AIRM_OPERATION_STATUS_CLOSE
+                            "
+                          >
+                            {{ getComponentName() + ".close" | translate }}</span
+                          >
+                          <span
+                            class="value"
+                            *ngIf="
+                              jobCardRow.workOrderStatusDetailDTO.status ===
+                              awPropertiesConstants.AIRM_OPERATION_STATUS_POSTPONEMENT_REQUESTED
+                            "
+                          >
+                            {{ getComponentName() + ".postPonementRequest" | translate }}</span
+                          >
+                          <span
+                            class="value"
+                            *ngIf="
+                              jobCardRow.workOrderStatusDetailDTO.status ===
+                              awPropertiesConstants.AIRM_OPERATION_STATUS_POSTPONED
+                            "
+                          >
+                            {{ getComponentName() + ".postponed" | translate }}</span
+                          >
+                        </div>
+                        <div class="additional-data" *ngIf="jobCardRow.workOrderStatusDetailDTO">
+                          <span class="grid-cell--6 grid-cell--no-padding">
+                            <span class="label"> {{ getComponentName() + ".startDate" | translate }}</span>
+                            <span class="value">
+                              {{ jobCardRow.workOrderStatusDetailDTO.startDate | date: "dd/MM/yyyy" }}</span
+                            >
+                          </span>
+                          <span class="grid-cell--6 grid-cell--no-padding">
+                            <span class="label"> {{ getComponentName() + ".endDate" | translate }}</span>
+                            <span class="value">
+                              {{ jobCardRow.workOrderStatusDetailDTO.endDate | date: "dd/MM/yyyy" }}</span
+                            >
+                          </span>
+                        </div>
+                      </div>
+                    </span>
+
+                    <span *ngSwitchCase="'asset'" class="tree-table-cell">
+                      <a *ngIf="jobCardRow.asset" (click)="openSnLink(jobCardRow.asset)" class="value">
+                        {{ jobCardRow.assetRepresentation }}
+                      </a>
+                    </span>
+
+                    <span *ngSwitchDefault class="tree-table-cell"> {{ jobCardRow[col.field] }} </span>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p-overlayPanel #opFilters class="aw-overlay" (onShow)="filtersVisible = true" (onHide)="filtersVisible = false">
+  <aw-works-management-table-filters
+    [searchCriteria]="searchCriteria"
+    [searchStatusList]="searchStatusList"
+    [searchTypeList]="searchTypeList"
+    [searchWPAssetList]="searchWPAssetList"
+    [searchWOAssetList]="searchWOAssetList"
+    [searchWOCodeList]="searchWOCodeList"
+    [searchUserList]="searchUserList"
+    (onFilter)="opFilters.hide(); filtersVisible = false; filterWithCriteria()"
+    (onReset)="resetTableFilters(); opFilters.hide()"
+  >
+  </aw-works-management-table-filters>
+</p-overlayPanel>

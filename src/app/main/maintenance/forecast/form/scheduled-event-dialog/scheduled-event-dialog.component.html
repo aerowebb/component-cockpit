@@ -1,0 +1,220 @@
+<a-modal class="aw-modal" [(visible)]="display" [width]="50">
+  <a-header>
+    <div class="modal-title">{{ componentTitleKey | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="column">
+      <div class="row">
+        <div class="form-group required">
+          <label class="form-label">
+            {{ "plannedDate" | translate }}
+          </label>
+
+          <div class="form-control">
+            <p-calendar
+              showButtonBar="true"
+              [monthNavigator]="true"
+              [yearNavigator]="true"
+              [yearRange]="sessionService.calendarYearRange"
+              class="aw-calendar"
+              appendTo="body"
+              [dateFormat]="sessionService.dateFormatPrimeNG"
+              [locale]="sessionService.calendarFormat"
+              [showTime]="true"
+              [(ngModel)]="plannedDate"
+            ></p-calendar>
+          </div>
+        </div>
+
+        <div class="form-group"></div>
+      </div>
+
+      <div class="row">
+        <div class="form-group">
+          <label class="form-label">
+            {{ "taskCode" | translate }}
+          </label>
+
+          <div class="form-control">
+            <input
+              type="text"
+              class="aw-input"
+              [(ngModel)]="eventModel._obj.bsdeScheduledEvent.taskCode"
+              [disabled]="true"
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">
+            {{ "blocked" | translate }}
+          </label>
+
+          <div class="form-control">
+            <p-checkbox
+              binary="true"
+              class="aw-checkbox"
+              [(ngModel)]="eventModel._obj.bsdeScheduledEvent.eventBlocked"
+              [disabled]="true"
+            ></p-checkbox>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group">
+          <label class="form-label">
+            {{ "taskDescription" | translate }}
+          </label>
+
+          <div class="form-control text-area">
+            <textarea
+              class="aw-textarea"
+              [rows]="3"
+              pInputTextarea
+              autoResize="autoResize"
+              [(ngModel)]="eventModel._obj.bireTask.taskDesignation"
+              [disabled]="true"
+            ></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group">
+          <label class="form-label">
+            {{ "notToExceedDate" | translate }}
+          </label>
+
+          <div class="form-control">
+            <p-calendar
+              showButtonBar="true"
+              [monthNavigator]="true"
+              [yearNavigator]="true"
+              [yearRange]="sessionService.calendarYearRange"
+              class="aw-calendar"
+              appendTo="body"
+              [dateFormat]="sessionService.dateFormatPrimeNG"
+              [locale]="sessionService.calendarFormat"
+              [showTime]="true"
+              [(ngModel)]="eventModel._obj.bsdeScheduledEvent.nteDate"
+              [disabled]="true"
+            ></p-calendar>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label"> {{ "toBePerformedAt" | translate }} ({{ unitName }}) </label>
+
+          <div class="form-control">
+            <input
+              type="text"
+              class="aw-input"
+              [(ngModel)]="eventModel._obj.bsdeScheduledEvent.counterValue"
+              [disabled]="true"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group">
+          <label class="form-label">
+            {{ "periodicities" | translate }}
+          </label>
+
+          <div class="form-control">
+            <input
+              type="text"
+              class="aw-input"
+              [(ngModel)]="eventModel._obj.bsdeScheduledEvent.periodicities"
+              [disabled]="true"
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label"> {{ "cumulatedFlightHours" | translate }} (H) </label>
+
+          <div class="form-control">
+            <input
+              type="text"
+              class="aw-input"
+              [(ngModel)]="eventModel._obj.bsdeScheduledEvent.topEqtTsn"
+              [disabled]="true"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group">
+          <label class="form-label">
+            {{ "occurrence" | translate }}
+          </label>
+
+          <div class="form-control">
+            <input
+              type="text"
+              class="aw-input"
+              [(ngModel)]="eventModel._obj.bsdeScheduledEvent.occurrence"
+              [disabled]="true"
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label"> {{ "remainingAvailability" | translate }} ({{ unitName }}) </label>
+
+          <div class="form-control">
+            <input
+              type="text"
+              class="aw-input"
+              [(ngModel)]="eventModel._obj.bsdeScheduledEvent.counterRemaining"
+              [disabled]="true"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group">
+          <label class="form-label"> {{ "alertThreshold" | translate }} </label>
+
+          <div class="form-control">
+            <input
+              type="text"
+              class="aw-input"
+              [(ngModel)]="eventModel._obj.bsdeScheduledEvent.taskThreshold"
+              [disabled]="true"
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label"> {{ "alertTolerance" | translate }} </label>
+
+          <div class="form-control">
+            <input
+              type="text"
+              class="aw-input"
+              [(ngModel)]="eventModel._obj.bsdeScheduledEvent.taskTolerance"
+              [disabled]="true"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button type="button" mat-raised-button (click)="closeDialog()">
+      {{ "cancel" | translate }}
+    </button>
+
+    <button type="button" color="primary" mat-raised-button [disabled]="!plannedDate" (click)="validate()">
+      {{ "validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>

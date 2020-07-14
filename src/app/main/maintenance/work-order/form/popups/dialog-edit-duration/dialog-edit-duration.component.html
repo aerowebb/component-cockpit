@@ -1,0 +1,68 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".title" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div>
+      <b>{{ getComponentName() + ".currentPerformedDuration" | translate }}:</b> {{ existingDuration }}
+    </div>
+    <div>
+      <b>{{ getComponentName() + ".currentElapsedTime" | translate }}:</b> {{ existingElapsed }}
+    </div>
+
+    <div class="form-group required">
+      <label class="form-label">{{ getComponentName() + ".performedDuration" | translate }}</label>
+
+      <div class="form-control">
+        <p-calendar
+          showButtonBar="true"
+          [monthNavigator]="true"
+          [yearNavigator]="true"
+          [yearRange]="sessionService.calendarYearRange"
+          showTime="true"
+          [timeOnly]="true"
+          showSeconds="true"
+          [(ngModel)]="performedDuration"
+          class="aw-calendar"
+          [dateFormat]="sessionService.dateFormatPrimeNG"
+          [locale]="sessionService.calendarFormat"
+          [disabled]="isReadOpenMode"
+          appendTo="body"
+          (onBlur)="calculateElapsed()"
+        ></p-calendar>
+      </div>
+    </div>
+    <div class="form-group required">
+      <label class="form-label">{{ getComponentName() + ".elapsedTime" | translate }}</label>
+
+      <div class="form-control">
+        <p-calendar
+          showButtonBar="true"
+          [monthNavigator]="true"
+          [yearNavigator]="true"
+          [yearRange]="sessionService.calendarYearRange"
+          showTime="true"
+          [timeOnly]="true"
+          showSeconds="true"
+          class="aw-calendar"
+          [(ngModel)]="elapsedTime"
+          appendTo="body"
+          [dateFormat]="sessionService.dateFormatPrimeNG"
+          [locale]="sessionService.calendarFormat"
+          [disabled]="isReadOpenMode"
+        ></p-calendar>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button type="button" mat-raised-button (click)="closeDialog()">
+      <span>{{ "global.cancel" | translate }}</span>
+    </button>
+
+    <button type="button" color="primary" mat-raised-button (click)="validate()">
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>

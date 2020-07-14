@@ -1,0 +1,9 @@
+@import "constants";
+@import "mixins";
+
+:host {
+  /deep/ .modal .modal__content {
+    min-height: 30vh;
+    max-width: 50vw;
+  }
+}

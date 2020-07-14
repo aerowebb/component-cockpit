@@ -1,0 +1,36 @@
+<a-modal class="aw-modal" [(visible)]="display" [width]="80">
+  <a-header>
+    <div class="modal-title">
+      {{ getComponentName() + ".causeOfRemovalMangement" | translate }} ({{ causeOfRemovalDataSource.dataCount }})
+    </div>
+  </a-header>
+
+  <a-content>
+    <div class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+      <div class="form-control">
+        <a-table [dataSource]="causeOfRemovalDataSource"> </a-table>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button *ngIf="isReadOpenMode" type="button" mat-raised-button (click)="onCancel()">
+      <span>{{ "global.close" | translate }}</span>
+    </button>
+
+    <button *ngIf="!isReadOpenMode" type="button" mat-raised-button (click)="onCancel()">
+      <span>{{ "global.cancel" | translate }}</span>
+    </button>
+
+    <button
+      *ngIf="!isReadOpenMode"
+      type="button"
+      mat-raised-button
+      color="primary"
+      [disabled]="!causeOfRemovalDataSource.hasDataSelection"
+      (click)="onValidate()"
+    >
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>

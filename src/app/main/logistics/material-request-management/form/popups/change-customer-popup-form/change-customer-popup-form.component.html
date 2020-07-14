@@ -1,0 +1,91 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".writeRequest" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <ng-container>
+      <div class="section">
+        <h4 class="section-title">
+          {{ getComponentName() + ".currentSupplier" | translate }}
+        </h4>
+        <div class="section-content">
+          <div class="row">
+            <div class="form-group">
+              <label class="form-label">
+                {{ getComponentName() + ".site" | translate }}
+              </label>
+              <div class="form-control">
+                <div class="form-control-generic" *ngIf="procurementRequest.bidtSiteIssue">
+                  {{ procurementRequest?.bidtSiteIssue?.siteCode }}
+                  <ng-container *ngIf="procurementRequest?.bidtSiteIssue?.siteName">
+                    - {{ procurementRequest?.bidtSiteIssue?.siteName }}
+                  </ng-container>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">
+                {{ getComponentName() + ".warehouse" | translate }}
+              </label>
+              <div class="form-control">
+                <div class="form-control-generic" *ngIf="procurementRequest.bidtWarehouseIssue">
+                  {{ procurementRequest?.bidtWarehouseIssue?.whCode }}
+                  <ng-container *ngIf="procurementRequest?.bidtWarehouseIssue?.whName">
+                    - {{ procurementRequest?.bidtWarehouseIssue?.whName }}
+                  </ng-container>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="form-group">
+              <label class="form-label">{{ getComponentName() + ".partner" | translate }}</label>
+
+              <div class="form-control">
+                <div class="form-control-generic" *ngIf="procurementRequest.bidoCustomer">
+                  {{ procurementRequest.bidoCustomer.customerName }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h4 class="section-title">
+          {{ getComponentName() + ".newSupplier" | translate }}
+        </h4>
+        <div class="section-content">
+          <div class="row">
+            <div class="form-group">
+              <label class="form-label"> {{ getComponentName() + ".partner" | translate }} </label>
+              <div class="form-control">
+                <p-dropdown
+                  class="aw-dropdown fixed-width"
+                  [options]="customers"
+                  [showClear]="true"
+                  placeholder="&nbsp;"
+                  [(ngModel)]="newCustomer"
+                  appendTo="body"
+                >
+                </p-dropdown>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </a-content>
+
+  <a-footer>
+    <button type="button" mat-raised-button (click)="cancel()">
+      <span>{{ "global.cancel" | translate }}</span>
+    </button>
+
+    <button type="button" color="primary" mat-raised-button (click)="validate()">
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>

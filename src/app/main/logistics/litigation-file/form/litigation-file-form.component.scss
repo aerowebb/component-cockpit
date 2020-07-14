@@ -1,0 +1,88 @@
+@import "constants";
+@import "mixins";
+
+:host {
+  .ok {
+    background-color: $green-light1 !important;
+    padding: 0.2em;
+    width: fit-content;
+  }
+
+  .warning {
+    background-color: $orange !important;
+    padding: 0.2em;
+    width: fit-content;
+  }
+
+  .nok {
+    background-color: $red-light1 !important;
+    padding: 0.2em;
+    width: fit-content;
+  }
+
+  .font-ok {
+    color: $green-light1 !important;
+  }
+
+  .font-warning {
+    color: $orange !important;
+  }
+
+  .font-nok {
+    color: $red-light1 !important;
+  }
+
+  .font-bold {
+    font-weight: bold;
+  }
+
+  .font-italic {
+    font-style: italic;
+  }
+
+  .col-width-20 {
+    width: 20% !important;
+  }
+
+  .form-control-padding {
+    padding: 8px 0;
+  }
+
+  ::ng-deep .ui-inputswitch {
+    &.ui-inputswitch-checked {
+      .ui-inputswitch-slider {
+        background-color: $green-light1 !important;
+      }
+    }
+  }
+
+  ::ng-deep .red {
+    .ui-progressbar {
+      .ui-progressbar-value {
+        border: 0 none;
+        margin: 0;
+        background: $red-light1 !important;
+      }
+    }
+  }
+
+  ::ng-deep .yellow {
+    .ui-progressbar {
+      .ui-progressbar-value {
+        border: 0 none;
+        margin: 0;
+        background: $orange !important;
+      }
+    }
+  }
+
+  ::ng-deep .green {
+    .ui-progressbar {
+      .ui-progressbar-value {
+        border: 0 none;
+        margin: 0;
+        background: $green-light1 !important;
+      }
+    }
+  }
+}

@@ -1,0 +1,183 @@
+<a-modal class="aw-modal" [(visible)]="display" [width]="85">
+  <a-header>
+    <div class="modal-title">{{ "transaction." + getComponentName() | translate }}</div>
+
+    <i class="material-icons aw-icon aw-icon-with-border" (click)="cancel()">close</i>
+  </a-header>
+
+  <a-content>
+    <div class="search-dialog-container">
+      <div class="section search-criteria-section">
+        <h4 class="section-title">{{ "global.search" | translate }}</h4>
+
+        <div class="section-content">
+          <div class="column">
+            <div class="row">
+              <div class="form-group">
+                <label class="form-label"> {{ getComponentName() + ".familyVariant" | translate }} </label>
+
+                <div class="form-control">
+                  <p-dropdown
+                    class="aw-dropdown fixed-width"
+                    [options]="familyVariants"
+                    [(ngModel)]="selectedFamilyVariant"
+                    [showClear]="true"
+                    appendTo="body"
+                    placeholder="&nbsp;"
+                  ></p-dropdown>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label"> {{ getComponentName() + ".code" | translate }} </label>
+
+                <div class="form-control">
+                  <input type="text" class="aw-input" [(ngModel)]="searchObject.bireMaintenancePlanDTO.planCode" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label"> {{ getComponentName() + ".name" | translate }} </label>
+
+                <div class="form-control">
+                  <input type="text" class="aw-input" [(ngModel)]="searchObject.bireMaintenancePlanDTO.planName" />
+                </div>
+              </div>
+
+              <div class="form-group"></div>
+            </div>
+
+            <div class="row">
+              <div class="form-group">
+                <label class="form-label"> {{ getComponentName() + ".revisionDate" | translate }} </label>
+
+                <div class="form-control">
+                  <p-calendar
+                    showButtonBar="true"
+                    [monthNavigator]="true"
+                    [yearNavigator]="true"
+                    [yearRange]="sessionService.calendarYearRange"
+                    class="aw-calendar"
+                    [dateFormat]="sessionService.dateFormatPrimeNG"
+                    [locale]="sessionService.calendarFormat"
+                    [(ngModel)]="searchObject.bireMaintenancePlanDTO.planRevisionDate"
+                    appendTo="body"
+                  ></p-calendar>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label"> {{ getComponentName() + ".approvalDate" | translate }} </label>
+
+                <div class="form-control">
+                  <p-calendar
+                    showButtonBar="true"
+                    [monthNavigator]="true"
+                    [yearNavigator]="true"
+                    [yearRange]="sessionService.calendarYearRange"
+                    class="aw-calendar"
+                    [dateFormat]="sessionService.dateFormatPrimeNG"
+                    [locale]="sessionService.calendarFormat"
+                    [(ngModel)]="searchObject.bireMaintenancePlanDTO.planApprovalDate"
+                    appendTo="body"
+                  ></p-calendar>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label"> {{ getComponentName() + ".validityEndDate" | translate }} </label>
+
+                <div class="form-control">
+                  <p-calendar
+                    showButtonBar="true"
+                    [monthNavigator]="true"
+                    [yearNavigator]="true"
+                    [yearRange]="sessionService.calendarYearRange"
+                    class="aw-calendar"
+                    [dateFormat]="sessionService.dateFormatPrimeNG"
+                    [locale]="sessionService.calendarFormat"
+                    [(ngModel)]="searchObject.bireMaintenancePlanDTO.planValidityEndDate"
+                    appendTo="body"
+                  ></p-calendar>
+                </div>
+              </div>
+
+              <div class="form-group"></div>
+            </div>
+          </div>
+
+          <div class="row search-criteria-footer">
+            <div class="search-actions">
+              <button
+                type="button"
+                mat-raised-button
+                (click)="search()"
+                color="primary"
+                appKeyPress
+                [keyCode]="'Enter'"
+                (keyPress)="search()"
+              >
+                {{ "global.toSearch" | translate }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-row">
+        <div class="grid-cell--12">
+          <!-- Maintenance programs table -->
+          <div class="section results-section">
+            <h4 class="section-title">
+              {{ "global.results" | translate }} ({{
+                maintenanceProgramTableDataSource ? maintenanceProgramTableDataSource.dataCount : 0
+              }})
+            </h4>
+
+            <div class="section-content">
+              <a-table [dataSource]="maintenanceProgramTableDataSource">
+                <ng-template columnDef="ampStatus" let-rowData="rowData">
+                  <span
+                    *ngIf="rowData.type === MAINTENANCE_PLAN.PLAN_TYPE_RMP && rowData.ampStatus === 'green'"
+                    class="alert alert--ok"
+                  >
+                    {{ "global.alertOk" | translate }}
+                  </span>
+
+                  <span
+                    *ngIf="rowData.type === MAINTENANCE_PLAN.PLAN_TYPE_RMP && rowData.ampStatus === 'red'"
+                    class="alert alert--nok"
+                  >
+                    {{ "global.alertNok" | translate }}
+                  </span>
+
+                  <span
+                    *ngIf="rowData.type === MAINTENANCE_PLAN.PLAN_TYPE_RMP && rowData.ampStatus === 'yellow'"
+                    class="alert alert--warning"
+                  >
+                    {{ "global.alertWarning" | translate }}
+                  </span>
+                </ng-template>
+              </a-table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </a-content>
+  <a-footer>
+    <button type="button" mat-raised-button (click)="cancel()">
+      <span>{{ "global.cancel" | translate }}</span>
+    </button>
+
+    <button
+      [disabled]="!maintenanceProgramTableDataSource.hasDataSelection"
+      color="primary"
+      type="button"
+      mat-raised-button
+      (click)="validate()"
+    >
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>

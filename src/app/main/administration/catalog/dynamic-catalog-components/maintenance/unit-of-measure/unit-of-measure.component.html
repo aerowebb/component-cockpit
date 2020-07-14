@@ -1,0 +1,57 @@
+<div class="grid-row">
+  <div class="grid-cell--12">
+    <div class="grid-cell grid-cell--container">
+      <div class="grid-cell-header">
+        <div class="grid-cell-title-container">
+          <h3 class="grid-cell-title">
+            {{ getComponentName() + ".unitOfMeasureList" | translate }} ({{ unitOfMeasureTableDataSource.dataCount }})
+          </h3>
+        </div>
+      </div>
+
+      <div class="grid-cell-content">
+        <a-table [dataSource]="unitOfMeasureTableDataSource">
+          <ng-template tableActionsDef>
+            <button
+              *ngIf="unitOfMeasureTableDataSource.hasDataSelection"
+              type="button"
+              mat-raised-button
+              color="warn"
+              (click)="deleteSelectedUnitOfMeasure()"
+            >
+              {{ "global.delete" | translate }}
+            </button>
+
+            <button
+              *ngIf="unitOfMeasureTableDataSource.dataSelectionCount === 1"
+              type="button"
+              mat-raised-button
+              (click)="editSelectedUnitOfMeasure()"
+            >
+              {{ "global.edit" | translate }}
+            </button>
+
+            <button
+              *ngIf="!unitOfMeasureTableDataSource.hasDataSelection"
+              type="button"
+              mat-raised-button
+              (click)="addUnitOfMeasure()"
+            >
+              {{ "global.add" | translate }}
+            </button>
+          </ng-template>
+        </a-table>
+      </div>
+    </div>
+  </div>
+
+  <aw-dialog-unit-of-measure
+    *ngIf="showunitOfMeasureDialog"
+    [(display)]="showunitOfMeasureDialog"
+    [data]="selectedRunitOfMeasureDialogData"
+    [openMode]="unitOfMeasureDialogOpenMode"
+    (onValidated)="onAddUnitOfMeasure($event)"
+    (onUpdate)="onUpdateUnitOfMeasure($event)"
+    [unitOfMeasureList]="unitOfMeasureTableDataSource.dataSrc"
+  ></aw-dialog-unit-of-measure>
+</div>

@@ -1,0 +1,304 @@
+<div class="page-header">
+  <div class="page-info">
+    <div>
+      <div class="page-title">
+        {{ "transaction." + componentData.componentId | translate }}
+      </div>
+
+      <div class="page-subtitle">
+        <div class="page-subtitle">- {{ "page.searchPage" | translate }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-actions">
+    <button type="button" mat-raised-button (click)="openNewItem()" *ngIf="hasUpdateAccessRight">
+      {{ "global.create" | translate }}
+    </button>
+    <button
+      id="actions"
+      mat-icon-button
+      class="mat-elevation-z1"
+      matTooltip="{{ 'global.showAllActionTooltip' | translate }}"
+      matTooltipPosition="above"
+      aria-label="Show all actions"
+      [matMenuTriggerFor]="actions"
+    >
+      <mat-icon>more_horiz</mat-icon>
+    </button>
+
+    <mat-menu #actions="matMenu">
+      <button id="favorites" mat-menu-item (click)="updateFavoriteState()">
+        {{ (isFavoriteEntry ? "page.removeFromFavorites" : "page.addToFavorites") | translate }}
+      </button>
+    </mat-menu>
+  </div>
+</div>
+
+<div class="page-wrapper">
+  <div class="page-container search-page-container">
+    <div class="page-content">
+      <div class="grid-row">
+        <div class="grid-cell--12">
+          <div class="grid-cell grid-cell--container">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">{{ "global.search" | translate }}</h3>
+              </div>
+            </div>
+
+            <div class="grid-cell-content">
+              <div class="column">
+                <div class="row search-criteria-header">
+                  <i
+                    class="fa fa-fw fa-floppy-o aw-icon aw-icon-with-border search-criteria-action"
+                    aria-hidden="true"
+                    pTooltip="{{ 'global.save' | translate }}"
+                    tooltipPosition="top"
+                  ></i>
+                  <i
+                    class="fa fa-fw fa-undo aw-icon aw-icon-with-border search-criteria-action"
+                    aria-hidden="true"
+                    pTooltip="{{ 'global.reset' | translate }}"
+                    tooltipPosition="top"
+                    (click)="resetSearchCriteria()"
+                  ></i>
+                </div>
+
+                <div class="row">
+                  <div class="form-group required">
+                    <label class="form-label"> {{ componentName + ".familyVariantCode" | translate }} </label>
+
+                    <div class="form-control">
+                      <p-dropdown
+                        class="aw-dropdown fixed-width"
+                        [showClear]="true"
+                        [options]="familyVariant"
+                        [(ngModel)]="searchCriteria.familyCode"
+                        (keyup.enter)="search()"
+                        placeholder="&nbsp;"
+                      ></p-dropdown>
+                    </div>
+                  </div>
+
+                  <div class="display--flex-row flex--1">
+                    <div class="form-group">
+                      <label class="form-label"> {{ componentName + ".chapter" | translate }} </label>
+
+                      <div class="form-control">
+                        <input class="aw-input" type="text" maxlength="2" [(ngModel)]="searchCriteria.chapter" />
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-label"> {{ componentName + ".section" | translate }} </label>
+
+                      <div class="form-control">
+                        <input class="aw-input" type="text" maxlength="2" [(ngModel)]="searchCriteria.section" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="display--flex-row flex--1">
+                    <div class="form-group">
+                      <label class="form-label"> {{ componentName + ".subject" | translate }} </label>
+
+                      <div class="form-control">
+                        <input class="aw-input" type="text" maxlength="2" [(ngModel)]="searchCriteria.subject" />
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-label"> {{ componentName + ".sheet" | translate }} </label>
+
+                      <div class="form-control">
+                        <input class="aw-input" type="text" maxlength="5" [(ngModel)]="searchCriteria.sheet" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="display--flex-row flex--1">
+                    <div class="form-group">
+                      <label class="form-label"> {{ componentName + ".marks" | translate }} </label>
+
+                      <div class="form-control">
+                        <input class="aw-input" type="text" maxlength="5" [(ngModel)]="searchCriteria.marks" />
+                      </div>
+                    </div>
+
+                    <div class="form-group"></div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="form-group">
+                    <label class="form-label">{{ componentName + ".name" | translate }}</label>
+
+                    <div class="form-control">
+                      <input class="aw-input" type="text" [(ngModel)]="searchCriteria.name" />
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">{{ componentName + ".itemFamilyCode" | translate }}</label>
+
+                    <div class="form-control">
+                      <p-dropdown
+                        class="aw-dropdown fixed-width"
+                        [showClear]="true"
+                        placeholder="&nbsp;"
+                        [options]="itemFamily"
+                        [(ngModel)]="searchCriteria.itemFamilyCode"
+                        (keyup.enter)="search()"
+                      ></p-dropdown>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">{{ componentName + ".functionCode" | translate }}</label>
+
+                    <div class="form-control">
+                      <input class="aw-input" type="text" [(ngModel)]="searchCriteria.functionCode" />
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">{{ componentName + ".itemNumber" | translate }}</label>
+
+                    <div class="form-control">
+                      <input class="aw-input" type="text" maxlength="20" [(ngModel)]="searchCriteria.itemNumber" />
+                    </div>
+                  </div>
+                </div>
+
+                <div class="advanced-criteria" [ngClass]="{ 'display--none': !showAdvancedCriteria }">
+                  <div class="row">
+                    <div class="form-group flex">
+                      <label class="form-label"> {{ componentName + ".itemType" | translate }} </label>
+
+                      <div class="form-control">
+                        <p-dropdown
+                          class="aw-dropdown fixed-width"
+                          [showClear]="true"
+                          placeholder="&nbsp;"
+                          [options]="itemType"
+                          [(ngModel)]="searchCriteria.itemType"
+                          (keyup.enter)="search()"
+                        ></p-dropdown>
+                      </div>
+                    </div>
+
+                    <div class="form-group flex">
+                      <label class="form-label"> {{ componentName + ".flocType" | translate }} </label>
+
+                      <div class="form-control">
+                        <p-dropdown
+                          class="aw-dropdown fixed-width"
+                          [showClear]="true"
+                          placeholder="&nbsp;"
+                          [options]="flocType"
+                          [(ngModel)]="searchCriteria.ippeNodeType"
+                          (keyup.enter)="search()"
+                        ></p-dropdown>
+                      </div>
+                    </div>
+
+                    <div class="form-group flex">
+                      <label class="form-label"> {{ componentName + ".AssociatedPart" | translate }} </label>
+
+                      <div class="form-control">
+                        <input class="aw-input" type="text" [(ngModel)]="searchCriteria.attachingPart" />
+                      </div>
+                    </div>
+
+                    <div class="form-group flex">
+                      <label class="form-label"> {{ componentName + ".onlyMelCdlItems" | translate }} </label>
+
+                      <div class="form-control">
+                        <p-checkbox binary="true" class="aw-checkbox" [(ngModel)]="isMelSelected"></p-checkbox>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row"></div>
+                </div>
+
+                <div class="row search-criteria-footer">
+                  <button mat-button (click)="showAdvancedCriteria = !showAdvancedCriteria">
+                    <ng-container *ngIf="showAdvancedCriteria">
+                      <mat-icon>remove</mat-icon>
+                      {{ "global.collapseCriteria" | translate }}
+                    </ng-container>
+                    <ng-container *ngIf="!showAdvancedCriteria">
+                      <mat-icon>add</mat-icon>
+                      {{ "global.expandCriteria" | translate }}
+                    </ng-container>
+                  </button>
+
+                  <div class="search-actions">
+                    <button
+                      type="button"
+                      mat-raised-button
+                      class="btn-with-spinner"
+                      (click)="search()"
+                      color="primary"
+                      appKeyPress
+                      [keyCode]="'Enter'"
+                      (keyPress)="search()"
+                    >
+                      <span *ngIf="isTableLoading" class="lds-hourglass"></span>
+                      {{ "global.toSearch" | translate }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-row">
+        <div class="grid-cell--12">
+          <div #resultsContainerAnchor class="grid-cell grid-cell--container">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">
+                  {{ "global.results" | translate }} ({{ itemTableDataSource.dataCount }})
+                </h3>
+              </div>
+            </div>
+            <div class="grid-cell-content">
+              <a-table [dataSource]="itemTableDataSource">
+                <ng-template tableActionsDef>
+                  <button
+                    *ngIf="itemTableDataSource.hasData && !itemTableDataSource.hasDataSelection"
+                    type="button"
+                    mat-raised-button
+                    (click)="exportTable()"
+                  >
+                    {{ "global.export" | translate }}
+                  </button>
+
+                  <button
+                    *ngIf="hasManageAccessRight && itemTableDataSource.hasDataSelection"
+                    type="button"
+                    mat-raised-button
+                    color="warn"
+                    (click)="deleteItems()"
+                  >
+                    {{ "global.delete" | translate }}
+                  </button>
+
+                  <button
+                    *ngIf="itemTableDataSource.hasDataSelection"
+                    type="button"
+                    mat-raised-button
+                    (click)="openSelectedItem()"
+                  >
+                    {{ "global.open" | translate }}
+                  </button>
+                </ng-template>
+              </a-table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

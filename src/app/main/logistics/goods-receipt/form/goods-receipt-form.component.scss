@@ -1,0 +1,73 @@
+@import "constants";
+@import "mixins";
+
+:host {
+  .alert {
+    display: inline-block;
+    text-transform: none !important;
+    font-weight: 600;
+    width: 8em;
+    text-align: center;
+
+    &.alert--ok {
+      background-color: $green-light1;
+    }
+
+    &.alert--warning {
+      background-color: $orange;
+    }
+
+    &.alert--nok {
+      background-color: $red-light1;
+    }
+
+    &.alert--none {
+      background-color: $grey1;
+    }
+  }
+
+  .custom-width {
+    width: 50%;
+  }
+
+  .padding-class {
+    padding-left: 0.5em;
+  }
+
+  .label-class {
+    padding-right: 0.5em;
+    display: inline-block;
+    width: 2.5em;
+  }
+
+  .span-label {
+    color: #007ad9;
+  }
+
+  .custom-div {
+    padding-left: 1.2em;
+  }
+
+  .custom-anchor {
+    padding: 0.7em 0;
+  }
+
+  .custom-control {
+    padding-top: 0.4em;
+  }
+
+  ::ng-deep .green {
+    .ui-progressbar {
+      .ui-progressbar-value {
+        border: 0 none;
+        margin: 0;
+        background: $green-light1 !important;
+      }
+    }
+  }
+
+  .icon {
+    margin-left: 8px;
+    cursor: pointer;
+  }
+}

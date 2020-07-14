@@ -1,0 +1,39 @@
+<div class="grid-row">
+  <div class="grid-cell--12">
+    <div class="grid-cell grid-cell--container">
+      <div class="grid-cell-header">
+        <div class="grid-cell-title-container">
+          <h3 class="grid-cell-title">
+            {{ getComponentName() + ".title" | translate }} ({{ stockTypesTableDataSource.dataCount }})
+          </h3>
+        </div>
+      </div>
+      <div class="grid-cell-content">
+        <a-table [dataSource]="stockTypesTableDataSource">
+          <ng-template tableActionsDef>
+            <button
+              type="button"
+              *ngIf="stockTypesTableDataSource.hasDataSelection"
+              mat-raised-button
+              (click)="deleteSelectedStockType()"
+            >
+              {{ "global.delete" | translate }}
+            </button>
+            <button
+              type="button"
+              *ngIf="stockTypesTableDataSource.hasDataSelection"
+              mat-raised-button
+              (click)="openStockType()"
+            >
+              {{ "global.open" | translate }}
+            </button>
+          </ng-template>
+
+          <ng-template columnDef="stockTypeIsValuatedBoolean" let-rowData="rowData">
+            <i *ngIf="rowData.stockTypeIsValuatedBoolean" i class="fa fa-check" aria-hidden="true"></i>
+          </ng-template>
+        </a-table>
+      </div>
+    </div>
+  </div>
+</div>

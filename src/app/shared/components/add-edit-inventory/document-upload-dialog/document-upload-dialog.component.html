@@ -1,0 +1,93 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".docManagement" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="form-group">
+      <label class="form-label">{{ getComponentName() + ".docName" | translate }}</label>
+
+      <div class="form-control">
+        <input type="text" class="aw-input" [(ngModel)]="document.docName" [disabled]="isReadOpenMode" />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">{{ getComponentName() + ".docPublicationDate" | translate }}</label>
+
+      <div class="form-control">
+        <p-calendar
+          showButtonBar="true"
+          [monthNavigator]="true"
+          [yearNavigator]="true"
+          [yearRange]="sessionService.calendarYearRange"
+          class="aw-calendar"
+          [dateFormat]="sessionService.dateFormatPrimeNG"
+          [locale]="sessionService.calendarFormat"
+          [(ngModel)]="document.docPublicationDate"
+          appendTo="body"
+          [disabled]="isReadOpenMode"
+        ></p-calendar>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">{{ getComponentName() + ".docEndOfValidityDate" | translate }}</label>
+
+      <div class="form-control">
+        <p-calendar
+          showButtonBar="true"
+          [monthNavigator]="true"
+          [yearNavigator]="true"
+          [yearRange]="sessionService.calendarYearRange"
+          class="aw-calendar"
+          [dateFormat]="sessionService.dateFormatPrimeNG"
+          [locale]="sessionService.calendarFormat"
+          [(ngModel)]="document.docEndOfValidityDate"
+          appendTo="body"
+          [disabled]="isReadOpenMode"
+        ></p-calendar>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">{{ getComponentName() + ".docType" | translate }}</label>
+
+      <div class="form-control">
+        <p-dropdown
+          class="aw-dropdown fixed-width"
+          [options]="types"
+          [(ngModel)]="document.docCategory"
+          [disabled]="isReadOpenMode"
+          [showClear]="true"
+          placeholder="&nbsp;"
+          appendTo="body"
+        ></p-dropdown>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">{{ getComponentName() + ".docDescription" | translate }}</label>
+
+      <div class="form-control">
+        <textarea
+          class="aw-textarea"
+          pInputTextarea
+          [rows]="3"
+          [(ngModel)]="document.docDescription"
+          [disabled]="isReadOpenMode"
+        ></textarea>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button type="button" mat-raised-button (click)="closeDialog()">
+      <span>{{ "global.cancel" | translate }}</span>
+    </button>
+
+    <button *ngIf="!isReadOpenMode" type="button" color="primary" mat-raised-button (click)="validate()">
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>

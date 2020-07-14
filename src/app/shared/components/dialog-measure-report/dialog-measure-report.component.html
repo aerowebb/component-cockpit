@@ -1,0 +1,26 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".title" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="form-group custom-padding">
+      <div class="form-control">
+        <textarea
+          readonly
+          class="aw-textarea"
+          [rows]="15"
+          [cols]="100"
+          pInputTextarea
+          [(ngModel)]="reportMessage"
+        ></textarea>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button type="button" mat-raised-button (click)="closeDialog()">
+      <span>{{ "global.close" | translate }}</span>
+    </button>
+  </a-footer>
+</a-modal>

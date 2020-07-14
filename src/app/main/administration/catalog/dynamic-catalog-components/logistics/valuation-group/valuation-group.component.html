@@ -1,0 +1,55 @@
+<div class="grid-row">
+  <div class="grid-cell--12">
+    <div class="grid-cell grid-cell--container">
+      <div class="grid-cell-header">
+        <div class="grid-cell-title-container">
+          <h3 class="grid-cell-title">
+            {{ getComponentName() + ".title" | translate }} ({{ valuationGroupTableDataSource.dataCount }})
+          </h3>
+        </div>
+      </div>
+      <div class="grid-cell-content">
+        <a-table [dataSource]="valuationGroupTableDataSource">
+          <ng-template tableActionsDef>
+            <button
+              type="button"
+              *ngIf="!valuationGroupTableDataSource.hasDataSelection"
+              mat-raised-button
+              (click)="addValuationGroup()"
+            >
+              {{ "global.add" | translate }}
+            </button>
+
+            <button
+              type="button"
+              *ngIf="valuationGroupTableDataSource.hasDataSelection"
+              mat-raised-button
+              (click)="deleteSelectedValuationGroup()"
+            >
+              {{ "global.delete" | translate }}
+            </button>
+
+            <button
+              type="button"
+              mat-raised-button
+              *ngIf="valuationGroupTableDataSource.dataSelectionCount === 1"
+              (click)="editSelectedValuationGroup()"
+            >
+              {{ "global.edit" | translate }}
+            </button>
+          </ng-template>
+        </a-table>
+      </div>
+    </div>
+  </div>
+  <!-- FORM POPUP -->
+
+  <aw-valuation-group-form-popup
+    *ngIf="showValuationGroupForm"
+    [(display)]="showValuationGroupForm"
+    [valuationGroup]="currentValuationGroup"
+    [isNewValuationGroup]="isNewValuationGroup"
+    (onCreate)="createValuationGroup($event)"
+    (onUpdate)="updateValuationGroup($event)"
+  ></aw-valuation-group-form-popup>
+</div>

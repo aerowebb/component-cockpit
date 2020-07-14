@@ -1,0 +1,47 @@
+@import "constants";
+@import "mixins";
+
+$card-width: 8rem;
+
+:host {
+  .content {
+    @include flex-row();
+
+    flex-wrap: wrap;
+    max-width: 60vw;
+
+    .card {
+      border: $border-width $border-style $secondary-background-color;
+      border-radius: $border-radius;
+      cursor: pointer;
+      margin: $margin-value;
+      max-width: $card-width;
+      min-width: $card-width;
+      padding: $margin-value;
+      text-align: center;
+
+      &:hover {
+        border-color: darken($secondary-background-color, 10%);
+      }
+
+      &.selected {
+        border-color: $accent-color;
+        color: $accent-color;
+      }
+    }
+  }
+  .list {
+    display: flex;
+    flex-direction: column;
+  }
+  a:hover {
+    text-decoration: underline;
+  }
+
+  .footer {
+    @include flex-row();
+
+    justify-content: flex-end;
+    padding-top: calc(#{$margin-value} * 2);
+  }
+}

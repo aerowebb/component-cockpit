@@ -1,0 +1,17 @@
+:host {
+  .container {
+    align-items: center;
+
+    input {
+      opacity: 0;
+    }
+
+    .icon {
+      font-size: 8rem;
+    }
+
+    .label {
+      font-size: 1.25rem;
+    }
+  }
+}

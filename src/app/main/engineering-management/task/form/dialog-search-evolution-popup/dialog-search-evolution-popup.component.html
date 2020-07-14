@@ -1,0 +1,77 @@
+<a-modal class="aw-modal" [(visible)]="display" [width]="70">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".title" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="search-dialog-container">
+      <div class="section search-criteria-section">
+        <h4 class="section-title">{{ "global.search" | translate }}</h4>
+
+        <div class="section-content">
+          <div class="column">
+            <div class="row">
+              <div class="form-group">
+                <label class="form-label"> {{ getComponentName() + ".evolutionNumber" | translate }} </label>
+
+                <div class="form-control">
+                  <input class="aw-input" type="text" [(ngModel)]="searchCriteria.evolutionNumber" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label"> {{ getComponentName() + ".evolutionRevisionNumber" | translate }} </label>
+
+                <div class="form-control">
+                  <input class="aw-input" type="text" [(ngModel)]="searchCriteria.evolutionRevisionNumber" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label"> {{ getComponentName() + ".evolutionSummary" | translate }} </label>
+
+                <div class="form-control">
+                  <input class="aw-input" type="text" [(ngModel)]="searchCriteria.evolutionSummary" />
+                </div>
+              </div>
+            </div>
+
+            <div class="row search-criteria-footer">
+              <div class="search-actions">
+                <button type="button" mat-raised-button color="primary" (click)="search()">
+                  <span>{{ "global.toSearch" | translate }}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h4 class="section-title">
+          {{ "global.results" | translate }} ({{ evolutionTableDataSource ? evolutionTableDataSource.dataCount : 0 }})
+        </h4>
+
+        <div class="section-content">
+          <a-table [dataSource]="evolutionTableDataSource"> </a-table>
+        </div>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button type="button" mat-raised-button (click)="cancel()">
+      {{ "global.cancel" | translate }}
+    </button>
+
+    <button
+      type="button"
+      mat-raised-button
+      color="primary"
+      (click)="validate()"
+      [disabled]="!evolutionTableDataSource.dataSelection"
+    >
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>

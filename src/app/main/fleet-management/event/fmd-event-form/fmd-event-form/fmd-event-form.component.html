@@ -1,0 +1,1922 @@
+<div class="page-header">
+  <div class="page-info">
+    <div>
+      <div class="page-title">
+        {{ "transaction." + componentData.componentId | translate }}
+      </div>
+
+      <div class="page-subtitle">
+        <div *ngIf="!isCreateOpenMode" class="page-subtitle">- {{ componentSubtitle }}</div>
+      </div>
+    </div>
+
+    <div class="object-status" *ngIf="bidoFmdDTO.statusState" (click)="showStatus()">
+      {{ bidoFmdDTO.statusState | formatSelectOption: fmdStatusMap }}
+    </div>
+  </div>
+
+  <div class="page-actions">
+    <button *ngIf="isReadOpenMode && hasUpdateAccessRight" type="button" mat-raised-button (click)="editFMDEvent()">
+      {{ "global.edit" | translate }}
+    </button>
+
+    <button
+      *ngIf="!isReadOpenMode && !isCreateOpenMode"
+      type="button"
+      color="warn"
+      mat-raised-button
+      (click)="cancelFMDEvent()"
+    >
+      {{ "global.cancel" | translate }}
+    </button>
+
+    <button
+      *ngIf="!isReadOpenMode"
+      class="btn-with-spinner"
+      color="primary"
+      type="button"
+      mat-raised-button
+      (click)="saveFMDEvent()"
+    >
+      <span class="lds-hourglass" *ngIf="showSaveSpinner"></span>
+      {{ "global.save" | translate }}
+    </button>
+
+    <button
+      mat-icon-button
+      class="mat-elevation-z1"
+      matTooltip="{{ 'global.showAllActionTooltip' | translate }}"
+      matTooltipPosition="above"
+      aria-label="Show all actions"
+      [matMenuTriggerFor]="actions"
+    >
+      <mat-icon>more_horiz</mat-icon>
+    </button>
+    <mat-menu #actions="matMenu">
+      <button *ngIf="!isCreateOpenMode" mat-menu-item (click)="editXlsFormat()">
+        {{ componentData.componentId + ".editXlsFormat" | translate }}
+      </button>
+
+      <button
+        *ngIf="!isCreateOpenMode && hasUpdateFMDRights"
+        [disabled]="!exportFmdE5XEnabled()"
+        class="btn-with-spinner"
+        mat-menu-item
+        (click)="exportFmdE5X()"
+      >
+        <span class="lds-hourglass" *ngIf="showExportFMDE5xSpinner"></span>
+        {{ componentData.componentId + ".exportFMDE5x" | translate }}
+      </button>
+
+      <button mat-menu-item (click)="reloadFMDEvent()">{{ "global.refresh" | translate }}</button>
+      <button mat-menu-item (click)="updateFavoriteState()">
+        {{ (isFavoriteEntry ? "page.removeFromFavorites" : "page.addToFavorites") | translate }}
+      </button>
+    </mat-menu>
+  </div>
+</div>
+
+<div class="page-wrapper">
+  <div class="page-container search-page-container">
+    <div class="page-content">
+      <mat-tab-group animationDuration="0ms" dynamicHeight>
+        <!-- Home -->
+        <mat-tab id="homeTab">
+          <ng-template mat-tab-label>
+            {{ "home" | translate }}
+          </ng-template>
+          <!-- MAIN INFORMATION -->
+          <div class="grid-row">
+            <div class="grid-cell--4">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container loading-indicator">
+                    <h3 class="grid-cell-title">
+                      {{ "page.mainData" | translate }}
+                      <div *ngIf="isDataLoading" class="lds-hourglass"></div>
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <div class="column">
+                    <!-- ROW 1 -->
+                    <div class="row">
+                      <div class="form-group">
+                        <label class="form-label"> {{ componentData.componentId + ".reference" | translate }} </label>
+
+                        <div class="form-control">
+                          <input type="text" class="aw-input custom-width" [disabled]="true" [(ngModel)]="reference" />
+                          <span class="separator" *ngIf="referenceSplitFDEVisibility">-</span>
+                          <input
+                            type="text"
+                            class="aw-input"
+                            [disabled]="isReadOpenMode || referenceSplitVisibility"
+                            [(ngModel)]="referenceFDELetter"
+                            *ngIf="referenceSplitFDEVisibility"
+                            style="width: 2em"
+                          />
+                          <span class="separator" *ngIf="referenceSplitFMDVisibility">-</span>
+                          <input
+                            type="text"
+                            class="aw-input"
+                            [disabled]="isReadOpenMode || referenceSplitVisibility"
+                            [(ngModel)]="referenceFMDYear"
+                            *ngIf="referenceSplitFMDVisibility"
+                            style="width: 2em"
+                          />
+                          <input
+                            type="text"
+                            class="aw-input"
+                            [disabled]="isReadOpenMode || referenceSplitVisibility"
+                            [(ngModel)]="referenceFDEYear"
+                            *ngIf="referenceSplitFDEVisibility"
+                            style="width: 2em"
+                          />
+                          <span class="separator" *ngIf="referenceSplitFMDVisibility">-</span>
+                          <input
+                            type="text"
+                            class="aw-input"
+                            [disabled]="isReadOpenMode || referenceSplitVisibility"
+                            [(ngModel)]="referenceFMDNumber"
+                            *ngIf="referenceSplitFMDVisibility"
+                            style="width: 2em"
+                          />
+                          <input
+                            type="text"
+                            class="aw-input"
+                            [disabled]="isReadOpenMode || referenceSplitVisibility"
+                            [(ngModel)]="referenceFDENumber"
+                            *ngIf="referenceSplitFDEVisibility"
+                            style="width: 2em"
+                          />
+                          <i
+                            class="fa fa-fw fa-search aw-icon btn-search separator"
+                            style="display: flex"
+                            aria-hidden="true"
+                            *ngIf="isReadOpenMode && updateFDERefDialogVisibility"
+                            (click)="updateFDEReferenceVisibility()"
+                          ></i>
+                        </div>
+                      </div>
+
+                      <div class="form-group">
+                        <label class="form-label">
+                          {{ componentData.componentId + ".editionNumber" | translate }}
+                        </label>
+
+                        <div class="form-control">
+                          <input
+                            type="number"
+                            class="aw-input"
+                            [disabled]="isReadOpenMode"
+                            [(ngModel)]="bidoFmdDTO.editionNumber"
+                            (onChange)="onChangeEditionNumber()"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- ROW 2 -->
+                    <div class="row">
+                      <div class="form-group">
+                        <label class="form-label">
+                          {{ componentData.componentId + ".systemCreationDate" | translate }}
+                        </label>
+
+                        <div class="form-control">
+                          <p-calendar
+                            showButtonBar="true"
+                            [monthNavigator]="true"
+                            [yearNavigator]="true"
+                            [yearRange]="sessionService.calendarYearRange"
+                            class="aw-calendar"
+                            [dateFormat]="sessionService.dateFormatPrimeNG"
+                            [locale]="sessionService.calendarFormat"
+                            appendTo="body"
+                            [disabled]="true"
+                            [(ngModel)]="bidoFmdDTO.fmdSystemCreationDate"
+                          ></p-calendar>
+                        </div>
+                      </div>
+
+                      <div class="form-group">
+                        <label class="form-label"> {{ componentData.componentId + ".author" | translate }} </label>
+
+                        <div class="form-control">
+                          <input type="text" class="aw-input" [disabled]="true" [(ngModel)]="bidoFmdDTO.fmdAuthor" />
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- ROW 3 -->
+                    <div class="row">
+                      <div class="form-group">
+                        <label class="form-label"> {{ componentData.componentId + ".sheetNumber" | translate }} </label>
+
+                        <div class="form-control">
+                          <input
+                            type="text"
+                            class="aw-input"
+                            [disabled]="isReadOpenMode || getIsFMDFieldReadOnly()"
+                            [(ngModel)]="bidoFmdDTO.trackingSheetNumber"
+                            title="{{ bidoFmdDTO.trackingSheetNumber }}"
+                            maxlength="50"
+                          />
+                        </div>
+                      </div>
+
+                      <div class="form-group">
+                        <label class="form-label">
+                          {{ componentData.componentId + ".linkedEvent" | translate }}
+                        </label>
+
+                        <div class="form-control">
+                          <a (click)="openEventAsset(notificationCode)" style="cursor: pointer">{{
+                            notificationCode
+                          }}</a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- REPORTING INFORMATION -->
+            <div class="grid-cell--6">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container loading-indicator">
+                    <h3 class="grid-cell-title">
+                      {{ componentData.componentId + ".reportInfoAnchor" | translate }}
+                      <div *ngIf="isDataLoading" class="lds-hourglass"></div>
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content grid-cell-content-with-section">
+                  <div class="section">
+                    <div class="section-content">
+                      <!-- ROW 1 -->
+                      <div class="row">
+                        <div class="form-group">
+                          <label class="form-label">
+                            {{ componentData.componentId + ".creationDate" | translate }}
+                          </label>
+
+                          <div class="form-control">
+                            <p-calendar
+                              showButtonBar="true"
+                              [monthNavigator]="true"
+                              [yearNavigator]="true"
+                              [yearRange]="sessionService.calendarYearRange"
+                              class="aw-calendar"
+                              [dateFormat]="sessionService.dateFormatPrimeNG"
+                              [locale]="sessionService.calendarFormat"
+                              appendTo="body"
+                              [disabled]="isReadOpenMode || getIsFMDFieldReadOnly()"
+                              [(ngModel)]="bidoFmdDTO.fmdCreationDate"
+                            ></p-calendar>
+                          </div>
+                        </div>
+
+                        <div class="form-group" *ngIf="getFDM_FMDVisibility()">
+                          <label class="form-label">
+                            {{ componentData.componentId + ".personReporting" | translate }}
+                          </label>
+
+                          <div class="form-control">
+                            <input
+                              type="text"
+                              class="aw-input"
+                              [disabled]="true"
+                              [(ngModel)]="bidoFmdDTO.fmdReporter"
+                            />
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="form-label">
+                            {{ componentData.componentId + ".tcHolderName" | translate }}
+                          </label>
+
+                          <div class="form-control">
+                            <input
+                              type="text"
+                              class="aw-input"
+                              [disabled]="true"
+                              [(ngModel)]="bidoFmdDTO.tcHolderName"
+                              title="{{ bidoFmdDTO.tcHolderName }}"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- ROW 2 -->
+                      <div class="row">
+                        <div class="form-group flex--2">
+                          <label class="form-label">
+                            {{ componentData.componentId + ".tcHolderAddress" | translate }}
+                          </label>
+
+                          <div class="form-control">
+                            <textarea
+                              class="aw-textarea"
+                              [rows]="3"
+                              pInputTextarea
+                              [disabled]="true"
+                              [(ngModel)]="bidoFmdDTO.tcHolderAddress"
+                              tooltipPosition="bottom"
+                              title="{{ bidoFmdDTO.tcHolderName }}"
+                            ></textarea>
+                          </div>
+                        </div>
+
+                        <div class="form-group">
+                          <label class="form-label">
+                            {{ componentData.componentId + ".aeronauticalAuthority" | translate }}
+                          </label>
+
+                          <div class="form-control">
+                            <p-dropdown
+                              class="aw-dropdown fixed-width"
+                              [options]="aeronauticalAuthorityMap"
+                              [showClear]="true"
+                              placeholder="&nbsp;"
+                              [disabled]="isReadOpenMode || getIsFMDFieldReadOnly()"
+                              [(ngModel)]="bidoFmdDTO.authorities"
+                            ></p-dropdown>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- ROW 3 -->
+                      <div class="row">
+                        <div class="form-group">
+                          <label class="form-label">
+                            {{ componentData.componentId + ".typeCertificate" | translate }}
+                          </label>
+
+                          <div class="form-control">
+                            <p-dropdown
+                              class="aw-dropdown fixed-width"
+                              [options]="typeCertificateMap"
+                              [showClear]="true"
+                              placeholder="&nbsp;"
+                              [disabled]="isReadOpenMode || getIsFMDFieldReadOnly()"
+                              [(ngModel)]="bidoFmdDTO.typeCertificate"
+                            ></p-dropdown>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="form-label">
+                            {{ componentData.componentId + ".productionCertificate" | translate }}
+                          </label>
+
+                          <div class="form-control">
+                            <p-dropdown
+                              class="aw-dropdown fixed-width"
+                              [options]="productionCertMap"
+                              [showClear]="true"
+                              placeholder="&nbsp;"
+                              [(ngModel)]="bidoFmdDTO.productionCertificate"
+                              [disabled]="isReadOpenMode || getIsFMDFieldReadOnly()"
+                            ></p-dropdown>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="form-label"> {{ componentData.componentId + ".doaNumber" | translate }} </label>
+
+                          <div class="form-control">
+                            <p-dropdown
+                              class="aw-dropdown fixed-width"
+                              [options]="doaNumberMap"
+                              [showClear]="false"
+                              placeholder="&nbsp;"
+                              [disabled]="isReadOpenMode || getIsFMDFieldReadOnly()"
+                              [(ngModel)]="bidoFmdDTO.doaNumber"
+                            ></p-dropdown>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- ROW 4 -->
+                      <div class="row" *ngIf="getFDM_FDEVisibility()">
+                        <div class="form-group">
+                          <label class="form-label">
+                            {{ componentData.componentId + ".fdeChapeau" | translate }}
+                          </label>
+
+                          <div class="form-control">
+                            <input
+                              type="text"
+                              class="aw-input"
+                              [disabled]="isReadOpenMode || getIsFMDFieldReadOnly()"
+                              [(ngModel)]="bidoFmdDTO.fdmFdeChapeau"
+                            />
+                          </div>
+                        </div>
+
+                        <div class="form-group">
+                          <label class="form-label">
+                            {{ componentData.componentId + ".nombreDenv" | translate }}
+                          </label>
+
+                          <div class="form-control">
+                            <input
+                              type="text"
+                              class="aw-input"
+                              [disabled]="isReadOpenMode || getIsFMDFieldReadOnly()"
+                              [(ngModel)]="bidoFmdDTO.fdmFdeNumeroFr"
+                            />
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="form-label">
+                            {{ componentData.componentId + ".fincheDeResignation" | translate }}
+                          </label>
+
+                          <div class="form-control">
+                            <input
+                              type="text"
+                              class="aw-input"
+                              [disabled]="isReadOpenMode || getIsFMDFieldReadOnly()"
+                              [(ngModel)]="bidoFmdDTO.fdmFdeNumeroFr"
+                            />
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="form-label"> {{ componentData.componentId + ".origine" | translate }} </label>
+
+                          <div class="form-control">
+                            <textarea
+                              class="aw-textarea"
+                              [rows]="3"
+                              pInputTextarea
+                              [disabled]="isReadOpenMode || getIsFMDFieldReadOnly()"
+                              [(ngModel)]="bidoFmdDTO.fdmFdeOrigine"
+                            ></textarea>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- FMD E5X -->
+            <div class="grid-cell--2">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container loading-indicator">
+                    <h3 class="grid-cell-title">
+                      {{ componentData.componentId + ".fmdE5X" | translate }}
+                      <div *ngIf="isDataLoading" class="lds-hourglass"></div>
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content grid-cell-content-with-section">
+                  <div class="section">
+                    <div class="section-content">
+                      <div class="row">
+                        <div class="form-group">
+                          <label class="form-label">
+                            {{ componentData.componentId + ".eventType" | translate }}
+                          </label>
+
+                          <div class="form-control">
+                            <p-dropdown
+                              class="aw-dropdown fixed-width"
+                              [showClear]="true"
+                              [options]="eventTypeMap"
+                              [disabled]="isReadOpenMode || getIsFMDFieldReadOnly()"
+                              [(ngModel)]="bidoFmdDTO.e5xEventType"
+                            ></p-dropdown>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="form-group">
+                          <label class="form-label">
+                            {{ componentData.componentId + ".highestDamage" | translate }}
+                          </label>
+
+                          <div class="form-control">
+                            <p-dropdown
+                              class="aw-dropdown fixed-width"
+                              [showClear]="false"
+                              [options]="e5xHighestDamageMap"
+                              placeholder="&nbsp;"
+                              [disabled]="isReadOpenMode || getIsFMDFieldReadOnly()"
+                              [(ngModel)]="bidoFmdDTO.e5xHighestDamage"
+                            ></p-dropdown>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="form-group">
+                          <label class="form-label">
+                            {{ componentData.componentId + ".injuryLevel" | translate }}
+                          </label>
+
+                          <div class="form-control">
+                            <p-dropdown
+                              class="aw-dropdown fixed-width"
+                              [showClear]="false"
+                              [options]="e5xinjuryLevelMap"
+                              placeholder="&nbsp;"
+                              [disabled]="isReadOpenMode || getIsFMDFieldReadOnly()"
+                              [(ngModel)]="bidoFmdDTO.e5xInjuryLevel"
+                            ></p-dropdown>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row" *ngIf="getFDM_FDEVisibility()">
+                        <div class="form-group">
+                          <label class="form-label">
+                            {{ componentData.componentId + ".causeRacine" | translate }}
+                          </label>
+
+                          <div class="form-control">
+                            <textarea
+                              class="aw-textarea"
+                              [rows]="3"
+                              pInputTextarea
+                              [disabled]="true"
+                              [(ngModel)]="bidoFmdDTO.fdmFdeCauseRacine"
+                            ></textarea>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row" *ngIf="getFDM_FDEVisibility()">
+                        <div class="form-group">
+                          <label class="form-label">
+                            {{ componentData.componentId + ".casAnterieurs" | translate }}
+                          </label>
+
+                          <div class="form-control">
+                            <textarea
+                              class="aw-textarea"
+                              [rows]="3"
+                              pInputTextarea
+                              [disabled]="isReadOpenMode || getIsFMDFieldReadOnly()"
+                              [(ngModel)]="bidoFmdDTO.fdmFdeCasAnterieurs"
+                            ></textarea>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row" *ngIf="getFDM_FDEVisibility()">
+                        <div class="form-group">
+                          <label class="form-label">
+                            {{ componentData.componentId + ".fincheDeResignationAnterieurs" | translate }}
+                          </label>
+
+                          <div class="form-control">
+                            <textarea
+                              class="aw-textarea"
+                              [rows]="3"
+                              pInputTextarea
+                              [disabled]="isReadOpenMode || getIsFMDFieldReadOnly()"
+                              [(ngModel)]="bidoFmdDTO.fdmFdeFrAnterieures"
+                            ></textarea>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- EVENT INFORMATION -->
+          <div class="grid-row">
+            <div class="grid-cell--12">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container loading-indicator">
+                    <h3 class="grid-cell-title">
+                      {{ componentData.componentId + ".eventInfoAnchor" | translate }}
+                      ({{ eventInfoData ? eventInfoData.length : 0 }})
+                      <div *ngIf="isDataLoading" class="lds-hourglass"></div>
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content grid-cell-content-with-section">
+                  <div class="section">
+                    <div class="section-content">
+                      <p-table
+                        [resizableColumns]="true"
+                        #eventTable
+                        class="aw-table2"
+                        [columns]="tableCols"
+                        [value]="eventInfoData"
+                        [scrollable]="true"
+                      >
+                        <ng-template pTemplate="emptymessage">
+                          <span *ngIf="!isLoadingMaintenanceProgramTable"> &nbsp;</span>
+                          <div *ngIf="isLoadingMaintenanceProgramTable" class="aw-table-loading-indicator">
+                            <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                            <div class="lds-hourglass"></div>
+                          </div>
+                        </ng-template>
+                        <ng-template pTemplate="caption">
+                          <div class="aw-table-header">
+                            <div class="aw-table-global-filter">
+                              <label class="aw-table-global-filter-label">
+                                <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                              </label>
+
+                              <input
+                                #ptableCusCustomerGlobalFilter
+                                class="aw-table-global-filter-input"
+                                type="text"
+                                placeholder="{{ 'table.globalFilterText' | translate }}"
+                                (input)="eventTable.filterGlobal($event.target.value, 'contains')"
+                              />
+                            </div>
+                          </div>
+                        </ng-template>
+                        <ng-template pTemplate="colgroup" let-columns>
+                          <colgroup>
+                            <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                          </colgroup>
+                        </ng-template>
+                        <ng-template pTemplate="header" let-columns>
+                          <tr>
+                            <th
+                              pResizableColumn
+                              *ngFor="let col of columns"
+                              [ngStyle]="{ 'text-align': col.alignment }"
+                            >
+                              <span *ngIf="col.field !== 'info'">{{
+                                componentData.componentId + "." + col.field | translate
+                              }}</span>
+                            </th>
+                          </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                          <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                            <td
+                              class="multi-row"
+                              *ngFor="let col of columns"
+                              [ngSwitch]="col.field"
+                              [ngStyle]="{ 'text-align': col.alignment }"
+                              [ngClass]="{ 'cell-grey': col.field === 'engineData' || col.field === 'fmdData' }"
+                            >
+                              <span *ngSwitchCase="'control'">
+                                <span *ngIf="rowData.control === false"></span>
+                                <span *ngIf="rowData.control === true" class="alert alert--warning">
+                                  {{ "FmdEventFormComponent.warning" | translate }}
+                                </span>
+                              </span>
+                              <span *ngSwitchCase="'engineData'">
+                                <div
+                                  pTooltip="{{ 'FmdEventFormComponent.dataIssuedFromSelectedEvent' | translate }}"
+                                  tooltipPosition="bottom"
+                                >
+                                  {{ rowData[col.field] }}
+                                </div>
+                              </span>
+                              <span *ngSwitchCase="'fmdData'">
+                                <div
+                                  pTooltip="{{ 'FmdEventFormComponent.dataIssuedFromSavedFMD' | translate }}"
+                                  tooltipPosition="bottom"
+                                >
+                                  {{ rowData[col.field] }}
+                                </div>
+                              </span>
+                              <span *ngSwitchDefault> {{ rowData[col.field] }} </span>
+                            </td>
+                          </tr>
+                        </ng-template>
+                      </p-table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+        <mat-tab id="assetControlsTab">
+          <ng-template mat-tab-label>
+            {{ componentData.componentId + ".assetControls" | translate }}
+          </ng-template>
+          <!-- AIRCRAFT INFORMATION -->
+          <div class="grid-row">
+            <div #aircraftInfoAnchor class="grid-cell--12" (click)="setSelectedAnchor('aircraftInfoAnchor')">
+              <div
+                class="grid-cell grid-cell--container"
+                [ngClass]="{ active: isSelectedAnchor('aircraftInfoAnchor') }"
+              >
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container loading-indicator">
+                    <h3 class="grid-cell-title">
+                      {{ componentData.componentId + ".aircraftInfoAnchor" | translate }}
+                      ({{ aircraftInfoData ? aircraftInfoData.length : 0 }})
+                      <div *ngIf="isDataLoading" class="lds-hourglass"></div>
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content grid-cell-content-with-section">
+                  <div class="section" *ngIf="getFDM_FDEVisibility()">
+                    <div class="section-content">
+                      <div class="row">
+                        <div class="form-group">
+                          <label class="form-label">
+                            {{ componentData.componentId + ".client" | translate }}
+                          </label>
+
+                          <div class="form-control">
+                            <p-dropdown
+                              class="aw-dropdown fixed-width"
+                              [showClear]="true"
+                              [options]="clientMap"
+                              placeholder="&nbsp;"
+                              [disabled]="isReadOpenMode || isStatusClosed"
+                              [(ngModel)]="bidoFmdDTO.fdmFdeClient"
+                            ></p-dropdown>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="form-label">
+                            {{ componentData.componentId + ".tsnDeIavion" | translate }}
+                          </label>
+
+                          <div class="form-control">
+                            <input
+                              type="text"
+                              class="aw-input"
+                              [disabled]="true"
+                              [(ngModel)]="bidoFmdDTO.fdmFdeTsnAvion"
+                            />
+                          </div>
+                        </div>
+                        <div class="form-group"></div>
+                        <div class="form-group"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="section">
+                    <div class="section-content">
+                      <p-table
+                        [resizableColumns]="true"
+                        #aircraftTable
+                        class="aw-table2"
+                        [columns]="tableCols"
+                        [value]="aircraftInfoData"
+                        [scrollable]="true"
+                      >
+                        <ng-template pTemplate="emptymessage">
+                          <span *ngIf="!isLoadingMaintenanceProgramTable"> &nbsp;</span>
+                          <div *ngIf="isLoadingMaintenanceProgramTable" class="aw-table-loading-indicator">
+                            <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                            <div class="lds-hourglass"></div>
+                          </div>
+                        </ng-template>
+                        <ng-template pTemplate="caption">
+                          <div class="aw-table-header">
+                            <div class="aw-table-global-filter">
+                              <label class="aw-table-global-filter-label">
+                                <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                              </label>
+
+                              <input
+                                #ptableCusCustomerGlobalFilter
+                                class="aw-table-global-filter-input"
+                                type="text"
+                                placeholder="{{ 'table.globalFilterText' | translate }}"
+                                (input)="aircraftTable.filterGlobal($event.target.value, 'contains')"
+                              />
+                            </div>
+                          </div>
+                        </ng-template>
+                        <ng-template pTemplate="colgroup" let-columns>
+                          <colgroup>
+                            <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                          </colgroup>
+                        </ng-template>
+                        <ng-template pTemplate="header" let-columns>
+                          <tr>
+                            <th
+                              pResizableColumn
+                              *ngFor="let col of columns"
+                              [ngStyle]="{ 'text-align': col.alignment }"
+                            >
+                              <span *ngIf="col.field !== 'info'">{{
+                                componentData.componentId + "." + col.field | translate
+                              }}</span>
+                            </th>
+                          </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                          <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                            <td
+                              *ngFor="let col of columns"
+                              [ngSwitch]="col.field"
+                              [ngStyle]="{ 'text-align': col.alignment }"
+                              [ngClass]="{ 'cell-grey': col.field === 'engineData' || col.field === 'fmdData' }"
+                            >
+                              <span *ngSwitchCase="'control'">
+                                <span *ngIf="rowData.control === false"></span>
+                                <span *ngIf="rowData.control === true" class="alert alert--warning">
+                                  {{ "FmdEventFormComponent.warning" | translate }}
+                                </span>
+                              </span>
+                              <span *ngSwitchCase="'engineData'">
+                                <div
+                                  pTooltip="{{ 'FmdEventFormComponent.dataIssuedFromSelectedEvent' | translate }}"
+                                  tooltipPosition="bottom"
+                                >
+                                  {{ rowData[col.field] }}
+                                </div>
+                              </span>
+                              <span *ngSwitchCase="'fmdData'">
+                                <td
+                                  *ngIf="
+                                    !isReadOpenMode &&
+                                    getFDMIsFDE &&
+                                    (rowData['info'] === getTranslatedText('aircraftSerialNumber') ||
+                                      rowData['info'] === getTranslatedText('operatorName'))
+                                  "
+                                  [pEditableColumn]="rowData[col.field]"
+                                  [pEditableColumnField]="rowData[col.field]"
+                                  style="width: 10%"
+                                >
+                                  <p-cellEditor
+                                    *ngIf="
+                                      rowData['info'] === getTranslatedText('aircraftSerialNumber') ||
+                                      rowData['info'] === getTranslatedText('operatorName')
+                                    "
+                                  >
+                                    <ng-template pTemplate="input">
+                                      <input
+                                        *ngIf="rowData['info'] === getTranslatedText('aircraftSerialNumber')"
+                                        class="aw-input"
+                                        type="text"
+                                        [(ngModel)]="rowData.fmdData"
+                                      />
+                                      <p-dropdown
+                                        class="aw-dropdown fixed-width"
+                                        *ngIf="rowData['info'] === getTranslatedText('operatorName')"
+                                        [showClear]="true"
+                                        [options]="operatorMap"
+                                        placeholder="&nbsp;"
+                                        [disabled]="isReadOpenMode || isStatusClosed"
+                                        [(ngModel)]="bidoFmdDTO.operatorName"
+                                      ></p-dropdown>
+                                    </ng-template>
+                                    <ng-template pTemplate="output">
+                                      <div
+                                        pTooltip="{{
+                                          componentData.componentId + '.dataIssuedFromSavedFMD' | translate
+                                        }}"
+                                        tooltipPosition="bottom"
+                                      >
+                                        {{ rowData[col.field] }}
+                                      </div>
+                                    </ng-template>
+                                  </p-cellEditor>
+                                </td>
+                                <div
+                                  *ngIf="
+                                    !isReadOpenMode &&
+                                    getFDMIsFDE &&
+                                    rowData['info'] !== getTranslatedText('aircraftSerialNumber') &&
+                                    rowData['info'] !== getTranslatedText('operatorName')
+                                  "
+                                  pTooltip="{{ 'FmdEventFormComponent.dataIssuedFromSavedFMD' | translate }}"
+                                  tooltipPosition="bottom"
+                                >
+                                  {{ rowData[col.field] }}
+                                </div>
+                                <div
+                                  *ngIf="!isReadOpenMode && !getFDMIsFDE"
+                                  pTooltip="{{ 'FmdEventFormComponent.dataIssuedFromSavedFMD' | translate }}"
+                                  tooltipPosition="bottom"
+                                >
+                                  {{ rowData[col.field] }}
+                                </div>
+                                <div
+                                  *ngIf="isReadOpenMode && !getFDMIsFDE"
+                                  pTooltip="{{ 'FmdEventFormComponent.dataIssuedFromSavedFMD' | translate }}"
+                                  tooltipPosition="bottom"
+                                >
+                                  {{ rowData[col.field] }}
+                                </div>
+                              </span>
+                              <span *ngSwitchDefault> {{ rowData[col.field] }} </span>
+                            </td>
+                          </tr>
+                        </ng-template>
+                      </p-table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ENGINE INFORMATION -->
+          <div class="grid-row">
+            <div class="grid-cell--12">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container loading-indicator">
+                    <h3 class="grid-cell-title">
+                      {{ componentData.componentId + ".engineInfoAnchor" | translate }}
+                      ({{ engineInfoData ? engineInfoData.length : 0 }})
+                      <div *ngIf="isDataLoading" class="lds-hourglass"></div>
+                    </h3>
+                  </div>
+                </div>
+                <div class="grid-cell-content grid-cell-content-with-section">
+                  <div class="section">
+                    <div class="section-content">
+                      <p-table
+                        [resizableColumns]="true"
+                        #engineTable
+                        class="aw-table2"
+                        [columns]="tableCols"
+                        [value]="engineInfoData"
+                        [scrollable]="true"
+                      >
+                        <ng-template pTemplate="emptymessage">
+                          <span *ngIf="!isLoadingMaintenanceProgramTable"> &nbsp;</span>
+                          <div *ngIf="isLoadingMaintenanceProgramTable" class="aw-table-loading-indicator">
+                            <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                            <div class="lds-hourglass"></div>
+                          </div>
+                        </ng-template>
+                        <ng-template pTemplate="caption">
+                          <div class="aw-table-header">
+                            <div class="aw-table-global-filter">
+                              <label class="aw-table-global-filter-label">
+                                <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                              </label>
+
+                              <input
+                                #ptableCusCustomerGlobalFilter
+                                class="aw-table-global-filter-input"
+                                type="text"
+                                placeholder="{{ 'table.globalFilterText' | translate }}"
+                                (input)="engineTable.filterGlobal($event.target.value, 'contains')"
+                              />
+                            </div>
+                          </div>
+                        </ng-template>
+                        <ng-template pTemplate="colgroup" let-columns>
+                          <colgroup>
+                            <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                          </colgroup>
+                        </ng-template>
+                        <ng-template pTemplate="header" let-columns>
+                          <tr>
+                            <th
+                              pResizableColumn
+                              *ngFor="let col of columns"
+                              [ngStyle]="{ 'text-align': col.alignment }"
+                            >
+                              <span *ngIf="col.field !== 'info'">{{
+                                componentData.componentId + "." + col.field | translate
+                              }}</span>
+                            </th>
+                          </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                          <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                            <td
+                              class="multi-row"
+                              *ngFor="let col of columns"
+                              [ngSwitch]="col.field"
+                              [ngStyle]="{ 'text-align': col.alignment }"
+                              [ngClass]="{ 'cell-grey': col.field === 'engineData' || col.field === 'fmdData' }"
+                            >
+                              <span *ngSwitchCase="'control'">
+                                <span *ngIf="rowData.control === false"></span>
+                                <span *ngIf="rowData.control === true" class="alert alert--warning">
+                                  {{ "FmdEventFormComponent.warning" | translate }}
+                                </span>
+                              </span>
+                              <span *ngSwitchCase="'engineData'">
+                                <div
+                                  pTooltip="{{ 'FmdEventFormComponent.dataIssuedFromSelectedEvent' | translate }}"
+                                  tooltipPosition="bottom"
+                                >
+                                  {{ rowData[col.field] }}
+                                </div>
+                              </span>
+                              <span *ngSwitchCase="'fmdData'">
+                                <div
+                                  pTooltip="{{ 'FmdEventFormComponent.dataIssuedFromSavedFMD' | translate }}"
+                                  tooltipPosition="bottom"
+                                >
+                                  {{ rowData[col.field] }}
+                                </div>
+                              </span>
+                              <span *ngSwitchDefault> {{ rowData[col.field] }} </span>
+                            </td>
+                          </tr>
+                        </ng-template>
+                      </p-table>
+                    </div>
+                  </div>
+                  <div class="section padding-class" *ngIf="getFDM_FDEVisibility()">
+                    <h4 class="section-title">
+                      {{ componentData.componentId + ".engine" | translate }}({{
+                        engineInfoData ? engineInfoData.length : 0
+                      }})
+                    </h4>
+                    <div class="section-content">
+                      <p-table
+                        [resizableColumns]="true"
+                        #engine2Table
+                        class="aw-table2"
+                        [columns]="tableCols"
+                        [value]="engineInfoData"
+                        [scrollable]="true"
+                      >
+                        <ng-template pTemplate="emptymessage">
+                          <span *ngIf="!isLoadingMaintenanceProgramTable"> &nbsp;</span>
+                          <div *ngIf="isLoadingMaintenanceProgramTable" class="aw-table-loading-indicator">
+                            <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                            <div class="lds-hourglass"></div>
+                          </div>
+                        </ng-template>
+                        <ng-template pTemplate="caption">
+                          <div class="aw-table-header">
+                            <div class="aw-table-global-filter">
+                              <label class="aw-table-global-filter-label">
+                                <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                              </label>
+
+                              <input
+                                #ptableCusCustomerGlobalFilter
+                                class="aw-table-global-filter-input"
+                                type="text"
+                                placeholder="{{ 'table.globalFilterText' | translate }}"
+                                (input)="engine2Table.filterGlobal($event.target.value, 'contains')"
+                              />
+                            </div>
+                          </div>
+                        </ng-template>
+                        <ng-template pTemplate="colgroup" let-columns>
+                          <colgroup>
+                            <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                          </colgroup>
+                        </ng-template>
+                        <ng-template pTemplate="header" let-columns>
+                          <tr>
+                            <th
+                              pResizableColumn
+                              *ngFor="let col of columns"
+                              [ngStyle]="{ 'text-align': col.alignment }"
+                            >
+                              <span *ngIf="col.field !== 'info'">{{
+                                componentData.componentId + "." + col.field | translate
+                              }}</span>
+                            </th>
+                          </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                          <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                            <td
+                              class="multi-row"
+                              *ngFor="let col of columns"
+                              [ngSwitch]="col.field"
+                              [ngStyle]="{ 'text-align': col.alignment }"
+                              [ngClass]="{ 'cell-grey': col.field === 'engineData' || col.field === 'fmdData' }"
+                            >
+                              <span *ngSwitchCase="'control'">
+                                <span *ngIf="rowData.control === false"></span>
+                                <span *ngIf="rowData.control === true" class="alert alert--warning">
+                                  {{ "FmdEventFormComponent.warning" | translate }}
+                                </span>
+                              </span>
+                              <span *ngSwitchCase="'engineData'">
+                                <div
+                                  pTooltip="{{ 'FmdEventFormComponent.dataIssuedFromSelectedEvent' | translate }}"
+                                  tooltipPosition="bottom"
+                                >
+                                  {{ rowData[col.field] }}
+                                </div>
+                              </span>
+                              <span *ngSwitchCase="'fmdData'">
+                                <div
+                                  pTooltip="{{ 'FmdEventFormComponent.dataIssuedFromSavedFMD' | translate }}"
+                                  tooltipPosition="bottom"
+                                >
+                                  {{ rowData[col.field] }}
+                                </div>
+                              </span>
+                              <span *ngSwitchDefault> {{ rowData[col.field] }} </span>
+                            </td>
+                          </tr>
+                        </ng-template>
+                      </p-table>
+                    </div>
+                  </div>
+                  <div class="section" *ngIf="getFDM_FDEVisibility()">
+                    <h4 class="section-title">{{ componentData.componentId + ".element" | translate }}</h4>
+                    <div class="section-content">
+                      <div class="row">
+                        <div class="form-group">
+                          <label class="form-label"> {{ componentData.componentId + ".element" | translate }} </label>
+
+                          <div class="form-control">
+                            <textarea
+                              class="aw-textarea"
+                              [rows]="3"
+                              pInputTextarea
+                              disabled
+                              [(ngModel)]="bidoFmdDTO.fdmFdeElements"
+                            ></textarea>
+                          </div>
+                        </div>
+
+                        <div class="form-group">
+                          <label class="form-label"> {{ componentData.componentId + ".pn" | translate }} </label>
+
+                          <div class="form-control">
+                            <input
+                              type="text"
+                              class="aw-input"
+                              [disabled]="true"
+                              [(ngModel)]="bidoFmdDTO.fdmFdePnElement"
+                            />
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="form-label">
+                            {{ componentData.componentId + ".sn" | translate }}
+                          </label>
+
+                          <div class="form-control">
+                            <input
+                              type="text"
+                              class="aw-input"
+                              [disabled]="true"
+                              [(ngModel)]="bidoFmdDTO.fdmFdeSnElement"
+                            />
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="form-label"> {{ componentData.componentId + ".competers" | translate }} </label>
+
+                          <div class="form-control">
+                            <textarea
+                              class="aw-textarea"
+                              [rows]="3"
+                              pInputTextarea
+                              disabled
+                              [(ngModel)]="bidoFmdDTO.fdmFdeCompteurs"
+                            ></textarea>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+        <mat-tab id="findingsTab">
+          <ng-template mat-tab-label>
+            {{ componentData.componentId + ".findings" | translate }}
+          </ng-template>
+          <div class="grid-row">
+            <!-- INITIAL FINDINGS -->
+            <div class="grid-cell--6">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container loading-indicator">
+                    <h3 class="grid-cell-title">
+                      {{ componentData.componentId + ".initialFindingsAnchor" | translate }} ({{
+                        initialFindingsData ? initialFindingsData.length : 0
+                      }})
+                      <div *ngIf="isDataLoading" class="lds-hourglass"></div>
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <p-table
+                    [resizableColumns]="true"
+                    #initialFindingsTable
+                    class="aw-table2"
+                    [columns]="tableCols"
+                    [value]="initialFindingsData"
+                    [scrollable]="true"
+                  >
+                    <ng-template pTemplate="emptymessage">
+                      <span *ngIf="!isLoadingMaintenanceProgramTable"> &nbsp;</span>
+                      <div *ngIf="isLoadingMaintenanceProgramTable" class="aw-table-loading-indicator">
+                        <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                        <div class="lds-hourglass"></div>
+                      </div>
+                    </ng-template>
+                    <ng-template pTemplate="caption">
+                      <div class="aw-table-header">
+                        <div class="aw-table-global-filter">
+                          <label class="aw-table-global-filter-label">
+                            <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                          </label>
+
+                          <input
+                            #initialFindingsTableGlobalFilter
+                            class="aw-table-global-filter-input"
+                            type="text"
+                            placeholder="{{ 'table.globalFilterText' | translate }}"
+                            (input)="initialFindingsTable.filterGlobal($event.target.value, 'contains')"
+                          />
+                        </div>
+                      </div>
+                    </ng-template>
+                    <ng-template pTemplate="colgroup" let-columns>
+                      <colgroup>
+                        <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                      </colgroup>
+                    </ng-template>
+                    <ng-template pTemplate="header" let-columns>
+                      <tr>
+                        <th pResizableColumn *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                          <span *ngIf="col.field !== 'info'">{{
+                            componentData.componentId + "." + col.field | translate
+                          }}</span>
+                        </th>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                      <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                        <td
+                          class="multi-row"
+                          *ngFor="let col of columns"
+                          [ngSwitch]="col.field"
+                          [ngStyle]="{ 'text-align': col.alignment }"
+                          [ngClass]="{
+                            'cell-grey':
+                              col.field === 'engineData' || (getIsFMDFieldReadOnly() && col.field === 'fmdData')
+                          }"
+                        >
+                          <span *ngSwitchCase="'control'">
+                            <span *ngIf="rowData.control === false"></span>
+                            <span *ngIf="rowData.control === true" class="alert alert--warning">
+                              {{ "FmdEventFormComponent.warning" | translate }}
+                            </span>
+                          </span>
+
+                          <span *ngIf="!isReadOpenMode && !getIsFMDFieldReadOnly()">
+                            <span *ngSwitchCase="'fmdData'" class="page-header-links">
+                              <span *ngIf="rowData.info === getTranslatedText('eventNarrative')">
+                                <td
+                                  class="multi-row"
+                                  [pEditableColumn]="rowData[col.field]"
+                                  [pEditableColumnField]="rowData[col.field]"
+                                  style="width: 10%"
+                                >
+                                  <p-cellEditor>
+                                    <ng-template pTemplate="input">
+                                      <textarea
+                                        class="aw-textarea"
+                                        [rows]="3"
+                                        pInputTextarea
+                                        [(ngModel)]="rowData.fmdData"
+                                        maxlength="2000"
+                                      ></textarea>
+                                    </ng-template>
+                                    <ng-template pTemplate="output">
+                                      <div
+                                        class="multi-row"
+                                        pTooltip="{{
+                                          componentData.componentId + '.dataIssuedFromSavedFMD' | translate
+                                        }}"
+                                        tooltipPosition="bottom"
+                                      >
+                                        {{ rowData[col.field] }}
+                                      </div>
+                                    </ng-template>
+                                  </p-cellEditor>
+                                </td>
+                              </span>
+
+                              <span *ngIf="rowData.info === getTranslatedText('initialFindingsAnchor')">
+                                <td
+                                  class="multi-row"
+                                  [pEditableColumn]="rowData[col.field]"
+                                  [pEditableColumnField]="rowData[col.field]"
+                                  style="width: 10%"
+                                >
+                                  <p-cellEditor>
+                                    <ng-template pTemplate="input">
+                                      <textarea
+                                        class="aw-textarea"
+                                        [rows]="3"
+                                        pInputTextarea
+                                        [(ngModel)]="rowData.fmdData"
+                                        maxlength="600"
+                                      ></textarea>
+                                    </ng-template>
+                                    <ng-template pTemplate="output">
+                                      <div
+                                        class="multi-row"
+                                        pTooltip="{{
+                                          componentData.componentId + '.dataIssuedFromSavedFMD' | translate
+                                        }}"
+                                        tooltipPosition="bottom"
+                                      >
+                                        {{ rowData[col.field] }}
+                                      </div>
+                                    </ng-template>
+                                  </p-cellEditor>
+                                </td>
+                              </span>
+                            </span>
+                          </span>
+
+                          <span *ngIf="isReadOpenMode || getIsFMDFieldReadOnly()">
+                            <span *ngSwitchCase="'fmdData'">
+                              <div
+                                class="multi-row"
+                                pTooltip="{{ componentData.componentId + '.dataIssuedFromSavedFMD' | translate }}"
+                                tooltipPosition="bottom"
+                              >
+                                {{ rowData[col.field] }}
+                              </div>
+                            </span>
+                          </span>
+
+                          <span *ngSwitchCase="'engineData'">
+                            <div
+                              class="multi-row"
+                              pTooltip="{{ componentData.componentId + '.dataIssuedFromSelectedEvent' | translate }}"
+                              tooltipPosition="bottom"
+                            >
+                              {{ rowData[col.field] }}
+                            </div>
+                          </span>
+
+                          <span *ngSwitchDefault> {{ rowData[col.field] }} </span>
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </div>
+              </div>
+            </div>
+
+            <!--INVESTIGATION FINDINGS-->
+            <div class="grid-cell--6">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container loading-indicator">
+                    <h3 class="grid-cell-title">
+                      {{ componentData.componentId + ".investigationFindings" | translate }}
+                      <div *ngIf="isDataLoading" class="lds-hourglass"></div>
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <div class="form-group">
+                    <label class="form-label">{{
+                      componentData.componentId + ".investigationFindings" | translate
+                    }}</label>
+
+                    <div class="form-control" style="width: 50em">
+                      <textarea
+                        class="aw-textarea"
+                        [rows]="3"
+                        pInputTextarea
+                        [(ngModel)]="bidoFmdDTO.investigationFindingLong"
+                        [disabled]="isReadOpenMode || getIsFMDFieldReadOnly()"
+                        maxlength="2000"
+                      ></textarea>
+                    </div>
+                  </div>
+
+                  <!-- <div class="form-group flex--3"></div> -->
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!--RISK ANALYSIS-->
+          <div class="grid-row">
+            <div class="grid-cell--6">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container loading-indicator">
+                    <h3 class="grid-cell-title">
+                      {{ componentData.componentId + ".riskAnalysis" | translate }}
+                      <div *ngIf="isDataLoading" class="lds-hourglass"></div>
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <div class="form-group">
+                    <label class="form-label">{{
+                      componentData.componentId + ".riskClassification" | translate
+                    }}</label>
+
+                    <div class="form-control" style="width: 50em">
+                      <textarea
+                        class="aw-textarea"
+                        [rows]="3"
+                        pInputTextarea
+                        [(ngModel)]="bidoFmdDTO.riskClassification"
+                        [disabled]="isReadOpenMode || getIsFMDFieldReadOnly()"
+                        maxlength="50"
+                      ></textarea>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <div class="form-group">
+                    <label class="form-label">{{ componentData.componentId + ".riskAssessment" | translate }}</label>
+
+                    <div class="form-control" style="width: 50em">
+                      <textarea
+                        class="aw-textarea"
+                        [rows]="3"
+                        pInputTextarea
+                        [(ngModel)]="bidoFmdDTO.riskAssessment"
+                        [disabled]="isReadOpenMode || getIsFMDFieldReadOnly()"
+                        maxlength="600"
+                      ></textarea>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!--CORRECTIVE ACTION-->
+            <div class="grid-cell--6">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container loading-indicator">
+                    <h3 class="grid-cell-title">
+                      {{ componentData.componentId + ".correctiveActions" | translate }}
+                      <div *ngIf="isDataLoading" class="lds-hourglass"></div>
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <div class="form-group">
+                    <label class="form-label">{{ componentData.componentId + ".correctiveActions" | translate }}</label>
+
+                    <div class="form-control" style="width: 50em">
+                      <textarea
+                        class="aw-textarea"
+                        [rows]="3"
+                        pInputTextarea
+                        [(ngModel)]="bidoFmdDTO.correctiveActionLong"
+                        [disabled]="isReadOpenMode || getIsFMDFieldReadOnly()"
+                        maxlength="2000"
+                      ></textarea>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- CLOSEOUT INFORMATION -->
+          <div class="grid-row">
+            <div class="grid-cell--12">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container loading-indicator">
+                    <h3 class="grid-cell-title">
+                      {{ componentData.componentId + ".closeoutInformationAnchor" | translate }} ({{
+                        closeoutInformationData ? closeoutInformationData.length : 0
+                      }})
+                      <div *ngIf="isDataLoading" class="lds-hourglass"></div>
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content grid-cell-content-with-section">
+                  <div class="section">
+                    <div class="section-content">
+                      <div class="row">
+                        <p-table
+                          [resizableColumns]="true"
+                          #closeoutInformationTable
+                          class="aw-table2"
+                          [columns]="tableCols"
+                          [value]="closeoutInformationData"
+                          [scrollable]="true"
+                        >
+                          <ng-template pTemplate="emptymessage">
+                            <span *ngIf="!isLoadingMaintenanceProgramTable"> &nbsp;</span>
+                            <div *ngIf="isLoadingMaintenanceProgramTable" class="aw-table-loading-indicator">
+                              <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                              <div class="lds-hourglass"></div>
+                            </div>
+                          </ng-template>
+                          <ng-template pTemplate="caption">
+                            <div class="aw-table-header">
+                              <div class="aw-table-global-filter">
+                                <label class="aw-table-global-filter-label">
+                                  <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                                </label>
+
+                                <input
+                                  #closeoutInformationTableGlobalFilter
+                                  class="aw-table-global-filter-input"
+                                  type="text"
+                                  placeholder="{{ 'table.globalFilterText' | translate }}"
+                                  (input)="closeoutInformationTable.filterGlobal($event.target.value, 'contains')"
+                                />
+                              </div>
+                            </div>
+                          </ng-template>
+                          <ng-template pTemplate="colgroup" let-columns>
+                            <colgroup>
+                              <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                            </colgroup>
+                          </ng-template>
+                          <ng-template pTemplate="header" let-columns>
+                            <tr>
+                              <th
+                                pResizableColumn
+                                *ngFor="let col of columns"
+                                [ngStyle]="{ 'text-align': col.alignment }"
+                              >
+                                <span *ngIf="col.field !== 'info'">{{
+                                  componentData.componentId + "." + col.field | translate
+                                }}</span>
+                              </th>
+                            </tr>
+                          </ng-template>
+                          <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                            <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                              <td
+                                class="multi-row"
+                                *ngFor="let col of columns"
+                                [ngSwitch]="col.field"
+                                [ngStyle]="{ 'text-align': col.alignment }"
+                                [ngClass]="{
+                                  'cell-grey':
+                                    col.field === 'engineData' ||
+                                    (col.field === 'fmdData' &&
+                                      rowData.info !== getTranslatedText('investigationFindings')) ||
+                                    (col.field === 'fmdData' && getIsFMDFieldReadOnly()) ||
+                                    col.field === 'fmdData && !getIsFMDFieldReadOnly()'
+                                }"
+                              >
+                                <span *ngSwitchCase="'control'">
+                                  <span *ngIf="rowData.control === false"></span>
+                                  <span *ngIf="rowData.control === true" class="alert alert--warning">
+                                    {{ "FmdEventFormComponent.warning" | translate }}
+                                  </span>
+                                </span>
+
+                                <span *ngSwitchCase="'engineData'">
+                                  <div
+                                    pTooltip="{{
+                                      componentData.componentId + '.dataIssuedFromSelectedEvent' | translate
+                                    }}"
+                                    tooltipPosition="bottom"
+                                  >
+                                    {{ rowData[col.field] }}
+                                  </div>
+                                </span>
+
+                                <span *ngIf="!isReadOpenMode && !getIsFMDFieldReadOnly() && !isStatusClosed">
+                                  <span *ngSwitchCase="'fmdData'" class="page-header-links">
+                                    <span *ngIf="rowData.info === getTranslatedText('investigationFindings')">
+                                      <td
+                                        class="multi-row"
+                                        [pEditableColumn]="rowData[col.field]"
+                                        [pEditableColumnField]="rowData[col.field]"
+                                        style="width: 10%"
+                                      >
+                                        <p-cellEditor>
+                                          <ng-template pTemplate="input">
+                                            <textarea
+                                              class="aw-textarea"
+                                              [rows]="3"
+                                              pInputTextarea
+                                              [(ngModel)]="rowData.fmdData"
+                                              maxlength="300"
+                                            ></textarea>
+                                          </ng-template>
+                                          <ng-template pTemplate="output">
+                                            <div
+                                              class="multi-row"
+                                              pTooltip="{{
+                                                componentData.componentId + '.dataIssuedFromSavedFMD' | translate
+                                              }}"
+                                              tooltipPosition="bottom"
+                                            >
+                                              {{ rowData[col.field] }}
+                                            </div>
+                                          </ng-template>
+                                        </p-cellEditor>
+                                      </td>
+                                    </span>
+                                  </span>
+                                </span>
+
+                                <span *ngSwitchDefault>
+                                  <div
+                                    class="multi-row"
+                                    pTooltip="{{ componentData.componentId + '.dataIssuedFromSavedFMD' | translate }}"
+                                    tooltipPosition="bottom"
+                                  >
+                                    {{ rowData[col.field] }}
+                                  </div>
+                                </span>
+                              </td>
+                            </tr>
+                          </ng-template>
+                        </p-table>
+                      </div>
+                    </div>
+                  </div>
+                  <br /><br />
+                  <div class="section">
+                    <div class="row">
+                      <div class="form-group">
+                        <label class="form-label">
+                          {{ componentData.componentId + ".closeoutReason" | translate }}
+                        </label>
+
+                        <div class="form-control">
+                          <p-dropdown
+                            class="aw-dropdown fixed-width"
+                            [options]="closeoutReasonOptions"
+                            [showClear]="true"
+                            placeholder="&nbsp;"
+                            [disabled]="isReadOpenMode || getIsFMDFieldReadOnly()"
+                            [(ngModel)]="bidoFmdDTO.closeoutReason"
+                          ></p-dropdown>
+                        </div>
+                      </div>
+
+                      <div class="form-group">
+                        <label class="form-label">
+                          {{ componentData.componentId + ".closureDate" | translate }}
+                        </label>
+
+                        <div class="form-control">
+                          <p-calendar
+                            showButtonBar="true"
+                            [monthNavigator]="true"
+                            [yearNavigator]="true"
+                            [yearRange]="sessionService.calendarYearRange"
+                            class="aw-calendar"
+                            [dateFormat]="sessionService.dateFormatPrimeNG"
+                            [locale]="sessionService.calendarFormat"
+                            appendTo="body"
+                            [disabled]="isReadOpenMode || getIsClosureDateReadOnly()"
+                            [(ngModel)]="bidoFmdDTO.closureDate"
+                          ></p-calendar>
+                        </div>
+                      </div>
+
+                      <div class="form-group">
+                        <label class="form-label">{{
+                          componentData.componentId + ".correctiveAction" | translate
+                        }}</label>
+
+                        <div class="form-control">
+                          <textarea
+                            class="aw-textarea"
+                            [rows]="3"
+                            pInputTextarea
+                            [(ngModel)]="bidoFmdDTO.correctiveAction"
+                            [disabled]="isReadOpenMode || getIsFMDFieldReadOnly()"
+                            maxlength="100"
+                          ></textarea>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div *ngIf="getFDMIsFDE" class="form-group">
+                        <label class="form-label">{{
+                          componentData.componentId + ".fdmFdeJustificatif" | translate
+                        }}</label>
+
+                        <div class="form-control">
+                          <textarea
+                            class="aw-textarea"
+                            [rows]="3"
+                            pInputTextarea
+                            [(ngModel)]="bidoFmdDTO.fdmFdeJustificatif"
+                            [disabled]="isReadOpenMode || getIsFMDFieldReadOnly()"
+                          ></textarea>
+                        </div>
+                      </div>
+
+                      <div *ngIf="getFDMIsFDE" class="form-group">
+                        <label class="form-label">{{
+                          componentData.componentId + ".fdmFdeElements" | translate
+                        }}</label>
+
+                        <div class="form-control">
+                          <textarea
+                            class="aw-textarea"
+                            [rows]="3"
+                            pInputTextarea
+                            [(ngModel)]="bidoFmdDTO.fdmFdeElements"
+                            [disabled]="isReadOpenMode || getIsFMDFieldReadOnly()"
+                          ></textarea>
+                        </div>
+                      </div>
+
+                      <div *ngIf="getRefusalReasonVisibility()" class="form-group">
+                        <label class="form-label">
+                          {{ componentData.componentId + ".refusalReason" | translate }}
+                        </label>
+
+                        <div class="form-control">
+                          <input
+                            type="text"
+                            class="aw-input"
+                            [disabled]="isReadOpenMode || getIsRefusalReasonReadOnly()"
+                            [(ngModel)]="bidoFmdDTO.refusalReason"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+        <mat-tab id="documentsTab">
+          <ng-template mat-tab-label>
+            {{ "global.documents" | translate }}
+          </ng-template>
+          <!--DOCUMENTS TAB-->
+          <div class="grid-row">
+            <div class="grid-cell--12">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container loading-indicator">
+                    <h3 class="grid-cell-title">
+                      {{ "global.documents" | translate }}
+                      ({{ documentTable ? documentTable.length : 0 }})
+                      <div *ngIf="isDataLoading" class="lds-hourglass"></div>
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <p-table
+                    [resizableColumns]="true"
+                    #ptableDocument
+                    class="aw-table2"
+                    [columns]="documentTableCols"
+                    [value]="documentTable"
+                    [(selection)]="selectedDocuments"
+                    dataKey="docName"
+                    [scrollable]="true"
+                  >
+                    <ng-template pTemplate="emptymessage">
+                      <span *ngIf="!isLoadingDocumentTable"> &nbsp;</span>
+
+                      <div *ngIf="isLoadingDocumentTable" class="aw-table-loading-indicator">
+                        <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                        <div class="lds-hourglass"></div>
+                      </div>
+                    </ng-template>
+
+                    <ng-template pTemplate="caption">
+                      <div class="aw-table-header" [ngClass]="{ 'rows-selected': selectedDocuments.length > 0 }">
+                        <div class="aw-table-global-filter">
+                          <label class="aw-table-global-filter-label">
+                            <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                          </label>
+
+                          <input
+                            #ptableDocumentGlobalFilter
+                            class="aw-table-global-filter-input"
+                            type="text"
+                            placeholder="{{ 'table.globalFilterText' | translate }}"
+                            (input)="ptableDocument.filterGlobal($event.target.value, 'contains')"
+                          />
+                        </div>
+
+                        <div *ngIf="getUpdateFormVisibility()" class="aw-table-actions">
+                          <button
+                            *ngIf="selectedDocuments.length > 0"
+                            type="button"
+                            mat-raised-button
+                            (click)="downloadFiles()"
+                          >
+                            {{ "global.download" | translate }}
+                          </button>
+
+                          <button
+                            *ngIf="!isReadOpenMode && selectedDocuments.length > 0"
+                            type="button"
+                            mat-raised-button
+                            color="warn"
+                            (click)="deleteDocuments()"
+                          >
+                            {{ "global.delete" | translate }}
+                          </button>
+
+                          <button
+                            *ngIf="!isReadOpenMode && selectedDocuments.length === 1"
+                            type="button"
+                            mat-raised-button
+                            (click)="editDocument()"
+                          >
+                            {{ "global.edit" | translate }}
+                          </button>
+
+                          <button
+                            *ngIf="selectedDocuments.length === 1"
+                            type="button"
+                            mat-raised-button
+                            (click)="openDocument()"
+                          >
+                            {{ "global.open" | translate }}
+                          </button>
+
+                          <p-fileUpload
+                            #fileUploader
+                            *ngIf="!isReadOpenMode && selectedDocuments.length === 0"
+                            chooseLabel="{{ 'global.upload' | translate }}"
+                            name="document[]"
+                            customUpload="true"
+                            mode="basic"
+                            auto="true"
+                            (uploadHandler)="uploadDocument($event, fileUploader)"
+                          ></p-fileUpload>
+                        </div>
+                      </div>
+                    </ng-template>
+
+                    <ng-template pTemplate="colgroup" let-columns>
+                      <colgroup>
+                        <col class="aw-table-checkbox-wrapper" [ngClass]="{ 'display--none': isReadOpenMode }" />
+                        <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                      </colgroup>
+                    </ng-template>
+
+                    <ng-template pTemplate="header" let-columns>
+                      <tr>
+                        <th class="aw-table-checkbox-wrapper" [ngClass]="{ 'display--none': isReadOpenMode }">
+                          <p-tableHeaderCheckbox class="aw-table-checkbox"></p-tableHeaderCheckbox>
+                        </th>
+
+                        <th pResizableColumn *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                          {{ componentData.componentId + "." + col.field | translate }}
+                        </th>
+                      </tr>
+                    </ng-template>
+
+                    <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                      <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                        <td class="aw-table-checkbox-wrapper" [ngClass]="{ 'display--none': isReadOpenMode }">
+                          <p-tableCheckbox class="aw-table-checkbox" [value]="rowData"></p-tableCheckbox>
+                        </td>
+
+                        <td *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                          {{ rowData[col.field] }}
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+  </div>
+</div>
+
+<!--POPUPS-->
+
+<aw-dialog-business-partner-bido-document
+  *ngIf="showDocumentDialog"
+  [(display)]="showDocumentDialog"
+  [document]="currentDocument"
+  [openMode]="documentDialogOpenMode"
+  [types]="documentTypes"
+  (onValidated)="onAddDocument($event)"
+></aw-dialog-business-partner-bido-document>
+
+<aw-dialog-update-fde-reference
+  [(display)]="updateFDERefDialogVisibility"
+  [data]="updateFDERefData"
+  *ngIf="updateFDERefDialogVisibility"
+  (onAdded)="onUpdateFDERef($event)"
+></aw-dialog-update-fde-reference>

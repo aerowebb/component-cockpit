@@ -1,0 +1,151 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".modificationManagement" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div *ngIf="!isReadOpenMode" class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+      <label class="form-label">{{ getComponentName() + ".modificationType" | translate }}</label>
+
+      <div class="form-control">
+        <input
+          type="text"
+          class="aw-input"
+          maxlength="10"
+          [(ngModel)]="bireModificationObject.modificationType"
+          [disabled]="isReadOpenMode || !isEditable"
+        />
+      </div>
+    </div>
+
+    <div *ngIf="!isReadOpenMode" class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+      <label class="form-label">{{ getComponentName() + ".modificationNumber" | translate }}</label>
+
+      <div class="form-control">
+        <input
+          type="text"
+          class="aw-input"
+          maxlength="50"
+          [(ngModel)]="bireModificationObject.modificationNumber"
+          [disabled]="isReadOpenMode || !isEditable"
+        />
+      </div>
+    </div>
+
+    <div *ngIf="!isReadOpenMode" class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+      <label class="form-label">{{ getComponentName() + ".modificationRevisionNumber" | translate }}</label>
+
+      <div class="form-control">
+        <input
+          type="text"
+          class="aw-input"
+          [(ngModel)]="bireModificationObject.modificationRevisionNumber"
+          maxlength="10"
+          [disabled]="isReadOpenMode || !isEditable"
+        />
+      </div>
+    </div>
+
+    <div *ngIf="isReadOpenMode" class="form-group">
+      <label class="form-label">{{ getComponentName() + ".modificationType" | translate }}</label>
+
+      <div class="form-control">
+        <input
+          type="text"
+          class="aw-input"
+          [(ngModel)]="bireModificationObject.modificationType"
+          maxlength="10"
+          [disabled]="isReadOpenMode || !isEditable"
+        />
+      </div>
+    </div>
+
+    <div *ngIf="isReadOpenMode" class="form-group">
+      <label class="form-label">{{ getComponentName() + ".modificationNumber" | translate }}</label>
+
+      <div class="form-control">
+        <input
+          type="text"
+          class="aw-input"
+          maxlength="50"
+          [(ngModel)]="bireModificationObject.modificationNumber"
+          [disabled]="isReadOpenMode || !isEditable"
+        />
+      </div>
+    </div>
+    <div *ngIf="isReadOpenMode" class="form-group">
+      <label class="form-label">{{ getComponentName() + ".modificationRevisionNumber" | translate }}</label>
+
+      <div class="form-control">
+        <input
+          type="text"
+          class="aw-input"
+          maxlength="10"
+          [(ngModel)]="bireModificationObject.modificationRevisionNumber"
+          [disabled]="isReadOpenMode || !isEditable"
+        />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">{{ getComponentName() + ".modificationDocumentUrl" | translate }}</label>
+
+      <div class="form-control">
+        <input
+          type="text"
+          class="aw-input"
+          [(ngModel)]="bireModificationObject.modificationDocumentUrl"
+          [disabled]="isReadOpenMode"
+        />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">{{ getComponentName() + ".modificationTitle" | translate }}</label>
+
+      <div class="form-control">
+        <textarea
+          class="aw-textarea"
+          [(ngModel)]="bireModificationObject.modificationTitle"
+          maxlength="300"
+          [disabled]="isReadOpenMode"
+          [rows]="3"
+          pInputTextarea
+        ></textarea>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button *ngIf="isReadOpenMode" type="button" mat-raised-button (click)="onCancel()">
+      <span>{{ "global.close" | translate }}</span>
+    </button>
+
+    <button *ngIf="!isReadOpenMode" type="button" mat-raised-button (click)="onCancel()">
+      <span>{{ "global.cancel" | translate }}</span>
+    </button>
+
+    <button
+      *ngIf="!isReadOpenMode"
+      type="button"
+      color="primary"
+      mat-raised-button
+      (click)="onValidate()"
+      [disabled]="
+        !bireModificationObject.modificationType ||
+        !bireModificationObject.modificationNumber ||
+        !bireModificationObject.modificationRevisionNumber
+      "
+    >
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>
+
+<!-- ZONE POPUP -->
+<!--
+  TODO: fix for AOT: Property 'showFamilyCodeDialog' does not exist on type 'FamilyModificationPopupFormComponent'.
+-->
+<!--
+  <aw-dialog-table *ngIf="showFamilyCodeDialog" [(display)]="showFamilyCodeDialog" [data]="dialogTableDataFamilyCode" (onSelected)="setSelectedFamilyCode($event)"></aw-dialog-table>
+-->

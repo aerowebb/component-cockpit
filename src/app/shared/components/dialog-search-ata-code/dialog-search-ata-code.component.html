@@ -1,0 +1,126 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".title" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="search-dialog-container">
+      <div class="section">
+        <h4 class="section-title">{{ "global.search" | translate }}</h4>
+
+        <div class="section-content">
+          <div class="column">
+            <div class="row">
+              <div class="form-group">
+                <label class="form-label">
+                  {{ getComponentName() + ".name" | translate }}
+                </label>
+
+                <div class="form-control">
+                  <input type="text" class="aw-input" [(ngModel)]="searchObject.name" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">
+                  {{ getComponentName() + ".itemNumber" | translate }}
+                </label>
+
+                <div class="form-control">
+                  <input type="text" class="aw-input" [(ngModel)]="searchObject.itemNumber" />
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="form-group">
+                <label class="form-label">
+                  {{ getComponentName() + ".chapter" | translate }}
+                </label>
+
+                <div class="form-control">
+                  <input type="text" class="aw-input" [(ngModel)]="searchObject.chapter" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">
+                  {{ getComponentName() + ".section" | translate }}
+                </label>
+
+                <div class="form-control">
+                  <input type="text" class="aw-input" [(ngModel)]="searchObject.section" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">
+                  {{ getComponentName() + ".subject" | translate }}
+                </label>
+
+                <div class="form-control">
+                  <input type="text" class="aw-input" [(ngModel)]="searchObject.subject" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">
+                  {{ getComponentName() + ".sheet" | translate }}
+                </label>
+
+                <div class="form-control">
+                  <input type="text" class="aw-input" [(ngModel)]="searchObject.sheet" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">
+                  {{ getComponentName() + ".marks" | translate }}
+                </label>
+
+                <div class="form-control">
+                  <input type="text" class="aw-input" [(ngModel)]="searchObject.marks" />
+                </div>
+              </div>
+            </div>
+
+            <div class="row search-criteria-footer">
+              <div class="search-actions">
+                <button type="button" color="primary" mat-raised-button (click)="search()">
+                  {{ "global.toSearch" | translate }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h4 class="section-title">
+          {{ "global.results" | translate }}
+          ({{ itemsTableDataSource ? itemsTableDataSource.dataCount : 0 }}{{ moreResults ? "+" : "" }})
+        </h4>
+
+        <div class="section-content">
+          <a-table [dataSource]="itemsTableDataSource"></a-table>
+        </div>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button type="button" mat-raised-button (click)="cancel()">
+      {{ "dialog.cancel" | translate }}
+    </button>
+
+    <button
+      type="button"
+      color="primary"
+      mat-raised-button
+      (click)="validate()"
+      [disabled]="!itemsTableDataSource.hasDataSelection"
+    >
+      {{ "dialog.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>

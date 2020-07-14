@@ -1,0 +1,23 @@
+@import "constants";
+:host {
+  .critictiy-alert {
+    font-weight: 400;
+    text-align: center;
+    width: 100%;
+  }
+
+  .package--nok {
+    background-color: $red-light1;
+  }
+
+  .package--ok {
+    background-color: $green-light1;
+  }
+
+  .package--warning {
+    background-color: $orange;
+  }
+  .critcity-span {
+    padding: 8px;
+  }
+}

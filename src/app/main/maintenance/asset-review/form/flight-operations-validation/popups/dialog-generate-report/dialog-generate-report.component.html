@@ -1,0 +1,17 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".title" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="form-group" style="padding-top: 5px">
+      <textarea class="aw-textarea" [cols]="80" [rows]="15" pInputTextarea [(ngModel)]="reportMessage"></textarea>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button type="button" mat-raised-button (click)="closeDialog()">
+      <span>{{ "global.cancel" | translate }}</span>
+    </button>
+  </a-footer>
+</a-modal>

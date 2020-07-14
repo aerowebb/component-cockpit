@@ -1,0 +1,9 @@
+@import "mixins";
+
+:host {
+  .separator {
+    @include flex-row();
+
+    align-items: center;
+  }
+}

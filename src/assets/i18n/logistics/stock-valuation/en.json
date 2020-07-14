@@ -1,0 +1,43 @@
+{
+  "StockValuationSearchComponent": {
+    "TODO": "",
+    "materialCode": "Material",
+    "warehouseId": "Warehouse",
+    "method": "Method",
+    "toCalculate": "Calculate",
+    "selectDate": "Please select a correct date",
+    "methodWeightedAverage": "Method of weighted average after each receipt",
+    "methodFifo": "Method FIFO"
+  },
+  "StockValuationFormComponent": {
+    "newCalculation": "New Calculation",
+    "quantityChart": "Stock Quantity Variation",
+    "amountChart": "Stock Amount Variation",
+    "quantity": "Quantity",
+    "amount": "Amount",
+    "materialCode": "Material",
+    "warehouseId": "Warehouse",
+    "avgValue": "Average Value",
+    "stockSheet": "Stock Sheet",
+    "receiptQty": "Receipt Quantity",
+    "issueQty": "Issue Quantity",
+    "stockQty": "Stock Quantity",
+    "receiptAmt": "Receipt Amount",
+    "issueAmt": "Issue Amount",
+    "stockAmt": "Stock Amount",
+    "stock": "Stock",
+    "date": "Date",
+    "materialDesignation": "Designation",
+    "stockQuantity": "Quantity",
+    "stockAmount": "Amount",
+    "stockValue": "Average Value",
+    "receipt": "Receipt",
+    "issue": "Issue",
+    "receiptQuantity": "Quantity",
+    "receiptAmount": "Amount",
+    "receiptValue": "Average Value",
+    "issueQuantity": "Quantity",
+    "issueAmount": "Amount",
+    "issueValue": "Average Value"
+  }
+}

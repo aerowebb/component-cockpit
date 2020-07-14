@@ -1,0 +1,267 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div class="modal-title">{{ "equipmentPopin.title" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="search-dialog-container">
+      <div class="section search-criteria-section">
+        <h4 class="section-title">{{ "global.search" | translate }}</h4>
+
+        <div class="section-content">
+          <div class="column" *ngIf="!isGroundEquipment">
+            <div class="row">
+              <div class="form-group">
+                <label class="form-label"> {{ "equipmentPopin.pnCode" | translate }} </label>
+
+                <div class="form-control">
+                  <input class="aw-input" type="text" [(ngModel)]="searchObject.pnCode" [disabled]="pnChoose" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label"> {{ "equipmentPopin.sn" | translate }} </label>
+
+                <div class="form-control"><input class="aw-input" type="text" [(ngModel)]="searchObject.sn" /></div>
+              </div>
+              <div class="form-group">
+                <label class="form-label"> {{ "equipmentPopin.equipmentCode" | translate }} </label>
+
+                <div class="form-control">
+                  <input class="aw-input" type="text" [(ngModel)]="searchObject.equipmentCode" />
+                </div>
+              </div>
+              <!--<div class="form-group">
+                <label class="form-label"> {{ "equipmentPopin.batchNumber" | translate }} </label>
+
+                <div class="form-control">
+                  <input class="aw-input" type="text" [(ngModel)]="searchObject.batchNumber" />
+                </div>
+              </div>-->
+            </div>
+
+            <div class="row">
+              <div class="form-group">
+                <label class="form-label"> {{ "equipmentPopin.equipmentDesignation" | translate }} </label>
+
+                <div class="form-control">
+                  <input class="aw-input" type="text" [(ngModel)]="searchObject.equipmentDesignation" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label"> {{ "equipmentPopin.registration" | translate }} </label>
+
+                <div class="form-control">
+                  <input class="aw-input" type="text" [(ngModel)]="searchObject.registration" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label"> {{ "equipmentPopin.equipmentFunction" | translate }} </label>
+
+                <div class="form-control">
+                  <p-dropdown
+                    class="aw-dropdown fixed-width"
+                    [options]="propertyFunctions"
+                    [(ngModel)]="searchObject.equipmentFunction"
+                    [showClear]="true"
+                    placeholder="&nbsp;"
+                    appendTo="body"
+                  ></p-dropdown>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="form-group">
+                <label class="form-label"> {{ "equipmentPopin.operatorCustomerCode" | translate }} </label>
+
+                <div class="form-control">
+                  <input class="aw-input" type="text" [(ngModel)]="searchObject.operatorCustomerCode" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label"> {{ "equipmentPopin.modelCode" | translate }} </label>
+
+                <div class="form-control">
+                  <input class="aw-input" type="text" [(ngModel)]="searchObject.modelCode" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label"> {{ "equipmentPopin.operationalStatus" | translate }} </label>
+
+                <div class="form-control">
+                  <p-dropdown
+                    class="aw-dropdown fixed-width"
+                    [options]="propertyStatus"
+                    [(ngModel)]="searchObject.operationalStatus"
+                    [showClear]="true"
+                    placeholder="&nbsp;"
+                    appendTo="body"
+                  ></p-dropdown>
+                </div>
+              </div>
+            </div>
+
+            <div class="row search-criteria-footer">
+              <div class="search-actions">
+                <button type="button" color="primary" mat-raised-button (click)="searchEquipments()">
+                  <span>{{ "global.toSearch" | translate }}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- FOR GROUND EQUIPMENT -->
+          <div class="column" *ngIf="isGroundEquipment">
+            <div class="row">
+              <div class="form-group">
+                <label class="form-label"> {{ "equipmentPopin.equipmentCode" | translate }} </label>
+
+                <div class="form-control">
+                  <input class="aw-input" type="text" [(ngModel)]="searchObject.equipmentCode" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label"> {{ "equipmentPopin.pnCode" | translate }} </label>
+
+                <div class="form-control"><input class="aw-input" type="text" [(ngModel)]="searchObject.pnCode" /></div>
+              </div>
+              <div class="form-group">
+                <label class="form-label"> {{ "equipmentPopin.sn" | translate }} </label>
+
+                <div class="form-control"><input class="aw-input" type="text" [(ngModel)]="searchObject.sn" /></div>
+              </div>
+              <div class="form-group"></div>
+            </div>
+
+            <div class="row">
+              <div class="form-group">
+                <label class="form-label"> {{ "equipmentPopin.equipmentDesignation" | translate }} </label>
+
+                <div class="form-control">
+                  <input class="aw-input" type="text" [(ngModel)]="searchObject.equipmentDesignation" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label"> {{ "equipmentPopin.operatorCustomerCode" | translate }} </label>
+
+                <div class="form-control">
+                  <input class="aw-input" type="text" [(ngModel)]="searchObject.operatorCustomerCode" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label"> {{ "equipmentPopin.operationalStatus" | translate }} </label>
+
+                <div class="form-control">
+                  <p-dropdown
+                    class="aw-dropdown fixed-width"
+                    [options]="propertyStatus"
+                    [(ngModel)]="searchObject.operationalStatus"
+                    [showClear]="true"
+                    placeholder="&nbsp;"
+                    appendTo="body"
+                  ></p-dropdown>
+                </div>
+              </div>
+            </div>
+
+            <div class="row search-criteria-footer">
+              <div class="search-actions">
+                <button type="button" color="primary" mat-raised-button (click)="searchEquipments()">
+                  <span>{{ "global.toSearch" | translate }}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section results-section">
+        <h4 class="section-title">
+          {{ "global.results" | translate }} ({{ resultsTable.list ? resultsTable.list.length : 0 }})
+        </h4>
+
+        <div class="section-content">
+          <p-table
+            [resizableColumns]="true"
+            #ptable
+            class="aw-table2"
+            [columns]="resultsTableCols"
+            [value]="resultsTable.list"
+            [(selection)]="selectedObjectList"
+            dataKey="equipmentCode"
+            [scrollable]="true"
+            [selectionMode]="selectionMode"
+          >
+            <ng-template pTemplate="emptymessage">
+              <span *ngIf="!isLoading"> &nbsp;</span>
+
+              <div *ngIf="isLoading" class="aw-table-loading-indicator">
+                <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                <div class="lds-hourglass"></div>
+              </div>
+            </ng-template>
+
+            <ng-template pTemplate="caption">
+              <div class="aw-table-header">
+                <div class="aw-table-global-filter">
+                  <label class="aw-table-global-filter-label">
+                    <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                  </label>
+
+                  <input
+                    #ptableGlobalFilter
+                    class="aw-table-global-filter-input"
+                    type="text"
+                    placeholder="{{ 'table.globalFilterText' | translate }}"
+                    (input)="ptable.filterGlobal($event.target.value, 'contains')"
+                  />
+                </div>
+              </div>
+            </ng-template>
+
+            <ng-template pTemplate="colgroup" let-columns>
+              <colgroup>
+                <col *ngIf="selectionMultiple" class="aw-table-checkbox-wrapper" />
+                <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+              </colgroup>
+            </ng-template>
+
+            <ng-template pTemplate="header" let-columns>
+              <tr>
+                <th *ngIf="selectionMultiple" class="aw-table-checkbox-wrapper">
+                  <p-tableHeaderCheckbox class="aw-table-checkbox"></p-tableHeaderCheckbox>
+                </th>
+
+                <th pResizableColumn *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                  {{ "equipmentPopin." + col.field | translate }}
+                </th>
+              </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+              <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                <td *ngIf="selectionMultiple" class="aw-table-checkbox-wrapper">
+                  <p-tableCheckbox class="aw-table-checkbox" [value]="rowData"></p-tableCheckbox>
+                </td>
+
+                <td *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                  {{ rowData[col.field] }}
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button type="button" mat-raised-button (click)="closeDialog()">
+      <span>{{ "global.cancel" | translate }}</span>
+    </button>
+
+    <button type="button" color="primary" mat-raised-button (click)="onValidate()" [disabled]="disableValidate()">
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>

@@ -1,0 +1,25 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".title" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <a-table [dataSource]="alternativesTableDataSource"> </a-table>
+  </a-content>
+
+  <a-footer>
+    <button type="button" mat-raised-button (click)="closeDialog()">
+      {{ "cancel" | translate }}
+    </button>
+
+    <button
+      type="button"
+      mat-raised-button
+      color="primary"
+      (click)="onSelect()"
+      [disabled]="!alternativesTableDataSource.hasDataSelection"
+    >
+      {{ "validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>

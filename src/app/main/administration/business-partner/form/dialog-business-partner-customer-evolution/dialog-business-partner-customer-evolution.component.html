@@ -1,0 +1,83 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".title" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+      <label class="form-label">{{ getComponentName() + ".evolutionNumber" | translate }}</label>
+
+      <div class="form-control form-control-with-modal" [ngClass]="{ disabled: isReadOpenMode }">
+        <div class="form-control-data" (click)="openEvolutionDialog()">
+          {{ customerEvolution.evolutionNumber }}
+          <span *ngIf="customerEvolution.evolutionRevisionNumber"
+            >- {{ customerEvolution.evolutionRevisionNumber }}</span
+          >
+        </div>
+
+        <div *ngIf="customerEvolution.evolutionNumber" class="btn-clear-wrapper">
+          <i
+            class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+            aria-hidden="true"
+            (click)="resetCustomerEvolution()"
+          ></i>
+        </div>
+        <div class="btn-search-wrapper">
+          <i class="fa fa-fw fa-search aw-icon btn-search" aria-hidden="true" (click)="openEvolutionDialog()"></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">{{ getComponentName() + ".customizedCompliance" | translate }}</label>
+
+      <div class="form-control">
+        <p-dropdown
+          class="aw-dropdown fixed-width"
+          [options]="customizedCompliances"
+          [(ngModel)]="customerEvolution.customizedCompliance"
+          [showClear]="true"
+          placeholder="&nbsp;"
+          [disabled]="isReadOpenMode"
+          appendTo="body"
+        ></p-dropdown>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button *ngIf="isReadOpenMode" type="button" mat-raised-button (click)="closeDialog()">
+      <span>{{ "global.close" | translate }}</span>
+    </button>
+
+    <button *ngIf="!isReadOpenMode" type="button" mat-raised-button (click)="closeDialog()">
+      <span>{{ "global.cancel" | translate }}</span>
+    </button>
+
+    <button
+      *ngIf="!isReadOpenMode"
+      type="button"
+      mat-raised-button
+      color="primary"
+      (click)="validate()"
+      [disabled]="
+        customerEvolution.evolutionNumber === undefined ||
+        customerEvolution.evolutionNumber === null ||
+        customerEvolution.evolutionNumber.length === 0 ||
+        customerEvolution.evolutionRevisionNumber === undefined ||
+        customerEvolution.evolutionRevisionNumber === null ||
+        customerEvolution.evolutionRevisionNumber.length === 0
+      "
+    >
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>
+
+<aw-dialog-table
+  *ngIf="showEvolutionDialog"
+  [data]="evolutionTableData"
+  [keyMap]="keyMap"
+  [(display)]="showEvolutionDialog"
+  (onSelected)="onSelectedEvolution($event)"
+></aw-dialog-table>

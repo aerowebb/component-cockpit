@@ -1,0 +1,168 @@
+@import "constants";
+
+:host {
+  .pointer {
+    cursor: pointer !important;
+  }
+
+  .tieProgressBar {
+    margin-top: 8px;
+  }
+
+  ::ng-deep button.aw-btn {
+    margin-left: 8px;
+  }
+
+  ::ng-deep div.slider-row {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  ::ng-deep .time-resolution {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    margin: 0 calc(2 * #{$margin-value});
+    margin-bottom: 1em;
+    p-slider {
+      width: 10rem;
+    }
+  }
+
+  .scheduler-wrap {
+    height: 75vh;
+    visibility: hidden;
+    &.show {
+      visibility: visible;
+    }
+  }
+
+  ::ng-deep .center-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  ::ng-deep .aircraft-default {
+    color: black;
+    font-family: "LatoLatinWeb";
+    font-size: 0.875rem;
+    font-weight: 400;
+    padding: 5px;
+    margin: auto;
+    box-sizing: border-box !important;
+    border-radius: 16px;
+    border: solid 1px;
+    min-width: 190px !important;
+    margin-bottom: 2px;
+    margin-top: 2px;
+    background-color: $primary-background-color !important;
+    justify-content: left;
+  }
+
+  ::ng-deep .no-aircraft-assigned {
+    color: $red-dark1 !important;
+    justify-content: center !important;
+    text-align: center !important;
+    border-color: grey !important;
+  }
+
+  ::ng-deep .aircraft-default {
+    border-color: grey !important;
+  }
+
+  ::ng-deep .aircraft-status-ok {
+    border-color: $green-light1 !important;
+  }
+
+  ::ng-deep .aircraft-status-warning {
+    border-color: $orange !important;
+  }
+
+  ::ng-deep .aircraft-status-nok {
+    border-color: $red-light1 !important;
+  }
+
+  ::ng-deep .red-label {
+    color: $red-dark1 !important;
+  }
+
+  ::ng-deep .on-click-remove-flight-association {
+    color: black !important;
+    transition-property: opacity;
+    position: absolute;
+    top: 2px;
+    right: 2px;
+  }
+
+  ::ng-deep .availablesAircrafts {
+    overflow-y: auto;
+    height: 75vh;
+    padding-left: 0px !important;
+  }
+
+  ::ng-deep .active-overload {
+    outline: 2px solid #2196f3;
+    outline-offset: 3px;
+    font-weight: bold !important;
+  }
+
+  ::ng-deep a {
+    color: $accent-color !important;
+    border-bottom-color: transparent;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    cursor: pointer;
+    transition: border-bottom-color 0.25s ease-in-out;
+  }
+
+  ::ng-deep .column-label {
+    font-weight: 400;
+  }
+
+  ::ng-deep .column-label:before {
+    content: "\2022";
+    color: #2196f3;
+    margin-right: 0.6em;
+  }
+
+  .tooltip {
+    position: relative;
+  }
+
+  .tooltiptext {
+    font-family: "LatoLatinWeb";
+    font-size: 0.875rem;
+    font-weight: 400;
+    visibility: hidden;
+    width: 120px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -60px;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .tooltip .tooltiptext::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #555 transparent transparent transparent;
+  }
+
+  .tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+  }
+}

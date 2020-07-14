@@ -1,0 +1,27 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".title" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="form-group">
+      <div class="form-control">
+        <textarea
+          class="aw-textarea"
+          [rows]="20"
+          [cols]="150"
+          pInputTextarea
+          [(ngModel)]="reportContent.text"
+        ></textarea>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button type="button" mat-raised-button (click)="closeAllDialog()">{{ "global.close" | translate }}</button>
+
+    <button type="button" mat-raised-button (click)="exportToTxt()">
+      {{ getComponentName() + ".exportTxt" | translate }}
+    </button>
+  </a-footer>
+</a-modal>

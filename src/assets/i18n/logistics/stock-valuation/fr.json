@@ -1,0 +1,42 @@
+{
+  "StockValuationSearchComponent": {
+    "materialCode": "Article",
+    "warehouseId": "Magasin",
+    "method": "Méthode",
+    "toCalculate": "Calculer",
+    "selectDate": "Merci de sélectionner une date correcte",
+    "methodWeightedAverage": "Méthode CUMP après chaque entrée",
+    "methodFifo": "Méthode PEPS"
+  },
+  "StockValuationFormComponent": {
+    "newCalculation": "Nouveau calcul",
+    "quantityChart": "Variation de la quantité du stock",
+    "amountChart": "Variation du montant du stock",
+    "quantity": "Quantité",
+    "amount": "Montant",
+    "materialCode": "Article",
+    "warehouseId": "Magasin",
+    "avgValue": "Valeur Moyenne",
+    "stockSheet": "Rapport de stock",
+    "receiptQty": "Quantité d'entrée",
+    "issueQty": "Quantité de sortie",
+    "stockQty": "Quantité de stock",
+    "receiptAmt": "Montant d'entrée",
+    "issueAmt": "Montant de sortie",
+    "stockAmt": "Montant Stock",
+    "stock": "Stock",
+    "date": "Date",
+    "materialDesignation": "Désignation",
+    "stockQuantity": "Quantité",
+    "stockAmount": "Montant",
+    "stockValue": "Valeur moyenne",
+    "receipt": "Réception",
+    "issue": "Sortie",
+    "receiptQuantity": "Quantité",
+    "receiptAmount": "Montant",
+    "receiptValue": "Montant moyen",
+    "issueQuantity": "Quantité",
+    "issueAmount": "Montant",
+    "issueValue": "Valeur moyenne"
+  }
+}

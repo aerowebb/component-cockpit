@@ -1,0 +1,106 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".title" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="column">
+      <div class="row">
+        <div class="form-group">
+          <label class="form-label">{{ getComponentName() + ".familyVariantCode" | translate }} </label>
+
+          <div class="form-control">
+            <p-dropdown
+              appendTo="body"
+              class="aw-dropdown fixed-width"
+              placeholder="&nbsp;"
+              [options]="familyVariants"
+              [(ngModel)]="selectedFamilyVariantCode"
+              (onChange)="loadAssets()"
+              [showClear]="true"
+            ></p-dropdown>
+            <!-- <input type="text" class="aw-input" [(ngModel)]="selectFlight.familyVariantCode" [disabled]="true" /> -->
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group">
+          <label class="form-label">{{ getComponentName() + ".chronoNumber" | translate }} </label>
+
+          <div class="form-control">
+            <input type="text" class="aw-input" [(ngModel)]="selectFlight.chronoNumber" [disabled]="true" />
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group">
+          <label class="form-label">{{ getComponentName() + ".flightStatus" | translate }} </label>
+
+          <div class="form-control">
+            <input type="text" class="aw-input" [(ngModel)]="selectFlight.flightStatus" [disabled]="true" />
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group">
+          <label class="form-label">{{ getComponentName() + ".startDate" | translate }} </label>
+
+          <div class="form-control">
+            <input type="text" class="aw-input" [(ngModel)]="startDate" [disabled]="true" />
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group">
+          <label class="form-label">{{ getComponentName() + ".endDate" | translate }} </label>
+
+          <div class="form-control">
+            <input type="text" class="aw-input" [(ngModel)]="endDate" [disabled]="true" />
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group">
+          <label class="form-label">{{ getComponentName() + ".asset" | translate }}</label>
+
+          <div class="form-control">
+            <p-dropdown
+              appendTo="body"
+              class="aw-dropdown fixed-width"
+              placeholder="&nbsp;"
+              [showClear]="true"
+              [options]="selectFlight.asset"
+              [(ngModel)]="selectedAssetValue"
+            ></p-dropdown>
+          </div>
+        </div>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button *ngIf="isReadOpenMode" type="button" mat-raised-button (click)="cancel()">
+      <span>{{ "global.close" | translate }}</span>
+    </button>
+
+    <button *ngIf="!isReadOpenMode" type="button" mat-raised-button (click)="cancel()">
+      <span>{{ "global.cancel" | translate }}</span>
+    </button>
+
+    <button
+      *ngIf="!isReadOpenMode"
+      type="button"
+      mat-raised-button
+      color="primary"
+      (click)="add()"
+      [disabled]="selectFlight.familyVariantCode === undefined || selectFlight.familyVariantCode === null"
+    >
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>

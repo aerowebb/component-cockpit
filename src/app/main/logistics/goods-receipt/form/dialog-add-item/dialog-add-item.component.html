@@ -1,0 +1,143 @@
+<a-modal class="aw-modal" [(visible)]="display" [width]="40">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".title" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="row">
+      <div class="form-group">
+        <div class="form-control aw-selectbutton-wrapper">
+          <p-selectButton
+            [(ngModel)]="selectedChoiceItem"
+            [options]="choiceListItem"
+            (onChange)="resetChoiceItem()"
+          ></p-selectButton>
+        </div>
+      </div>
+    </div>
+
+    <div class="row" *ngIf="selectedChoiceItem === component.CURRENT_PACKAGE && createWithPackage">
+      <div class="form-group required">
+        <label class="form-label">{{ getComponentName() + ".packageNumber" | translate }}</label>
+
+        <div class="form-control">
+          <p-dropdown
+            class="aw-dropdown fixed-width"
+            placeholder="&nbsp;"
+            [showClear]="true"
+            [(ngModel)]="packageDto"
+            [options]="packageList"
+            appendTo="body"
+          ></p-dropdown>
+        </div>
+      </div>
+    </div>
+
+    <div class="row" *ngIf="selectedChoiceItem === component.NEW_PACKAGE && createWithPackage">
+      <div class="form-group required">
+        <label class="form-label">{{ getComponentName() + ".packageType" | translate }}</label>
+
+        <div class="form-control">
+          <p-dropdown
+            class="aw-dropdown fixed-width"
+            [showClear]="true"
+            placeholder="&nbsp;"
+            [(ngModel)]="this.packageDto.packageType"
+            [options]="packagesTypesList"
+          ></p-dropdown>
+        </div>
+      </div>
+    </div>
+
+    <div class="row" *ngIf="selectedChoiceItem === component.NEW_PACKAGE && createWithPackage">
+      <div class="form-group">
+        <div class="form-control aw-selectbutton-wrapper">
+          <p-selectButton
+            [(ngModel)]="selectedChoicePackage"
+            [options]="choiceListPackage"
+            (onChange)="resetChoicePackage()"
+          ></p-selectButton>
+        </div>
+      </div>
+
+      <div class="form-group required" *ngIf="!isPackageCodeGenerated">
+        <label class="form-label">{{ getComponentName() + ".packageNumber" | translate }}</label>
+
+        <div class="form-control">
+          <input type="text" class="aw-input" [(ngModel)]="packageDto.externalPackageCode" />
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="form-group required">
+        <label class="form-label">{{ getComponentName() + ".article" | translate }}</label>
+
+        <div class="form-control form-control-with-modal">
+          <div class="form-control-data" (click)="openSearchPnDialog()">
+            {{ article }}
+          </div>
+
+          <div *ngIf="article" class="btn-clear-wrapper">
+            <i
+              class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+              aria-hidden="true"
+              (click)="article = undefined"
+            ></i>
+          </div>
+          <div class="btn-search-wrapper">
+            <i class="fa fa-fw fa-search aw-icon btn-search" aria-hidden="true" (click)="openSearchPnDialog()"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="articleDesignation" *ngIf="pnUse">
+      {{ pnUse.articleDesignation }}
+    </div>
+    <div class="row">
+      <div class="form-group required">
+        <label class="form-label">{{ getComponentName() + ".quantity" | translate }}</label>
+
+        <div class="form-control">
+          <input
+            type="number"
+            name="docName"
+            [min]="0"
+            oninput="validity.valid||(value='');"
+            class="aw-input"
+            [(ngModel)]="quantity"
+          />
+        </div>
+      </div>
+      <div
+        class="form-group"
+        [ngClass]="{
+          'visibility--hidden': !(pnUse && pnUse.quantityUnit)
+        }"
+      >
+        <label class="form-label">{{ "unit" | translate }}</label>
+
+        <div class="form-control">
+          <div class="form-control-generic" *ngIf="pnUse && pnUse.pnCode && pnUse.quantityUnit">
+            {{ pnUse.quantityUnit }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button type="button" mat-raised-button (click)="closeDialog()">{{ "global.cancel" | translate }}</button>
+    <button type="button" color="primary" mat-raised-button (click)="validate()">
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>
+
+<aw-dialog-search-pn
+  *ngIf="searchPnDialogVisible"
+  [(display)]="searchPnDialogVisible"
+  (onSelected)="onSelectPn($event)"
+  [withAllTypes]="true"
+  [showPartTypeSelection]="true"
+></aw-dialog-search-pn>

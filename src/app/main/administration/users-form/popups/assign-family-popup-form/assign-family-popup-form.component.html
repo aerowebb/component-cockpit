@@ -1,0 +1,26 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div class="modal-title">
+      {{ componentData.componentId + ".title" | translate }}({{
+        familyTableDataSource ? familyTableDataSource.dataCount : 0
+      }})
+    </div>
+  </a-header>
+
+  <a-content>
+    <div class="section">
+      <div class="section-content">
+        <a-table [dataSource]="familyTableDataSource"> </a-table>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button type="button" mat-raised-button (click)="cancel()">
+      <span>{{ "global.cancel" | translate }}</span>
+    </button>
+    <button type="button" mat-raised-button color="primary" (click)="associate()">
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>

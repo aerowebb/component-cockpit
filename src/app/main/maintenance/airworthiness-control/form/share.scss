@@ -1,0 +1,7 @@
+@import "constants";
+
+.grid-cell.in-simulation {
+  border-left-color: $orange !important;
+  border-left-style: $border-style;
+  border-left-width: $margin-value !important;
+}

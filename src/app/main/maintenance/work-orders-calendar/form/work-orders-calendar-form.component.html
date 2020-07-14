@@ -1,0 +1,71 @@
+<div class="page-header">
+  <div class="page-info">
+    <div>
+      <h2 class="page-title">
+        {{ "transaction." + componentData.componentId | translate }}
+      </h2>
+
+      <div class="page-subtitle"></div>
+    </div>
+
+    <div class="page-actions"></div>
+  </div>
+</div>
+
+<div class="page-wrapper">
+  <div class="page-container">
+    <!-- Work Order Calendar-->
+    <div class="grid-row">
+      <div class="grid-cell--12">
+        <div class="grid-cell grid-cell--container gantt-block">
+          <div class="grid-cell-header">
+            <div class="grid-cell-title-container">
+              <h3 class="grid-cell-title">
+                {{ getComponentName() + ".calendar" | translate }}
+              </h3>
+            </div>
+          </div>
+
+          <div class="grid-cell-content" [ngClass]="{ show: !ganttLoading }">
+            <div class="scheduler-header" [ngClass]="{ show: !ganttLoading }">
+              <div class="grid-cell--10"></div>
+              <div class="today-btn">
+                <button mat-raised-button (click)="showToday()">
+                  {{ "today" | translate }}
+                </button>
+              </div>
+              <div class="time-resolution">
+                <p-slider
+                  [max]="TIME_RESOLUTION_MAX_ZOOM"
+                  [min]="TIME_RESOLUTION_MIN_ZOOM"
+                  [(ngModel)]="ganttZoomLevel"
+                  (onChange)="onChangeTimeResolution($event)"
+                ></p-slider>
+              </div>
+            </div>
+            <div class="gantt-wrap" [ngClass]="{ show: !ganttLoading }" *ngIf="ganttConfig">
+              <bry-gantt
+                #gantt
+                [columns]="ganttConfig.columns"
+                [project]="ganttConfig.project"
+                [projectLines]="ganttConfig.projectLines"
+                [labels]="ganttConfig.labels"
+                [taskContextMenu]="ganttConfig.taskContextMenu"
+              ></bry-gantt>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<aw-dialog-work-order-edition
+  *ngIf="showEditWorkOrder"
+  [(display)]="showEditWorkOrder"
+  [workOrderSelected]="selectedWorkOrder"
+  [workPackage]="workPackage"
+  [workOrders]="workOrderList"
+  (onValidated)="onAddWorkOrder($event)"
+>
+</aw-dialog-work-order-edition>

@@ -1,0 +1,172 @@
+<div class="page-header">
+  <div class="page-info">
+    <div>
+      <h2 class="page-title">
+        {{ "transaction." + componentData.componentId | translate }}
+      </h2>
+    </div>
+  </div>
+
+  <div class="page-actions">
+    <button type="button" mat-raised-button (click)="openNewManufacturing()" *ngIf="hasUpdateAccessRight">
+      {{ "global.create" | translate }}
+    </button>
+
+    <button
+      mat-icon-button
+      class="mat-elevation-z1"
+      matTooltip="{{ 'global.showAllActionTooltip' | translate }}"
+      matTooltipPosition="above"
+      aria-label="Show all actions"
+      [matMenuTriggerFor]="actions"
+    >
+      <mat-icon>more_horiz</mat-icon>
+    </button>
+    <mat-menu #actions="matMenu">
+      <button mat-menu-item (click)="updateFavoriteState()">{{ "addToFavorite" | translate }}</button>
+    </mat-menu>
+  </div>
+</div>
+
+<div class="page-wrapper">
+  <div class="page-container">
+    <div class="page-content">
+      <div class="grid-row">
+        <div class="grid-cell--12">
+          <div class="grid-cell grid-cell--container">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">{{ "global.search" | translate }}</h3>
+              </div>
+            </div>
+
+            <div class="grid-cell-content">
+              <div class="column">
+                <!-- TODO -->
+                <!-- <div class="row search-criteria-header">
+                  <aw-manage-search-criteria></aw-manage-search-criteria>
+                </div> -->
+
+                <div class="row">
+                  <div class="form-group">
+                    <label class="form-label">{{ componentData.componentId + ".partNumber" | translate }}</label>
+
+                    <div class="form-control">
+                      <input type="text" class="aw-input" [(ngModel)]="manufacturingInputObj.pnCode" />
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">{{ componentData.componentId + ".batchNumber" | translate }}</label>
+
+                    <div class="form-control">
+                      <input type="text" class="aw-input" [(ngModel)]="manufacturingInputObj.batchNumber" />
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">{{ componentData.componentId + ".designation" | translate }}</label>
+
+                    <div class="form-control">
+                      <input type="text" class="aw-input" [(ngModel)]="manufacturingInputObj.designation" />
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="form-group">
+                    <label class="form-label">{{ componentData.componentId + ".operationalStatus" | translate }}</label>
+
+                    <div class="form-control">
+                      <p-dropdown
+                        class="aw-dropdown fixed-width"
+                        [(ngModel)]="manufacturingInputObj.operationalStatus"
+                        placeholder="&nbsp;"
+                        [showClear]="true"
+                        [options]="statusList"
+                      ></p-dropdown>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">{{ componentData.componentId + ".eisDate" | translate }}</label>
+
+                    <div class="form-control">
+                      <input type="text" class="aw-input" [(ngModel)]="manufacturingInputObj.eisDate" />
+                    </div>
+                  </div>
+                  <div class="form-group"></div>
+                </div>
+
+                <div class="row search-criteria-footer">
+                  <div class="search-actions">
+                    <button
+                      type="button"
+                      mat-raised-button
+                      color="primary"
+                      (click)="search()"
+                      appKeyPress
+                      [keyCode]="'Enter'"
+                      (keyPress)="search()"
+                    >
+                      {{ componentData.componentId + ".toSearch" | translate }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-row">
+        <div class="grid-cell--12">
+          <div #resultsContainerAnchor class="grid-cell grid-cell--container">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">{{ "results" | translate }} ({{ mfgBatchTableDataSource.dataCount }})</h3>
+              </div>
+            </div>
+
+            <div class="grid-cell-content">
+              <a-table [dataSource]="mfgBatchTableDataSource">
+                <ng-template tableActionsDef>
+                  <button
+                    type="button"
+                    mat-raised-button
+                    (click)="exportMfgBatchTable()"
+                    *ngIf="mfgBatchTableDataSource.hasData && !mfgBatchTableDataSource.hasDataSelection"
+                  >
+                    {{ "global.export" | translate }}
+                  </button>
+
+                  <button
+                    type="button"
+                    mat-raised-button
+                    color="warn"
+                    (click)="deleteMfgBatch(mfgBatchTableDataSource.dataSelection)"
+                    *ngIf="hasManageAccessRight && mfgBatchTableDataSource.hasDataSelection"
+                  >
+                    {{ "global.delete" | translate }}
+                  </button>
+
+                  <button
+                    type="button"
+                    mat-raised-button
+                    (click)="openMfgBatchDetails(mfgBatchTableDataSource.dataSelection)"
+                    *ngIf="mfgBatchTableDataSource.hasDataSelection"
+                  >
+                    {{ "global.open" | translate }}
+                  </button>
+                </ng-template>
+
+                <ng-template columnDef="batchNumber" let-rowData="rowData">
+                  <a (click)="openMfgBatchDetail(rowData.batchNumber)">{{ rowData.batchNumber }}</a>
+                </ng-template>
+                <ng-template columnDef="partNumber" let-rowData="rowData">
+                  <a> {{ rowData.partNumber }}</a>
+                </ng-template>
+              </a-table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

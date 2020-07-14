@@ -1,0 +1,171 @@
+<a-modal class="aw-modal" [(visible)]="display" [width]="40">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".title" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="column">
+      <div class="section">
+        <h4 class="section-title">
+          {{ getComponentName() + ".deltaValue" | translate }}
+        </h4>
+
+        <div class="section-content">
+          <div class="row">
+            <div class="form-group">
+              <label class="form-label">
+                {{ getComponentName() + ".quantity" | translate }}
+              </label>
+
+              <div class="form-control">
+                <input type="number" class="aw-input" [(ngModel)]="deltaValue.quantity" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">
+                {{ getComponentName() + ".volume" | translate }}
+              </label>
+
+              <div class="form-control">
+                <input type="number" class="aw-input" [(ngModel)]="deltaValue.volume" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h4 class="section-title">
+          {{ getComponentName() + ".meteredSource" | translate }}
+        </h4>
+
+        <div class="section-content">
+          <div class="row">
+            <div class="form-group">
+              <label class="form-label">
+                {{ getComponentName() + ".quantity" | translate }}
+              </label>
+
+              <div class="form-control">
+                <input type="number" class="aw-input" [(ngModel)]="meteredSource.quantity" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">
+                {{ getComponentName() + ".volume" | translate }}
+              </label>
+
+              <div class="form-control">
+                <input type="number" class="aw-input" [(ngModel)]="meteredSource.volume" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h4 class="section-title">
+          {{ getComponentName() + ".context" | translate }}
+        </h4>
+
+        <div class="section-content">
+          <div class="row">
+            <div class="form-group">
+              <label class="form-label">
+                {{ getComponentName() + ".density" | translate }}
+              </label>
+
+              <div class="form-control">
+                <p-dropdown
+                  class="aw-dropdown fixed-width"
+                  [options]="densityList"
+                  [(ngModel)]="density"
+                  [showClear]="true"
+                  placeholder="&nbsp;"
+                  appendTo="body"
+                ></p-dropdown>
+              </div>
+            </div>
+
+            <div class="form-group required">
+              <label class="form-label">
+                {{ getComponentName() + ".occurrence" | translate }}
+              </label>
+
+              <div class="form-control">
+                <p-dropdown
+                  class="aw-dropdown fixed-width"
+                  [options]="occurrenceList"
+                  [(ngModel)]="occurrence"
+                  [showClear]="true"
+                  placeholder="&nbsp;"
+                  appendTo="body"
+                ></p-dropdown>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="form-group required">
+              <label class="form-label">{{ getComponentName() + ".date" | translate }}</label>
+
+              <div class="form-control">
+                <p-calendar
+                  showButtonBar="true"
+                  [monthNavigator]="true"
+                  [yearNavigator]="true"
+                  [yearRange]="sessionService.calendarYearRange"
+                  class="aw-calendar"
+                  [dateFormat]="sessionService.dateFormatPrimeNG"
+                  [locale]="sessionService.calendarFormat"
+                  [(ngModel)]="date"
+                  appendTo="body"
+                ></p-calendar>
+              </div>
+            </div>
+
+            <div class="form-group required">
+              <label class="form-label">
+                {{ getComponentName() + ".origin" | translate }}
+              </label>
+
+              <div class="form-control">
+                <p-dropdown
+                  class="aw-dropdown fixed-width"
+                  [options]="originList"
+                  [(ngModel)]="origin"
+                  [showClear]="true"
+                  placeholder="&nbsp;"
+                  appendTo="body"
+                ></p-dropdown>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="form-group">
+              <label class="form-label">
+                {{ getComponentName() + ".batchNumber" | translate }}
+              </label>
+
+              <div class="form-control">
+                <input type="text" class="aw-input" [(ngModel)]="batchNumber" />
+              </div>
+            </div>
+            <div class="form-group"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button type="button" mat-raised-button (click)="closeDialog()">{{ "global.cancel" | translate }}</button>
+
+    <button type="button" color="primary" mat-raised-button (click)="validate()" [disabled]="!isValid()">
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>

@@ -1,0 +1,70 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".title" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+      <label class="form-label">{{ getComponentName() + ".ratingCode" | translate }}</label>
+
+      <div class="form-control form-control-with-modal" [ngClass]="{ disabled: isReadOpenMode }">
+        <div class="form-control-data" (click)="showRatingDialog()">{{ selectedRating.ratingCode }}</div>
+
+        <div *ngIf="selectedRating.ratingCode" class="btn-clear-wrapper">
+          <i
+            class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+            aria-hidden="true"
+            *ngIf="!!isReadOpenMode"
+            (click)="selectedRating.ratingCode = undefined"
+          ></i>
+        </div>
+        <div class="btn-search-wrapper">
+          <i class="fa fa-fw fa-search aw-icon btn-search" aria-hidden="true" (click)="showRatingDialog()"></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">{{ getComponentName() + ".ratingName" | translate }}</label>
+
+      <div class="form-control">
+        <input
+          type="text"
+          class="aw-input"
+          maxlength="50"
+          [(ngModel)]="selectedRating.ratingName"
+          [disabled]="isReadOpenMode"
+        />
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button *ngIf="isReadOpenMode" type="button" mat-raised-button (click)="closeDialog()">
+      <span>{{ "global.close" | translate }}</span>
+    </button>
+
+    <button *ngIf="!isReadOpenMode" type="button" mat-raised-button (click)="closeDialog()">
+      <span>{{ "global.cancel" | translate }}</span>
+    </button>
+
+    <button
+      *ngIf="!isReadOpenMode"
+      type="button"
+      mat-raised-button
+      color="primary"
+      (click)="validate()"
+      [disabled]="!selectedRating || !selectedRating.ratingCode"
+    >
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>
+
+<aw-dialog-search-rating
+  *ngIf="showDialog"
+  [(display)]="showDialog"
+  (onSelected)="setSelectedRating($event)"
+  [structure-type]="bireRatingInput.structureType"
+  [family-code]="bireRatingInput.familyCode"
+></aw-dialog-search-rating>

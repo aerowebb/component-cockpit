@@ -1,0 +1,15 @@
+{
+  "SettingsFormComponent": {
+    "propertiesKey": "Key",
+    "isStandard": "Standard",
+    "propertiesValue": "Value",
+    "propertyValues": "Property Values",
+    "inspectorWorkbench": "Inspector Work Bench",
+    "engineeringManagement": "Engineering Data",
+    "fleetManagement": "Fleet Management",
+    "maintenanceOperations": "Maintenance Operations",
+    "installationParameters": "Installation Parameters",
+    "generalConfiguration": "General Configuration",
+    "successOnUpdateSettings": "Data have been successfully updated !"
+  }
+}

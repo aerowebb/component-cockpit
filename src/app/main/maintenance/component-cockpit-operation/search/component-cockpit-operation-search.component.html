@@ -1,0 +1,553 @@
+<div class="page-header">
+  <div class="page-info">
+    <div>
+      <div class="page-title">
+        {{ "transaction." + componentData.componentId | translate }}
+      </div>
+
+      <div class="page-subtitle">
+        <div class="page-subtitle"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-actions">
+    <button type="button" mat-raised-button (click)="openNewComponentCockpit()" *ngIf="hasUpdateAccessRight">
+      {{ "global.create" | translate }}
+    </button>
+    <button
+      id="actions"
+      mat-icon-button
+      class="mat-elevation-z1"
+      matTooltip="{{ 'global.showAllActionTooltip' | translate }}"
+      matTooltipPosition="above"
+      aria-label="Show all actions"
+      [matMenuTriggerFor]="actions"
+    >
+      <mat-icon>more_horiz</mat-icon>
+    </button>
+
+    <mat-menu #actions="matMenu">
+      <button id="favorites" mat-menu-item (click)="updateFavoriteState()">
+        {{ (isFavoriteEntry ? "page.removeFromFavorites" : "page.addToFavorites") | translate }}
+      </button>
+    </mat-menu>
+  </div>
+</div>
+
+<div class="page-wrapper">
+  <div class="page-container search-page-container">
+    <div class="page-content">
+      <div class="grid-row">
+        <div class="grid-cell--12">
+          <div class="grid-cell grid-cell--container" style="height: auto;">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">{{ "global.search" | translate }}</h3>
+              </div>
+            </div>
+
+            <div class="grid-cell-content grid-cell-content-with-section">
+              <div class="section">
+                <div class="section-content">
+                  <div class="row search-criteria-header">
+                    <aw-manage-search-criteria
+                      [componentId]="SEARCH_CRITERIA_ID"
+                      (onSelected)="loadSearchCriteria($event)"
+                      (onSavedAsked)="saveSearchCriteriaAsked()"
+                      [objectFromPage]="criteriaToSave"
+                    ></aw-manage-search-criteria>
+                  </div>
+                </div>
+              </div>
+
+              <!-- MAIN -->
+              <div class="section">
+                <div class="section-content">
+                  <div class="row">
+                    <div class="form-group">
+                      <label class="form-label"> {{ componentData.componentId + ".number" | translate }} </label>
+
+                      <div class="form-control">
+                        <input
+                          type="text"
+                          class="aw-input"
+                          pKeyFilter="int"
+                          [(ngModel)]="searchObj.bsdeProjectDTOCriteria.projectNumber"
+                        />
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label"> {{ componentData.componentId + ".name" | translate }} </label>
+
+                      <div class="form-control">
+                        <input
+                          type="text"
+                          class="aw-input"
+                          [maxlength]="19"
+                          [(ngModel)]="searchObj.bsdeProjectDTOCriteria.projectName"
+                        />
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label"> {{ componentData.componentId + ".pn" | translate }} </label>
+
+                      <div class="form-control">
+                        <input
+                          type="text"
+                          class="aw-input"
+                          [maxlength]="50"
+                          [(ngModel)]="searchObj.bsdeProjectDTOCriteria.projectPn"
+                        />
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label"> {{ componentData.componentId + ".sn" | translate }} </label>
+
+                      <div class="form-control">
+                        <input
+                          type="text"
+                          class="aw-input"
+                          [maxlength]="50"
+                          [(ngModel)]="searchObj.bsdeProjectDTOCriteria.projectSn"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="form-group">
+                      <label class="form-label">
+                        {{ componentData.componentId + ".mroCenter" | translate }}
+                      </label>
+
+                      <div class="form-control">
+                        <p-dropdown
+                          class="aw-dropdown fixed-width"
+                          placeholder="&nbsp;"
+                          [(ngModel)]="searchObj.mroSiteText"
+                          [options]="mroCenterList"
+                          [showClear]="true"
+                          (keydown.enter)="search()"
+                        ></p-dropdown>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label"> {{ componentData.componentId + ".customer" | translate }} </label>
+
+                      <div class="form-control">
+                        <p-dropdown
+                          class="aw-dropdown fixed-width"
+                          placeholder="&nbsp;"
+                          [showClear]="true"
+                          [(ngModel)]="searchObj.bsdeProjectDTOCriteria.customerCode"
+                          [options]="customerList"
+                          (keydown.enter)="search()"
+                        ></p-dropdown>
+                      </div>
+                    </div>
+                    <div class="form-group"></div>
+                    <div class="form-group"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- EXPANDABLE CONTENT -->
+              <div class="section">
+                <div class="section-content">
+                  <div class="advanced-criteria" [ngClass]="{ 'display--none': !showAdvancedCriteria }">
+                    <div class="row">
+                      <div class="form-group">
+                        <label class="form-label">{{ getComponentName() + ".description" | translate }} </label>
+
+                        <div class="form-control">
+                          <input
+                            type="text"
+                            class="aw-input"
+                            [maxlength]="150"
+                            [(ngModel)]="searchObj.bsdeProjectDTOCriteria.projectDescription"
+                          />
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label">
+                          {{ componentData.componentId + ".startDateStr" | translate }}
+                        </label>
+
+                        <div class="form-control  display--flex-row">
+                          <p-dropdown
+                            class="aw-dropdown fixed-width  flex--2"
+                            [options]="dateFilterList"
+                            appendTo="body"
+                            [(ngModel)]="searchObj.startDateCriteria"
+                            placeholder="&nbsp;"
+                          ></p-dropdown>
+                          &nbsp;&nbsp;
+                          <p-calendar
+                            showButtonBar="true"
+                            [monthNavigator]="true"
+                            [yearNavigator]="true"
+                            [yearRange]="sessionService.calendarYearRange"
+                            class="aw-calendar flex--4"
+                            [dateFormat]="sessionService.dateFormatPrimeNG"
+                            [locale]="sessionService.calendarFormat"
+                            [(ngModel)]="searchObj.bsdeProjectDTOCriteria.projectStartDate"
+                            appendTo="body"
+                          >
+                          </p-calendar>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label">
+                          {{ componentData.componentId + ".endDateStr" | translate }}
+                        </label>
+
+                        <div class="form-control  display--flex-row">
+                          <p-dropdown
+                            class="aw-dropdown fixed-width  flex--2"
+                            [options]="dateFilterList"
+                            appendTo="body"
+                            [(ngModel)]="searchObj.endDateCriteria"
+                            placeholder="&nbsp;"
+                          ></p-dropdown>
+                          &nbsp;&nbsp;
+                          <p-calendar
+                            showButtonBar="true"
+                            [monthNavigator]="true"
+                            [yearNavigator]="true"
+                            [yearRange]="sessionService.calendarYearRange"
+                            class="aw-calendar flex--4"
+                            [dateFormat]="sessionService.dateFormatPrimeNG"
+                            [locale]="sessionService.calendarFormat"
+                            [(ngModel)]="searchObj.bsdeProjectDTOCriteria.projectEndDate"
+                            appendTo="body"
+                          ></p-calendar>
+                        </div>
+                      </div>
+                      <div class="form-group"></div>
+                    </div>
+                    <div class="row">
+                      <div class="form-group">
+                        <label class="form-label"> {{ componentData.componentId + ".lastUpdate" | translate }} </label>
+
+                        <div class="form-control  display--flex-row">
+                          <p-dropdown
+                            class="aw-dropdown fixed-width  flex--2"
+                            [options]="dateFilterList"
+                            [(ngModel)]="searchObj.statusDateCriteria"
+                            placeholder="&nbsp;"
+                            appendTo="body"
+                          ></p-dropdown>
+                          &nbsp;&nbsp;
+                          <p-calendar
+                            showButtonBar="true"
+                            [monthNavigator]="true"
+                            [yearNavigator]="true"
+                            [yearRange]="sessionService.calendarYearRange"
+                            class="aw-calendar flex--4"
+                            [dateFormat]="sessionService.dateFormatPrimeNG"
+                            [(ngModel)]="searchObj.bsdeProjectDTOCriteria.statusDate"
+                            [locale]="sessionService.calendarFormat"
+                            appendTo="body"
+                          ></p-calendar>
+                        </div>
+                      </div>
+
+                      <div class="form-group">
+                        <label class="form-label">
+                          {{ componentData.componentId + ".lastUpdatedBy" | translate }}
+                        </label>
+
+                        <div class="form-control">
+                          <p-dropdown
+                            class="aw-dropdown fixed-width"
+                            [options]="lastUpdateByList"
+                            [showClear]="true"
+                            placeholder="&nbsp;"
+                            [(ngModel)]="searchObj.lastUserCriteria"
+                            (keydown.enter)="search()"
+                          ></p-dropdown>
+                        </div>
+                      </div>
+
+                      <div class="form-group">
+                        <label class="form-label">
+                          {{ componentData.componentId + ".currentStatus" | translate }}
+                        </label>
+
+                        <div class="form-control">
+                          <p-dropdown
+                            class="aw-dropdown fixed-width"
+                            [options]="statusList"
+                            [(ngModel)]="searchObj.bsdeProjectDTOCriteria.statusStateText"
+                            [showClear]="true"
+                            appendTo="body"
+                            placeholder="&nbsp;"
+                            (keydown.enter)="search()"
+                          ></p-dropdown>
+                        </div>
+                      </div>
+                      <div class="form-group"></div>
+                    </div>
+
+                    <div class="row">
+                      <div class="form-group">
+                        <label class="form-label">
+                          {{ componentData.componentId + ".attributeName" | translate }}
+                        </label>
+
+                        <div class="form-control">
+                          <p-dropdown
+                            class="aw-dropdown fixed-width"
+                            placeholder="&nbsp;"
+                            [options]="attributeNameList"
+                            [(ngModel)]="attributeNameVal"
+                            [showClear]="true"
+                            (keydown.enter)="search()"
+                          ></p-dropdown>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label">
+                          {{ componentData.componentId + ".attributeValue" | translate }}
+                        </label>
+
+                        <div class="form-control">
+                          <input type="text" class="aw-input" [(ngModel)]="attributeValue" />
+                        </div>
+                      </div>
+                      <div class="form-group"></div>
+                      <div class="form-group"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row search-criteria-footer">
+                <button mat-button (click)="showAdvancedCriteria = !showAdvancedCriteria">
+                  <ng-container *ngIf="showAdvancedCriteria">
+                    <mat-icon>remove</mat-icon>
+                    {{ "global.collapseCriteria" | translate }}
+                  </ng-container>
+                  <ng-container *ngIf="!showAdvancedCriteria">
+                    <mat-icon>add</mat-icon>
+                    {{ "global.expandCriteria" | translate }}
+                  </ng-container>
+                </button>
+
+                <div class="search-actions">
+                  <button
+                    type="button"
+                    mat-raised-button
+                    (click)="search()"
+                    color="primary"
+                    appKeyPress
+                    [keyCode]="'Enter'"
+                    (keyPress)="search()"
+                  >
+                    {{ "global.toSearch" | translate }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RESULT TABLE -->
+      <div class="grid-row">
+        <div class="grid-cell--12">
+          <div #resultsContainerAnchor class="grid-cell grid-cell--container">
+            <div class="grid-cell-header">
+              <div class="grid-cell-title-container">
+                <h3 class="grid-cell-title">
+                  {{ "global.results" | translate }} ({{ resultsTable ? resultsTable.length : 0 }})
+                </h3>
+              </div>
+            </div>
+
+            <div class="grid-cell-content">
+              <p-table
+                [resizableColumns]="true"
+                #ptableCockpit
+                class="aw-table2"
+                [columns]="tableCols"
+                [value]="resultsTable"
+                [(selection)]="selectedRows"
+                [scrollable]="true"
+                dataKey="projectNumber"
+              >
+                <ng-template pTemplate="emptymessage">
+                  <span *ngIf="!isLoading"> &nbsp;</span>
+
+                  <div *ngIf="isLoading" class="aw-table-loading-indicator">
+                    <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                    <div class="lds-hourglass"></div>
+                  </div>
+                </ng-template>
+
+                <ng-template pTemplate="caption">
+                  <div class="aw-table-header" [ngClass]="{ 'rows-selected': selectedRows.length > 0 }">
+                    <div class="aw-table-global-filter">
+                      <label class="aw-table-global-filter-label">
+                        <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                      </label>
+
+                      <input
+                        #ptableEquipmentGlobalFilter
+                        class="aw-table-global-filter-input"
+                        type="text"
+                        placeholder="{{ 'table.globalFilterText' | translate }}"
+                        (input)="ptableCockpit.filterGlobal($event.target.value, 'contains')"
+                      />
+                    </div>
+
+                    <div class="aw-table-actions">
+                      <button
+                        *ngIf="resultsTable && resultsTable.length > 0 && selectedRows.length === 0"
+                        type="button"
+                        mat-raised-button
+                        (click)="exportTable()"
+                      >
+                        {{ "global.export" | translate }}
+                      </button>
+
+                      <button
+                        *ngIf="selectedRows.length > 0"
+                        type="button"
+                        mat-raised-button
+                        color="warn"
+                        (click)="deleteSelectedCockpits()"
+                      >
+                        {{ "global.delete" | translate }}
+                      </button>
+
+                      <button
+                        *ngIf="selectedRows.length > 0"
+                        type="button"
+                        (click)="openWorkscopeUC()"
+                        mat-raised-button
+                      >
+                        {{ componentData.componentId + ".workscope" | translate }}
+                      </button>
+
+                      <button
+                        *ngIf="selectedRows.length > 0"
+                        type="button"
+                        (click)="openInspectionUC()"
+                        mat-raised-button
+                      >
+                        {{ componentData.componentId + ".inspection" | translate }}
+                      </button>
+
+                      <button *ngIf="selectedRows.length > 0" type="button" mat-raised-button>
+                        {{ componentData.componentId + ".outGoingConfiguration" | translate }}
+                      </button>
+
+                      <button
+                        *ngIf="selectedRows.length > 0"
+                        type="button"
+                        mat-raised-button
+                        (click)="openComponentCockpit()"
+                      >
+                        {{ "global.open" | translate }}
+                      </button>
+                    </div>
+                  </div>
+                </ng-template>
+
+                <ng-template pTemplate="colgroup" let-columns>
+                  <colgroup>
+                    <col class="aw-table-checkbox-wrapper" />
+                    <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                    <col class="row-expand-wrapper" />
+                  </colgroup>
+                </ng-template>
+
+                <ng-template pTemplate="header" let-columns>
+                  <tr>
+                    <th class="aw-table-checkbox-wrapper">
+                      <p-tableHeaderCheckbox class="aw-table-checkbox"></p-tableHeaderCheckbox>
+                    </th>
+
+                    <th pResizableColumn *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                      {{ componentData.componentId + "." + col.field | translate }}
+                    </th>
+
+                    <th class="row-expand-wrapper"></th>
+                  </tr>
+                </ng-template>
+
+                <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                  <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                    <td class="aw-table-checkbox-wrapper">
+                      <p-tableCheckbox class="aw-table-checkbox" [value]="rowData"></p-tableCheckbox>
+                    </td>
+
+                    <td *ngFor="let col of columns" [ngSwitch]="col.field" [ngStyle]="{ 'text-align': col.alignment }">
+                      <span *ngSwitchCase="'projectNumber'">
+                        <a (click)="openComponent(rowData)"> {{ rowData[col.field] }}</a>
+                      </span>
+                      <span *ngSwitchCase="'projectName'" pTooltip="{{ rowData[col.field] }}" tooltipPosition="bottom">
+                        {{ rowData[col.field] }}
+                      </span>
+
+                      <span *ngSwitchDefault>{{ rowData[col.field] }}</span>
+                    </td>
+
+                    <td class="row-expand-wrapper" [pRowToggler]="rowData">
+                      <i
+                        class="fa fa-fw aw-icon aw-icon-with-border"
+                        [ngClass]="{
+                          'fa-minus': rowData._expand,
+                          'fa-plus': !rowData.expand
+                        }"
+                        aria-hidden="true"
+                        pTooltip="{{ 'global.showTableRowDetails' | translate }}"
+                        tooltipPosition="left"
+                        (click)="toggleResultTableRowDetailsVisibility(rowData)"
+                      ></i>
+                    </td>
+                  </tr>
+                  <tr *ngIf="rowData._expand" class="row-expanded">
+                    <td [attr.colspan]="columns.length + 1">
+                      <div class="row">
+                        <div class="form-group">
+                          <label class="form-label">
+                            {{ getComponentName() + ".mroCenter" | translate }}
+                          </label>
+
+                          <div class="form-control">
+                            <input class="aw-input" type="text" [(ngModel)]="rowData.mroCenter" [disabled]="true" />
+                          </div>
+                        </div>
+
+                        <div class="form-group">
+                          <label class="form-label">
+                            {{ getComponentName() + ".lastUpdate" | translate }}
+                          </label>
+
+                          <div class="form-control">
+                            <input class="aw-input" type="text" [(ngModel)]="rowData.lastUpdated" [disabled]="true" />
+                          </div>
+                        </div>
+
+                        <div class="form-group">
+                          <label class="form-label">
+                            {{ getComponentName() + ".lastUpdatedBy" | translate }}
+                          </label>
+
+                          <div class="form-control">
+                            <input class="aw-input" type="text" [(ngModel)]="rowData.lastUpdatedBy" [disabled]="true" />
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,126 @@
+<a-modal class="aw-modal" [(visible)]="display" [width]="75">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".title" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="search-dialog-container">
+      <div class="section search-criteria-section">
+        <h4 class="section-title">{{ "global.search" | translate }}</h4>
+
+        <div class="section-content">
+          <div class="column">
+            <div class="row">
+              <div class="form-group">
+                <label class="form-label">
+                  {{ getComponentName() + ".pcNumber" | translate }}
+                </label>
+                <div class="form-control">
+                  <input type="text" class="aw-input" [(ngModel)]="searchObject.pcNumber" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">
+                  {{ getComponentName() + ".pcLabel" | translate }}
+                </label>
+                <div class="form-control">
+                  <input type="text" class="aw-input" [(ngModel)]="searchObject.pcLabel" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">
+                  {{ getComponentName() + ".statusState" | translate }}
+                </label>
+                <div class="form-control">
+                  <p-dropdown
+                    class="aw-dropdown fixed-width"
+                    [options]="statusList"
+                    [(ngModel)]="searchObject.statusState"
+                    placeholder="&nbsp;"
+                    [showClear]="true"
+                  ></p-dropdown>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="form-group">
+                <label class="form-label">
+                  {{ getComponentName() + ".pcLegalCommitment" | translate }}
+                </label>
+                <div class="form-control">
+                  <input type="text" class="aw-input" [(ngModel)]="searchObject.pcLegalCommitment" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">
+                  {{ getComponentName() + ".pcCreationDateStart" | translate }}
+                </label>
+                <div class="form-control">
+                  <p-calendar
+                    showButtonBar="true"
+                    [monthNavigator]="true"
+                    [yearNavigator]="true"
+                    [yearRange]="sessionService.calendarYearRange"
+                    class="aw-calendar"
+                    [dateFormat]="sessionService.dateFormatPrimeNG"
+                    [locale]="sessionService.calendarFormat"
+                    [(ngModel)]="searchObject.pcCreationDateInterval.minValue"
+                  ></p-calendar>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">
+                  {{ getComponentName() + ".pcCreationDateEnd" | translate }}
+                </label>
+                <div class="form-control">
+                  <p-calendar
+                    showButtonBar="true"
+                    [monthNavigator]="true"
+                    [yearNavigator]="true"
+                    [yearRange]="sessionService.calendarYearRange"
+                    class="aw-calendar"
+                    [dateFormat]="sessionService.dateFormatPrimeNG"
+                    [locale]="sessionService.calendarFormat"
+                    [(ngModel)]="searchObject.pcCreationDateInterval.maxValue"
+                  ></p-calendar>
+                </div>
+              </div>
+            </div>
+
+            <div class="row search-criteria-footer">
+              <div class="search-actions">
+                <button type="button" mat-raised-button color="primary" (click)="search()">
+                  <span>{{ "global.toSearch" | translate }}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section results-section">
+        <h4 class="section-title">
+          {{ "global.results" | translate }} ({{
+            parentContractTableDataSource ? parentContractTableDataSource.dataCount : 0
+          }})
+        </h4>
+
+        <div class="section-content">
+          <a-table [dataSource]="parentContractTableDataSource"> </a-table>
+        </div>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button type="button" mat-raised-button (click)="onCancel()">
+      <span>{{ "global.cancel" | translate }}</span>
+    </button>
+    <button type="button" color="primary" mat-raised-button (click)="onValidate()">
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>

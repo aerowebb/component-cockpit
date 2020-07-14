@@ -1,0 +1,681 @@
+<div class="page-header">
+  <div class="page-info">
+    <div>
+      <div class="page-title">
+        {{ "transaction." + componentData.componentId | translate }}
+      </div>
+      <div class="page-subtitle">
+        <div class="page-subtitle" *ngIf="!isCreateOpenMode && componentData && componentData.objectId">
+          - {{ serializationService.deserialize(componentData.objectId)["customerCode"] }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-actions">
+    <button
+      *ngIf="isReadOpenMode && hasUpdateAccessRight"
+      type="button"
+      mat-raised-button
+      (click)="editBusinessPartner()"
+    >
+      {{ "global.edit" | translate }}
+    </button>
+
+    <button
+      *ngIf="!isReadOpenMode && !isCreateOpenMode"
+      type="button"
+      color="warn"
+      mat-raised-button
+      (click)="cancelBusinessPartner()"
+    >
+      {{ "global.cancel" | translate }}
+    </button>
+
+    <button
+      *ngIf="!isReadOpenMode"
+      class="btn-with-spinner"
+      color="primary"
+      type="button"
+      mat-raised-button
+      (click)="saveBusinessPartner()"
+    >
+      <span class="lds-hourglass" *ngIf="showSaveSpinner"></span>
+      {{ "global.save" | translate }}
+    </button>
+
+    <button
+      mat-icon-button
+      class="mat-elevation-z1"
+      matTooltip="{{ 'global.showAllActionTooltip' | translate }}"
+      matTooltipPosition="above"
+      aria-label="Show all actions"
+      [matMenuTriggerFor]="actions"
+    >
+      <mat-icon>more_horiz</mat-icon>
+    </button>
+    <mat-menu #actions="matMenu">
+      <button mat-menu-item (click)="reloadBusinessPartner()">{{ "global.refresh" | translate }}</button>
+      <button mat-menu-item (click)="updateFavoriteState()">
+        {{ (isFavoriteEntry ? "page.removeFromFavorites" : "page.addToFavorites") | translate }}
+      </button>
+    </mat-menu>
+  </div>
+</div>
+
+<div #page class="page-wrapper">
+  <div class="page-container">
+    <div class="page-content">
+      <mat-tab-group animationDuration="0ms" dynamicHeight>
+        <mat-tab>
+          <ng-template mat-tab-label>
+            {{ "home" | translate }}
+          </ng-template>
+          <div class="grid-row">
+            <div class="grid-cell--12">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ "page.mainData" | translate }}
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <div class="row">
+                    <div id="code" class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+                      <label class="form-label">
+                        {{ "global.code" | translate }}
+                      </label>
+
+                      <div class="form-control">
+                        <input
+                          type="text"
+                          class="aw-input"
+                          [(ngModel)]="businessPartner.customerCode"
+                          [disabled]="isReadOpenMode || !isCreateOpenMode"
+                        />
+                      </div>
+                    </div>
+
+                    <div id="name" class="form-group">
+                      <label class="form-label">
+                        {{ "global.name" | translate }}
+                      </label>
+
+                      <div class="form-control">
+                        <input
+                          type="text"
+                          class="aw-input"
+                          [(ngModel)]="businessPartner.customerName"
+                          [disabled]="isReadOpenMode"
+                        />
+                      </div>
+                    </div>
+
+                    <div id="comments" class="form-group flex--2">
+                      <label class="form-label">
+                        {{ "global.comments" | translate }}
+                      </label>
+
+                      <div class="form-control">
+                        <textarea
+                          class="aw-textarea"
+                          [rows]="3"
+                          pInputTextarea
+                          [(ngModel)]="businessPartner.comments"
+                          [disabled]="isReadOpenMode"
+                        ></textarea>
+                      </div>
+                    </div>
+
+                    <div id="icaoCode" class="form-group">
+                      <label class="form-label">
+                        {{ "global.icaoCode" | translate }}
+                      </label>
+
+                      <div class="form-control">
+                        <p-dropdown
+                          class="aw-dropdown fixed-width"
+                          [options]="icaoCodes"
+                          [(ngModel)]="businessPartner.icaoCode"
+                          [showClear]="true"
+                          placeholder="&nbsp;"
+                          [disabled]="isReadOpenMode"
+                        ></p-dropdown>
+                      </div>
+                    </div>
+                    <div id="isOwner" class="form-group">
+                      <label class="form-label">
+                        {{ componentData.componentId + ".isOwner" | translate }}
+                      </label>
+
+                      <div class="form-control">
+                        <p-checkbox
+                          binary="true"
+                          class="aw-checkbox"
+                          [(ngModel)]="businessPartner.isOwner"
+                          [disabled]="isReadOpenMode"
+                        ></p-checkbox>
+                      </div>
+                    </div>
+
+                    <div id="isOperator" class="form-group">
+                      <label class="form-label">
+                        {{ componentData.componentId + ".isOperator" | translate }}
+                      </label>
+
+                      <div class="form-control">
+                        <p-checkbox
+                          binary="true"
+                          class="aw-checkbox"
+                          [(ngModel)]="businessPartner.isOperator"
+                          [disabled]="isReadOpenMode"
+                        ></p-checkbox>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div id="website" class="form-group">
+                      <label class="form-label">
+                        {{ "global.website" | translate }}
+                      </label>
+
+                      <div class="form-control">
+                        <input
+                          type="text"
+                          class="aw-input"
+                          [(ngModel)]="businessPartner.webSite"
+                          [disabled]="isReadOpenMode"
+                        />
+                      </div>
+                    </div>
+
+                    <div id="phone1" class="form-group">
+                      <label class="form-label">
+                        {{ "global.phone1" | translate }}
+                      </label>
+
+                      <div class="form-control">
+                        <input
+                          type="text"
+                          class="aw-input"
+                          [(ngModel)]="businessPartner.phone1"
+                          [disabled]="isReadOpenMode"
+                        />
+                      </div>
+                    </div>
+
+                    <div id="phone2" class="form-group">
+                      <label class="form-label">
+                        {{ "global.phone2" | translate }}
+                      </label>
+
+                      <div class="form-control">
+                        <input
+                          type="text"
+                          class="aw-input"
+                          [(ngModel)]="businessPartner.phone2"
+                          [disabled]="isReadOpenMode"
+                        />
+                      </div>
+                    </div>
+
+                    <div id="fax" class="form-group">
+                      <label class="form-label">
+                        {{ "global.fax" | translate }}
+                      </label>
+
+                      <div class="form-control">
+                        <input
+                          type="text"
+                          class="aw-input"
+                          [(ngModel)]="businessPartner.fax"
+                          [disabled]="isReadOpenMode"
+                        />
+                      </div>
+                    </div>
+
+                    <div id="email" class="form-group">
+                      <label class="form-label">
+                        {{ "global.email" | translate }}
+                      </label>
+
+                      <div class="form-control">
+                        <input
+                          type="text"
+                          class="aw-input"
+                          [(ngModel)]="businessPartner.email"
+                          [disabled]="isReadOpenMode"
+                        />
+                      </div>
+                    </div>
+
+                    <div id="otherType" class="form-group">
+                      <label class="form-label">
+                        {{ componentData.componentId + ".otherType" | translate }}
+                      </label>
+
+                      <div class="form-control">
+                        <p-dropdown
+                          class="aw-dropdown fixed-width"
+                          [options]="customerTypes"
+                          [(ngModel)]="businessPartner.customerType"
+                          [showClear]="true"
+                          placeholder="&nbsp;"
+                          [disabled]="isReadOpenMode"
+                        ></p-dropdown>
+                      </div>
+                    </div>
+                    <div class="form-group"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-row">
+            <div class="grid-cell--12">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">{{ "global.airport" | translate }}/{{ "global.base" | translate }}</h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content grid-cell-content-with-section">
+                  <div class="section">
+                    <div class="section-content">
+                      <div class="row">
+                        <div id="airportName" class="form-group">
+                          <label class="form-label">
+                            {{ "global.name" | translate }}
+                          </label>
+
+                          <div class="form-control">
+                            <input
+                              type="text"
+                              class="aw-input"
+                              [(ngModel)]="businessPartner.airport"
+                              [disabled]="isReadOpenMode"
+                            />
+                          </div>
+                        </div>
+
+                        <div id="address" class="form-group flex--2">
+                          <label class="form-label">
+                            {{ "global.address" | translate }}
+                          </label>
+
+                          <div class="form-control">
+                            <textarea
+                              class="aw-textarea"
+                              [rows]="3"
+                              pInputTextarea
+                              [(ngModel)]="businessPartner.address"
+                              [disabled]="isReadOpenMode"
+                            ></textarea>
+                          </div>
+                        </div>
+
+                        <div id="town" class="form-group">
+                          <label class="form-label">
+                            {{ "global.town" | translate }}
+                          </label>
+
+                          <div class="form-control">
+                            <input
+                              type="text"
+                              class="aw-input"
+                              [(ngModel)]="businessPartner.town"
+                              [disabled]="isReadOpenMode"
+                            />
+                          </div>
+                        </div>
+
+                        <div id="zone" class="form-group">
+                          <label class="form-label">
+                            {{ "global.zone" | translate }}
+                          </label>
+
+                          <div class="form-control">
+                            <p-dropdown
+                              class="aw-dropdown fixed-width"
+                              [options]="zones"
+                              [(ngModel)]="businessPartner.zone"
+                              [showClear]="true"
+                              placeholder="&nbsp;"
+                              [disabled]="isReadOpenMode"
+                              (onChange)="updateCountries()"
+                            ></p-dropdown>
+                          </div>
+                        </div>
+
+                        <div id="country" class="form-group">
+                          <label class="form-label">
+                            {{ "global.country" | translate }}
+                          </label>
+
+                          <div class="form-control">
+                            <p-dropdown
+                              class="aw-dropdown fixed-width"
+                              [options]="countries"
+                              [(ngModel)]="businessPartner.country"
+                              [showClear]="true"
+                              placeholder="&nbsp;"
+                              [disabled]="isReadOpenMode"
+                            ></p-dropdown>
+                          </div>
+                        </div>
+
+                        <div id="airportIcaoCode" class="form-group">
+                          <label class="form-label">
+                            {{ "global.icaoCode" | translate }}
+                          </label>
+
+                          <div class="form-control">
+                            <p-dropdown
+                              class="aw-dropdown fixed-width"
+                              [options]="icaoCodes"
+                              [(ngModel)]="businessPartner.airportIcaoCode"
+                              [showClear]="true"
+                              placeholder="&nbsp;"
+                              [disabled]="isReadOpenMode"
+                            ></p-dropdown>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-row">
+            <div class="grid-cell--12">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ getComponentName() + ".activity" | translate }}
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content grid-cell-content-with-section">
+                  <div class="section">
+                    <div class="section-content"></div>
+                  </div>
+
+                  <aw-dynamic-attributes
+                    id="dynamicAttributes"
+                    [attributes]="dynamicAttributes"
+                    [workflowControls]="userWorkflow ? userWorkflow.listControlByIdentifier : []"
+                    [isReadOpenMode]="isReadOpenMode"
+                  >
+                  </aw-dynamic-attributes>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+        <mat-tab>
+          <ng-template mat-tab-label>
+            {{ "global.general" | translate }}
+          </ng-template>
+          <div class="grid-row">
+            <div class="grid-cell--6">
+              <!-- Customers list table -->
+
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ componentData.componentId + ".associatedBusinessPartner" | translate }}
+                      ({{ customerTableDataSource ? customerTableDataSource.dataCount : 0 }})
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <a-table [dataSource]="customerTableDataSource">
+                    <ng-template tableActionsDef>
+                      <button
+                        *ngIf="!isReadOpenMode && customerTableDataSource.hasDataSelection"
+                        type="button"
+                        mat-raised-button
+                        color="warn"
+                        (click)="deleteCusCustomers()"
+                      >
+                        {{ "global.delete" | translate }}
+                      </button>
+
+                      <button
+                        *ngIf="!isReadOpenMode && customerTableDataSource.dataSelectionCount === 1"
+                        type="button"
+                        mat-raised-button
+                        (click)="editCusCustomer()"
+                      >
+                        {{ "global.edit" | translate }}
+                      </button>
+
+                      <button
+                        *ngIf="customerTableDataSource.dataSelectionCount === 1"
+                        type="button"
+                        mat-raised-button
+                        (click)="openCusCustomer()"
+                      >
+                        {{ "global.open" | translate }}
+                      </button>
+
+                      <button
+                        *ngIf="!isReadOpenMode && !customerTableDataSource.hasDataSelection"
+                        type="button"
+                        mat-raised-button
+                        (click)="createCusCustomer()"
+                      >
+                        {{ "global.add" | translate }}
+                      </button>
+                    </ng-template>
+                  </a-table>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid-cell--6">
+              <!-- Contacts list table -->
+
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ componentData.componentId + ".listContacts" | translate }}
+                      ({{ contactTableDataSource ? contactTableDataSource.dataCount : 0 }})
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <a-table [dataSource]="contactTableDataSource">
+                    <ng-template columnDef="primaryContact" let-rowData="rowData">
+                      <div class="ui-g-12">
+                        <p-checkbox [(ngModel)]="rowData.primaryContact" [disabled]="isReadOpenMode" binary="true">
+                        </p-checkbox>
+                      </div>
+                    </ng-template>
+                  </a-table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-row">
+            <div class="grid-cell--6">
+              <!-- Customer evolutions table -->
+
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ componentData.componentId + ".customizedEvolutionsCompliance" | translate }}
+                      ({{ customerEvolutionTableDataSource ? customerEvolutionTableDataSource.dataCount : 0 }})
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <a-table [dataSource]="customerEvolutionTableDataSource">
+                    <ng-template tableActionsDef>
+                      <button
+                        *ngIf="!isReadOpenMode && customerEvolutionTableDataSource.hasDataSelection"
+                        type="button"
+                        mat-raised-button
+                        color="warn"
+                        (click)="deleteCustomerEvolutions()"
+                      >
+                        {{ "global.delete" | translate }}
+                      </button>
+
+                      <button
+                        *ngIf="!isReadOpenMode && customerEvolutionTableDataSource.dataSelectionCount === 1"
+                        type="button"
+                        mat-raised-button
+                        (click)="editCustomerEvolution()"
+                      >
+                        {{ "global.edit" | translate }}
+                      </button>
+
+                      <button
+                        *ngIf="customerEvolutionTableDataSource.dataSelectionCount === 1"
+                        type="button"
+                        mat-raised-button
+                        (click)="openCustomerEvolution()"
+                      >
+                        {{ "global.open" | translate }}
+                      </button>
+
+                      <button
+                        *ngIf="!isReadOpenMode && !customerEvolutionTableDataSource.hasDataSelection"
+                        type="button"
+                        mat-raised-button
+                        (click)="createCustomerEvolution()"
+                      >
+                        {{ "global.add" | translate }}
+                      </button>
+                    </ng-template>
+                  </a-table>
+                </div>
+              </div>
+            </div>
+
+            <!-- New documents table -->
+
+            <div class="grid-cell--6">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ "global.documents" | translate }}
+                      ({{ documentTableDataSource ? documentTableDataSource.dataCount : 0 }})
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <a-table [dataSource]="documentTableDataSource">
+                    <ng-template tableActionsDef>
+                      <button
+                        *ngIf="documentTableDataSource.hasDataSelection"
+                        type="button"
+                        mat-raised-button
+                        (click)="downloadFiles()"
+                      >
+                        {{ "global.download" | translate }}
+                      </button>
+
+                      <button
+                        *ngIf="!isReadOpenMode && documentTableDataSource.hasDataSelection"
+                        type="button"
+                        mat-raised-button
+                        color="warn"
+                        (click)="deleteDocuments()"
+                      >
+                        {{ "global.delete" | translate }}
+                      </button>
+
+                      <button
+                        *ngIf="!isReadOpenMode && documentTableDataSource.dataSelectionCount === 1"
+                        type="button"
+                        mat-raised-button
+                        (click)="editDocument()"
+                      >
+                        {{ "global.edit" | translate }}
+                      </button>
+
+                      <button
+                        *ngIf="documentTableDataSource.dataSelectionCount === 1"
+                        type="button"
+                        mat-raised-button
+                        (click)="openDocument()"
+                      >
+                        {{ "global.open" | translate }}
+                      </button>
+
+                      <p-fileUpload
+                        #fileUploader
+                        *ngIf="!isReadOpenMode && !documentTableDataSource.hasDataSelection"
+                        mode="basic"
+                        name="document[]"
+                        (uploadHandler)="uploadDocument($event, fileUploader)"
+                        chooseLabel="{{ 'global.upload' | translate }}"
+                        customUpload="true"
+                        auto="true"
+                      >
+                      </p-fileUpload>
+                    </ng-template>
+                  </a-table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+  </div>
+
+  <aw-dialog-business-partner-cus-customer
+    *ngIf="showCusCustomerDialog"
+    [(display)]="showCusCustomerDialog"
+    [cusCustomer]="currentCusCustomer"
+    [openMode]="cusCustomerDialogOpenMode"
+    (onValidated)="onAddCusCustomer($event)"
+  >
+  </aw-dialog-business-partner-cus-customer>
+
+  <aw-dialog-business-partner-customer-evolution
+    *ngIf="showCustomerEvolutionDialog"
+    [(display)]="showCustomerEvolutionDialog"
+    [customerEvolution]="currentCustomerEvolution"
+    [openMode]="customerEvolutionDialogOpenMode"
+    (onValidated)="onAddCustomerEvolution($event)"
+  >
+  </aw-dialog-business-partner-customer-evolution>
+
+  <aw-dialog-business-partner-bido-document
+    *ngIf="showDocumentDialog"
+    [(display)]="showDocumentDialog"
+    [document]="currentDocument"
+    [openMode]="documentDialogOpenMode"
+    [types]="documentTypes"
+    (onValidated)="onAddDocument($event)"
+  ></aw-dialog-business-partner-bido-document>
+  <aw-dialog-status
+    *ngIf="showStatusUpdatesPopup"
+    [isStatusEditable]="false"
+    [item]="businessPartner"
+    [itemId]="businessPartner.customerCode"
+    [(display)]="showStatusUpdatesPopup"
+  ></aw-dialog-status>
+</div>

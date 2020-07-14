@@ -1,0 +1,1471 @@
+<div #page *ngIf="loadedWorkflow">
+  <div class="page-header">
+    <div class="page-info">
+      <div>
+        <h2 class="page-title">
+          {{ "transaction." + componentData.componentId | translate }}
+        </h2>
+
+        <div class="page-subtitle">
+          <div *ngIf="componentData && componentData.objectId" class="page-subtitle">
+            - {{ serializationService.deserialize(componentData.objectId)["pnCode"] }}
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="object-status" *ngIf="materialFieldData.statusState" (click)="showStatus()">
+          {{ materialFieldData.statusState | formatSelectOption: workflowStatus }}
+        </div>
+        <div class="object-is-incomplete" *ngIf="materialFieldData.incompletePartForSupply && !isCreateOpenMode">
+          {{ componentData.componentId + ".materialIsIncomplete" | translate }}
+        </div>
+      </div>
+    </div>
+
+    <div class="page-actions">
+      <button
+        id="edit"
+        *ngIf="isReadOpenMode && hasUpdateAccessRight"
+        type="button"
+        mat-raised-button
+        (click)="editMaterial()"
+      >
+        {{ "global.edit" | translate }}
+      </button>
+
+      <button
+        *ngIf="!isReadOpenMode && !isCreateOpenMode"
+        type="button"
+        color="warn"
+        mat-raised-button
+        (click)="cancelMaterial()"
+      >
+        {{ "global.cancel" | translate }}
+      </button>
+
+      <button
+        id="save"
+        *ngIf="!isReadOpenMode"
+        class="btn-with-spinner"
+        color="primary"
+        type="button"
+        mat-raised-button
+        (click)="saveMaterial()"
+      >
+        <span class="lds-hourglass" *ngIf="showSaveSpinner"></span>
+        {{ "global.save" | translate }}
+      </button>
+
+      <button
+        mat-icon-button
+        class="mat-elevation-z1"
+        matTooltip="{{ 'global.showAllActionTooltip' | translate }}"
+        matTooltipPosition="above"
+        aria-label="Show all actions"
+        [matMenuTriggerFor]="actions"
+      >
+        <mat-icon>more_horiz</mat-icon>
+      </button>
+      <mat-menu #actions="matMenu">
+        <button mat-menu-item (click)="showCreateProcurementDialog()" *ngIf="isReadOpenMode && !isCreateOpenMode">
+          {{ "createProcurementRequest" | translate }}
+        </button>
+        <button mat-menu-item [matMenuTriggerFor]="navigations">
+          {{ "global.goTo" | translate }}
+        </button>
+        <button mat-menu-item (click)="reloadMaterial()">{{ "global.refresh" | translate }}</button>
+        <button mat-menu-item (click)="openStatusUpdatesPopup()">{{ "updates" | translate }}</button>
+        <button mat-menu-item (click)="updateFavoriteState()">{{ "addToFavorite" | translate }}</button>
+      </mat-menu>
+      <mat-menu #navigations="matMenu">
+        <button *ngIf="!isCreateOpenMode" type="button" mat-menu-item (click)="navigationLinkList[0].command()">
+          {{ navigationLinkList[0].label | translate }}
+        </button>
+      </mat-menu>
+    </div>
+  </div>
+
+  <div class="page-wrapper">
+    <div class="page-container">
+      <mat-tab-group animationDuration="0ms" dynamicHeight>
+        <mat-tab>
+          <ng-template mat-tab-label>
+            {{ "home" | translate }}
+          </ng-template>
+
+          <div class="grid-row">
+            <div id="main" #mainAnchor class="grid-cell--5">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ "page.mainData" | translate }}
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <div class="column">
+                    <div class="row">
+                      <div id="pnCode" class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+                        <label class="form-label">
+                          {{ componentData.componentId + ".code" | translate }}
+                        </label>
+
+                        <div class="form-control">
+                          <input
+                            type="text"
+                            class="aw-input"
+                            maxlength="25"
+                            [(ngModel)]="materialFieldData.pnCode"
+                            [disabled]="isReadOpenMode || !isCreateOpenMode"
+                          />
+                        </div>
+                      </div>
+                      <div id="articleDesignation" class="form-group">
+                        <label class="form-label">
+                          {{ componentData.componentId + ".name" | translate }}
+                        </label>
+
+                        <div class="form-control">
+                          <input
+                            type="text"
+                            class="aw-input"
+                            maxlength="100"
+                            [(ngModel)]="materialFieldData.articleDesignation"
+                            [disabled]="isReadOpenMode"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div id="pnType" class="form-group">
+                        <label class="form-label">
+                          {{ componentData.componentId + ".materialType" | translate }}
+                        </label>
+
+                        <div class="form-control">
+                          <p-dropdown
+                            class="aw-dropdown fixed-width"
+                            [showClear]="true"
+                            placeholder="&nbsp;"
+                            [options]="materialType"
+                            [(ngModel)]="materialFieldData.pnType"
+                            (onChange)="enableEngieeringView()"
+                            [disabled]="isReadOpenMode"
+                            appendTo="body"
+                          ></p-dropdown>
+                        </div>
+                      </div>
+
+                      <div id="quantityUnit" class="form-group">
+                        <label class="form-label">
+                          {{ componentData.componentId + ".quantityUnit" | translate }}
+                        </label>
+
+                        <div class="form-control">
+                          <p-dropdown
+                            class="aw-dropdown fixed-width"
+                            [showClear]="true"
+                            placeholder="&nbsp;"
+                            [options]="quantityUnit"
+                            [(ngModel)]="materialFieldData.quantityUnit"
+                            [disabled]="isReadOpenMode"
+                            appendTo="body"
+                          ></p-dropdown>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div id="traceability" class="form-group">
+                        <label class="form-label">
+                          {{ componentData.componentId + ".traceability" | translate }}
+                        </label>
+
+                        <div class="form-control">
+                          <p-dropdown
+                            class="aw-dropdown fixed-width"
+                            [showClear]="true"
+                            placeholder="&nbsp;"
+                            [options]="traceability"
+                            [(ngModel)]="materialFieldData.traceability"
+                            [disabled]="isReadOpenMode"
+                            appendTo="body"
+                          ></p-dropdown>
+                        </div>
+                      </div>
+
+                      <div id="storageConditionValue" class="form-group">
+                        <label class="form-label">
+                          {{ componentData.componentId + ".storageCondition" | translate }}
+                        </label>
+
+                        <div class="form-control">
+                          <p-dropdown
+                            class="aw-dropdown fixed-width"
+                            [showClear]="true"
+                            placeholder="&nbsp;"
+                            [options]="storageCondition"
+                            [(ngModel)]="storageConditionValue"
+                            [disabled]="isReadOpenMode"
+                            appendTo="body"
+                          ></p-dropdown>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div id="otanPnReference" class="form-group">
+                        <label class="form-label">{{
+                          componentData.componentId + ".otanPnReference" | translate
+                        }}</label>
+
+                        <div class="form-control">
+                          <input
+                            type="text"
+                            class="aw-input"
+                            [(ngModel)]="materialFieldData.otanPnReference"
+                            maxlength="20"
+                            [disabled]="isReadOpenMode"
+                          />
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label">
+                          {{ componentData.componentId + ".sparePartClass" | translate }}
+                        </label>
+
+                        <div class="form-control">
+                          <p-dropdown
+                            class="aw-dropdown fixed-width"
+                            placeholder="&nbsp;"
+                            [showClear]="true"
+                            [(ngModel)]="materialFieldData.sparePartClassCode"
+                            [options]="sparePartClassOptions"
+                            [disabled]="isReadOpenMode"
+                            appendTo="body"
+                          ></p-dropdown>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid-cell--7 grid-cell--no-padding">
+              <div class="grid-row">
+                <div class="grid-cell--12">
+                  <div class="grid-cell grid-cell--container">
+                    <div class="grid-cell-header">
+                      <div class="grid-cell-title-container">
+                        <h3 id="alternativeTableTitle" class="grid-cell-title">
+                          {{ componentData.componentId + ".expiration" | translate }}
+                        </h3>
+                      </div>
+                    </div>
+
+                    <div class="grid-cell-content grid-cell-content-with-section">
+                      <div class="row">
+                        <div id="expirationDuration" class="form-group">
+                          <label class="form-label">
+                            {{ componentData.componentId + ".duration" | translate }}
+                          </label>
+
+                          <div class="form-control">
+                            <input
+                              #expirationDuration="ngModel"
+                              type="text"
+                              class="aw-input"
+                              [pKeyFilter]="inputValidationService.validatorOfNumber()"
+                              [pValidateOnly]="true"
+                              maxlength="50"
+                              [(ngModel)]="materialFieldData.expirationDuration"
+                              [disabled]="isReadOpenMode"
+                            />
+                            <p-message
+                              *ngIf="
+                                expirationDuration.invalid && (expirationDuration.dirty || expirationDuration.touched)
+                              "
+                              severity="error"
+                              [text]="inputValidationService.formatOfNumber()"
+                            ></p-message>
+                          </div>
+                        </div>
+                        <div id="expirationUnit" class="form-group">
+                          <label class="form-label">
+                            {{ componentData.componentId + ".unit" | translate }}
+                          </label>
+
+                          <div class="form-control">
+                            <p-dropdown
+                              class="aw-dropdown fixed-width"
+                              [showClear]="true"
+                              placeholder="&nbsp;"
+                              [options]="expirationUnit"
+                              [(ngModel)]="materialFieldData.expirationUnit"
+                              [disabled]="isReadOpenMode"
+                              appendTo="body"
+                            ></p-dropdown>
+                          </div>
+                        </div>
+                        <div id="expirationThreshold" class="form-group">
+                          <label class="form-label">
+                            {{ componentData.componentId + ".alertThreshold" | translate }}
+                          </label>
+
+                          <div class="form-control">
+                            <input
+                              #expirationThreshold="ngModel"
+                              type="text"
+                              class="aw-input"
+                              [pKeyFilter]="inputValidationService.validatorOfNumber()"
+                              [pValidateOnly]="true"
+                              maxlength="50"
+                              [(ngModel)]="materialFieldData.expirationThreshold"
+                              [disabled]="isReadOpenMode"
+                            />
+                            <p-message
+                              *ngIf="
+                                expirationThreshold.invalid &&
+                                (expirationThreshold.dirty || expirationThreshold.touched)
+                              "
+                              severity="error"
+                              [text]="inputValidationService.formatOfNumber()"
+                            ></p-message>
+                          </div>
+                        </div>
+                        <div id="expirationThresholdUnit" class="form-group">
+                          <label class="form-label">
+                            {{ componentData.componentId + ".alertThresholdUnit" | translate }}
+                          </label>
+
+                          <div class="form-control">
+                            <p-dropdown
+                              class="aw-dropdown fixed-width"
+                              [showClear]="true"
+                              placeholder="&nbsp;"
+                              [options]="expirationThresholdUnit"
+                              [(ngModel)]="materialFieldData.expirationThresholdUnit"
+                              [disabled]="isReadOpenMode"
+                              appendTo="body"
+                            ></p-dropdown>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="grid-row">
+                <div class="grid-cell--12">
+                  <div class="grid-cell grid-cell--container">
+                    <div class="grid-cell-header">
+                      <div class="grid-cell-title-container">
+                        <h3 id="alternativeTableTitle" class="grid-cell-title">
+                          {{ componentData.componentId + ".alternatives" | translate }}
+                          ({{ alternativeTable ? alternativeTable.length : 0 }})
+                        </h3>
+                      </div>
+                    </div>
+
+                    <div class="grid-cell-content grid-cell-content-with-section">
+                      <p-table
+                        id="alternativeTable"
+                        [resizableColumns]="true"
+                        #ptableAlternative
+                        class="aw-table2"
+                        [columns]="alternativeTableCols"
+                        [value]="alternativeTable"
+                        [(selection)]="selectedAlternatives"
+                        [scrollable]="true"
+                      >
+                        <ng-template pTemplate="emptymessage">
+                          <span *ngIf="!isLoading"> &nbsp;</span>
+
+                          <div *ngIf="isLoading" class="aw-table-loading-indicator">
+                            <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                            <div class="lds-hourglass"></div>
+                          </div>
+                        </ng-template>
+
+                        <ng-template pTemplate="caption">
+                          <div class="aw-table-header" [ngClass]="{ 'rows-selected': selectedAlternatives.length > 0 }">
+                            <div class="aw-table-global-filter">
+                              <label class="aw-table-global-filter-label">
+                                <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                              </label>
+
+                              <input
+                                #ptableAlternativeGlobalFilter
+                                class="aw-table-global-filter-input"
+                                type="text"
+                                placeholder="{{ 'table.globalFilterText' | translate }}"
+                                (input)="ptableAlternative.filterGlobal($event.target.value, 'contains')"
+                              />
+                            </div>
+
+                            <div class="aw-table-actions">
+                              <button
+                                id="deleteAlternative"
+                                *ngIf="!isReadOpenMode && selectedAlternatives.length > 0"
+                                type="button"
+                                mat-raised-button
+                                color="warn"
+                                (click)="deleteAlternative()"
+                              >
+                                {{ "global.delete" | translate }}
+                              </button>
+
+                              <button
+                                id="editAlternative"
+                                *ngIf="!isReadOpenMode && selectedAlternatives.length === 1"
+                                type="button"
+                                mat-raised-button
+                                (click)="editAlternative()"
+                              >
+                                {{ "global.edit" | translate }}
+                              </button>
+                              <button
+                                id="openAlternative"
+                                *ngIf="!isReadOpenMode && selectedAlternatives.length === 1"
+                                type="button"
+                                mat-raised-button
+                                (click)="openAlternative()"
+                              >
+                                {{ "global.open" | translate }}
+                              </button>
+                              <button
+                                id="addAlternative"
+                                *ngIf="!isReadOpenMode && selectedAlternatives.length === 0"
+                                type="button"
+                                mat-raised-button
+                                (click)="addAlternative()"
+                              >
+                                {{ "global.add" | translate }}
+                              </button>
+                            </div>
+                          </div>
+                        </ng-template>
+
+                        <ng-template pTemplate="colgroup" let-columns>
+                          <colgroup>
+                            <col class="aw-table-checkbox-wrapper" />
+                            <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                          </colgroup>
+                        </ng-template>
+
+                        <ng-template pTemplate="header" let-columns>
+                          <tr>
+                            <th class="aw-table-checkbox-wrapper">
+                              <p-tableHeaderCheckbox class="aw-table-checkbox"></p-tableHeaderCheckbox>
+                            </th>
+
+                            <th
+                              pResizableColumn
+                              *ngFor="let col of columns"
+                              [ngStyle]="{ 'text-align': col.alignment }"
+                            >
+                              {{ componentData.componentId + "." + col.field | translate }}
+                              <!-- materialFieldData.pnCode -->
+                            </th>
+                          </tr>
+                        </ng-template>
+
+                        <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                          <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                            <td class="aw-table-checkbox-wrapper">
+                              <p-tableCheckbox class="aw-table-checkbox" [value]="rowData"></p-tableCheckbox>
+                            </td>
+
+                            <td
+                              *ngFor="let col of columns"
+                              [ngStyle]="{ 'text-align': col.alignment }"
+                              [ngSwitch]="col.field"
+                            >
+                              <span *ngSwitchCase="'birePnByFkBidtPnBidtPn2BirePnPnCode'">
+                                <div *ngIf="rowData[col.field] !== materialFieldData.pnCode">
+                                  {{ rowData[col.field] }}
+                                </div>
+                                <div *ngIf="rowData[col.field] === materialFieldData.pnCode">
+                                  {{ rowData["birePnByFkBidtPnBidtPn1BirePnPnCode"] }}
+                                </div>
+                              </span>
+                              <span *ngSwitchDefault>
+                                {{ rowData[col.field] }}
+                              </span>
+                            </td>
+                          </tr>
+                        </ng-template>
+                      </p-table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+
+        <mat-tab>
+          <ng-template mat-tab-label>
+            {{ getComponentName() + ".logistics" | translate }}
+          </ng-template>
+
+          <div class="grid-row">
+            <div id="warhouse" #warhouseAnchor class="grid-cell--12" (click)="setSelectedAnchor('warhouseAnchor')">
+              <div class="grid-cell grid-cell--container" [ngClass]="{ active: isSelectedAnchor('warhouseAnchor') }">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 id="warehouseTableTitle" class="grid-cell-title">
+                      {{ componentData.componentId + ".warehouses" | translate }}
+                      ({{ warehouseTable ? warehouseTable.length : 0 }})
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <p-table
+                    id="warehouseTable"
+                    [resizableColumns]="true"
+                    #ptableWarehouse
+                    class="aw-table2"
+                    [columns]="warehouseTableCols"
+                    [value]="warehouseTable"
+                    [(selection)]="selectedWarehouse"
+                    dataKey="dataId"
+                    [scrollable]="true"
+                  >
+                    <ng-template pTemplate="emptymessage">
+                      <span *ngIf="!isLoading"> &nbsp;</span>
+
+                      <div *ngIf="isLoading" class="aw-table-loading-indicator">
+                        <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                        <div class="lds-hourglass"></div>
+                      </div>
+                    </ng-template>
+
+                    <ng-template pTemplate="caption">
+                      <div class="aw-table-header" [ngClass]="{ 'rows-selected': selectedWarehouse.length > 0 }">
+                        <div class="aw-table-global-filter">
+                          <label class="aw-table-global-filter-label">
+                            <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                          </label>
+
+                          <input
+                            #ptableWarehouseGlobalFilter
+                            class="aw-table-global-filter-input"
+                            type="text"
+                            placeholder="{{ 'table.globalFilterText' | translate }}"
+                            (input)="ptableWarehouse.filterGlobal($event.target.value, 'contains')"
+                          />
+                        </div>
+
+                        <div class="aw-table-actions">
+                          <button
+                            id="deleteWarehouse"
+                            *ngIf="!isReadOpenMode && selectedWarehouse.length > 0"
+                            type="button"
+                            mat-raised-button
+                            color="warn"
+                            (click)="deleteWarehouse()"
+                          >
+                            {{ "global.delete" | translate }}
+                          </button>
+                          <button
+                            id="goToStockStatus"
+                            *ngIf="selectedWarehouse.length === 1"
+                            type="button"
+                            mat-raised-button
+                            (click)="goToStockStatus()"
+                          >
+                            {{ componentData.componentId + ".stockStatus" | translate }}
+                          </button>
+                          <button
+                            id="editWarehouse"
+                            *ngIf="!isReadOpenMode && selectedWarehouse.length === 1"
+                            type="button"
+                            mat-raised-button
+                            (click)="editWarehouse()"
+                          >
+                            {{ "global.edit" | translate }}
+                          </button>
+
+                          <button
+                            id="openWarehouse"
+                            *ngIf="!isReadOpenMode && selectedWarehouse.length === 1"
+                            type="button"
+                            mat-raised-button
+                            (click)="openWarehouse()"
+                          >
+                            {{ "global.open" | translate }}
+                          </button>
+                          <button
+                            id="addWarehouse"
+                            *ngIf="!isReadOpenMode && selectedWarehouse.length === 0"
+                            type="button"
+                            mat-raised-button
+                            (click)="addWarehouse()"
+                          >
+                            {{ "global.add" | translate }}
+                          </button>
+                        </div>
+                      </div>
+                    </ng-template>
+
+                    <ng-template pTemplate="colgroup" let-columns>
+                      <colgroup>
+                        <col class="aw-table-checkbox-wrapper" />
+                        <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                      </colgroup>
+                    </ng-template>
+
+                    <ng-template pTemplate="header" let-columns>
+                      <tr>
+                        <th class="aw-table-checkbox-wrapper">
+                          <p-tableHeaderCheckbox class="aw-table-checkbox"></p-tableHeaderCheckbox>
+                        </th>
+
+                        <th pResizableColumn *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                          {{ componentData.componentId + "." + col.field | translate }}
+                        </th>
+                      </tr>
+                    </ng-template>
+
+                    <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                      <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                        <td class="aw-table-checkbox-wrapper">
+                          <p-tableCheckbox class="aw-table-checkbox" [value]="rowData"></p-tableCheckbox>
+                        </td>
+
+                        <td *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                          {{ rowData[col.field] }}
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-row">
+            <div id="valuation" class="grid-cell--3">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 id="valuationTableTitle" class="grid-cell-title">
+                      {{ componentData.componentId + ".valuation" | translate }}
+                      ({{ valuationTable ? valuationTable.length : 0 }})
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <p-table
+                    id="valuationTable"
+                    [resizableColumns]="true"
+                    #ptableValuation
+                    class="aw-table2"
+                    [columns]="valuationTableCols"
+                    [value]="valuationTable"
+                    [(selection)]="selectedValuation"
+                    [scrollable]="true"
+                  >
+                    <ng-template pTemplate="emptymessage">
+                      <span *ngIf="!isLoading"> &nbsp;</span>
+
+                      <div *ngIf="isLoading" class="aw-table-loading-indicator">
+                        <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                        <div class="lds-hourglass"></div>
+                      </div>
+                    </ng-template>
+
+                    <ng-template pTemplate="caption">
+                      <div class="aw-table-header" [ngClass]="{ 'rows-selected': selectedValuation.length > 0 }">
+                        <div class="aw-table-global-filter">
+                          <label class="aw-table-global-filter-label">
+                            <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                          </label>
+
+                          <input
+                            #ptableValuationGlobalFilter
+                            class="aw-table-global-filter-input"
+                            type="text"
+                            placeholder="{{ 'table.globalFilterText' | translate }}"
+                            (input)="ptableValuation.filterGlobal($event.target.value, 'contains')"
+                          />
+                        </div>
+
+                        <div class="aw-table-actions">
+                          <button
+                            id="deleteValuation"
+                            *ngIf="!isReadOpenMode && selectedValuation.length > 0"
+                            type="button"
+                            mat-raised-button
+                            color="warn"
+                            (click)="deleteValuation()"
+                          >
+                            {{ "global.delete" | translate }}
+                          </button>
+
+                          <button
+                            id="editValuation"
+                            *ngIf="!isReadOpenMode && selectedValuation.length === 1"
+                            type="button"
+                            mat-raised-button
+                            (click)="editValuation()"
+                          >
+                            {{ "global.edit" | translate }}
+                          </button>
+
+                          <button
+                            id="openValuation"
+                            *ngIf="!isReadOpenMode && selectedValuation.length === 1"
+                            type="button"
+                            mat-raised-button
+                            (click)="openValuation()"
+                          >
+                            {{ "global.open" | translate }}
+                          </button>
+                          <button
+                            id="addValuation"
+                            *ngIf="!isReadOpenMode && selectedValuation.length === 0"
+                            type="button"
+                            mat-raised-button
+                            (click)="addValuation()"
+                          >
+                            {{ "global.add" | translate }}
+                          </button>
+                        </div>
+                      </div>
+                    </ng-template>
+
+                    <ng-template pTemplate="colgroup" let-columns>
+                      <colgroup>
+                        <col class="aw-table-checkbox-wrapper" />
+                        <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                      </colgroup>
+                    </ng-template>
+
+                    <ng-template pTemplate="header" let-columns>
+                      <tr>
+                        <th class="aw-table-checkbox-wrapper">
+                          <p-tableHeaderCheckbox class="aw-table-checkbox"></p-tableHeaderCheckbox>
+                        </th>
+
+                        <th pResizableColumn *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                          {{ componentData.componentId + "." + col.field | translate }}
+                        </th>
+                      </tr>
+                    </ng-template>
+
+                    <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                      <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                        <td class="aw-table-checkbox-wrapper">
+                          <p-tableCheckbox class="aw-table-checkbox" [value]="rowData"></p-tableCheckbox>
+                        </td>
+                        <td
+                          *ngFor="let col of columns"
+                          [ngSwitch]="col.field"
+                          [ngStyle]="{ 'text-align': col.alignment }"
+                        >
+                          {{ rowData[col.field] }}
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </div>
+              </div>
+            </div>
+
+            <div id="customerEvolutionTablePanel" class="grid-cell--6">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 id="customerEvolutionTableTitle" class="grid-cell-title">
+                      {{ componentData.componentId + ".suppliers" | translate }}
+                      ({{ supplierTable ? supplierTable.length : 0 }})
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <p-table
+                    id="customerEvolutionTable"
+                    [resizableColumns]="true"
+                    #ptableSuppliers
+                    class="aw-table2"
+                    [columns]="suppliersTableCols"
+                    [value]="supplierTable"
+                    [(selection)]="selectedSuppliers"
+                    dataKey="dataId"
+                    [scrollable]="true"
+                  >
+                    <ng-template pTemplate="emptymessage">
+                      <span *ngIf="!isLoading"> &nbsp;</span>
+
+                      <div *ngIf="isLoading" class="aw-table-loading-indicator">
+                        <div class="loading-message">{{ "table.loadingData" | translate }}</div>
+                        <div class="lds-hourglass"></div>
+                      </div>
+                    </ng-template>
+
+                    <ng-template pTemplate="caption">
+                      <div class="aw-table-header" [ngClass]="{ 'rows-selected': selectedSuppliers.length > 0 }">
+                        <div class="aw-table-global-filter">
+                          <label class="aw-table-global-filter-label">
+                            <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                          </label>
+
+                          <input
+                            #ptableSuppliersGlobalFilter
+                            class="aw-table-global-filter-input"
+                            type="text"
+                            placeholder="{{ 'table.globalFilterText' | translate }}"
+                            (input)="ptableSuppliers.filterGlobal($event.target.value, 'contains')"
+                          />
+                        </div>
+
+                        <div class="aw-table-actions">
+                          <button
+                            id="deleteSupplier"
+                            *ngIf="!isReadOpenMode && selectedSuppliers.length > 0"
+                            type="button"
+                            mat-raised-button
+                            color="warn"
+                            (click)="deleteSupplier()"
+                          >
+                            {{ "global.delete" | translate }}
+                          </button>
+
+                          <button
+                            id="editSupplier"
+                            *ngIf="!isReadOpenMode && selectedSuppliers.length === 1"
+                            type="button"
+                            mat-raised-button
+                            (click)="editSupplier()"
+                          >
+                            {{ "global.edit" | translate }}
+                          </button>
+                          <button
+                            id="openSupplier"
+                            *ngIf="!isReadOpenMode && selectedSuppliers.length === 1"
+                            type="button"
+                            mat-raised-button
+                            (click)="openSupplier()"
+                          >
+                            {{ "global.open" | translate }}
+                          </button>
+                          <button
+                            id="addSupplier"
+                            *ngIf="!isReadOpenMode && selectedSuppliers.length === 0"
+                            type="button"
+                            mat-raised-button
+                            (click)="addSupplier()"
+                          >
+                            {{ "global.add" | translate }}
+                          </button>
+                        </div>
+                      </div>
+                    </ng-template>
+
+                    <ng-template pTemplate="colgroup" let-columns>
+                      <colgroup>
+                        <col class="aw-table-checkbox-wrapper" />
+                        <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                      </colgroup>
+                    </ng-template>
+
+                    <ng-template pTemplate="header" let-columns>
+                      <tr>
+                        <th class="aw-table-checkbox-wrapper">
+                          <p-tableHeaderCheckbox class="aw-table-checkbox"></p-tableHeaderCheckbox>
+                        </th>
+
+                        <th pResizableColumn *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                          {{ componentData.componentId + "." + col.field | translate }}
+                        </th>
+                      </tr>
+                    </ng-template>
+
+                    <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                      <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                        <td class="aw-table-checkbox-wrapper">
+                          <p-tableCheckbox class="aw-table-checkbox" [value]="rowData"></p-tableCheckbox>
+                        </td>
+
+                        <td
+                          *ngFor="let col of columns"
+                          [ngSwitch]="col.field"
+                          [ngStyle]="{ 'text-align': col.alignment }"
+                        >
+                          <a *ngSwitchCase="'supplierName'" (click)="openBussinerPartnerForm(rowData)">
+                            {{ rowData[col.field] }}
+                          </a>
+                          <span *ngSwitchDefault> {{ rowData[col.field] }} </span>
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </div>
+              </div>
+            </div>
+            <div class="grid-cell--3">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 *ngIf="isMaterialContainer()" class="grid-cell-title">
+                      {{ componentData.componentId + ".pnContent" | translate }}
+                      ({{ containerTable ? containerTable.length : 0 }})
+                    </h3>
+                    <h3 *ngIf="!isMaterialContainer()" class="grid-cell-title">
+                      {{ componentData.componentId + ".pnContainer" | translate }}
+                      ({{ containerTable ? containerTable.length : 0 }})
+                    </h3>
+                  </div>
+                </div>
+                <div class="grid-cell-content">
+                  <p-table
+                    id="containerTable"
+                    [resizableColumns]="true"
+                    #ptableContainer
+                    class="aw-table2"
+                    [columns]="containerTableCols"
+                    [value]="containerTable"
+                    [(selection)]="selectedContainer"
+                    [scrollable]="true"
+                  >
+                    <ng-template pTemplate="caption">
+                      <div class="aw-table-header" [ngClass]="{ 'rows-selected': selectedContainer.length > 0 }">
+                        <div class="aw-table-global-filter">
+                          <label class="aw-table-global-filter-label">
+                            <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                          </label>
+
+                          <input
+                            #ptableContainersGlobalFilter
+                            class="aw-table-global-filter-input"
+                            type="text"
+                            placeholder="{{ 'table.globalFilterText' | translate }}"
+                            (input)="ptableContainer.filterGlobal($event.target.value, 'contains')"
+                          />
+                        </div>
+
+                        <div class="aw-table-actions">
+                          <button
+                            id="deleteContainer"
+                            *ngIf="!isReadOpenMode && selectedContainer.length > 0"
+                            type="button"
+                            mat-raised-button
+                            color="warn"
+                            (click)="deleteContainer()"
+                          >
+                            {{ "global.delete" | translate }}
+                          </button>
+
+                          <button
+                            id="editContainer"
+                            *ngIf="!isReadOpenMode && selectedContainer.length === 1"
+                            type="button"
+                            mat-raised-button
+                            (click)="editContainer()"
+                          >
+                            {{ "global.edit" | translate }}
+                          </button>
+                          <button
+                            id="openContainer"
+                            *ngIf="selectedContainer.length === 1"
+                            type="button"
+                            mat-raised-button
+                            (click)="openContainer()"
+                          >
+                            {{ "global.open" | translate }}
+                          </button>
+                          <button
+                            id="addContainer"
+                            *ngIf="!isReadOpenMode && selectedContainer.length === 0"
+                            type="button"
+                            mat-raised-button
+                            (click)="addContainer()"
+                          >
+                            {{ "global.add" | translate }}
+                          </button>
+                        </div>
+                      </div>
+                    </ng-template>
+
+                    <ng-template pTemplate="colgroup" let-columns>
+                      <colgroup>
+                        <col class="aw-table-checkbox-wrapper" />
+                        <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                      </colgroup>
+                    </ng-template>
+
+                    <ng-template pTemplate="header" let-columns>
+                      <tr>
+                        <th class="aw-table-checkbox-wrapper">
+                          <p-tableHeaderCheckbox class="aw-table-checkbox"></p-tableHeaderCheckbox>
+                        </th>
+
+                        <th pResizableColumn *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                          {{ componentData.componentId + "." + col.field | translate }}
+                        </th>
+                      </tr>
+                    </ng-template>
+
+                    <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                      <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                        <td class="aw-table-checkbox-wrapper">
+                          <p-tableCheckbox class="aw-table-checkbox" [value]="rowData"></p-tableCheckbox>
+                        </td>
+
+                        <td
+                          *ngFor="let col of columns"
+                          [ngSwitch]="col.field"
+                          [ngStyle]="{ 'text-align': col.alignment }"
+                        >
+                          {{ rowData[col.field] }}
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+        <mat-tab>
+          <ng-template mat-tab-label>
+            {{ componentData.componentId + ".furtherInformation" | translate }}
+          </ng-template>
+
+          <div class="grid-row">
+            <div id="furtherInformationPanel" class="grid-cell--12">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ componentData.componentId + ".furtherInformation" | translate }}
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <div class="column">
+                    <div class="row">
+                      <div class="form-group">
+                        <label class="form-label">{{ componentData.componentId + ".avgPrice" | translate }}</label>
+                        <div class="form-control">
+                          <input
+                            type="text"
+                            (ngModelChange)="materialFieldData.averagePrice = $event"
+                            [ngModel]="materialFieldData.averagePrice"
+                            class="aw-input"
+                            style="width:65%"
+                            maxlength="15"
+                            [disabled]="isReadOpenMode"
+                          />
+                          <span style="width:35%;padding-top:1em; float:right">{{ priceCurrency }}</span>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label">{{ componentData.componentId + ".avgPriceUnit" | translate }}</label>
+                        <div class="form-control">
+                          <p-dropdown
+                            class="aw-dropdown fixed-width"
+                            [options]="unitOfIssueOptions"
+                            [(ngModel)]="materialFieldData.unitOfIssue"
+                            [showClear]="true"
+                            placeholder="&nbsp;"
+                            [disabled]="isReadOpenMode"
+                            appendTo="body"
+                          ></p-dropdown>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label">{{ componentData.componentId + ".quantity" | translate }}</label>
+                        <div class="form-control">
+                          <input
+                            type="text"
+                            (ngModelChange)="materialFieldData.quantityPerIssue = $event"
+                            [ngModel]="materialFieldData.quantityPerIssue | number: '1.0-2'"
+                            class="aw-input"
+                            maxlength="15"
+                            [disabled]="isReadOpenMode"
+                          />
+                        </div>
+                      </div>
+
+                      <div id="accounting" class="form-group">
+                        <label class="form-label">{{ componentData.componentId + ".accounting" | translate }}</label>
+
+                        <div class="form-control">
+                          <input
+                            type="text"
+                            class="aw-input"
+                            maxlength="50"
+                            [(ngModel)]="materialFieldData.accounting"
+                            [disabled]="isReadOpenMode"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div id="mtbf" class="form-group">
+                        <label class="form-label">{{ componentData.componentId + ".mtbf" | translate }}</label>
+
+                        <div class="form-control">
+                          <input
+                            type="text"
+                            class="aw-input inputs-with-unit"
+                            [(ngModel)]="materialFieldData.mtbf"
+                            maxlength="15"
+                            [disabled]="isReadOpenMode"
+                          />
+                          <span class="units">{{ mtbfAndMtburUnit }}</span>
+                        </div>
+                      </div>
+                      <div id="mtbur" class="form-group">
+                        <label class="form-label">{{ componentData.componentId + ".mtbur" | translate }}</label>
+
+                        <div class="form-control">
+                          <input
+                            type="text"
+                            class="aw-input inputs-with-unit"
+                            [(ngModel)]="materialFieldData.mtbur"
+                            maxlength="15"
+                            [disabled]="isReadOpenMode"
+                          />
+                          <span class="units">{{ mtbfAndMtburUnit }}</span>
+                        </div>
+                      </div>
+                      <div id="netWeight" class="form-group">
+                        <label class="form-label">{{ componentData.componentId + ".netWeight" | translate }}</label>
+
+                        <div class="form-control">
+                          <input
+                            type="text"
+                            class="aw-input inputs-with-unit"
+                            [(ngModel)]="materialFieldData.netWeight"
+                            maxlength="15"
+                            [disabled]="isReadOpenMode"
+                          />
+                          <span class="units">{{ weightUnit }}</span>
+                        </div>
+                      </div>
+                      <div id="packedWeight" class="form-group">
+                        <label class="form-label">{{ componentData.componentId + ".packedWeight" | translate }}</label>
+
+                        <div class="form-control">
+                          <input
+                            type="text"
+                            class="aw-input inputs-with-unit"
+                            [(ngModel)]="materialFieldData.packedWeight"
+                            maxlength="15"
+                            [disabled]="isReadOpenMode"
+                          />
+                          <span class="units">{{ weightUnit }}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div id="unpackedHeight" class="form-group">
+                        <label class="form-label">{{
+                          componentData.componentId + ".unpackedHeight" | translate
+                        }}</label>
+
+                        <div class="form-control">
+                          <input
+                            type="text"
+                            class="aw-input inputs-with-unit"
+                            [(ngModel)]="materialFieldData.unpackedHeight"
+                            maxlength="15"
+                            [disabled]="isReadOpenMode"
+                          />
+                          <span class="units">{{ measurementsUnit }}</span>
+                        </div>
+                      </div>
+                      <div id="unpackedLength" class="form-group">
+                        <label class="form-label">{{
+                          componentData.componentId + ".unpackedLength" | translate
+                        }}</label>
+
+                        <div class="form-control">
+                          <input
+                            type="text"
+                            class="aw-input inputs-with-unit"
+                            [(ngModel)]="materialFieldData.unpackedLength"
+                            maxlength="15"
+                            [disabled]="isReadOpenMode"
+                          />
+                          <span class="units">{{ measurementsUnit }}</span>
+                        </div>
+                      </div>
+                      <div id="unpackedWidth" class="form-group">
+                        <label class="form-label">{{ componentData.componentId + ".unpackedWidth" | translate }}</label>
+
+                        <div class="form-control">
+                          <input
+                            type="text"
+                            class="aw-input inputs-with-unit"
+                            [(ngModel)]="materialFieldData.unpackedWidth"
+                            maxlength="15"
+                            [disabled]="isReadOpenMode"
+                          />
+                          <span class="units">{{ measurementsUnit }}</span>
+                        </div>
+                      </div>
+
+                      <div id="hasExpirationDate" class="form-group">
+                        <label class="form-label">{{
+                          componentData.componentId + ".hasExpirationDate" | translate
+                        }}</label>
+
+                        <div class="form-control">
+                          <p-checkbox
+                            class="aw-checkbox"
+                            binary="true"
+                            [(ngModel)]="materialFieldData.hasExpirationDate"
+                            [disabled]="isReadOpenMode"
+                          ></p-checkbox>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-row">
+            <div id="supplyConversionTablePanel" class="grid-cell--12">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ componentData.componentId + ".supplyConversionTable" | translate }}
+                      ({{ supplyConversionTable ? supplyConversionTable.length : 0 }})
+                    </h3>
+                  </div>
+                </div>
+                <div class="grid-cell-content">
+                  <p-table
+                    id="supplyConversionTable"
+                    [resizableColumns]="true"
+                    #ptableSupplyConversion
+                    class="aw-table2"
+                    [columns]="supplyConversionTableCols"
+                    [value]="supplyConversionTable"
+                    [(selection)]="selectedSupplyConversion"
+                    [scrollable]="true"
+                  >
+                    <ng-template pTemplate="caption">
+                      <div class="aw-table-header" [ngClass]="{ 'rows-selected': selectedSupplyConversion.length > 0 }">
+                        <div class="aw-table-global-filter">
+                          <label class="aw-table-global-filter-label">
+                            <i class="fa fa-fw fa-search" aria-hidden="true"></i>
+                          </label>
+
+                          <input
+                            #ptableSupplyConversionGlobalFilter
+                            class="aw-table-global-filter-input"
+                            type="text"
+                            placeholder="{{ 'table.globalFilterText' | translate }}"
+                            (input)="ptableSupplyConversion.filterGlobal($event.target.value, 'contains')"
+                          />
+                        </div>
+
+                        <div class="aw-table-actions">
+                          <button
+                            id="deleteSupplyConversion"
+                            *ngIf="!isReadOpenMode && selectedSupplyConversion.length > 0"
+                            type="button"
+                            mat-raised-button
+                            color="warn"
+                            (click)="deleteSupplyConversion()"
+                          >
+                            {{ "global.delete" | translate }}
+                          </button>
+
+                          <button
+                            id="editSupplyConversion"
+                            *ngIf="!isReadOpenMode && selectedSupplyConversion.length === 1"
+                            type="button"
+                            mat-raised-button
+                            (click)="editSupplyConversion()"
+                          >
+                            {{ "global.edit" | translate }}
+                          </button>
+                          <button
+                            id="openSupplyConversion"
+                            *ngIf="selectedSupplyConversion.length === 1"
+                            type="button"
+                            mat-raised-button
+                            (click)="openSupplyConversion()"
+                          >
+                            {{ "global.open" | translate }}
+                          </button>
+                          <div
+                            class="hover-div"
+                            pTooltip="{{ componentData.componentId + '.addHover' | translate }}"
+                            [tooltipDisabled]="enableUnitOfIssue"
+                            tooltipPosition="top"
+                          >
+                            <button
+                              id="addSupplyConversion"
+                              *ngIf="!isReadOpenMode && selectedSupplyConversion.length === 0"
+                              type="button"
+                              mat-raised-button
+                              (click)="addSupplyConversion()"
+                              [disabled]="!enableUnitOfIssue"
+                            >
+                              {{ "global.add" | translate }}
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </ng-template>
+
+                    <ng-template pTemplate="colgroup" let-columns>
+                      <colgroup>
+                        <col class="aw-table-checkbox-wrapper" />
+                        <col *ngFor="let col of columns" [ngStyle]="{ width: col.width }" />
+                      </colgroup>
+                    </ng-template>
+
+                    <ng-template pTemplate="header" let-columns>
+                      <tr>
+                        <th class="aw-table-checkbox-wrapper">
+                          <p-tableHeaderCheckbox class="aw-table-checkbox"></p-tableHeaderCheckbox>
+                        </th>
+
+                        <th pResizableColumn *ngFor="let col of columns" [ngStyle]="{ 'text-align': col.alignment }">
+                          {{ componentData.componentId + "." + col.field | translate }}
+                        </th>
+                      </tr>
+                    </ng-template>
+
+                    <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                      <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex">
+                        <td class="aw-table-checkbox-wrapper">
+                          <p-tableCheckbox class="aw-table-checkbox" [value]="rowData"></p-tableCheckbox>
+                        </td>
+
+                        <td
+                          *ngFor="let col of columns"
+                          [ngSwitch]="col.field"
+                          [ngStyle]="{ 'text-align': col.alignment }"
+                        >
+                          {{ rowData[col.field] }}
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+        <mat-tab *ngIf="dynamicAttributes && dynamicAttributes.length">
+          <ng-template mat-tab-label>
+            {{ "attributes" | translate }}
+          </ng-template>
+
+          <div class="grid-row">
+            <div id="attributesPanel" class="grid-cell--12">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ componentData.componentId + ".tabAttributes" | translate }}
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content grid-cell-content-with-section">
+                  <aw-dynamic-attributes
+                    id="dynamicAttributes"
+                    [attributes]="dynamicAttributes"
+                    [workflowControls]="userWorkflow ? userWorkflow.listControlByIdentifier : []"
+                    [isReadOpenMode]="isReadOpenMode"
+                  ></aw-dynamic-attributes>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+  </div>
+
+  <aw-assign-warehouse-popup-form
+    *ngIf="showWarehousePopup"
+    [(display)]="showWarehousePopup"
+    [warehouseDetail]="currentWarehouse"
+    [openMode]="warehouseDialogOpenMode"
+    (onValidated)="onAddWarehouse($event)"
+  ></aw-assign-warehouse-popup-form>
+  <aw-status-update-history
+    *ngIf="showStatusUpdatesPopup"
+    [object]="pnStatus"
+    [data]="tableStatusUpdatesData"
+    [deleteApi]="deleteApi"
+    [isStatusEditable]="false"
+    [(display)]="showStatusUpdatesPopup"
+    [keyMap]="updatesKeyMap"
+    (onUpdated)="updateObjectStatusFromStatusUpdatesHistory($event)"
+  ></aw-status-update-history>
+  <aw-assign-supplier-popup-form
+    *ngIf="showSupplierPopup"
+    [(display)]="showSupplierPopup"
+    [supplierDetail]="currentSupplier"
+    [priceCurrency]="priceCurrency"
+    [openMode]="supplierDialogOpenMode"
+    [serviceType]="serviceType"
+    (onValidated)="onAddSupplier($event)"
+  ></aw-assign-supplier-popup-form>
+  <aw-assign-valuation-popup-form
+    *ngIf="showValuationPopup"
+    [(display)]="showValuationPopup"
+    [valuationDetail]="currentValuation"
+    [priceCurrency]="priceCurrency"
+    [openMode]="valuationDialogOpenMode"
+    (onValidated)="onAddValuation($event)"
+  ></aw-assign-valuation-popup-form>
+  <aw-assign-alternative-popup-form
+    *ngIf="showAlternativePopup"
+    [(display)]="showAlternativePopup"
+    [alternativeDetail]="currentAlternative"
+    [pnCode]="materialFieldData.pnCode"
+    [openMode]="alternativeDialogOpenMode"
+    (onValidated)="onAddAlternative($event)"
+  ></aw-assign-alternative-popup-form>
+  <aw-assign-container-popup-form
+    *ngIf="showContainerPopup"
+    [(display)]="showContainerPopup"
+    [containerDetail]="currentContainer"
+    [openMode]="containerDialogOpenMode"
+    [pnType]="materialFieldData.pnType"
+    (onValidated)="onAddContainer($event)"
+  ></aw-assign-container-popup-form>
+  <aw-assign-supply-conversion-popup-form
+    *ngIf="showSupplyConversionPopup"
+    [(display)]="showSupplyConversionPopup"
+    [pnCode]="materialFieldData.pnCode"
+    [supplyConversionDetail]="currentSupplyConversion"
+    [unitOfIssueOptions]="unitOfIssueOptions"
+    [openMode]="supplyConversionDialogOpenMode"
+    [supplyUnit]="materialFieldData.unitOfIssue"
+    (onValidated)="onAddSupplyConversion($event)"
+  ></aw-assign-supply-conversion-popup-form>
+
+  <aw-procurement-request-popup
+    *ngIf="createProcurementDialogVisible"
+    [(display)]="createProcurementDialogVisible"
+    [pn]="materialFieldData"
+    (onValidate)="onCreateProcurementRequest($event)"
+  >
+  </aw-procurement-request-popup>
+</div>

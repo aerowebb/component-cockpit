@@ -1,0 +1,60 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".title" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="search-dialog-container">
+      <div class="section results-section">
+        <div class="section-content">
+          <a-table [dataSource]="usageHistoryTableDataSource">
+            <ng-template columnDef="usageValueH" let-rowData="rowData">
+              <input
+                *ngIf="rowData.usageValueHEdit"
+                pInputText
+                style="width: 50%"
+                type="number"
+                maxlength="100"
+                [(ngModel)]="rowData.usageValueH"
+              />
+              <span *ngIf="!rowData.usageValueHEdit"> {{ rowData.usageValueH }} </span>
+              <i
+                class="fa fa-fw fa-pencil"
+                aria-hidden="true"
+                pTooltip="{{ 'global.edit' | translate }}"
+                tooltipPosition="top"
+                (click)="rowData.usageValueHEdit = !rowData.usageValueHEdit"
+              ></i>
+            </ng-template>
+            <ng-template columnDef="usageValueC" let-rowData="rowData">
+              <input
+                *ngIf="rowData.usageValueCEdit"
+                pInputText
+                style="width: 50%"
+                type="number"
+                maxlength="100"
+                [(ngModel)]="rowData.usageValueC"
+              />
+              <span *ngIf="!rowData.usageValueCEdit"> {{ rowData.usageValueC }} </span>
+              <i
+                class="fa fa-fw fa-pencil "
+                aria-hidden="true"
+                pTooltip="{{ 'global.edit' | translate }}"
+                tooltipPosition="top"
+                (click)="rowData.usageValueCEdit = !rowData.usageValueCEdit"
+              ></i>
+            </ng-template>
+          </a-table>
+        </div>
+      </div>
+    </div>
+  </a-content>
+  <a-footer>
+    <button type="button" mat-raised-button (click)="closeDialog()">
+      <span>{{ "global.cancel" | translate }}</span>
+    </button>
+    <button type="button" mat-raised-button color="primary" (click)="validate()">
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>

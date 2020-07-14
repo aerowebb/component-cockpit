@@ -1,0 +1,30 @@
+:host {
+  .search-panel-container {
+    align-items: flex-end;
+    border-bottom: 1px dashed #bdbdbd;
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 10px;
+
+    .search-criteria-container {
+      display: flex;
+      flex-direction: row;
+      flex-grow: 1;
+      flex-wrap: wrap;
+      padding-right: 40px;
+
+      .form-group {
+        min-width: 10rem;
+        width: 15rem;
+
+        &:last-of-type {
+          margin-right: 0;
+        }
+      }
+    }
+
+    .search-button-container {
+      padding-bottom: 16px;
+    }
+  }
+}

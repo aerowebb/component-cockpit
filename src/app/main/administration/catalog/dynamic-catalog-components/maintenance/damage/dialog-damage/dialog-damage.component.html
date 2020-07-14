@@ -1,0 +1,61 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".title" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="form-group required">
+      <label class="form-label">{{ getComponentName() + ".damageCode" | translate }}</label>
+      <div class="form-control">
+        <input
+          type="text"
+          name="returnReasonCode"
+          [(ngModel)]="bireDamageDTO.damageCode"
+          class="aw-input"
+          maxlength="50"
+          [disabled]="isReadOpenMode || !isCreateOpenMode"
+          required
+        />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">{{ getComponentName() + ".damageDescription" | translate }}</label>
+      <div class="form-control">
+        <textarea
+          class="aw-textarea"
+          [rows]="3"
+          pInputTextarea
+          [(ngModel)]="bireDamageDTO.damageDescription"
+          [disabled]="isReadOpenMode"
+          maxlength="1000"
+        ></textarea>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">{{ getComponentName() + ".unitCode" | translate }}</label>
+      <div class="form-control">
+        <p-dropdown
+          class="aw-dropdown fixed-width"
+          appendTo="body"
+          [showClear]="true"
+          placeholder="&nbsp;"
+          [options]="unitCodeList"
+          [disabled]="isReadOpenMode"
+          [(ngModel)]="bireDamageDTO.unitCode"
+        ></p-dropdown>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button *ngIf="isReadOpenMode" type="button" mat-raised-button (click)="closeDialog()">
+      {{ "global.close" | translate }}
+    </button>
+    <button type="button" mat-raised-button (click)="closeDialog()">{{ "global.cancel" | translate }}</button>
+    <button type="button" mat-raised-button color="primary" (click)="validate()" [disabled]="!bireDamageDTO.damageCode">
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>

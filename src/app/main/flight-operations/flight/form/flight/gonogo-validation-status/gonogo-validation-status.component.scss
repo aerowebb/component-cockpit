@@ -1,0 +1,25 @@
+@import "constants";
+
+:host {
+  .action-list {
+    .aw-btn {
+      margin-left: $margin-value;
+
+      &:first-of-type {
+        margin-left: 0;
+      }
+    }
+  }
+
+  .data {
+    & > .form-group {
+      &:first-of-type {
+        max-width: 4.5rem;
+      }
+
+      &:nth-of-type(2) {
+        max-width: 10.5rem;
+      }
+    }
+  }
+}

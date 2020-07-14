@@ -1,0 +1,108 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".title" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="column">
+      <div class="row">
+        <div class="form-group" [ngClass]="{ required: !isReadOpenMode }">
+          <label class="form-label">{{ getComponentName() + ".itemGroup" | translate }}</label>
+
+          <div class="form-control form-control-with-modal" [ngClass]="{ disabled: isReadOpenMode }">
+            <div class="form-control-data" (click)="openItemTableDialog()">
+              {{ item.chapter }} <span *ngIf="item.section">- {{ item.section }}</span>
+              <span *ngIf="item.subject">- {{ item.subject }}</span> <span *ngIf="item.sheet">- {{ item.sheet }}</span>
+              <span *ngIf="item.marks">- {{ item.marks }}</span>
+            </div>
+
+            <div
+              *ngIf="item.chapter && item.section && item.subject && item.sheet && item.marks"
+              class="btn-clear-wrapper"
+            >
+              <i
+                class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+                aria-hidden="true"
+                (click)="
+                  item.chapter = undefined;
+                  item.section = undefined;
+                  item.subject = undefined;
+                  item.sheet = undefined;
+                  item.marks = undefined;
+                  item.versionNumber = undefined
+                "
+              ></i>
+            </div>
+            <div class="btn-search-wrapper">
+              <i class="fa fa-fw fa-search aw-icon btn-search" aria-hidden="true" (click)="openItemTableDialog()"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group required">
+          <label class="form-label">{{ getComponentName() + ".versionNumber" | translate }} </label>
+
+          <div class="form-control">
+            <p-dropdown
+              class="aw-dropdown fixed-width"
+              [options]="versions"
+              [(ngModel)]="item.versionNumber"
+              [disabled]="isReadOnlyForm || !item.chapter"
+              [showClear]="true"
+              placeholder="&nbsp;"
+              (onClick)="checkFamilyVariantAndItem()"
+              appendTo="body"
+            ></p-dropdown>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group required">
+          <label class="form-label">{{ getComponentName() + ".taskItemTypeCode" | translate }}</label>
+
+          <div class="form-control">
+            <p-dropdown
+              class="aw-dropdown fixed-width"
+              [options]="linkTypes"
+              [(ngModel)]="item.taskItemTypeCode"
+              [disabled]="isReadOnlyForm"
+              [showClear]="true"
+              placeholder="&nbsp;"
+              appendTo="body"
+            ></p-dropdown>
+          </div>
+        </div>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button *ngIf="isReadOpenMode" type="button" mat-raised-button (click)="cancel()">
+      <span>{{ "global.close" | translate }}</span>
+    </button>
+
+    <button *ngIf="!isReadOpenMode" type="button" mat-raised-button (click)="cancel()">
+      <span>{{ "global.cancel" | translate }}</span>
+    </button>
+
+    <button
+      *ngIf="!isReadOpenMode"
+      color="primary"
+      type="button"
+      mat-raised-button
+      (click)="add()"
+      [disabled]="!isValidItem()"
+    >
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>
+
+<aw-dialog-search-item
+  *ngIf="showItemTableDialog"
+  [(display)]="showItemTableDialog"
+  (onValidated)="onSelectedItem($event)"
+></aw-dialog-search-item>

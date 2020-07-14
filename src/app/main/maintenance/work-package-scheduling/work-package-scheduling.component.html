@@ -1,0 +1,49 @@
+<div class="page-header">
+  <div class="page-info">
+    <div>
+      <div class="page-title">
+        {{ "transaction." + componentData.componentId | translate }}
+      </div>
+    </div>
+  </div>
+
+  <div class="page-actions">
+    <button
+      id="actions"
+      mat-icon-button
+      class="mat-elevation-z1"
+      matTooltip="{{ 'global.showAllActionTooltip' | translate }}"
+      matTooltipPosition="above"
+      aria-label="Show all actions"
+      [matMenuTriggerFor]="actions"
+    >
+      <mat-icon>more_horiz</mat-icon>
+    </button>
+
+    <mat-menu #actions="matMenu">
+      <button type="button" mat-menu-item (click)="reloadData()">
+        {{ "global.refresh" | translate }}
+      </button>
+
+      <button id="favorites" mat-menu-item (click)="updateFavoriteState()">
+        {{ (isFavoriteEntry ? "page.removeFromFavorites" : "page.addToFavorites") | translate }}
+      </button>
+    </mat-menu>
+  </div>
+</div>
+<div class="page-wrapper">
+  <div class="page-container search-page-container">
+    <div class="page-content">
+      <div class="grid-row">
+        <aw-work-scheduling
+          [firstColumnName]="'projectNumber'"
+          [workPackageStatusList]="statusList"
+          [tableData]="treeTable"
+          [isTableLoading]="isTableLoading"
+          (onRowClick)="openWorkPackageDetail($event)"
+          [ngStyle]="{ width: '100%' }"
+        ></aw-work-scheduling>
+      </div>
+    </div>
+  </div>
+</div>

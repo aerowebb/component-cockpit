@@ -1,0 +1,28 @@
+:host {
+  .search-panel-container {
+    align-items: center;
+    border-bottom: 1px dashed #bdbdbd;
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 10px;
+
+    .search-criteria-container {
+      display: flex;
+      flex-direction: row;
+      flex-grow: 1;
+      flex-wrap: wrap;
+      padding-right: 40px;
+
+      .form-group {
+        margin-right: 20px;
+        max-width: 15rem;
+        min-width: 10rem;
+        width: 20%;
+
+        &:last-of-type {
+          margin-right: 0;
+        }
+      }
+    }
+  }
+}

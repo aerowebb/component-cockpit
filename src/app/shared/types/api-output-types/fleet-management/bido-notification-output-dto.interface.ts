@@ -1,0 +1,29 @@
+export interface BidoNotificationOutputDTO {
+  notificationCode?: string;
+  asset?: string;
+  typeCode?: string;
+  equipmentCode?: string;
+  equipmentFunction?: string;
+  notificationSubject?: string;
+  notificationRemarks?: string;
+  notificationStatusVisibility?: boolean;
+  reportingPeriodStartDate?: string;
+  reportingPeriodEndDate?: string;
+  reportingDate?: string;
+  status?: string;
+  isDeduced?: boolean;
+  hasFmd?: boolean;
+  notNotificationCode?: string;
+  eventCause?: string;
+  pnCode?: string;
+  snCode?: string;
+  operationalStatus?: string;
+  linkedEventCode?: string;
+  currentTSNValue?: number;
+  currentCSNValue?: number;
+  fmdReference?: string;
+  fmdFaceReference?: string;
+  removeFmdVisibility?: boolean;
+  enableFmdButton?: boolean;
+  _expand?: boolean;
+}

@@ -1,0 +1,85 @@
+<a-modal class="aw-modal" [(visible)]="display">
+  <a-header>
+    <div class="modal-title">{{ getComponentName() + ".title" | translate }}</div>
+  </a-header>
+
+  <a-content>
+    <div class="form-group required">
+      <label class="form-label">{{ getComponentName() + ".codeName" | translate }}</label>
+      <div class="form-control">
+        <p-dropdown
+          class="aw-dropdown fixed-width"
+          appendTo="body"
+          [options]="codeName"
+          [showClear]="true"
+          placeholder="&nbsp;"
+          [(ngModel)]="valuationGroup.valuationGroupCode"
+        ></p-dropdown>
+      </div>
+    </div>
+    <div class="form-group required">
+      <label class="form-label">{{ getComponentName() + ".name" | translate }}</label>
+      <div class="form-control">
+        <input type="text" class="aw-input" [(ngModel)]="valuationGroup.valuationGroupName" maxlength="100" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">{{ getComponentName() + ".minValue" | translate }}</label>
+      <div class="form-control">
+        <input
+          #rangeValueMin="ngModel"
+          type="text"
+          [pKeyFilter]="inputValidationService.validatorOfMoney()"
+          [pValidateOnly]="true"
+          maxlength="18"
+          class="aw-input"
+          [(ngModel)]="valuationGroup.rangeValueMin"
+        />
+        <p-message
+          *ngIf="rangeValueMin.invalid && (rangeValueMin.dirty || rangeValueMin.touched)"
+          severity="error"
+          [text]="inputValidationService.formatOfMoney()"
+        ></p-message>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">{{ getComponentName() + ".maxValue" | translate }}</label>
+      <div class="form-control">
+        <input
+          #rangeValueMax="ngModel"
+          type="text"
+          [pKeyFilter]="inputValidationService.validatorOfMoney()"
+          [pValidateOnly]="true"
+          maxlength="18"
+          class="aw-input"
+          [(ngModel)]="valuationGroup.rangeValueMax"
+        />
+        <p-message
+          *ngIf="rangeValueMax.invalid && (rangeValueMax.dirty || rangeValueMax.touched)"
+          severity="error"
+          [text]="inputValidationService.formatOfMoney()"
+        ></p-message>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">{{ getComponentName() + ".unitCode" | translate }}</label>
+      <div class="form-control">
+        <p-dropdown
+          class="aw-dropdown fixed-width"
+          appendTo="body"
+          [options]="unitCode"
+          [showClear]="true"
+          placeholder="&nbsp;"
+          [(ngModel)]="unitCodeSelected"
+        ></p-dropdown>
+      </div>
+    </div>
+  </a-content>
+
+  <a-footer>
+    <button type="button" mat-raised-button (click)="cancel()">{{ "global.cancel" | translate }}</button>
+    <button type="button" mat-raised-button color="primary" (click)="associate()" [disabled]="!enableAssociateButton()">
+      {{ "global.validate" | translate }}
+    </button>
+  </a-footer>
+</a-modal>

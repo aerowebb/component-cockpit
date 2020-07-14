@@ -1,0 +1,45 @@
+<div class="grid-cell-header">
+  <div class="grid-cell-title-container">
+    <h3 class="grid-cell-title">
+      <span>{{ getComponentName() + ".hums" | translate }}</span>
+    </h3>
+  </div>
+</div>
+
+<div class="grid-cell-content">
+  <div class="column">
+    <div class="row flex-row--justify-end">
+      <button id="sendFscHumsPanel" *ngIf="sendFscVisible" type="button" mat-raised-button (click)="sendFscToHums()">
+        {{ getComponentName() + ".sendFsc" | translate }}
+      </button>
+    </div>
+
+    <div class="row">
+      <div id="humsStatus" class="form-group">
+        <label class="form-label">
+          {{ getComponentName() + ".status" | translate }}
+        </label>
+
+        <div class="form-control">
+          <input type="text" class="aw-input" [(ngModel)]="humsStatus" [disabled]="isReadOpenMode" />
+        </div>
+      </div>
+
+      <div id="humsMessage" class="form-group">
+        <label class="form-label">
+          {{ getComponentName() + ".message" | translate }}
+        </label>
+
+        <div class="form-control">
+          <textarea
+            class="aw-textarea"
+            pInputTextarea
+            [rows]="3"
+            [(ngModel)]="humsMessage"
+            [disabled]="isReadOpenMode"
+          ></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

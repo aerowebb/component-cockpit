@@ -1,0 +1,328 @@
+<div class="page-header">
+  <div class="page-info">
+    <div>
+      <h2 class="page-title">
+        {{ "transaction." + componentData.componentId | translate }}
+      </h2>
+
+      <div class="page-subtitle" *ngIf="!isCreateOpenMode && componentData && componentData.objectId">
+        - {{ subTitle }}
+      </div>
+    </div>
+  </div>
+
+  <div class="page-actions">
+    <button *ngIf="isReadOpenMode && hasUpdateAccessRight" type="button" mat-raised-button (click)="editModification()">
+      {{ "global.edit" | translate }}
+    </button>
+    <button
+      *ngIf="!isReadOpenMode && !isCreateOpenMode"
+      color="warn"
+      type="button"
+      mat-raised-button
+      (click)="cancel()"
+    >
+      {{ "global.cancel" | translate }}
+    </button>
+    <button
+      *ngIf="!isReadOpenMode"
+      class="btn-with-spinner"
+      color="primary"
+      type="button"
+      mat-raised-button
+      (click)="save()"
+    >
+      <span class="lds-hourglass" *ngIf="showSaveSpinner"></span>
+      {{ "global.save" | translate }}
+    </button>
+    <button
+      mat-icon-button
+      class="mat-elevation-z1"
+      matTooltip="{{ 'global.showAllActionTooltip' | translate }}"
+      matTooltipPosition="above"
+      aria-label="Show all actions"
+      [matMenuTriggerFor]="actions"
+    >
+      <mat-icon>more_horiz</mat-icon>
+    </button>
+    <mat-menu #actions="matMenu">
+      <button
+        mat-menu-item
+        id="upgrade"
+        *ngIf="!isReadOpenMode && selectedModification.modificationRevisionNumber != null"
+        type="button"
+        (click)="upgradeModification()"
+      >
+        {{ "global.upgrade" | translate }}
+      </button>
+      <button mat-menu-item id="status" (click)="openStatusUpdatesPopup()">{{ "updates" | translate }}</button>
+      <button
+        mat-menu-item
+        id="refresh"
+        *ngIf="isReadOpenMode && componentData && componentData.objectId"
+        type="button"
+        (click)="refresh()"
+      >
+        {{ "global.refresh" | translate }}
+      </button>
+      <button mat-menu-item id="favorite" (click)="updateFavoriteState()">
+        {{ (isFavoriteEntry ? "page.removeFromFavorites" : "page.addToFavorites") | translate }}
+      </button>
+    </mat-menu>
+  </div>
+</div>
+
+<div class="page-wrapper">
+  <div class="page-container search-page-container">
+    <div class="page-content">
+      <mat-tab-group animationDuration="0ms" dynamicHeight>
+        <mat-tab>
+          <ng-template mat-tab-label>
+            {{ "home" | translate }}
+          </ng-template>
+          <div class="grid-row">
+            <div class="grid-cell--equally">
+              <div class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">{{ "page.mainData" | translate }}</h3>
+                  </div>
+                </div>
+                <div class="grid-cell-content">
+                  <div class="column">
+                    <div class="grid-row">
+                      <div class="form-group flex--2 required">
+                        <label class="form-label">{{ componentData.componentId + ".number" | translate }}</label>
+                        <div class="form-control">
+                          <input
+                            type="text"
+                            class="aw-input"
+                            [(ngModel)]="selectedModification.modificationNumber"
+                            maxlength="50"
+                            [disabled]="isReadOpenMode || !isCreateOpenMode"
+                          />
+                        </div>
+                      </div>
+
+                      <div class="form-group flex--2 required">
+                        <label class="form-label">{{
+                          componentData.componentId + ".revisionNumber" | translate
+                        }}</label>
+                        <div class="form-control">
+                          <input
+                            type="text"
+                            class="aw-input"
+                            [(ngModel)]="selectedModification.modificationRevisionNumber"
+                            maxlength="10"
+                            [disabled]="isReadOpenMode || !isCreateOpenMode"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div class="grid-row">
+                      <div class="form-group flex--2" [ngClass]="{ required: !isReadOpenMode }">
+                        <label class="form-label">{{ componentData.componentId + ".familyCode" | translate }}</label>
+                        <div class="form-control form-control-with-modal" [ngClass]="{ disabled: !isCreateOpenMode }">
+                          <div class="form-control-data" (click)="openFamilyPopup()">
+                            {{ selectedModification.familyCode }}
+                          </div>
+
+                          <div *ngIf="selectedModification.familyCode" class="btn-clear-wrapper">
+                            <i
+                              class="ui-dropdown-clear-icon pi pi-times aw-icon btn-clear"
+                              aria-hidden="true"
+                              (click)="resetFamilyCode()"
+                            ></i>
+                          </div>
+                          <div class="btn-search-wrapper">
+                            <i
+                              class="fa fa-fw fa-search aw-icon btn-search"
+                              aria-hidden="true"
+                              (click)="openFamilyPopup()"
+                            ></i>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="form-group flex--2">
+                        <label class="form-label">{{ componentData.componentId + ".structureType" | translate }}</label>
+                        <div class="form-control">
+                          <input
+                            type="text"
+                            class="aw-input"
+                            [(ngModel)]="selectedModification.structureType"
+                            [disabled]="isReadOpenMode || !isCreateOpenMode"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div class="grid-row">
+                      <div class="form-group flex--2 required">
+                        <label class="form-label">{{ componentData.componentId + ".type" | translate }}</label>
+                        <div class="form-control">
+                          <input
+                            type="text"
+                            class="aw-input"
+                            [(ngModel)]="selectedModification.modificationType"
+                            maxlength="10"
+                            [disabled]="isReadOpenMode || !isCreateOpenMode"
+                          />
+                        </div>
+                      </div>
+                      <div class="form-group flex--2">
+                        <label class="form-label">{{ componentData.componentId + ".documentUrl" | translate }}</label>
+                        <div class="form-control">
+                          <input
+                            type="text"
+                            style="width: 100%"
+                            class="aw-input"
+                            [disabled]="isReadOpenMode"
+                            [(ngModel)]="selectedModification.modificationDocumentUrl"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div class="grid-row">
+                      <div class="form-group">
+                        <label class="form-label">{{ componentData.componentId + ".designation" | translate }}</label>
+                        <div class="form-control">
+                          <textarea
+                            class="aw-textarea"
+                            style="width: 100%"
+                            [rows]="3"
+                            maxlength="300"
+                            pInputTextarea
+                            [disabled]="isReadOpenMode"
+                            [(ngModel)]="selectedModification.modificationTitle"
+                          ></textarea>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="grid-cell--equally">
+              <div #assetTableAnchor class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">
+                      {{ componentData.componentId + ".assetsAssociated" | translate }} ({{
+                        assetTableDataSource ? assetTableDataSource.dataSelectionCount : 0
+                      }})
+                    </h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content">
+                  <a-table [dataSource]="assetTableDataSource">
+                    <ng-template tableActionsDef>
+                      <button
+                        *ngIf="!isReadOpenMode && assetTableDataSource.hasDataSelection"
+                        type="button"
+                        mat-raised-button
+                        (click)="deleteSelectedConcernedAssets()"
+                      >
+                        {{ "global.delete" | translate }}
+                      </button>
+
+                      <button
+                        *ngIf="!isReadOpenMode && !assetTableDataSource.hasDataSelection"
+                        type="button"
+                        mat-raised-button
+                        (click)="createAsset()"
+                      >
+                        {{ "global.add" | translate }}
+                      </button>
+
+                      <button
+                        *ngIf="!isReadOpenMode && assetTableDataSource.dataSelectionCount === 1"
+                        type="button"
+                        mat-raised-button
+                        (click)="editAsset()"
+                      >
+                        {{ "global.edit" | translate }}
+                      </button>
+
+                      <button
+                        *ngIf="assetTableDataSource.dataSelectionCount === 1"
+                        type="button"
+                        mat-raised-button
+                        (click)="openAsset()"
+                      >
+                        {{ "global.open" | translate }}
+                      </button>
+                    </ng-template>
+                  </a-table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+        <mat-tab>
+          <ng-template mat-tab-label>
+            {{ "attributes" | translate }}
+          </ng-template>
+          <div class="grid-row">
+            <div class="grid-cell--12">
+              <div #dynamicAttributeListAnchor class="grid-cell grid-cell--container">
+                <div class="grid-cell-header">
+                  <div class="grid-cell-title-container">
+                    <h3 class="grid-cell-title">{{ "global.attributes" | translate }}</h3>
+                  </div>
+                </div>
+
+                <div class="grid-cell-content grid-cell-content-with-section">
+                  <div class="aw-btn-group">
+                    <button *ngIf="!isReadOpenMode" type="button" (click)="openHistoricAttributes()" mat-raised-button>
+                      <span>{{ "global.historic" | translate }}</span>
+                    </button>
+
+                    <aw-dynamic-attributes
+                      [attributes]="dynamicAttributesModification"
+                      [isReadOpenMode]="isReadOpenMode"
+                    ></aw-dynamic-attributes>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+  </div>
+</div>
+
+<!-- Popup Zone -->
+<aw-modification-assets-popup-form
+  *ngIf="showAssetPopup"
+  [(display)]="showAssetPopup"
+  [component-data]="dataAssets"
+  (onCreate)="onSaveAssets($event)"
+></aw-modification-assets-popup-form>
+
+<!-- Dialog ZONE -->
+<aw-dialog-table
+  *ngIf="showFamilyCodeDialog"
+  [(display)]="showFamilyCodeDialog"
+  [data]="dialogTableDataFamilyList"
+  (onSelected)="setSelectedObject($event)"
+  [keyMap]="keyMap"
+></aw-dialog-table>
+<aw-status-update-history
+  *ngIf="showStatusUpdatesPopup"
+  [object]="selectedModification"
+  [data]="tableStatusUpdatesData"
+  [deleteApi]="deleteApi"
+  [(display)]="showStatusUpdatesPopup"
+  [keyMap]="updatesKeyMap"
+  [isStatusEditable]="!isReadOpenMode"
+  (onUpdated)="updateObjectStatusFromStatusUpdatesHistory($event)"
+></aw-status-update-history>
+<aw-dynamic-attributes-history
+  *ngIf="showDynamicAttributesHistoric"
+  [attributes]="dynamicAttributesModification"
+  [history]="dynamicAttributesHistoric"
+  showDelete="true"
+  [deleteApi]="productStructureHistoryApi.removeHBireModificationAttribute"
+  [(display)]="showDynamicAttributesHistoric"
+></aw-dynamic-attributes-history>

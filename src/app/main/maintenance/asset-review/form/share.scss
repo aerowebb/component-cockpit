@@ -1,0 +1,28 @@
+@import "constants";
+
+.airworthiness-alert,
+.maintenance-alert {
+  font-weight: 600;
+  text-align: center;
+}
+
+.airworthiness-alert.airworthiness-alert--nok,
+.maintenance-alert.maintenance-alert--nok {
+  background-color: $red-light1;
+}
+
+.airworthiness-alert.airworthiness-alert--ok,
+.maintenance-alert.maintenance-alert--ok {
+  background-color: $green-light1;
+}
+
+.airworthiness-alert.airworthiness-alert--warning,
+.maintenance-alert.maintenance-alert--warning {
+  background-color: $orange;
+}
+
+.aw-table2 .airworthiness-alert,
+.aw-tree-table2 .maintenance-alert {
+  display: inline-block;
+  width: 100%;
+}
