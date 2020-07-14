@@ -185,6 +185,7 @@
     "unit": "Unit",
     "urgent": "Urgent",
     "waiting": "Waiting",
+    "warnigWorkOrder": "Some selected mvts don't have workOrder",
     "warehouse": "Warehouse",
     "withdraw": "Withdraw",
     "withdrawAndShip": "Withdraw And Ship",

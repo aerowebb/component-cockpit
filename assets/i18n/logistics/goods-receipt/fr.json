@@ -73,10 +73,19 @@
     "warningMessage": "Destinataire et expéditeur ne doivent pas être identiques",
     "workshop": "Atelier"
   },
-  "DialogScanComponent": {
-    "scanMaterial": "Veuillez numériser un matériau"
+  "DialogGoodsReceiptAssetScanComponent": {
+    "errorOnParsing": "Impossible de scanner l'individu",
+    "scan": "Veuillez scanner un individu"
+  },
+  "DialogGoodsReceiptPackageScanComponent": {
+    "errorOnParsing": "Impossible de scanner le colis",
+    "scan": "Veuillez scanner un colis"
   },
   "GoodsReceiptFormComponent": {
+    "physicalReceiptOnPackageNotPerformed": "La réception physique du colis n'a pas été réalisée",
+    "visualControlAlreadyPerformed": "Le contrôle visuel de l'individu a déjà été réalisé",
+    "noAssetWithBatchNumber": "Aucun individu correpondant trouvé",
+    "scanAsset": "Scanner individu",
     "accepted": "Accepté",
     "addItem": "Ajouter Poste",
     "addMaterial": "Ajouter Individu",
@@ -85,8 +94,6 @@
     "articleType": "Type d'individu",
     "back": "Retour",
     "batchNumber": "N° d’emballage",
-    "packageNumber": "Code colis",
-    "refeArticle": "Référence article",
     "compliance": "Contrôle conformité",
     "container": "Conteneur",
     "control": "Criticité",
@@ -107,6 +114,7 @@
     "enterPackagingNumber": "Saisir N° d'emballage",
     "expected": "Attendu le",
     "expectedDate": "Date d’attendu",
+    "expirationDate": "Péremption",
     "external": "Externe",
     "folderNum": "Numéro de Dossier",
     "generated": "Générer",
@@ -114,10 +122,11 @@
     "generatedPackaging": "Générer N° d'emballage",
     "inDispute": "En litige",
     "inProgress": "En cours",
-    "litigate": "Dossier de litige",
     "immediate": "Immédiat",
     "internal": "Interne",
     "knowAsset": "Individu Connu",
+    "litigate": "Dossier de litige",
+    "manufacturingBatch": "Lot de fab.",
     "materialNum": "Numéro Poste",
     "materials": "Individus",
     "missingPackage": "Emballage Manquant",
@@ -127,6 +136,7 @@
     "nextMovementType": "NEN_ext Movement Type",
     "newItem": "Nouveau poste",
     "newPackage": "Nouveau colis",
+    "packageNumber": "Code colis",
     "packageNum": "Numéro de Colis",
     "packageType": "Type de colis",
     "packaging": "Contrôle Emballage",
@@ -147,6 +157,7 @@
     "received": "Reçu",
     "receptionOK": "Reçu",
     "recipient": "Destinataire",
+    "refeArticle": "Référence article",
     "refDocType": "Type de Document",
     "refDocument": "Document de Référence",
     "refDocumentNum": "Numéro du Document",
@@ -156,7 +167,7 @@
     "scan": "Scanner",
     "shop": "Magasin",
     "site": "Site",
-    "sn": "N° Série",
+    "sn": "S/N",
     "SnAndManufactoring": "N° Série ou Lot fab",
     "status": "Statut",
     "stockMvtSn": "N° Série",
@@ -179,6 +190,12 @@
     "workshop": "Atelier"
   },
   "LocalGoodReceiptSearchComponent": {
+    "visualCheckPerformed": "Contrôle visuel de l'individu réalisé",
+    "scanAsset": "Scanner individu",
+    "scanPackage": "Scanner colis",
+    "missingRights": "Vous n'avez pas les droits pour réceptionner ce colis",
+    "packageReceived": "Colis réceptionné",
+    "noMatchingDeliveryFolder": "Aucun dossier de réception correspondant",
     "errorOnOpenDeliveryFolder": "Impossible d'ouvrir le dossier de réception",
     "designation": "Désignation",
     "packagingNumber": "Numéro d'emballage",
@@ -232,6 +249,8 @@
     "workshop": "Atelier"
   },
   "ExternalGoodReceiptSearchComponent": {
+    "scanAsset": "Scanner individu",
+    "scanPackage": "Scanner colis",
     "errorOnOpenDeliveryFolder": "Impossible d'ouvrir le dossier de réception",
     "designation": "Désignation",
     "packagingNumber": "Numéro d'emballage",

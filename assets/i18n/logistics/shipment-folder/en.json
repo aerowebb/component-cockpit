@@ -187,6 +187,10 @@
     "waitValidate": "In Waiting Shipment"
   },
   "ExternalShipmentSearchComponent": {
+    "visualCheckPerformed": "Visual check performed",
+    "missingRights": "You don't have rights to receipt this package",
+    "packageReceived": "Package received",
+    "noMatchingDeliveryFolder": "No matching delivery folder",
     "errorOnOpenDeliveryFolder": "Unable to open delivery folder",
     "designation": "Designation",
     "packagingNumber": "Packaging Number",

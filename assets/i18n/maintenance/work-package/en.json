@@ -122,6 +122,7 @@
     "zoneList": "Zone"
   },
   "WorkPackageFormComponent": {
+    "acrsEventToDelete": "This Work Package is linked to a validated ACRS. The ACRS will not be valid anymore. Do you wish to continue ?",
     "alreadyExistonItem": "already exist on item",
     "Costs": "Costs",
     "Engineering": "Engineering",

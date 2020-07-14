@@ -122,6 +122,7 @@
     "zoneList": "Zone"
   },
   "WorkPackageFormComponent": {
+    "acrsEventToDelete": "Ce Dossier de travail est lié à une APRS validée. L'APRS ne sera plus valide. Voulez vous continuer ?",
     "alreadyExistonItem": "EN_already exist on item",
     "Costs": "Coûts",
     "Engineering": "Données Techniques",

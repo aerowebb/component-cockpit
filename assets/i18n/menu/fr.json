@@ -49,7 +49,8 @@
     "DAS_DEF_AIRWORTHINESS": "Bureau technique",
     "DAS_DEF_LINE": "Chef de piste",
     "DAS_DEF_LOGISTICS": "Logisticien",
-    "DAS_DEF_MRO_CENTER": "Chef d'atelier"
+    "DAS_DEF_MRO_CENTER": "Chef d'atelier",
+    "DAS_DEF_REFERENTIAL" : "EN_Referential Dashboard"
   },
   "transaction": {
     "ADM_CUS_ATTRIBUTES": "Attributs",

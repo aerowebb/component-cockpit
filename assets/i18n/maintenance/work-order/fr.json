@@ -204,7 +204,8 @@
     "isController": "Contrôleur",
     "qualification": "Qualification",
     "stakeholder": "Intervenant",
-    "stakeholderName": "Nom de l'intervenant"
+    "stakeholderName": "Nom de l'intervenant",
+    "operator": "Opérateur"
   },
   "OperationComponent": {
     "historicPopup": {
@@ -241,7 +242,7 @@
     "closedRow1": "L'ordre de travail a été fermé par la maintenance (Part 145).",
     "closedRow2": "Vous pouvez le rouvrir. Le status passera automatiquement à sa valeur précédente",
     "postponementRequestedRow1": "Une demande de report a été émise sur l'ordre de travail.",
-    "postponementRequestedRow2": "Vous pouvez accepter le report en passant l'ordre de travail au statut Reporté.",
+    "postponementRequestedRow2": "Vous pouvez accepter ou refuser le report en vous rendant sur l’événement de demande de report associé.",
     "postponedRow1": "Le demande de report de l'ordre de travail a été acceptée.",
     "postponedRow2": "Pour annuler le report veuillez contacter le service responsable.",
     "changeToPerformedStatus": "Valider le Contrôle Qualité",

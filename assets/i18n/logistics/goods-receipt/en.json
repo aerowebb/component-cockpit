@@ -73,10 +73,19 @@
     "warningMessage": "Recipient and Shipper should not be same",
     "workshop": "Workshop"
   },
-  "DialogScanComponent": {
-    "scanMaterial": "Please scan a Material"
+  "DialogGoodsReceiptAssetScanComponent": {
+    "errorOnParsing": "Unable to scan asset",
+    "scan": "Please scan an asset"
+  },
+  "DialogGoodsReceiptPackageScanComponent": {
+    "errorOnParsing": "Unable to scan package",
+    "scan": "Please scan a package"
   },
   "GoodsReceiptFormComponent": {
+    "physicalReceiptOnPackageNotPerformed": "Physical receipt on package is not performed",
+    "visualControlAlreadyPerformed": "Visual control on this asset has already been performed",
+    "noAssetWithBatchNumber": "No asset matches given batch number",
+    "scanAsset": "Scan Asset",
     "accepted": "Accepted",
     "addItem": "Add Item",
     "addMaterial": "Add Material",
@@ -85,8 +94,6 @@
     "articleType": "Article Type",
     "back": "Back",
     "batchNumber": "Packaging Number",
-    "packageNumber": "Package code",
-    "refeArticle": "Reference Article",
     "compliance": "Control Compliance",
     "container": "Container",
     "control": "Control",
@@ -106,6 +113,7 @@
     "enterPackagingNumber": "Enter Packaging Number",
     "expected": "Expected",
     "expectedDate": "Expected Date",
+    "expirationDate": "Expiration",
     "external": "External",
     "folderNum": "Folder No.",
     "generated": "Generate",
@@ -113,10 +121,11 @@
     "generatedPackaging": "Generate Packaging Number",
     "inDispute": "In Dispute",
     "inProgress": "In Progress",
-    "litigate": "Litigation Folder",
     "immediate": "Immediate",
     "internal": "Internal",
     "knowAsset": "Know Asset",
+    "litigate": "Litigation Folder",
+    "manufacturingBatch": "Manuf batch",
     "materials": "Materials",
     "missingPackage": "Package Missing",
     "movementStoreEntrance": "Movement Store Entrance",
@@ -125,6 +134,7 @@
     "nextMovementType": "Next Movement Type",
     "newItem": "New Item",
     "newPackage": "New package",
+    "packageNumber": "Package code",
     "packageNum": "Package No.",
     "packageType": "Package Type",
     "packaging": "Control Packaging",
@@ -144,6 +154,7 @@
     "received": "Received",
     "receptionOK": "Receipt OK",
     "recipient": "Recipient",
+    "refeArticle": "Reference Material",
     "refDocType": "Document Type",
     "refDocument": "Reference Document",
     "refDocumentNum": "Document Number",
@@ -152,7 +163,7 @@
     "routine": "Routine",
     "shop": "Warehouse",
     "site": "Workshop",
-    "sn": "Serial number",
+    "sn": "S/N",
     "SnAndManufactoring": "S/N or Manuf batch",
     "status": "Status",
     "stockMvtSn": "Serial number",
@@ -175,6 +186,12 @@
     "workshop": "Workshop"
   },
   "LocalGoodReceiptSearchComponent": {
+    "visualCheckPerformed": "Visual check performed",
+    "scanAsset": "Scan Asset",
+    "scanPackage": "Scan Package",
+    "missingRights": "You don't have rights to receipt this package",
+    "packageReceived": "Package received",
+    "noMatchingDeliveryFolder": "No matching delivery folder",
     "errorOnOpenDeliveryFolder": "Unable to open delivery folder",
     "designation": "Designation",
     "packagingNumber": "Packaging Number",
@@ -228,6 +245,8 @@
     "workshop": "Workshop"
   },
   "ExternalGoodReceiptSearchComponent": {
+    "scanAsset": "Scan Asset",
+    "scanPackage": "Scan Package",
     "errorOnOpenDeliveryFolder": "Unable to open delivery folder",
     "designation": "Designation",
     "packagingNumber": "Packaging Number",

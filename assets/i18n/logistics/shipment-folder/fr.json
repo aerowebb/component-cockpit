@@ -193,6 +193,10 @@
     "waitValidate": "En attente expédition"
   },
   "ExternalShipmentSearchComponent": {
+    "visualCheckPerformed": "Contrôle visuel de l'individu réalisé",
+    "missingRights": "Vous n'avez pas les droits pour réceptionner ce colis",
+    "packageReceived": "Colis réceptionné",
+    "noMatchingDeliveryFolder": "Aucun dossier de réception correspondant",
     "errorOnOpenDeliveryFolder": "Impossible d'ouvrir le dossier de réception",
     "designation": "Désignation",
     "packagingNumber": "Numéro d'emballage",

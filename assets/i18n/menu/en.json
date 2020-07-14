@@ -49,7 +49,8 @@
     "DAS_DEF_AIRWORTHINESS": "Airworthiness",
     "DAS_DEF_LINE": "Line",
     "DAS_DEF_LOGISTICS": "Logistic",
-    "DAS_DEF_MRO_CENTER": "MRO Center"
+    "DAS_DEF_MRO_CENTER": "MRO Center",
+    "DAS_DEF_REFERENTIAL" : "Referential Dashboard"
   },
   "transaction": {
     "ADM_CUS_ATTRIBUTES": "Attributes",

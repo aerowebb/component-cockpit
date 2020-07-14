@@ -8,6 +8,8 @@
     "satisfactionRateDetails": "Satisfaction Rate Details"
   },
   "MaterialRequestTransferOrderManagementFormComponent": {
+    "inTransit": "In Transit",
+    "delivered": "Delivered",
     "advancement": "Advancement",
     "applicant": "Applicant",
     "availabilityAtDate": "Availability at Date",
@@ -34,6 +36,7 @@
     "msn": "MSN",
     "no": "No",
     "notBooked": "Not Booked",
+    "notReversed": "Not reversed",
     "notSelected": "Not Selected",
     "notServed": "Not Served",
     "noUnconfirmedFailureFilter": "No Unconfirmed Failure",
@@ -48,6 +51,7 @@
     "received": "Received ",
     "recepient": "Recipient",
     "requestedQuantity": "Requested Quantity",
+    "reversed": "Reversed",
     "routine": "Routine",
     "sameSiteFilter": "Located on the same site as the Transfer order",
     "satisfactionRate": "Satisfaction Rate",
@@ -62,7 +66,7 @@
     "sn": "S/N",
     "snBatch": "SN or Batch",
     "status": "Status",
-    "suggestedMaterials": "Suggested Materials",
+    "suggestedAssets": "Suggested Assets",
     "technicalData": "Technical Data",
     "type": "Type",
     "undefined": "Undefined",

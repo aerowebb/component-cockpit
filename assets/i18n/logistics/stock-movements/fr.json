@@ -186,6 +186,7 @@
     "tooltipDisclocate": "Vous devez diviser le lot",
     "unit": "Unité",
     "urgent": "Urgent",
+    "warnigWorkOrder": "Certains des mouvement seléctionnés n'ont pas d'ordre de travail",
     "waiting": "En attente",
     "warehouse": "Magasin",
     "withdraw": "Se désister",
