@@ -1,9 +1,0 @@
-{
-  "PartNumberExportFormComponent": {
-    "data": "Données",
-    "export": "Exporter",
-    "exportPartNumberData": "Exporter les données Part Number",
-    "pn": "Part Number",
-    "type": "Type"
-  }
-}

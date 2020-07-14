@@ -1,7 +1,0 @@
-@import "constants";
-
-:host {
-  .form-group.may-required .form-label::after {
-    color: $orange !important;
-  }
-}

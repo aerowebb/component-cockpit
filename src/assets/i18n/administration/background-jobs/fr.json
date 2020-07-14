@@ -1,8 +1,0 @@
-{
-  "BackgroundJobsComponent": {
-    "Name": "Nom",
-    "Author": "Auteur",
-    "StartTime": "Date de début",
-    "Parameters": "Paramètres"
-  }
-}

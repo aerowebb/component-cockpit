@@ -1,6 +1,0 @@
-{
-  "TableDataSourceWithHistoryComponent": {
-    "errorOnAddedDuplicate": "Cette valeur est déjà existante, la table n'accepte que des valeurs uniques, cette ligne ne peut pas être ajoutée",
-    "errorOnUpdatedDuplicate": "Cette valeur est déjà existante, la table n'accepte que des valeurs uniques, cette ligne ne peut pas être éditée"
-  }
-}

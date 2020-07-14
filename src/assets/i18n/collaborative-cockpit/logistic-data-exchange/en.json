@@ -1,9 +1,0 @@
-{
-  "LogisticDataExchangeComponent": {
-    "materialFileToImport": "Materials file to import",
-    "importFile": "Import",
-    "importData": "You are about to load data from the following file: {{importData.fileName}}",
-    "importData.line1": "Warning: This step can take a few minutes...",
-    "openReport": "You have chosen to open the document: {{openReport.reportName}}"
-  }
-}
